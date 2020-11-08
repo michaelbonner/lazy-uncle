@@ -110,7 +110,7 @@ export default function Home() {
 
           <div
             class={`${
-              showMobileNav ? "absolut" : "hidden"
+              showMobileNav ? "absolute" : "hidden"
             } top-0 inset-x-0 p-2 transition transform origin-top-right md:hidden`}
           >
             <div class="rounded-lg shadow-md">
