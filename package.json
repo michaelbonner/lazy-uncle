@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@prisma/client": "^2.30.3",
     "@tailwindcss/ui": "^0.7.2",
     "next": "^11.1.2",
     "postcss-preset-env": "^6.7.0",
@@ -17,6 +18,7 @@
   "devDependencies": {
     "autoprefixer": "^10.3.4",
     "postcss": "^8.3.6",
+    "prisma": "^2.30.3",
     "tailwindcss": "^2.2.9"
   }
 }
