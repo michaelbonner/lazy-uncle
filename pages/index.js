@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import Head from "next/head";
 import { useState } from "react";
@@ -114,10 +115,10 @@ export default function Home() {
                   Log in
                 </button>
               ) : (
-                <div className="flex space-x-2 items-center">
-                  <span className="text-white">
-                    Welcome {session.user.name}
-                  </span>
+                <div className="flex space-x-4 items-center">
+                  <Link href="/dashboard">
+                    <a className="text-white underline">Dashboard</a>
+                  </Link>
                   <button
                     className="text-white underline"
                     onClick={() => signOut()}
@@ -238,8 +239,8 @@ export default function Home() {
                     <p className="mt-3 text-base text-gray-300 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
                       Do you have so many birthdays and no easy way to keep
                       track of them? Do we have the solution for you! Easily
-                      enter the birthdays, we'll tell you how old they are and
-                      remind you of their birthday when it comes near.
+                      enter the birthdays, we&apos;ll tell you how old they are
+                      and remind you of their birthday when it comes near.
                     </p>
                   </div>
                 </div>
@@ -254,27 +255,25 @@ export default function Home() {
                         <div className="mt-1 grid grid-cols-2 gap-3">
                           <div>
                             <span className="w-full inline-flex rounded-md shadow-sm">
-                              <Link href="/api/auth/signin/google">
-                                <a
-                                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition duration-150 ease-in-out"
-                                  aria-label="Sign in with Google"
-                                >
-                                  <IoLogoGoogle className="w-5 h-5 fill-current" />
-                                </a>
-                              </Link>
+                              <button
+                                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition duration-150 ease-in-out"
+                                aria-label="Sign in with Google"
+                                onClick={() => signIn("google")}
+                              >
+                                <IoLogoGoogle className="w-5 h-5 fill-current" />
+                              </button>
                             </span>
                           </div>
 
                           <div>
                             <span className="w-full inline-flex rounded-md shadow-sm">
-                              <Link href="/api/auth/signin/github">
-                                <a
-                                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition duration-150 ease-in-out"
-                                  aria-label="Sign in with GitHub"
-                                >
-                                  <IoLogoGithub className="w-5 h-5 fill-current" />
-                                </a>
-                              </Link>
+                              <button
+                                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition duration-150 ease-in-out"
+                                aria-label="Sign in with GitHub"
+                                onClick={() => signIn("github")}
+                              >
+                                <IoLogoGithub className="w-5 h-5 fill-current" />
+                              </button>
                             </span>
                           </div>
                         </div>
