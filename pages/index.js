@@ -2,20 +2,23 @@ import Link from "next/link";
 import Head from "next/head";
 import { useState } from "react";
 import { IoLogoGithub, IoLogoGoogle } from "react-icons/io5";
+import { useSession, signIn, signOut } from "next-auth/react";
 
 export default function Home() {
   const [showMobileNav, setShowMobileNav] = useState(false);
+  const { data: session } = useSession();
+
   return (
     <div>
       <Head>
-        <title>Create Next App</title>
+        <title>Lazy Uncle App</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div class="relative bg-gray-800 overflow-hidden">
-        <div class="hidden sm:block sm:absolute sm:inset-0">
+      <div className="relative bg-gray-800 overflow-hidden">
+        <div className="hidden sm:block sm:absolute sm:inset-0">
           <svg
-            class="absolute bottom-0 right-0 transform translate-x-1/2 mb-48 text-gray-700 lg:top-0 lg:mt-28 lg:mb-0 xl:transform-none xl:translate-x-0"
+            className="absolute bottom-0 right-0 transform translate-x-1/2 mb-48 text-gray-700 lg:top-0 lg:mt-28 lg:mb-0 xl:transform-none xl:translate-x-0"
             width="364"
             height="384"
             viewBox="0 0 364 384"
@@ -40,10 +43,10 @@ export default function Home() {
             />
           </svg>
         </div>
-        <div class="relative pt-6 pb-12 sm:pb-32">
-          <nav class="relative max-w-screen-xl mx-auto flex items-center justify-between px-4 sm:px-6">
-            <div class="flex items-center flex-1">
-              <div class="flex items-center justify-between w-full md:w-auto">
+        <div className="relative pt-6 pb-12 sm:pb-32">
+          <nav className="relative max-w-screen-xl mx-auto flex items-center justify-between px-4 sm:px-6">
+            <div className="flex items-center flex-1">
+              <div className="flex items-center justify-between w-full md:w-auto">
                 <Link href="/">
                   <a aria-label="Home">
                     <svg
@@ -76,17 +79,17 @@ export default function Home() {
                     </svg>
                   </a>
                 </Link>
-                <div class="-mr-2 flex items-center md:hidden">
+                <div className="-mr-2 flex items-center md:hidden">
                   <button
                     type="button"
-                    class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:bg-gray-700 focus:outline-none focus:bg-gray-700 transition duration-150 ease-in-out"
+                    className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:bg-gray-700 focus:outline-none focus:bg-gray-700 transition duration-150 ease-in-out"
                     id="main-menu"
                     aria-label="Main menu"
                     aria-haspopup="true"
                     onClick={() => setShowMobileNav(!showMobileNav)}
                   >
                     <svg
-                      class="h-6 w-6"
+                      className="h-6 w-6"
                       stroke="currentColor"
                       fill="none"
                       viewBox="0 0 24 24"
@@ -102,29 +105,48 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div class="hidden md:flex">
-              <a
-                href="#"
-                class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-gray-600 hover:bg-gray-500 focus:outline-none focus:shadow-outline-gray focus:border-gray-700 active:bg-gray-700 transition duration-150 ease-in-out"
-              >
-                Log in
-              </a>
+            <div className="hidden md:flex">
+              {!session ? (
+                <button
+                  onClick={() => signIn()}
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-gray-600 hover:bg-gray-500 focus:outline-none focus:shadow-outline-gray focus:border-gray-700 active:bg-gray-700 transition duration-150 ease-in-out"
+                >
+                  Log in
+                </button>
+              ) : (
+                <div className="flex space-x-2 items-center">
+                  <span className="text-white">
+                    Welcome {session.user.name}
+                  </span>
+                  <button
+                    className="text-white underline"
+                    onClick={() => signOut()}
+                  >
+                    Sign Out
+                  </button>
+                  <img
+                    className="w-6 h-6 rounded-full shadow"
+                    src={session.user.image}
+                    alt="avatar"
+                  />
+                </div>
+              )}
             </div>
           </nav>
 
           <div
-            class={`${
+            className={`${
               showMobileNav ? "absolute" : "hidden"
             } top-0 inset-x-0 p-2 transition transform origin-top-right md:hidden`}
           >
-            <div class="rounded-lg shadow-md">
+            <div className="rounded-lg shadow-md">
               <div
-                class="rounded-lg bg-white shadow-xs overflow-hidden"
+                className="rounded-lg bg-white shadow-xs overflow-hidden"
                 role="menu"
                 aria-orientation="vertical"
                 aria-labelledby="main-menu"
               >
-                <div class="px-5 pt-4 flex items-center justify-between">
+                <div className="px-5 pt-4 flex items-center justify-between">
                   <div>
                     <svg
                       className="h-12 fill-current text-blue-400"
@@ -155,15 +177,15 @@ export default function Home() {
                       </g>
                     </svg>
                   </div>
-                  <div class="-mr-2">
+                  <div className="-mr-2">
                     <button
                       type="button"
-                      class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out"
+                      className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out"
                       aria-label="Close menu"
                       onClick={() => setShowMobileNav(!showMobileNav)}
                     >
                       <svg
-                        class="h-6 w-6"
+                        className="h-6 w-6"
                         stroke="currentColor"
                         fill="none"
                         viewBox="0 0 24 24"
@@ -179,29 +201,41 @@ export default function Home() {
                   </div>
                 </div>
                 <div>
-                  <a
-                    href="#"
-                    class="block w-full px-5 py-3 text-center font-medium text-blue-600 bg-gray-50 hover:bg-gray-100 hover:text-blue-700 focus:outline-none focus:bg-gray-100 focus:text-blue-700 transition duration-150 ease-in-out"
-                    role="menuitem"
-                  >
-                    Log in
-                  </a>
+                  {!session ? (
+                    <Link href="/api/auth/signin">
+                      <a
+                        className="block w-full px-5 py-3 text-center font-medium text-blue-600 bg-gray-50 hover:bg-gray-100 hover:text-blue-700 focus:outline-none focus:bg-gray-100 focus:text-blue-700 transition duration-150 ease-in-out"
+                        role="menuitem"
+                      >
+                        Log in
+                      </a>
+                    </Link>
+                  ) : (
+                    <div>
+                      <span className="text-white">
+                        Welcome {session.user.name}
+                      </span>
+                      <Link href="/api/auth/signout">
+                        <a className="text-white underline">Sign Out</a>
+                      </Link>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           </div>
 
-          <main class="mt-8 sm:mt-16 md:mt-20 lg:mt-24">
-            <div class="mx-auto max-w-screen-xl">
-              <div class="lg:grid lg:grid-cols-12 lg:gap-8">
-                <div class="px-4 sm:px-6 sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left lg:flex lg:items-center">
+          <main className="mt-8 sm:mt-16 md:mt-20 lg:mt-24">
+            <div className="mx-auto max-w-screen-xl">
+              <div className="lg:grid lg:grid-cols-12 lg:gap-8">
+                <div className="px-4 sm:px-6 sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left lg:flex lg:items-center">
                   <div>
-                    <h2 class="mt-4 text-4xl tracking-tight leading-10 font-extrabold text-white sm:mt-5 sm:leading-none sm:text-6xl lg:mt-6 lg:text-5xl xl:text-6xl">
+                    <h2 className="mt-4 text-4xl tracking-tight leading-10 font-extrabold text-white sm:mt-5 sm:leading-none sm:text-6xl lg:mt-6 lg:text-5xl xl:text-6xl">
                       Easy way to
-                      <br class="hidden md:inline" />
-                      <span class="text-blue-400">track birthdays</span>
+                      <br className="hidden md:inline" />
+                      <span className="text-blue-400">track birthdays</span>
                     </h2>
-                    <p class="mt-3 text-base text-gray-300 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
+                    <p className="mt-3 text-base text-gray-300 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
                       Do you have so many birthdays and no easy way to keep
                       track of them? Do we have the solution for you! Easily
                       enter the birthdays, we'll tell you how old they are and
@@ -209,58 +243,60 @@ export default function Home() {
                     </p>
                   </div>
                 </div>
-                <div class="mt-12 sm:mt-16 lg:mt-0 lg:col-span-6">
-                  <div class="bg-white sm:max-w-md sm:w-full sm:mx-auto sm:rounded-lg sm:overflow-hidden">
-                    <div class="px-4 py-8 sm:px-10">
+                <div className="mt-12 sm:mt-16 lg:mt-0 lg:col-span-6">
+                  <div className="bg-white sm:max-w-md sm:w-full sm:mx-auto sm:rounded-lg sm:overflow-hidden">
+                    <div className="px-4 py-8 sm:px-10">
                       <div>
-                        <p class="text-sm leading-5 font-medium text-gray-700">
+                        <p className="text-sm leading-5 font-medium text-gray-700">
                           Sign in with
                         </p>
 
-                        <div class="mt-1 grid grid-cols-2 gap-3">
+                        <div className="mt-1 grid grid-cols-2 gap-3">
                           <div>
-                            <span class="w-full inline-flex rounded-md shadow-sm">
-                              <button
-                                type="button"
-                                class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition duration-150 ease-in-out"
-                                aria-label="Sign in with Google"
-                              >
-                                <IoLogoGoogle class="w-5 h-5 fill-current" />
-                              </button>
+                            <span className="w-full inline-flex rounded-md shadow-sm">
+                              <Link href="/api/auth/signin/google">
+                                <a
+                                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition duration-150 ease-in-out"
+                                  aria-label="Sign in with Google"
+                                >
+                                  <IoLogoGoogle className="w-5 h-5 fill-current" />
+                                </a>
+                              </Link>
                             </span>
                           </div>
 
                           <div>
-                            <span class="w-full inline-flex rounded-md shadow-sm">
-                              <button
-                                type="button"
-                                class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition duration-150 ease-in-out"
-                                aria-label="Sign in with GitHub"
-                              >
-                                <IoLogoGithub class="w-5 h-5 fill-current" />
-                              </button>
+                            <span className="w-full inline-flex rounded-md shadow-sm">
+                              <Link href="/api/auth/signin/github">
+                                <a
+                                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition duration-150 ease-in-out"
+                                  aria-label="Sign in with GitHub"
+                                >
+                                  <IoLogoGithub className="w-5 h-5 fill-current" />
+                                </a>
+                              </Link>
                             </span>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <div class="px-4 py-6 bg-gray-50 border-t-2 border-gray-200 sm:px-10">
-                      <p class="text-xs leading-5 text-gray-500">
+                    <div className="px-4 py-6 bg-gray-50 border-t-2 border-gray-200 sm:px-10">
+                      <p className="text-xs leading-5 text-gray-500">
                         By signing up, you agree to our{" "}
                         <Link href="/privacy">
-                          <a class="font-medium text-gray-900 hover:underline">
+                          <a className="font-medium text-gray-900 hover:underline">
                             Terms
                           </a>
                         </Link>
                         ,{" "}
                         <Link href="/privacy">
-                          <a class="font-medium text-gray-900 hover:underline">
+                          <a className="font-medium text-gray-900 hover:underline">
                             Data Policy
                           </a>
                         </Link>{" "}
                         and{" "}
                         <Link href="/privacy">
-                          <a class="font-medium text-gray-900 hover:underline">
+                          <a className="font-medium text-gray-900 hover:underline">
                             Cookies Policy
                           </a>
                         </Link>
