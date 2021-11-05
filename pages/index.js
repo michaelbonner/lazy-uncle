@@ -14,6 +14,27 @@ export default function Home() {
       <Head>
         <title>Lazy Uncle App</title>
         <link rel="icon" href="/favicon.ico" />
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/apple-touch-icon.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/favicon-32x32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/favicon-16x16.png"
+        />
+        <link rel="manifest" href="/site.webmanifest" />
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
+        <meta name="msapplication-TileColor" content="#00aba9" />
+        <meta name="theme-color" content="#ffffff" />
       </Head>
 
       <div className="relative bg-gray-800 overflow-hidden">
@@ -150,7 +171,7 @@ export default function Home() {
                 <div className="px-5 pt-4 flex items-center justify-between">
                   <div>
                     <svg
-                      className="h-12 fill-current text-blue-400"
+                      className="h-12 fill-current text-green-400"
                       style={{ enableBackground: "new 0 0 220 53.8" }}
                       version="1.1"
                       viewBox="0 0 220 53.8"
@@ -205,7 +226,7 @@ export default function Home() {
                   {!session ? (
                     <Link href="/api/auth/signin">
                       <a
-                        className="block w-full px-5 py-3 text-center font-medium text-blue-600 bg-gray-50 hover:bg-gray-100 hover:text-blue-700 focus:outline-none focus:bg-gray-100 focus:text-blue-700 transition duration-150 ease-in-out"
+                        className="block w-full px-5 py-3 text-center font-medium text-green-600 bg-gray-50 hover:bg-gray-100 hover:text-green-700 focus:outline-none focus:bg-gray-100 focus:text-green-700 transition duration-150 ease-in-out"
                         role="menuitem"
                       >
                         Log in
@@ -234,7 +255,7 @@ export default function Home() {
                     <h2 className="mt-4 text-4xl tracking-tight leading-10 font-extrabold text-white sm:mt-5 sm:leading-none sm:text-6xl lg:mt-6 lg:text-5xl xl:text-6xl">
                       Easy way to
                       <br className="hidden md:inline" />
-                      <span className="text-blue-400">track birthdays</span>
+                      <span className="text-green-400">track birthdays</span>
                     </h2>
                     <p className="mt-3 text-base text-gray-300 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
                       Do you have so many birthdays and no easy way to keep
@@ -256,7 +277,7 @@ export default function Home() {
                           <div>
                             <span className="w-full inline-flex rounded-md shadow-sm">
                               <button
-                                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition duration-150 ease-in-out"
+                                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:outline-none focus:border-green-300 focus:shadow-outline-green transition duration-150 ease-in-out"
                                 aria-label="Sign in with Google"
                                 onClick={() => signIn("google")}
                               >
@@ -268,7 +289,7 @@ export default function Home() {
                           <div>
                             <span className="w-full inline-flex rounded-md shadow-sm">
                               <button
-                                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition duration-150 ease-in-out"
+                                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md bg-white text-sm leading-5 font-medium text-gray-500 hover:text-gray-400 focus:outline-none focus:border-green-300 focus:shadow-outline-green transition duration-150 ease-in-out"
                                 aria-label="Sign in with GitHub"
                                 onClick={() => signIn("github")}
                               >
