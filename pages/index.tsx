@@ -259,13 +259,14 @@ function Home({ providers }: { providers: Provider[] }) {
                 </div>
                 {birthdaysData?.birthdays?.length > 0 && (
                   <div className="flex justify-end mt-8">
-                    <a
-                      href={`webcal://${currentHref}/api/calendar-subscription/${session?.user?.id}`}
-                      className="flex items-center space-x-1 underline text-blue-600"
+                    <Link
+                      href={`webcal://${currentHref}api/calendar-subscription/${session?.user?.id}`}
                     >
-                      <GrFormCalendar className="text-blue-600" />
-                      <span>Subscribe to calendar</span>
-                    </a>
+                      <a className="flex items-center space-x-1 underline text-blue-600">
+                        <GrFormCalendar className="text-blue-600" />
+                        <span>Subscribe to calendar</span>
+                      </a>
+                    </Link>
                   </div>
                 )}
                 <hr className="h-px bg-gray-900 my-12 mx-8" />
