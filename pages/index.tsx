@@ -4,7 +4,12 @@ import { Provider } from "next-auth/providers";
 import { getProviders, signIn, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { GrFormFilter, GrGithub, GrGoogle } from "react-icons/gr";
+import {
+  GrFormCalendar,
+  GrFormFilter,
+  GrGithub,
+  GrGoogle,
+} from "react-icons/gr";
 import CreateBirthdayForm from "../components/CreateBirthdayForm";
 import MainLayout from "../components/layout/MainLayout";
 import UploadCsvBirthdayForm from "../components/UploadCsvBirthdayForm";
@@ -256,9 +261,10 @@ function Home({ providers }: { providers: Provider[] }) {
                   <div className="flex justify-end mt-8">
                     <a
                       href={`webcal://${currentHref}/api/calendar-subscription/${session?.user?.id}`}
-                      className="underline text-blue-600"
+                      className="flex items-center space-x-1 underline text-blue-600"
                     >
-                      Subscribe to calendar
+                      <GrFormCalendar className="text-blue-600" />
+                      <span>Subscribe to calendar</span>
                     </a>
                   </div>
                 )}
@@ -267,6 +273,7 @@ function Home({ providers }: { providers: Provider[] }) {
                   <div className="border py-8 px-4 lg:px-8 mt-4">
                     <h3 className="text-2xl mb-4">Add new birthday</h3>
                     <CreateBirthdayForm />
+                    <hr className="h-px bg-gray-900 my-12 mx-8" />
                     <h3 className="text-2xl mb-4">Import from CSV</h3>
                     <UploadCsvBirthdayForm />
                   </div>
