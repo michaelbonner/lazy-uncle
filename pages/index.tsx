@@ -17,7 +17,9 @@ const Home: NextPage = () => {
   const [workingDates, setWorkingDates] = useState<
     NexusGenObjects["Birthday"][]
   >([]);
-  const [filter, setFilter] = useState("");
+  const [nameFilter, setNameFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [parentFilter, setParentFilter] = useState("");
   const {
     data: birthdaysData,
     loading: birthdaysLoading,
@@ -28,14 +30,33 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     if (birthdaysData?.birthdays?.length > 0) {
-      const dates = birthdaysData.birthdays.filter(
-        (birthday: NexusGenObjects["Birthday"]) => {
+      const dates = birthdaysData.birthdays
+        .filter((birthday: NexusGenObjects["Birthday"]) => {
           return (
-            birthday?.name?.toLowerCase().includes(filter.toLowerCase()) ||
+            birthday?.name?.toLowerCase().includes(nameFilter.toLowerCase()) ||
             !birthday.id
           );
-        }
-      );
+        })
+        .filter((birthday: NexusGenObjects["Birthday"]) => {
+          if (!categoryFilter) {
+            return true;
+          }
+          return (
+            birthday?.category
+              ?.toLowerCase()
+              .includes(categoryFilter.toLowerCase()) || !birthday.id
+          );
+        })
+        .filter((birthday: NexusGenObjects["Birthday"]) => {
+          if (!parentFilter) {
+            return true;
+          }
+          return (
+            birthday?.parent
+              ?.toLowerCase()
+              .includes(parentFilter.toLowerCase()) || !birthday.id
+          );
+        });
       if (dates.length > 0) {
         setWorkingDates(
           [
@@ -59,7 +80,7 @@ const Home: NextPage = () => {
         setWorkingDates([]);
       }
     }
-  }, [birthdaysData, filter]);
+  }, [birthdaysData, categoryFilter, nameFilter, parentFilter]);
 
   return (
     <MainLayout title="Lazy Uncle">
@@ -75,17 +96,47 @@ const Home: NextPage = () => {
                   className="flex items-center justify-end space-x-2"
                   onSubmit={() => {}}
                 >
-                  <label className="block" htmlFor="filter">
-                    Filter
-                  </label>
-                  <input
-                    className="block w-full max-w-sm border-gray-300"
-                    id="filter"
-                    onChange={(e) => setFilter(e.target.value)}
-                    type="text"
-                    value={filter}
-                  />
+                  <div>
+                    <label className="block" htmlFor="nameFilter">
+                      Filter by name
+                    </label>
+                    <input
+                      className="block w-full max-w-sm border-gray-300"
+                      id="nameFilter"
+                      onChange={(e) => setNameFilter(e.target.value)}
+                      type="text"
+                      value={nameFilter}
+                    />
+                  </div>
+                  <div>
+                    <label className="block" htmlFor="categoryFilter">
+                      Filter by category
+                    </label>
+                    <input
+                      className="block w-full max-w-sm border-gray-300"
+                      id="categoryFilter"
+                      onChange={(e) => setCategoryFilter(e.target.value)}
+                      type="text"
+                      value={categoryFilter}
+                    />
+                  </div>
+                  <div>
+                    <label className="block" htmlFor="parentFilter">
+                      Filter by parent
+                    </label>
+                    <input
+                      className="block w-full max-w-sm border-gray-300"
+                      id="parentFilter"
+                      onChange={(e) => setParentFilter(e.target.value)}
+                      type="text"
+                      value={parentFilter}
+                    />
+                  </div>
                 </form>
+                <div className="text-right">
+                  {workingDates.length ? workingDates.length - 1 : 0}/
+                  {birthdaysData?.birthdays?.length} shown
+                </div>
                 <div>
                   {birthdaysLoading && <p>Loading...</p>}
                   {birthdaysError && <p>Error :(</p>}
