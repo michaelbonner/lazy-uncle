@@ -9,7 +9,7 @@ const Home: NextPage = () => {
   const { data, loading, error } = useQuery(GetAllBirthdaysQuery);
 
   return (
-    <div>
+    <div className="flex flex-col min-h-screen justify-between">
       <Head>
         <title>Lazy Uncle</title>
         <meta
@@ -18,6 +18,17 @@ const Home: NextPage = () => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+
+      <header>
+        <h1 className="text-4xl font-semibold px-8 py-4">
+          <Image
+            alt="Lazy Uncle"
+            height={80}
+            src="/lazy-uncle.svg"
+            width={200}
+          />
+        </h1>
+      </header>
 
       <main className="max-w-7xl px-auto py-6 px-8">
         <h1>Welcome to Lazy Uncle</h1>
@@ -37,7 +48,7 @@ const Home: NextPage = () => {
         </div>
       </main>
 
-      <footer className="px-8 py-6">
+      <footer className="bg-gray-100 px-8 py-6">
         <a href="/" target="_blank" rel="noopener noreferrer">
           &copy; {new Date().getFullYear()} Lazy Uncle
         </a>
