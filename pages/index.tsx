@@ -238,15 +238,17 @@ const Home: NextPage = () => {
                     </div>
                   )}
                 </div>
-                <div className="flex justify-end mt-8">
-                  <Link
-                    href={`webcal://${currentHref}/api/calendar-subscription/${session?.user?.id}`}
-                  >
-                    <a className="underline text-blue-600">
-                      Subscribe to calendar
-                    </a>
-                  </Link>
-                </div>
+                {birthdaysData?.birthdays?.length > 0 && (
+                  <div className="flex justify-end mt-8">
+                    <Link
+                      href={`webcal://${currentHref}/api/calendar-subscription/${session?.user?.id}`}
+                    >
+                      <a className="underline text-blue-600">
+                        Subscribe to calendar
+                      </a>
+                    </Link>
+                  </div>
+                )}
                 <hr className="h-px bg-gray-900 my-12 mx-8" />
                 <div className="bg-white rounded-lg shadow-lg mt-12">
                   <div className="border py-8 px-4 lg:px-8 mt-4">

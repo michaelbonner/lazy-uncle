@@ -7,7 +7,8 @@
     "Birthdate",
     "decompile",
     "toastify",
-    "typegen"
+    "typegen",
+    "webcal"
   ],
   "ignoreWords": [],
   "import": []
