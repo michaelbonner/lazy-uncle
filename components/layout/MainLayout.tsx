@@ -1,3 +1,4 @@
+import { signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
 import React, { ReactElement } from "react";
@@ -9,6 +10,7 @@ const MainLayout = ({
   children: ReactElement;
   title: string;
 }) => {
+  const { data: session } = useSession();
   return (
     <div className="bg-gray-100 min-h-screen">
       <Head>
@@ -20,8 +22,8 @@ const MainLayout = ({
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <header>
-        <h1 className="text-4xl font-semibold px-4 lg:px-8 pt-4">
+      <header className="flex justify-between px-4 lg:px-8">
+        <h1 className="text-4xl font-semibold pt-4">
           <Image
             alt="Lazy Uncle"
             height={80}
@@ -29,6 +31,11 @@ const MainLayout = ({
             width={200}
           />
         </h1>
+        {session?.user && (
+          <button className="underline" onClick={() => signOut()}>
+            Sign out
+          </button>
+        )}
       </header>
       {children}
       <footer className="bg-gray-100 px-4 lg:px-8 py-6">
