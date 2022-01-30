@@ -38,7 +38,7 @@ const Birthday = ({ id }: { id: string }) => {
         {birthdayLoading ? (
           <p>Loading...</p>
         ) : (
-          <div className="px-4 lg:px-8">
+          <div className="px-4 lg:px-8 max-w-7xl mx-auto">
             <div className="bg-white px-4 lg:px-8 py-8 pb-8 rounded-lg">
               <Link href="/">
                 <a className="underline text-blue-600">Back to all birthdays</a>
