@@ -5,6 +5,7 @@ import { signIn, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import CreateBirthdayForm from "../components/CreateBirthdayForm";
 import MainLayout from "../components/layout/MainLayout";
+import UploadCsvBirthdayForm from "../components/UploadCsvBirthdayForm";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import {
   DELETE_BIRTHDAY_MUTATION,
@@ -193,6 +194,8 @@ const Home: NextPage = () => {
                   <div className="border py-8 px-4 lg:px-8 mt-4">
                     <h3 className="text-2xl mb-4">Add new birthday</h3>
                     <CreateBirthdayForm />
+                    <h3 className="text-2xl mb-4">Import from CSV</h3>
+                    <UploadCsvBirthdayForm />
                   </div>
                 </div>
               </div>
