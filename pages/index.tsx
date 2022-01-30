@@ -130,7 +130,7 @@ const Home: NextPage = () => {
                                     : "py-4 hover:bg-gray-100"
                                 } border-t grid grid-cols-8`}
                               >
-                                <p className="pl-4 lg:pl-8 text-xl col-span-3">
+                                <p className="pl-4 lg:pl-8 text-lg col-span-3">
                                   {birthday.name}
                                 </p>
                                 <p className="text-sm">
