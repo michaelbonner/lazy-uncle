@@ -3,14 +3,16 @@
 
 
 type Birthday {
+  category: String
   date: String
   id: String
   name: String
+  parent: String
   user: User
 }
 
 type Mutation {
-  createBirthday(date: String!, name: String!, userId: String!): Birthday
+  createBirthday(category: String, date: String!, name: String!, parent: String, userId: String!): Birthday
   deleteBirthday(birthdayId: String!): Birthday
 }
 

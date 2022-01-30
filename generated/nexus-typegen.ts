@@ -29,9 +29,11 @@ export interface NexusGenScalars {
 
 export interface NexusGenObjects {
   Birthday: { // root type
+    category?: string | null; // String
     date?: string | null; // String
     id?: string | null; // String
     name?: string | null; // String
+    parent?: string | null; // String
   }
   Mutation: {};
   Query: {};
@@ -54,9 +56,11 @@ export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
   Birthday: { // field return type
+    category: string | null; // String
     date: string | null; // String
     id: string | null; // String
     name: string | null; // String
+    parent: string | null; // String
     user: NexusGenRootTypes['User'] | null; // User
   }
   Mutation: { // field return type
@@ -78,9 +82,11 @@ export interface NexusGenFieldTypes {
 
 export interface NexusGenFieldTypeNames {
   Birthday: { // field return type name
+    category: 'String'
     date: 'String'
     id: 'String'
     name: 'String'
+    parent: 'String'
     user: 'User'
   }
   Mutation: { // field return type name
@@ -103,8 +109,10 @@ export interface NexusGenFieldTypeNames {
 export interface NexusGenArgTypes {
   Mutation: {
     createBirthday: { // args
+      category?: string | null; // String
       date: string; // String!
       name: string; // String!
+      parent?: string | null; // String
       userId: string; // String!
     }
     deleteBirthday: { // args
