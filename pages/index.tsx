@@ -100,7 +100,7 @@ const Home: NextPage = () => {
                   {birthdaysError && <p>Error :(</p>}
                   {workingDates && (
                     <div className="bg-white rounded-lg shadow-lg mt-8 text-gray-600">
-                      <div className="grid grid-cols-8 bg-white rounded-t-lg">
+                      <div className="hidden lg:grid lg:grid-cols-8 bg-white rounded-t-lg">
                         <p className="py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider col-span-3 pl-4 lg:pl-8">
                           Name
                         </p>
@@ -153,8 +153,12 @@ const Home: NextPage = () => {
                                       </span>
                                     )}
                                 </p>
-                                <p>{birthday.category}</p>
-                                <p>{birthday.parent}</p>
+                                <p className="text-ellipsis overflow-hidden">
+                                  {birthday.category}
+                                </p>
+                                <p className="text-ellipsis overflow-hidden">
+                                  {birthday.parent}
+                                </p>
                                 <div className="text-right pr-4 lg:pr-8">
                                   {birthday.id && (
                                     <button
