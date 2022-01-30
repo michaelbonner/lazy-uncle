@@ -1,6 +1,7 @@
 import { useMutation } from "@apollo/client";
 import { Birthday } from "@prisma/client";
-import { parse } from "csv-parse/browser/esm/sync";
+import { parse as csvParse } from "csv-parse/browser/esm/sync";
+import { format, isValid, parse } from "date-fns";
 import { useSession } from "next-auth/react";
 import React, { useState } from "react";
 import {
@@ -27,8 +28,34 @@ const UploadCsvBirthdayForm = () => {
       e.preventDefault();
       const reader = new FileReader();
       reader.onload = async (data: any) => {
-        const parsedData = parse(data?.target?.result);
-        setBirthdays(parsedData);
+        const parsedData = csvParse(data?.target?.result);
+        const parsedBirthdays = parsedData
+          .filter((row: any) => {
+            if (!isValid(parse(row[1], "yyyy-MM-dd", new Date()))) {
+              return false;
+            }
+            return true;
+          })
+          .filter((row: any) => {
+            return row[0] !== "";
+          })
+          .map((row: any) => {
+            return {
+              name: row[0],
+              date: format(
+                parse(row[1], "yyyy-MM-dd", new Date()),
+                "yyyy-MM-dd"
+              ),
+              category: row[2] !== "NULL" ? row[2] : null,
+              parent: row[3] !== "NULL" ? row[3] : null,
+            };
+          });
+
+        if (parsedBirthdays.length > 0) {
+          setBirthdays(parsedBirthdays);
+        } else {
+          alert("No birthdays found in the file");
+        }
       };
 
       reader.readAsText(e.target.files[0]);
@@ -43,12 +70,13 @@ const UploadCsvBirthdayForm = () => {
       onSubmit={async (e) => {
         e.preventDefault();
         birthdays.forEach(async (birthday: any) => {
+          const { name, date, category, parent } = birthday;
           await createBirthday({
             variables: {
-              name: birthday[0],
-              date: birthday[1],
-              category: birthday[2] !== "NULL" ? birthday[2] : null,
-              parent: birthday[3] !== "NULL" ? birthday[3] : null,
+              name,
+              date,
+              category,
+              parent,
               userId,
             },
           });
@@ -57,10 +85,10 @@ const UploadCsvBirthdayForm = () => {
         setCsv("");
       }}
     >
-      <div className="grid lg:grid-cols-4 gap-x-4 items-end">
+      <div className="grid lg:grid-cols-2 gap-x-4 items-end">
         <div>
           <label className="block mt-4" htmlFor="csv">
-            CSV
+            CSV &ndash; rows of name, date (yyyy-mm-dd), category, parent
           </label>
           <input
             className="block w-full border-gray-300"

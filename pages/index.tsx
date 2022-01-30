@@ -71,7 +71,7 @@ const Home: NextPage = () => {
   });
 
   return (
-    <MainLayout title="Home">
+    <MainLayout title="Lazy Uncle">
       <>
         {sessionStatus === "loading" && (
           <p className="py-12 text-center">Loading...</p>
