@@ -1,10 +1,10 @@
 import { useQuery } from "@apollo/client";
 import { format } from "date-fns";
-import type { NextPage } from "next";
-import { signIn, useSession } from "next-auth/react";
+import { Provider } from "next-auth/providers";
+import { getProviders, signIn, useSession } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { GrGithub, GrGoogle } from "react-icons/gr";
 import CreateBirthdayForm from "../components/CreateBirthdayForm";
 import MainLayout from "../components/layout/MainLayout";
 import UploadCsvBirthdayForm from "../components/UploadCsvBirthdayForm";
@@ -13,7 +13,7 @@ import { GET_ALL_BIRTHDAYS_QUERY } from "../graphql/Birthday";
 import getAgeInYears from "../shared/getAgeInYears";
 import getDateFromYmdString from "../shared/getDateFromYmdString";
 
-const Home: NextPage = () => {
+function Home({ providers }: { providers: Provider[] }) {
   const { data: session, status: sessionStatus } = useSession();
   const [workingDates, setWorkingDates] = useState<
     NexusGenObjects["Birthday"][]
@@ -261,14 +261,33 @@ const Home: NextPage = () => {
               </div>
             ) : (
               <div className="flex justify-center mt-8 text-center">
-                <div className="flex-auto">
-                  <div className="text-lg mb-2">You are not logged in!</div>
-                  <button
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                    onClick={() => signIn()}
-                  >
-                    Sign in
-                  </button>
+                <div className="flex flex-col gap-y-6">
+                  <div className="text-lg mb-2">
+                    <p>
+                      Welcome to Lazy Uncle. I built this app to keep track of
+                      my nieces&apos; and nephews&apos; birthdays.
+                    </p>
+                    <p>
+                      You can use it for free as well. Let me know if you have
+                      any problems.
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-center justify-center space-y-2 my-12">
+                    {Object.values(providers).map((provider) => {
+                      console.log("provider", provider);
+                      return (
+                        <button
+                          key={provider.name}
+                          className="inline-flex space-x-2 items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                          onClick={() => signIn(provider.id)}
+                        >
+                          {provider.id === "github" && <GrGithub />}
+                          {provider.id === "google" && <GrGoogle />}
+                          <span>Sign in with {provider.name}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             )}
@@ -277,11 +296,12 @@ const Home: NextPage = () => {
       </>
     </MainLayout>
   );
-};
+}
 
 export async function getServerSideProps() {
+  const providers = await getProviders();
   return {
-    props: {},
+    props: { providers },
   };
 }
 

@@ -8,9 +8,6 @@ import GoogleProvider from "next-auth/providers/google";
 
 const prisma = new PrismaClient();
 
-const authHandler: NextApiHandler = (req, res) => NextAuth(req, res, options);
-export default authHandler;
-
 const options = {
   providers: [
     GitHubProvider({
@@ -39,3 +36,6 @@ const options = {
     },
   },
 };
+
+const authHandler: NextApiHandler = (req, res) => NextAuth(req, res, options);
+export default authHandler;
