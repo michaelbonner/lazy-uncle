@@ -119,20 +119,20 @@ const Home: NextPage = () => {
                                 key={birthday.id || birthday.name}
                                 className={`${
                                   !birthday.id
-                                    ? "bg-blue-100 text-blue-800 py-2"
-                                    : "py-4"
+                                    ? "bg-blue-100 hover:bg-blue-200 text-blue-800 py-2"
+                                    : "py-4 hover:bg-gray-100"
                                 } border-t grid grid-cols-6`}
                               >
-                                <p className="pl-4 lg:pl-8 text-2xl col-span-3">
+                                <p className="pl-4 lg:pl-8 text-xl col-span-3">
                                   {birthday.name}
                                 </p>
-                                <p>
+                                <p className="text-sm">
                                   {format(
                                     getDateFromYmdString(birthday.date || ""),
                                     "M/dd"
                                   )}
                                 </p>
-                                <p>
+                                <p className="text-sm">
                                   {birthday.id &&
                                     getAgeInYears(
                                       getDateFromYmdString(birthday.date || "")
