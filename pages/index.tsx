@@ -4,7 +4,7 @@ import { Provider } from "next-auth/providers";
 import { getProviders, signIn, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { GrGithub, GrGoogle } from "react-icons/gr";
+import { GrFormFilter, GrGithub, GrGoogle } from "react-icons/gr";
 import CreateBirthdayForm from "../components/CreateBirthdayForm";
 import MainLayout from "../components/layout/MainLayout";
 import UploadCsvBirthdayForm from "../components/UploadCsvBirthdayForm";
@@ -29,6 +29,7 @@ function Home({ providers }: { providers: Provider[] }) {
     variables: { userId: session?.user?.id },
   });
   const [currentHref, setCurrentHref] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     if (window.location.href) {
@@ -100,8 +101,25 @@ function Home({ providers }: { providers: Provider[] }) {
           <main className="max-w-7xl px-4 mx-auto pb-8">
             {session?.user ? (
               <div>
+                <div className="flex justify-end items-center space-x-4">
+                  <div>
+                    {workingDates.length ? workingDates.length - 1 : 0}/
+                    {birthdaysData?.birthdays?.length} shown
+                  </div>
+                  <button
+                    className="flex space-x-2 items-center py-2 px-4 border rounded-lg bg-white"
+                    onClick={() => {
+                      setShowFilters(!showFilters);
+                    }}
+                  >
+                    <GrFormFilter />
+                    <span>Toggle Filters</span>
+                  </button>
+                </div>
                 <form
-                  className="flex items-center justify-end space-x-2"
+                  className={`${
+                    showFilters ? "lg:grid" : "hidden"
+                  } grid-cols-1 lg:grid-cols-3 gap-4`}
                   onSubmit={() => {}}
                 >
                   <div>
@@ -109,7 +127,7 @@ function Home({ providers }: { providers: Provider[] }) {
                       Filter by name
                     </label>
                     <input
-                      className="block w-full max-w-sm border-gray-300"
+                      className="block w-full border-gray-300"
                       id="nameFilter"
                       onChange={(e) => setNameFilter(e.target.value)}
                       type="text"
@@ -121,7 +139,7 @@ function Home({ providers }: { providers: Provider[] }) {
                       Filter by category
                     </label>
                     <input
-                      className="block w-full max-w-sm border-gray-300"
+                      className="block w-full border-gray-300"
                       id="categoryFilter"
                       onChange={(e) => setCategoryFilter(e.target.value)}
                       type="text"
@@ -133,7 +151,7 @@ function Home({ providers }: { providers: Provider[] }) {
                       Filter by parent
                     </label>
                     <input
-                      className="block w-full max-w-sm border-gray-300"
+                      className="block w-full border-gray-300"
                       id="parentFilter"
                       onChange={(e) => setParentFilter(e.target.value)}
                       type="text"
@@ -141,10 +159,6 @@ function Home({ providers }: { providers: Provider[] }) {
                     />
                   </div>
                 </form>
-                <div className="text-right">
-                  {workingDates.length ? workingDates.length - 1 : 0}/
-                  {birthdaysData?.birthdays?.length} shown
-                </div>
                 <div>
                   {birthdaysLoading && <p>Loading...</p>}
                   {birthdaysError && <p>Error :(</p>}
