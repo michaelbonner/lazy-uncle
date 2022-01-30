@@ -19,7 +19,7 @@ const CreateBirthdayForm = () => {
 
   return (
     <form
-      className="flex flex-col space-y-4"
+      className="flex flex-col space-y-6"
       onSubmit={async (e) => {
         e.preventDefault();
         console.log("name", name);
@@ -31,33 +31,37 @@ const CreateBirthdayForm = () => {
             userId,
           },
         });
+        setName("");
+        setDate("");
       }}
     >
-      <div>
-        <label className="block" htmlFor="name">
-          Name
-        </label>
-        <input
-          className="block w-full max-w-sm"
-          id="name"
-          onChange={(e) => setName(e.target.value)}
-          type="text"
-          value={name}
-        />
+      <div className="grid lg:grid-cols-2 gap-x-8">
+        <div>
+          <label className="block" htmlFor="name">
+            Name
+          </label>
+          <input
+            className="block w-full border-gray-300"
+            id="name"
+            onChange={(e) => setName(e.target.value)}
+            type="text"
+            value={name}
+          />
+        </div>
+        <div>
+          <label className="block" htmlFor="date">
+            Birthday
+          </label>
+          <input
+            className="block w-full border-gray-300"
+            id="date"
+            onChange={(e) => setDate(e.target.value)}
+            type="date"
+            value={date}
+          />
+        </div>
       </div>
-      <div>
-        <label className="block" htmlFor="date">
-          Birthday
-        </label>
-        <input
-          className="block w-full max-w-sm"
-          id="date"
-          onChange={(e) => setDate(e.target.value)}
-          type="date"
-          value={date}
-        />
-      </div>
-      <div>
+      <div className="text-right">
         <button
           className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           type="submit"

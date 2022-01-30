@@ -18,3 +18,11 @@ export const GET_ALL_BIRTHDAYS_QUERY = gql`
     }
   }
 `;
+
+export const DELETE_BIRTHDAY_MUTATION = gql`
+  mutation DeleteBirthday($birthdayId: String!) {
+    deleteBirthday(birthdayId: $birthdayId) {
+      id
+    }
+  }
+`;
