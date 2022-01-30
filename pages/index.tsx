@@ -1,9 +1,13 @@
+import { useQuery } from "@apollo/client";
+import { Birthday } from "@prisma/client";
 import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import { PrismaClient } from "@prisma/client";
+import GetAllBirthdaysQuery from "../graphql/queries/birthdays/GetAllBirthdaysQuery";
 
 const Home: NextPage = () => {
+  const { data, loading, error } = useQuery(GetAllBirthdaysQuery);
+
   return (
     <div>
       <Head>
@@ -17,6 +21,20 @@ const Home: NextPage = () => {
 
       <main>
         <h1>Welcome to Lazy Uncle</h1>
+        <div>
+          {loading && <p>Loading...</p>}
+          {error && <p>Error :(</p>}
+          {data && (
+            <ul>
+              {data.birthdays.map((birthday: Birthday) => (
+                <li key={birthday.id}>
+                  <p>{birthday.name}</p>
+                  <p>{birthday.date}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </main>
 
       <footer>
@@ -37,40 +55,6 @@ const Home: NextPage = () => {
 };
 
 export async function getServerSideProps() {
-  // const prisma = new PrismaClient();
-
-  // async function main() {
-  //   await prisma.$connect();
-
-  //   await prisma.user.create({
-  //     data: {
-  //       name: "Rich",
-  //       email: "hello@prisma.com",
-  //       birthdays: {
-  //         create: {
-  //           name: "My first birthday",
-  //           date: new Date().toLocaleDateString(),
-  //         },
-  //       },
-  //     },
-  //   });
-
-  //   const allUsers = await prisma.user.findMany({
-  //     include: {
-  //       birthdays: true,
-  //     },
-  //   });
-  //   console.log("allUsers", allUsers);
-  // }
-
-  // main()
-  //   .catch((e) => {
-  //     throw e;
-  //   })
-  //   .finally(async () => {
-  //     await prisma.$disconnect();
-  //   });
-
   return {
     props: {},
   };
