@@ -10,6 +10,8 @@ const CreateBirthdayForm = () => {
   const { data: session } = useSession();
   const [name, setName] = useState("");
   const [date, setDate] = useState("");
+  const [category, setCategory] = useState("");
+  const [parent, setParent] = useState("");
   const userId = session?.user?.id;
 
   const [createBirthday, { data, loading, error }] = useMutation(
@@ -28,16 +30,20 @@ const CreateBirthdayForm = () => {
           variables: {
             name: name.trim(),
             date,
+            category: category.trim(),
+            parent: parent.trim(),
             userId,
           },
         });
         setName("");
         setDate("");
+        setCategory("");
+        setParent("");
       }}
     >
-      <div className="grid lg:grid-cols-2 gap-x-8">
+      <div className="grid lg:grid-cols-4 gap-x-4">
         <div>
-          <label className="block" htmlFor="name">
+          <label className="block mt-4" htmlFor="name">
             Name
           </label>
           <input
@@ -49,7 +55,7 @@ const CreateBirthdayForm = () => {
           />
         </div>
         <div>
-          <label className="block" htmlFor="date">
+          <label className="block mt-4" htmlFor="date">
             Birthday
           </label>
           <input
@@ -58,6 +64,30 @@ const CreateBirthdayForm = () => {
             onChange={(e) => setDate(e.target.value)}
             type="date"
             value={date}
+          />
+        </div>
+        <div>
+          <label className="block mt-4" htmlFor="category">
+            Category (optional)
+          </label>
+          <input
+            className="block w-full border-gray-300"
+            id="category"
+            onChange={(e) => setCategory(e.target.value)}
+            type="text"
+            value={category}
+          />
+        </div>
+        <div>
+          <label className="block mt-4" htmlFor="parent">
+            Parent (optional)
+          </label>
+          <input
+            className="block w-full border-gray-300"
+            id="parent"
+            onChange={(e) => setParent(e.target.value)}
+            type="text"
+            value={parent}
           />
         </div>
       </div>

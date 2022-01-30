@@ -29,6 +29,8 @@ const Birthday = objectType({
     t.string("id");
     t.string("name");
     t.string("date");
+    t.string("category");
+    t.string("parent");
     t.nullable.field("user", {
       type: "User",
       resolve: (parent) =>
@@ -96,13 +98,17 @@ const Mutation = objectType({
       args: {
         name: nonNull(stringArg()),
         date: nonNull(stringArg()),
+        category: stringArg(),
+        parent: stringArg(),
         userId: nonNull(stringArg()),
       },
-      resolve: (_, { name, date, userId }, ctx) => {
+      resolve: (_, { name, date, category, parent, userId }, ctx) => {
         return prisma.birthday.create({
           data: {
             name,
             date,
+            category,
+            parent,
             user: {
               connect: { id: userId || "" },
             },

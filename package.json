@@ -6,7 +6,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate": "prisma generate"
+    "generate": "prisma generate",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@apollo/client": "^3.5.8",
@@ -15,6 +16,7 @@
     "@tailwindcss/forms": "^0.4.0",
     "@types/next-auth": "^3.15.0",
     "apollo-server-micro": "^3.6.2",
+    "csv-parse": "^5.0.4",
     "date-fns": "^2.28.0",
     "graphql": "^15.8.0",
     "micro-cors": "^0.1.1",

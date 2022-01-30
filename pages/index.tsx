@@ -5,6 +5,7 @@ import { signIn, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import CreateBirthdayForm from "../components/CreateBirthdayForm";
 import MainLayout from "../components/layout/MainLayout";
+import UploadCsvBirthdayForm from "../components/UploadCsvBirthdayForm";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import {
   DELETE_BIRTHDAY_MUTATION,
@@ -70,7 +71,7 @@ const Home: NextPage = () => {
   });
 
   return (
-    <MainLayout title="Home">
+    <MainLayout title="Lazy Uncle">
       <>
         {sessionStatus === "loading" && (
           <p className="py-12 text-center">Loading...</p>
@@ -99,7 +100,7 @@ const Home: NextPage = () => {
                   {birthdaysError && <p>Error :(</p>}
                   {workingDates && (
                     <div className="bg-white rounded-lg shadow-lg mt-8 text-gray-600">
-                      <div className="grid grid-cols-6 bg-white rounded-t-lg">
+                      <div className="grid grid-cols-8 bg-white rounded-t-lg">
                         <p className="py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider col-span-3 pl-4 lg:pl-8">
                           Name
                         </p>
@@ -108,6 +109,12 @@ const Home: NextPage = () => {
                         </p>
                         <p className="py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Age
+                        </p>
+                        <p className="py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Category
+                        </p>
+                        <p className="py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Parent
                         </p>
                         <p className="py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider pr-4 lg:pr-8"></p>
                       </div>
@@ -121,7 +128,7 @@ const Home: NextPage = () => {
                                   !birthday.id
                                     ? "bg-blue-100 hover:bg-blue-200 text-blue-800 py-2"
                                     : "py-4 hover:bg-gray-100"
-                                } border-t grid grid-cols-6`}
+                                } border-t grid grid-cols-8`}
                               >
                                 <p className="pl-4 lg:pl-8 text-xl col-span-3">
                                   {birthday.name}
@@ -146,6 +153,8 @@ const Home: NextPage = () => {
                                       </span>
                                     )}
                                 </p>
+                                <p>{birthday.category}</p>
+                                <p>{birthday.parent}</p>
                                 <div className="text-right pr-4 lg:pr-8">
                                   {birthday.id && (
                                     <button
@@ -182,9 +191,11 @@ const Home: NextPage = () => {
                 </div>
                 <hr className="h-px bg-gray-900 my-12 mx-8" />
                 <div className="bg-white rounded-lg shadow-lg mt-12">
-                  <div className="border py-8 px-4 lg:px-8 mt-8">
+                  <div className="border py-8 px-4 lg:px-8 mt-4">
                     <h3 className="text-2xl mb-4">Add new birthday</h3>
                     <CreateBirthdayForm />
+                    <h3 className="text-2xl mb-4">Import from CSV</h3>
+                    <UploadCsvBirthdayForm />
                   </div>
                 </div>
               </div>
