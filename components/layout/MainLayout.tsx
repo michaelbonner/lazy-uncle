@@ -1,6 +1,7 @@
 import { signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
+import Link from "next/link";
 import React, { ReactElement } from "react";
 
 const MainLayout = ({
@@ -45,12 +46,16 @@ const MainLayout = ({
 
       <header className="flex justify-between px-4 lg:px-8">
         <h1 className="text-4xl font-semibold pt-4">
-          <Image
-            alt="Lazy Uncle"
-            height={80}
-            src="/lazy-uncle.svg"
-            width={200}
-          />
+          <Link href="/">
+            <a>
+              <Image
+                alt="Lazy Uncle"
+                height={80}
+                src="/lazy-uncle.svg"
+                width={200}
+              />
+            </a>
+          </Link>
         </h1>
         {session?.user && (
           <button className="underline" onClick={() => signOut()}>
@@ -59,12 +64,22 @@ const MainLayout = ({
         )}
       </header>
       {children}
-      <footer className="bg-gray-100 px-4 lg:px-8 py-6">
-        &copy; {new Date().getFullYear()}
-        {` `}
-        <a className="text-blue-600 underline" href="https://michaelbonner.dev">
-          Michael Bonner
-        </a>
+      <footer className="bg-gray-100 px-4 lg:px-8 py-6 flex justify-between">
+        <div>
+          &copy; {new Date().getFullYear()}
+          {` `}
+          <a
+            className="text-blue-600 underline"
+            href="https://michaelbonner.dev"
+          >
+            Michael Bonner
+          </a>
+        </div>
+        <div>
+          <Link href="/policies">
+            <a className="text-blue-600 underline">Policies</a>
+          </Link>
+        </div>
       </footer>
     </div>
   );
