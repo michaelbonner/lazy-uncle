@@ -1,20 +1,16 @@
 import { ApolloServer } from "apollo-server-micro";
-import { DateTimeResolver } from "graphql-scalars";
-import { NextApiHandler } from "next";
+import cors from "micro-cors";
+import { RequestHandler } from "next/dist/server/next";
 import {
   asNexusMethod,
   makeSchema,
   nonNull,
-  nullable,
   objectType,
+  queryType,
   stringArg,
 } from "nexus";
 import path from "path";
-import cors from "micro-cors";
 import prisma from "../../lib/prisma";
-import { RequestHandler } from "next/dist/server/next";
-
-export const GQLDate = asNexusMethod(DateTimeResolver, "date");
 
 const User = objectType({
   name: "User",
@@ -52,8 +48,7 @@ const Birthday = objectType({
   },
 });
 
-const Query = objectType({
-  name: "Query",
+const Query = queryType({
   definition(t) {
     t.field("birthday", {
       type: "Birthday",
@@ -136,8 +131,8 @@ const Mutation = objectType({
   },
 });
 
-export const schema = makeSchema({
-  types: [Query, Mutation, Birthday, User, GQLDate],
+const schema = makeSchema({
+  types: [Query, Mutation, Birthday, User],
   outputs: {
     typegen: path.join(process.cwd(), "generated/nexus-typegen.ts"),
     schema: path.join(process.cwd(), "generated/schema.graphql"),
@@ -159,7 +154,7 @@ async function getApolloServerHandler() {
     await apolloServer.start();
 
     apolloServerHandler = apolloServer.createHandler({
-      path: "/api",
+      path: "/api/graphql",
     });
   }
 
