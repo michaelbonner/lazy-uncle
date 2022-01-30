@@ -15,6 +15,7 @@ import MainLayout from "../components/layout/MainLayout";
 import UploadCsvBirthdayForm from "../components/UploadCsvBirthdayForm";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import { GET_ALL_BIRTHDAYS_QUERY } from "../graphql/Birthday";
+import getAgeForHumans from "../shared/getAgeForHumans";
 import getAgeInYears from "../shared/getAgeInYears";
 import getDateFromYmdString from "../shared/getDateFromYmdString";
 
@@ -164,7 +165,7 @@ function Home({ providers }: { providers: Provider[] }) {
                     />
                   </div>
                 </form>
-                <div>
+                <div className="text-center">
                   {birthdaysLoading && <p>Loading...</p>}
                   {birthdaysError && <p>Error :(</p>}
                   {workingDates && (
@@ -173,16 +174,16 @@ function Home({ providers }: { providers: Provider[] }) {
                         <p className="py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider col-span-3 pl-4 lg:pl-8">
                           Name
                         </p>
-                        <p className="py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <p className="py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Birthday
                         </p>
-                        <p className="py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <p className="py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Age
                         </p>
-                        <p className="py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <p className="py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Category
                         </p>
-                        <p className="py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <p className="py-3 text-xs font-medium text-gray-500 uppercase tracking-wider pr-4">
                           Parent
                         </p>
                       </div>
@@ -198,7 +199,7 @@ function Home({ providers }: { providers: Provider[] }) {
                                     : "py-4 hover:bg-gray-100"
                                 } border-t grid grid-cols-7`}
                               >
-                                <p className="pl-4 lg:pl-8 text-lg col-span-3">
+                                <p className="pl-4 lg:pl-8 text-lg col-span-3 text-left">
                                   <Link href={`/birthday/${birthday.id}`}>
                                     <a>{birthday.name}</a>
                                   </Link>
@@ -216,24 +217,17 @@ function Home({ providers }: { providers: Provider[] }) {
                                   </Link>
                                 </p>
                                 <p className="text-sm">
-                                  <Link href={`/birthday/${birthday.id}`}>
-                                    <a>
-                                      {birthday.id &&
-                                        getAgeInYears(
+                                  {birthday.id && (
+                                    <Link href={`/birthday/${birthday.id}`}>
+                                      <a>
+                                        {getAgeForHumans(
                                           getDateFromYmdString(
                                             birthday.date || ""
                                           )
-                                        ) < 30 && (
-                                          <span>
-                                            {getAgeInYears(
-                                              getDateFromYmdString(
-                                                birthday.date || ""
-                                              )
-                                            )}
-                                          </span>
                                         )}
-                                    </a>
-                                  </Link>
+                                      </a>
+                                    </Link>
+                                  )}
                                 </p>
                                 <p className="text-ellipsis overflow-hidden">
                                   <Link href={`/birthday/${birthday.id}`}>
