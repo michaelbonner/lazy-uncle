@@ -116,6 +116,30 @@ const Mutation = objectType({
         });
       },
     });
+
+    t.field("editBirthday", {
+      type: "Birthday",
+      args: {
+        id: nonNull(stringArg()),
+        name: nonNull(stringArg()),
+        date: nonNull(stringArg()),
+        category: stringArg(),
+        parent: stringArg(),
+      },
+      resolve: (_, { id, name, date, category, parent }, ctx) => {
+        return prisma.birthday.update({
+          where: {
+            id: id,
+          },
+          data: {
+            name,
+            date,
+            category,
+            parent,
+          },
+        });
+      },
+    });
   },
 });
 

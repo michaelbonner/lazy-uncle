@@ -14,6 +14,7 @@ type Birthday {
 type Mutation {
   createBirthday(category: String, date: String!, name: String!, parent: String, userId: String!): Birthday
   deleteBirthday(birthdayId: String!): Birthday
+  editBirthday(category: String, date: String!, id: String!, name: String!, parent: String): Birthday
 }
 
 type Query {

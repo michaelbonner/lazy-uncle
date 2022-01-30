@@ -1,24 +1,22 @@
 import { useMutation } from "@apollo/client";
-import { useSession } from "next-auth/react";
-import React, { useEffect, useState } from "react";
+import { Birthday } from "@prisma/client";
+import React, { useState } from "react";
 import { toast } from "react-toastify";
 import {
-  CREATE_BIRTHDAY_MUTATION,
-  GET_ALL_BIRTHDAYS_QUERY,
+  EDIT_BIRTHDAY_MUTATION,
+  GET_BIRTHDAY_BY_ID_QUERY,
 } from "../graphql/Birthday";
 
-const CreateBirthdayForm = () => {
-  const { data: session } = useSession();
-  const [name, setName] = useState("");
-  const [date, setDate] = useState("");
-  const [category, setCategory] = useState("");
-  const [parent, setParent] = useState("");
-  const userId = session?.user?.id;
+const EditBirthdayForm = ({ birthday }: { birthday: Birthday }) => {
+  const [name, setName] = useState(birthday.name);
+  const [date, setDate] = useState(birthday.date);
+  const [category, setCategory] = useState(birthday.category || "");
+  const [parent, setParent] = useState(birthday.parent || "");
 
-  const [createBirthday, { data, loading, error }] = useMutation(
-    CREATE_BIRTHDAY_MUTATION,
+  const [editBirthday, { data, loading, error }] = useMutation(
+    EDIT_BIRTHDAY_MUTATION,
     {
-      refetchQueries: [GET_ALL_BIRTHDAYS_QUERY, "Birthdays"],
+      refetchQueries: [GET_BIRTHDAY_BY_ID_QUERY, "BirthdayById"],
     }
   );
 
@@ -27,20 +25,17 @@ const CreateBirthdayForm = () => {
       className="flex flex-col space-y-6"
       onSubmit={async (e) => {
         e.preventDefault();
-        await createBirthday({
+        await editBirthday({
           variables: {
+            id: birthday.id,
             name: name.trim(),
             date,
             category: category.trim(),
             parent: parent.trim(),
-            userId,
           },
         });
-        setName("");
-        setDate("");
-        setCategory("");
-        setParent("");
-        toast.success("Birthday created successfully");
+
+        toast.success("Birthday updated successfully");
       }}
     >
       <div className="grid lg:grid-cols-4 gap-x-4">
@@ -98,10 +93,10 @@ const CreateBirthdayForm = () => {
           className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           type="submit"
         >
-          Add Birthday
+          Save Birthday
         </button>
       </div>
     </form>
   );
 };
-export default CreateBirthdayForm;
+export default EditBirthdayForm;

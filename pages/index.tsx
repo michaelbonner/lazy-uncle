@@ -1,16 +1,14 @@
-import { useMutation, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { format } from "date-fns";
 import type { NextPage } from "next";
 import { signIn, useSession } from "next-auth/react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import CreateBirthdayForm from "../components/CreateBirthdayForm";
 import MainLayout from "../components/layout/MainLayout";
 import UploadCsvBirthdayForm from "../components/UploadCsvBirthdayForm";
 import { NexusGenObjects } from "../generated/nexus-typegen";
-import {
-  DELETE_BIRTHDAY_MUTATION,
-  GET_ALL_BIRTHDAYS_QUERY,
-} from "../graphql/Birthday";
+import { GET_ALL_BIRTHDAYS_QUERY } from "../graphql/Birthday";
 import getAgeInYears from "../shared/getAgeInYears";
 import getDateFromYmdString from "../shared/getDateFromYmdString";
 
@@ -63,13 +61,6 @@ const Home: NextPage = () => {
     }
   }, [birthdaysData, filter]);
 
-  const [
-    deleteBirthday,
-    { data: deleteData, loading: deleteLoading, error: deleteError },
-  ] = useMutation(DELETE_BIRTHDAY_MUTATION, {
-    refetchQueries: [GET_ALL_BIRTHDAYS_QUERY, "Birthdays"],
-  });
-
   return (
     <MainLayout title="Lazy Uncle">
       <>
@@ -100,7 +91,7 @@ const Home: NextPage = () => {
                   {birthdaysError && <p>Error :(</p>}
                   {workingDates && (
                     <div className="bg-white rounded-lg shadow-lg mt-8 text-gray-600">
-                      <div className="hidden lg:grid lg:grid-cols-8 bg-white rounded-t-lg">
+                      <div className="hidden lg:grid lg:grid-cols-7 bg-white rounded-t-lg">
                         <p className="py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider col-span-3 pl-4 lg:pl-8">
                           Name
                         </p>
@@ -116,7 +107,6 @@ const Home: NextPage = () => {
                         <p className="py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Parent
                         </p>
-                        <p className="py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider pr-4 lg:pr-8"></p>
                       </div>
                       {workingDates.length ? (
                         <ul className="border-b">
@@ -128,59 +118,55 @@ const Home: NextPage = () => {
                                   !birthday.id
                                     ? "bg-blue-100 hover:bg-blue-200 text-blue-800 py-2"
                                     : "py-4 hover:bg-gray-100"
-                                } border-t grid grid-cols-8`}
+                                } border-t grid grid-cols-7`}
                               >
                                 <p className="pl-4 lg:pl-8 text-lg col-span-3">
-                                  {birthday.name}
+                                  <Link href={`/birthday/${birthday.id}`}>
+                                    <a>{birthday.name}</a>
+                                  </Link>
                                 </p>
                                 <p className="text-sm">
-                                  {format(
-                                    getDateFromYmdString(birthday.date || ""),
-                                    "M/dd"
-                                  )}
+                                  <Link href={`/birthday/${birthday.id}`}>
+                                    <a>
+                                      {format(
+                                        getDateFromYmdString(
+                                          birthday.date || ""
+                                        ),
+                                        "M/dd"
+                                      )}
+                                    </a>
+                                  </Link>
                                 </p>
                                 <p className="text-sm">
-                                  {birthday.id &&
-                                    getAgeInYears(
-                                      getDateFromYmdString(birthday.date || "")
-                                    ) < 30 && (
-                                      <span>
-                                        {getAgeInYears(
+                                  <Link href={`/birthday/${birthday.id}`}>
+                                    <a>
+                                      {birthday.id &&
+                                        getAgeInYears(
                                           getDateFromYmdString(
                                             birthday.date || ""
                                           )
+                                        ) < 30 && (
+                                          <span>
+                                            {getAgeInYears(
+                                              getDateFromYmdString(
+                                                birthday.date || ""
+                                              )
+                                            )}
+                                          </span>
                                         )}
-                                      </span>
-                                    )}
+                                    </a>
+                                  </Link>
                                 </p>
                                 <p className="text-ellipsis overflow-hidden">
-                                  {birthday.category}
+                                  <Link href={`/birthday/${birthday.id}`}>
+                                    <a>{birthday.category}</a>
+                                  </Link>
                                 </p>
-                                <p className="text-ellipsis overflow-hidden">
-                                  {birthday.parent}
+                                <p className="text-ellipsis overflow-hidden pr-4">
+                                  <Link href={`/birthday/${birthday.id}`}>
+                                    <a>{birthday.parent}</a>
+                                  </Link>
                                 </p>
-                                <div className="text-right pr-4 lg:pr-8">
-                                  {birthday.id && (
-                                    <button
-                                      className="text-red-500"
-                                      onClick={() => {
-                                        if (
-                                          window.confirm(
-                                            "Are you sure you want to delete this?"
-                                          )
-                                        ) {
-                                          deleteBirthday({
-                                            variables: {
-                                              birthdayId: birthday.id,
-                                            },
-                                          });
-                                        }
-                                      }}
-                                    >
-                                      x
-                                    </button>
-                                  )}
-                                </div>
                               </li>
                             )
                           )}
