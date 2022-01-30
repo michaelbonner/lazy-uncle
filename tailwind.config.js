@@ -1,12 +1,10 @@
 module.exports = {
-  future: {
-    removeDeprecatedGapUtilities: true,
-    purgeLayersByDefault: true,
-  },
-  purge: ["./pages/**/*.js", "./public/**/*.js"],
+  content: [
+    "./pages/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}",
+  ],
   theme: {
     extend: {},
   },
-  variants: {},
-  plugins: [require("@tailwindcss/ui")],
+  plugins: [require("@tailwindcss/forms")],
 };
