@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { format } from "date-fns";
 import type { NextPage } from "next";
+import { signIn, useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -18,11 +19,17 @@ const Home: NextPage = () => {
     NexusGenObjects["Birthday"][]
   >([]);
   const [filter, setFilter] = useState("");
-  const { data, loading, error } = useQuery(GET_ALL_BIRTHDAYS_QUERY);
+  const {
+    data: birthdaysData,
+    loading: birthdaysLoading,
+    error: birthdaysError,
+  } = useQuery(GET_ALL_BIRTHDAYS_QUERY);
+
+  const { data: session, status } = useSession();
 
   useEffect(() => {
-    if (data?.birthdays?.length > 0) {
-      const dates = data.birthdays.filter(
+    if (birthdaysData?.birthdays?.length > 0) {
+      const dates = birthdaysData.birthdays.filter(
         (birthday: NexusGenObjects["Birthday"]) => {
           return (
             birthday?.name?.toLowerCase().includes(filter.toLowerCase()) ||
@@ -53,7 +60,7 @@ const Home: NextPage = () => {
         setWorkingDates([]);
       }
     }
-  }, [data, filter]);
+  }, [birthdaysData, filter]);
 
   const [
     deleteBirthday,
@@ -85,92 +92,116 @@ const Home: NextPage = () => {
       </header>
 
       <main className="max-w-7xl px-4 mx-auto">
-        <form
-          className="flex items-center justify-end space-x-2"
-          onSubmit={() => {}}
-        >
-          <label className="block" htmlFor="filter">
-            Filter
-          </label>
-          <input
-            className="block w-full max-w-sm border-gray-300"
-            id="filter"
-            onChange={(e) => setFilter(e.target.value)}
-            type="text"
-            value={filter}
-          />
-        </form>
-        <div>
-          {loading && <p>Loading...</p>}
-          {error && <p>Error :(</p>}
-          {data && (
-            <div className="bg-white rounded-lg shadow-lg mt-8">
-              {workingDates.length ? (
-                <ul className="border-b">
-                  {workingDates.map((birthday: NexusGenObjects["Birthday"]) => (
-                    <li
-                      key={birthday.id}
-                      className={`${
-                        !birthday.id ? "bg-blue-100 text-blue-800 py-2" : "py-4"
-                      } border-t px-4 lg:px-8 grid grid-cols-6`}
-                    >
-                      <p className="text-2xl col-span-3">{birthday.name}</p>
-                      <p>
-                        {format(
-                          getDateFromYmdString(birthday.date || ""),
-                          "M/dd"
-                        )}
-                      </p>
-                      <p>
-                        {birthday.id &&
-                          getAgeInYears(
-                            getDateFromYmdString(birthday.date || "")
-                          ) < 30 && (
-                            <span>
-                              Age{" "}
-                              {getAgeInYears(
-                                getDateFromYmdString(birthday.date || "")
-                              )}
-                            </span>
-                          )}
-                      </p>
-                      <div className="text-right">
-                        {birthday.id && (
-                          <button
-                            className="text-red-500"
-                            onClick={() => {
-                              if (
-                                window.confirm(
-                                  "Are you sure you want to delete this?"
-                                )
-                              ) {
-                                deleteBirthday({
-                                  variables: {
-                                    birthdayId: birthday.id,
-                                  },
-                                });
-                              }
-                            }}
+        {session?.user ? (
+          <div>
+            <form
+              className="flex items-center justify-end space-x-2"
+              onSubmit={() => {}}
+            >
+              <label className="block" htmlFor="filter">
+                Filter
+              </label>
+              <input
+                className="block w-full max-w-sm border-gray-300"
+                id="filter"
+                onChange={(e) => setFilter(e.target.value)}
+                type="text"
+                value={filter}
+              />
+            </form>
+            <div>
+              {birthdaysLoading && <p>Loading...</p>}
+              {birthdaysError && <p>Error :(</p>}
+              {workingDates && (
+                <div className="bg-white rounded-lg shadow-lg mt-8">
+                  {workingDates.length ? (
+                    <ul className="border-b">
+                      {workingDates.map(
+                        (birthday: NexusGenObjects["Birthday"]) => (
+                          <li
+                            key={birthday.id}
+                            className={`${
+                              !birthday.id
+                                ? "bg-blue-100 text-blue-800 py-2"
+                                : "py-4"
+                            } border-t px-4 lg:px-8 grid grid-cols-6`}
                           >
-                            x
-                          </button>
-                        )}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="py-4 px-8 text-center">No birthdays found.</div>
+                            <p className="text-2xl col-span-3">
+                              {birthday.name}
+                            </p>
+                            <p>
+                              {format(
+                                getDateFromYmdString(birthday.date || ""),
+                                "M/dd"
+                              )}
+                            </p>
+                            <p>
+                              {birthday.id &&
+                                getAgeInYears(
+                                  getDateFromYmdString(birthday.date || "")
+                                ) < 30 && (
+                                  <span>
+                                    Age{" "}
+                                    {getAgeInYears(
+                                      getDateFromYmdString(birthday.date || "")
+                                    )}
+                                  </span>
+                                )}
+                            </p>
+                            <div className="text-right">
+                              {birthday.id && (
+                                <button
+                                  className="text-red-500"
+                                  onClick={() => {
+                                    if (
+                                      window.confirm(
+                                        "Are you sure you want to delete this?"
+                                      )
+                                    ) {
+                                      deleteBirthday({
+                                        variables: {
+                                          birthdayId: birthday.id,
+                                        },
+                                      });
+                                    }
+                                  }}
+                                >
+                                  x
+                                </button>
+                              )}
+                            </div>
+                          </li>
+                        )
+                      )}
+                    </ul>
+                  ) : (
+                    <div className="py-4 px-8 text-center">
+                      No birthdays found.
+                    </div>
+                  )}
+                </div>
               )}
             </div>
-          )}
-        </div>
-        <div className="bg-white rounded-lg shadow-lg mt-12">
-          <div className="border py-8 px-4 lg:px-8 mt-8">
-            <h3 className="text-2xl mb-4">Add new birthday</h3>
-            <CreateBirthdayForm />
+            <div className="bg-white rounded-lg shadow-lg mt-12">
+              <div className="border py-8 px-4 lg:px-8 mt-8">
+                <h3 className="text-2xl mb-4">Add new birthday</h3>
+                <CreateBirthdayForm />
+              </div>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="flex justify-center mt-8 text-center">
+            <div className="flex-auto">
+              <div className="text-lg mb-2">You are not logged in!</div>
+              <button
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                onClick={() => signIn()}
+              >
+                Sign in
+              </button>
+            </div>
+          </div>
+        )}
       </main>
 
       <footer className="bg-gray-100 px-4 lg:px-8 py-6">
