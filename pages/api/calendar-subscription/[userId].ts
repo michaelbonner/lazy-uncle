@@ -22,7 +22,7 @@ export default async function handler(
 
   const events = [] as Birthdate[];
   birthdays.forEach((birthday) => {
-    for (let index = 0; index < 20; index++) {
+    for (let index = -2; index < 12; index++) {
       const userBirthday = parse(birthday.date, "yyyy-MM-dd", new Date());
       const birthDate = setYear(
         userBirthday,
