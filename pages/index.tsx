@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import type { NextPage } from "next";
 import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import CreateBirthdayForm from "../components/CreateBirthdayForm";
 import MainLayout from "../components/layout/MainLayout";
@@ -27,6 +28,13 @@ const Home: NextPage = () => {
   } = useQuery(GET_ALL_BIRTHDAYS_QUERY, {
     variables: { userId: session?.user?.id },
   });
+  const [currentHref, setCurrentHref] = useState("");
+
+  useEffect(() => {
+    if (window.location.href) {
+      setCurrentHref(window.location.href);
+    }
+  }, []);
 
   useEffect(() => {
     if (birthdaysData?.birthdays?.length > 0) {
@@ -229,6 +237,15 @@ const Home: NextPage = () => {
                       )}
                     </div>
                   )}
+                </div>
+                <div className="flex justify-end mt-8">
+                  <Link
+                    href={`webcal://${currentHref}/api/calendar-subscription/${session?.user?.id}`}
+                  >
+                    <a className="underline text-blue-600">
+                      Subscribe to calendar
+                    </a>
+                  </Link>
                 </div>
                 <hr className="h-px bg-gray-900 my-12 mx-8" />
                 <div className="bg-white rounded-lg shadow-lg mt-12">
