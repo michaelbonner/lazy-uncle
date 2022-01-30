@@ -76,7 +76,7 @@ const Home: NextPage = () => {
           <p className="py-12 text-center">Loading...</p>
         )}
         {sessionStatus !== "loading" && (
-          <main className="max-w-7xl px-4 mx-auto">
+          <main className="max-w-7xl px-4 mx-auto pb-8">
             {session?.user ? (
               <div>
                 <form
