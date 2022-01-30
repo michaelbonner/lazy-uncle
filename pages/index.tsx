@@ -2,11 +2,12 @@ import { useQuery } from "@apollo/client";
 import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import GetAllBirthdaysQuery from "../graphql/queries/birthdays/GetAllBirthdaysQuery";
 import { NexusGenObjects } from "../generated/nexus-typegen";
+import CreateBirthdayForm from "../components/CreateBirthdayForm";
+import { GET_ALL_BIRTHDAYS_QUERY } from "../graphql/Birthday";
 
 const Home: NextPage = () => {
-  const { data, loading, error } = useQuery(GetAllBirthdaysQuery);
+  const { data, loading, error } = useQuery(GET_ALL_BIRTHDAYS_QUERY);
 
   return (
     <div className="flex flex-col min-h-screen justify-between">
@@ -45,6 +46,10 @@ const Home: NextPage = () => {
               ))}
             </ul>
           )}
+        </div>
+        <div className="border py-4 px-8 mt-8">
+          <h3 className="text-xl">Add new birthday</h3>
+          <CreateBirthdayForm />
         </div>
       </main>
 

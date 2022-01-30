@@ -11,6 +11,7 @@
   "dependencies": {
     "@apollo/client": "^3.5.8",
     "@prisma/client": "^3.8.1",
+    "@tailwindcss/forms": "^0.4.0",
     "apollo-server-micro": "^3.6.2",
     "graphql": "^15.8.0",
     "micro-cors": "^0.1.1",
