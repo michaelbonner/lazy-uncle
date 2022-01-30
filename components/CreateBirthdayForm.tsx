@@ -26,7 +26,7 @@ const CreateBirthdayForm = () => {
         e.preventDefault();
         await createBirthday({
           variables: {
-            name,
+            name: name.trim(),
             date,
             userId,
           },
