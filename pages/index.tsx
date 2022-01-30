@@ -138,7 +138,6 @@ const Home: NextPage = () => {
                                       getDateFromYmdString(birthday.date || "")
                                     ) < 30 && (
                                       <span>
-                                        Age{" "}
                                         {getAgeInYears(
                                           getDateFromYmdString(
                                             birthday.date || ""
