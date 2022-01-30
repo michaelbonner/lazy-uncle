@@ -62,7 +62,6 @@ export interface NexusGenFieldTypes {
   Mutation: { // field return type
     createBirthday: NexusGenRootTypes['Birthday'] | null; // Birthday
     deleteBirthday: NexusGenRootTypes['Birthday'] | null; // Birthday
-    signupUser: NexusGenRootTypes['User'] | null; // User
   }
   Query: { // field return type
     birthday: NexusGenRootTypes['Birthday'] | null; // Birthday
@@ -87,7 +86,6 @@ export interface NexusGenFieldTypeNames {
   Mutation: { // field return type name
     createBirthday: 'Birthday'
     deleteBirthday: 'Birthday'
-    signupUser: 'User'
   }
   Query: { // field return type name
     birthday: 'Birthday'
@@ -112,14 +110,13 @@ export interface NexusGenArgTypes {
     deleteBirthday: { // args
       birthdayId: string; // String!
     }
-    signupUser: { // args
-      email: string; // String!
-      name?: string | null; // String
-    }
   }
   Query: {
     birthday: { // args
       birthdayId: string; // String!
+    }
+    birthdays: { // args
+      userId: string; // String!
     }
   }
 }

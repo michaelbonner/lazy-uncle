@@ -1,14 +1,16 @@
 import { useMutation } from "@apollo/client";
-import React, { useState } from "react";
+import { useSession } from "next-auth/react";
+import React, { useEffect, useState } from "react";
 import {
   CREATE_BIRTHDAY_MUTATION,
   GET_ALL_BIRTHDAYS_QUERY,
 } from "../graphql/Birthday";
 
 const CreateBirthdayForm = () => {
+  const { data: session } = useSession();
   const [name, setName] = useState("");
   const [date, setDate] = useState("");
-  const userId = `61f5bcf7d2f64f8afdf450d3`;
+  const userId = session?.user?.id;
 
   const [createBirthday, { data, loading, error }] = useMutation(
     CREATE_BIRTHDAY_MUTATION,
@@ -22,8 +24,6 @@ const CreateBirthdayForm = () => {
       className="flex flex-col space-y-6"
       onSubmit={async (e) => {
         e.preventDefault();
-        console.log("name", name);
-        console.log("date", date);
         await createBirthday({
           variables: {
             name,

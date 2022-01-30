@@ -12,12 +12,11 @@ type Birthday {
 type Mutation {
   createBirthday(date: String!, name: String!, userId: String!): Birthday
   deleteBirthday(birthdayId: String!): Birthday
-  signupUser(email: String!, name: String): User
 }
 
 type Query {
   birthday(birthdayId: String!): Birthday
-  birthdays: [Birthday]
+  birthdays(userId: String!): [Birthday]
   users: [User]
 }
 

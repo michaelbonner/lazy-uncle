@@ -1,14 +1,7 @@
 import { ApolloServer } from "apollo-server-micro";
 import cors from "micro-cors";
 import { RequestHandler } from "next/dist/server/next";
-import {
-  asNexusMethod,
-  makeSchema,
-  nonNull,
-  objectType,
-  queryType,
-  stringArg,
-} from "nexus";
+import { makeSchema, nonNull, objectType, queryType, stringArg } from "nexus";
 import path from "path";
 import prisma from "../../lib/prisma";
 
@@ -64,8 +57,13 @@ const Query = queryType({
 
     t.list.field("birthdays", {
       type: "Birthday",
-      resolve: (_parent, _args) => {
-        return prisma.birthday.findMany({});
+      args: {
+        userId: nonNull(stringArg()),
+      },
+      resolve: (_, args) => {
+        return prisma.birthday.findMany({
+          where: { userId: args.userId },
+        });
       },
     });
 
@@ -81,22 +79,6 @@ const Query = queryType({
 const Mutation = objectType({
   name: "Mutation",
   definition(t) {
-    t.field("signupUser", {
-      type: "User",
-      args: {
-        name: stringArg(),
-        email: nonNull(stringArg()),
-      },
-      resolve: (_, { name, email }, ctx) => {
-        return prisma.user.create({
-          data: {
-            name,
-            email,
-          },
-        });
-      },
-    });
-
     t.nullable.field("deleteBirthday", {
       type: "Birthday",
       args: {

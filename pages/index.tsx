@@ -15,6 +15,7 @@ import getAgeInYears from "../shared/getAgeInYears";
 import getDateFromYmdString from "../shared/getDateFromYmdString";
 
 const Home: NextPage = () => {
+  const { data: session, status } = useSession();
   const [workingDates, setWorkingDates] = useState<
     NexusGenObjects["Birthday"][]
   >([]);
@@ -23,9 +24,9 @@ const Home: NextPage = () => {
     data: birthdaysData,
     loading: birthdaysLoading,
     error: birthdaysError,
-  } = useQuery(GET_ALL_BIRTHDAYS_QUERY);
-
-  const { data: session, status } = useSession();
+  } = useQuery(GET_ALL_BIRTHDAYS_QUERY, {
+    variables: { userId: session?.user?.id },
+  });
 
   useEffect(() => {
     if (birthdaysData?.birthdays?.length > 0) {
@@ -119,7 +120,7 @@ const Home: NextPage = () => {
                       {workingDates.map(
                         (birthday: NexusGenObjects["Birthday"]) => (
                           <li
-                            key={birthday.id}
+                            key={birthday.id || birthday.name}
                             className={`${
                               !birthday.id
                                 ? "bg-blue-100 text-blue-800 py-2"
