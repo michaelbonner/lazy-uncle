@@ -34,13 +34,13 @@ function Home({ providers }: { providers: Provider[] }) {
   } = useQuery(GET_ALL_BIRTHDAYS_QUERY, {
     variables: { userId: session?.user?.id },
   });
-  const [currentHref, setCurrentHref] = useState("");
+  const [currentHost, setCurrentHost] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    if (window.location.href) {
-      setCurrentHref(window.location.href);
+    if (window.location.host) {
+      setCurrentHost(window.location.host);
     }
   }, []);
 
@@ -197,7 +197,7 @@ function Home({ providers }: { providers: Provider[] }) {
                                   key={`${
                                     birthday.id || birthday.name
                                   }-desktop`}
-                                  className={`hidden lg:grid lg:grid-cols-6 border-t text-left lg:text-center px-4 lg:px-8
+                                  className={`hidden lg:grid lg:grid-cols-6 border-t text-left lg:text-center px-4 lg:px-8 cursor-pointer
                                 ${
                                   !birthday.id
                                     ? "bg-blue-100 hover:bg-blue-200 text-blue-800 py-2"
@@ -233,7 +233,7 @@ function Home({ providers }: { providers: Provider[] }) {
                                 </li>
                                 <li
                                   key={`${birthday.id || birthday.name}-mobile`}
-                                  className={`block lg:hidden border-t text-left px-4
+                                  className={`block lg:hidden border-t text-left px-4 cursor-pointer
                                 ${
                                   !birthday.id
                                     ? "bg-blue-100 hover:bg-blue-200 text-blue-800 py-2"
@@ -308,7 +308,7 @@ function Home({ providers }: { providers: Provider[] }) {
                 {birthdaysData?.birthdays?.length > 0 && (
                   <div className="flex justify-end mt-8">
                     <Link
-                      href={`webcal://${currentHref}api/calendar-subscription/${session?.user?.id}`}
+                      href={`webcal://${currentHost}/api/calendar-subscription/${session?.user?.id}`}
                     >
                       <a className="flex items-center space-x-1 underline text-blue-600">
                         <GrFormCalendar className="text-blue-600" />
