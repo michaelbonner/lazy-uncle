@@ -50,9 +50,9 @@ const MainLayout = ({
             <a>
               <Image
                 alt="Lazy Uncle"
-                height={80}
+                height={50}
                 src="/lazy-uncle.svg"
-                width={200}
+                width={160}
               />
             </a>
           </Link>

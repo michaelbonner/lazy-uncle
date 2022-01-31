@@ -16,7 +16,6 @@ import UploadCsvBirthdayForm from "../components/UploadCsvBirthdayForm";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import { GET_ALL_BIRTHDAYS_QUERY } from "../graphql/Birthday";
 import getAgeForHumans from "../shared/getAgeForHumans";
-import getAgeInYears from "../shared/getAgeInYears";
 import getDateFromYmdString from "../shared/getDateFromYmdString";
 
 function Home({ providers }: { providers: Provider[] }) {
@@ -107,10 +106,10 @@ function Home({ providers }: { providers: Provider[] }) {
           <main className="max-w-7xl px-4 mx-auto pb-8">
             {session?.user ? (
               <div>
-                <div className="flex justify-end items-center space-x-4">
+                <div className="flex lg:hidden justify-end items-center space-x-4">
                   <div>
                     {workingDates.length ? workingDates.length - 1 : 0}/
-                    {birthdaysData?.birthdays?.length} shown
+                    {birthdaysData?.birthdays?.length} visible
                   </div>
                   <button
                     className="flex space-x-2 items-center py-2 px-4 border rounded-lg bg-white"
@@ -124,13 +123,13 @@ function Home({ providers }: { providers: Provider[] }) {
                 </div>
                 <form
                   className={`${
-                    showFilters ? "lg:grid" : "hidden"
-                  } grid-cols-1 lg:grid-cols-3 gap-4`}
+                    showFilters ? "grid" : "hidden lg:grid"
+                  } grid-cols-3 gap-3 lg:gap-4 mt-4 max-w-3xl ml-auto`}
                   onSubmit={() => {}}
                 >
                   <div>
                     <label className="block" htmlFor="nameFilter">
-                      Filter by name
+                      Name
                     </label>
                     <input
                       className="block w-full border-gray-300"
@@ -142,7 +141,7 @@ function Home({ providers }: { providers: Provider[] }) {
                   </div>
                   <div>
                     <label className="block" htmlFor="categoryFilter">
-                      Filter by category
+                      Category
                     </label>
                     <input
                       className="block w-full border-gray-300"
@@ -154,7 +153,7 @@ function Home({ providers }: { providers: Provider[] }) {
                   </div>
                   <div>
                     <label className="block" htmlFor="parentFilter">
-                      Filter by parent
+                      Parent
                     </label>
                     <input
                       className="block w-full border-gray-300"
@@ -204,7 +203,7 @@ function Home({ providers }: { providers: Provider[] }) {
                                     <a>{birthday.name}</a>
                                   </Link>
                                 </p>
-                                <p className="text-sm">
+                                <p>
                                   <Link href={`/birthday/${birthday.id}`}>
                                     <a>
                                       {format(
@@ -216,7 +215,7 @@ function Home({ providers }: { providers: Provider[] }) {
                                     </a>
                                   </Link>
                                 </p>
-                                <p className="text-sm">
+                                <p>
                                   {birthday.id && (
                                     <Link href={`/birthday/${birthday.id}`}>
                                       <a>
