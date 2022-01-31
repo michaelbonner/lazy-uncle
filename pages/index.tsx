@@ -202,9 +202,11 @@ function Home({ providers }: { providers: Provider[] }) {
                                     ? "bg-blue-100 hover:bg-blue-200 text-blue-800 py-2"
                                     : "py-4 hover:bg-gray-100"
                                 }`}
-                                  onClick={() =>
-                                    router.push(`/birthday/${birthday.id}`)
-                                  }
+                                  onClick={() => {
+                                    if (birthday.id) {
+                                      router.push(`/birthday/${birthday.id}`);
+                                    }
+                                  }}
                                 >
                                   <p className="text-lg col-span-2 text-left">
                                     {birthday.name}
@@ -237,9 +239,11 @@ function Home({ providers }: { providers: Provider[] }) {
                                     ? "bg-blue-100 hover:bg-blue-200 text-blue-800 py-2"
                                     : "py-4 hover:bg-gray-100"
                                 }`}
-                                  onClick={() =>
-                                    router.push(`/birthday/${birthday.id}`)
-                                  }
+                                  onClick={() => {
+                                    if (birthday.id) {
+                                      router.push(`/birthday/${birthday.id}`);
+                                    }
+                                  }}
                                 >
                                   <div className="flex justify-between items-center">
                                     <div>

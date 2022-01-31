@@ -38,11 +38,11 @@ const Birthday = ({ id }: { id: string }) => {
         {birthdayLoading ? (
           <p>Loading...</p>
         ) : (
-          <div className="px-4 lg:px-8 max-w-7xl mx-auto">
-            <div className="bg-white px-4 lg:px-8 py-8 pb-8 rounded-lg">
-              <Link href="/">
-                <a className="underline text-blue-600">Back to all birthdays</a>
-              </Link>
+          <div className="px-4 lg:px-8 max-w-7xl mx-auto mt-8">
+            <Link href="/">
+              <a className="underline text-blue-600">Back to all birthdays</a>
+            </Link>
+            <div className="bg-white px-4 lg:px-8 py-8 pb-8 rounded-lg mt-4">
               <h1 className="text-xl mt-4">
                 Edit {birthdayData?.birthday?.name}&apos;s Birthday
               </h1>
