@@ -6,6 +6,10 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { GrFormCalendar, GrFormFilter } from "react-icons/gr";
+import {
+  HiOutlineSortAscending,
+  HiOutlineSortDescending,
+} from "react-icons/hi";
 import CreateBirthdayForm from "../components/CreateBirthdayForm";
 import MainLayout from "../components/layout/MainLayout";
 import UploadCsvBirthdayForm from "../components/UploadCsvBirthdayForm";
@@ -32,6 +36,7 @@ function Home({ providers }: { providers: Provider[] }) {
   });
   const [currentHost, setCurrentHost] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const [sortBy, setSortBy] = useState("date_asc");
   const router = useRouter();
 
   useEffect(() => {
@@ -70,21 +75,67 @@ function Home({ providers }: { providers: Provider[] }) {
           );
         });
       if (dates.length > 0) {
+        const unsortedDates = [...dates];
+        if (sortBy.substring(0, 4) === "date") {
+          unsortedDates.push({
+            name: "Today",
+            date: format(new Date(), "yyyy-MM-dd"),
+          });
+        }
         setWorkingDates(
-          [
-            ...dates,
-            {
-              name: "Today",
-              date: format(new Date(), "yyyy-MM-dd"),
-            },
-          ].sort(
+          unsortedDates.sort(
             (
               a: NexusGenObjects["Birthday"],
               b: NexusGenObjects["Birthday"]
             ) => {
-              const aDate = format(getDateFromYmdString(a.date || ""), "MM-dd");
-              const bDate = format(getDateFromYmdString(b.date || ""), "MM-dd");
-              return aDate > bDate ? 1 : -1;
+              if (sortBy === "date_asc") {
+                const aDate = format(
+                  getDateFromYmdString(a.date || ""),
+                  "MM-dd"
+                );
+                const bDate = format(
+                  getDateFromYmdString(b.date || ""),
+                  "MM-dd"
+                );
+                return aDate > bDate ? 1 : -1;
+              }
+              if (sortBy === "date_desc") {
+                const aDate = format(
+                  getDateFromYmdString(a.date || ""),
+                  "MM-dd"
+                );
+                const bDate = format(
+                  getDateFromYmdString(b.date || ""),
+                  "MM-dd"
+                );
+                return aDate > bDate ? -1 : 1;
+              }
+              if (sortBy === "name_asc") {
+                return (a.name || "") > (b.name || "") ? 1 : -1;
+              }
+              if (sortBy === "name_desc") {
+                return (a.name || "") > (b.name || "") ? -1 : 1;
+              }
+              if (sortBy === "age_asc") {
+                return (a.date || "") > (b.date || "") ? 1 : -1;
+              }
+              if (sortBy === "age_desc") {
+                return (a.date || "") > (b.date || "") ? -1 : 1;
+              }
+              if (sortBy === "category_asc") {
+                return (a.category || "") > (b.category || "") ? 1 : -1;
+              }
+              if (sortBy === "category_desc") {
+                return (a.category || "") > (b.category || "") ? -1 : 1;
+              }
+              if (sortBy === "parent_asc") {
+                return (a.parent || "") > (b.parent || "") ? 1 : -1;
+              }
+              if (sortBy === "parent_desc") {
+                return (a.parent || "") > (b.parent || "") ? -1 : 1;
+              }
+
+              return 1;
             }
           )
         );
@@ -92,7 +143,7 @@ function Home({ providers }: { providers: Provider[] }) {
         setWorkingDates([]);
       }
     }
-  }, [birthdaysData, categoryFilter, nameFilter, parentFilter]);
+  }, [birthdaysData, categoryFilter, nameFilter, parentFilter, sortBy]);
 
   return (
     <MainLayout title="Lazy Uncle">
@@ -168,21 +219,89 @@ function Home({ providers }: { providers: Provider[] }) {
                   {workingDates && (
                     <div className="bg-white rounded-lg shadow-lg mt-8 text-gray-600">
                       <div className="hidden lg:grid lg:grid-cols-6 bg-white rounded-t-lg px-4 lg:px-8">
-                        <p className="py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider col-span-2">
-                          Name
-                        </p>
-                        <p className="py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Birthday
-                        </p>
-                        <p className="py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Age
-                        </p>
-                        <p className="py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Category
-                        </p>
-                        <p className="py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Parent
-                        </p>
+                        <button
+                          className="flex space-x-1 items-center py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider col-span-2"
+                          type="button"
+                          onClick={() => {
+                            if (sortBy === "name_asc") {
+                              setSortBy("name_desc");
+                            } else {
+                              setSortBy("name_asc");
+                            }
+                          }}
+                        >
+                          <span>Name</span>
+                          {sortBy === "name_asc" && <HiOutlineSortDescending />}
+                          {sortBy === "name_desc" && <HiOutlineSortAscending />}
+                        </button>
+                        <button
+                          className="flex space-x-1 justify-center items-center py-3 text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          type="button"
+                          onClick={() => {
+                            if (sortBy === "date_asc") {
+                              setSortBy("date_desc");
+                            } else {
+                              setSortBy("date_asc");
+                            }
+                          }}
+                        >
+                          <span>Birthday</span>
+                          {sortBy === "date_asc" && <HiOutlineSortDescending />}
+                          {sortBy === "date_desc" && <HiOutlineSortAscending />}
+                        </button>
+                        <button
+                          className="flex space-x-1 justify-center items-center py-3 text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          type="button"
+                          onClick={() => {
+                            if (sortBy === "age_asc") {
+                              setSortBy("age_desc");
+                            } else {
+                              setSortBy("age_asc");
+                            }
+                          }}
+                        >
+                          <span>Age</span>
+                          {sortBy === "age_asc" && <HiOutlineSortDescending />}
+                          {sortBy === "age_desc" && <HiOutlineSortAscending />}
+                        </button>
+                        <button
+                          className="flex space-x-1 justify-center items-center py-3 text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          type="button"
+                          onClick={() => {
+                            if (sortBy === "category_asc") {
+                              setSortBy("category_desc");
+                            } else {
+                              setSortBy("category_asc");
+                            }
+                          }}
+                        >
+                          <span>Category</span>
+                          {sortBy === "category_asc" && (
+                            <HiOutlineSortDescending />
+                          )}
+                          {sortBy === "category_desc" && (
+                            <HiOutlineSortAscending />
+                          )}
+                        </button>
+                        <button
+                          className="flex space-x-1 justify-center items-center py-3 text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          type="button"
+                          onClick={() => {
+                            if (sortBy === "parent_asc") {
+                              setSortBy("parent_desc");
+                            } else {
+                              setSortBy("parent_asc");
+                            }
+                          }}
+                        >
+                          <span>Parent</span>
+                          {sortBy === "parent_asc" && (
+                            <HiOutlineSortDescending />
+                          )}
+                          {sortBy === "parent_desc" && (
+                            <HiOutlineSortAscending />
+                          )}
+                        </button>
                       </div>
                       {workingDates.length ? (
                         <ul className="border-b">
@@ -297,7 +416,9 @@ function Home({ providers }: { providers: Provider[] }) {
                         </ul>
                       ) : (
                         <div className="py-10 px-8 text-gray-400 italic text-center">
-                          No birthdays found.
+                          {birthdaysLoading
+                            ? "Loading..."
+                            : "No birthdays found"}
                         </div>
                       )}
                     </div>
