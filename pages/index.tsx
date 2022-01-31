@@ -1,19 +1,15 @@
 import { useQuery } from "@apollo/client";
 import { format } from "date-fns";
 import { Provider } from "next-auth/providers";
-import { getProviders, signIn, useSession } from "next-auth/react";
+import { getProviders, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import {
-  GrFormCalendar,
-  GrFormFilter,
-  GrGithub,
-  GrGoogle,
-} from "react-icons/gr";
+import { GrFormCalendar, GrFormFilter } from "react-icons/gr";
 import CreateBirthdayForm from "../components/CreateBirthdayForm";
 import MainLayout from "../components/layout/MainLayout";
 import UploadCsvBirthdayForm from "../components/UploadCsvBirthdayForm";
+import Welcome from "../components/Welcome";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import { GET_ALL_BIRTHDAYS_QUERY } from "../graphql/Birthday";
 import getAgeForHumans from "../shared/getAgeForHumans";
@@ -331,46 +327,7 @@ function Home({ providers }: { providers: Provider[] }) {
                 </div>
               </div>
             ) : (
-              <div className="flex justify-center mt-8 text-center">
-                <div className="flex flex-col gap-y-6">
-                  <div className="text-lg mb-2">
-                    <p>
-                      Welcome to Lazy Uncle. I built this app to keep track of
-                      my nieces&apos; and nephews&apos; birthdays.
-                    </p>
-                    <p>
-                      You can use it for free as well. Let me know if you have
-                      any problems.
-                    </p>
-                  </div>
-                  <div className="flex flex-col items-center justify-center space-y-2 my-12">
-                    {Object.values(providers).map((provider) => {
-                      console.log("provider", provider);
-                      return (
-                        <button
-                          key={provider.name}
-                          className={`
-                            inline-flex space-x-2 items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
-                            ${
-                              provider.id === "google" &&
-                              `bg-blue-600 hover:bg-blue-700`
-                            }
-                            ${
-                              provider.id === "github" &&
-                              `bg-gray-600 hover:bg-gray-700`
-                            }
-                            `}
-                          onClick={() => signIn(provider.id)}
-                        >
-                          {provider.id === "github" && <GrGithub />}
-                          {provider.id === "google" && <GrGoogle />}
-                          <span>Sign in with {provider.name}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
+              <Welcome providers={providers} />
             )}
           </main>
         )}
