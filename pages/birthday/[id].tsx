@@ -36,7 +36,9 @@ const Birthday = ({ id }: { id: string }) => {
       <>
         {birthdayError && <p>Error loading birthday</p>}
         {birthdayLoading ? (
-          <p>Loading...</p>
+          <div className="px-4 lg:px-8 max-w-7xl mx-auto mt-8 text-center py-36">
+            <p>Loading...</p>
+          </div>
         ) : (
           <div className="px-4 lg:px-8 max-w-7xl mx-auto mt-8">
             <Link href="/">
