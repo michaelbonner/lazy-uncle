@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { Provider } from "next-auth/providers";
 import { getProviders, signIn, useSession } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import {
   GrFormCalendar,
@@ -35,6 +36,7 @@ function Home({ providers }: { providers: Provider[] }) {
   });
   const [currentHref, setCurrentHref] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (window.location.href) {
@@ -169,8 +171,8 @@ function Home({ providers }: { providers: Provider[] }) {
                   {birthdaysError && <p>Error :(</p>}
                   {workingDates && (
                     <div className="bg-white rounded-lg shadow-lg mt-8 text-gray-600">
-                      <div className="hidden lg:grid lg:grid-cols-7 bg-white rounded-t-lg">
-                        <p className="py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider col-span-3 pl-4 lg:pl-8">
+                      <div className="hidden lg:grid lg:grid-cols-6 bg-white rounded-t-lg px-4 lg:px-8">
+                        <p className="py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider col-span-2">
                           Name
                         </p>
                         <p className="py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -182,7 +184,7 @@ function Home({ providers }: { providers: Provider[] }) {
                         <p className="py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Category
                         </p>
-                        <p className="py-3 text-xs font-medium text-gray-500 uppercase tracking-wider pr-4">
+                        <p className="py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Parent
                         </p>
                       </div>
@@ -190,55 +192,108 @@ function Home({ providers }: { providers: Provider[] }) {
                         <ul className="border-b">
                           {workingDates.map(
                             (birthday: NexusGenObjects["Birthday"]) => (
-                              <li
-                                key={birthday.id || birthday.name}
-                                className={`${
+                              <>
+                                <li
+                                  key={`${
+                                    birthday.id || birthday.name
+                                  }-desktop`}
+                                  className={`hidden lg:grid lg:grid-cols-6 border-t text-left lg:text-center px-4 lg:px-8
+                                ${
                                   !birthday.id
                                     ? "bg-blue-100 hover:bg-blue-200 text-blue-800 py-2"
                                     : "py-4 hover:bg-gray-100"
-                                } border-t grid grid-cols-7`}
-                              >
-                                <p className="pl-4 lg:pl-8 text-lg col-span-3 text-left">
-                                  <Link href={`/birthday/${birthday.id}`}>
-                                    <a>{birthday.name}</a>
-                                  </Link>
-                                </p>
-                                <p>
-                                  <Link href={`/birthday/${birthday.id}`}>
-                                    <a>
+                                }`}
+                                  onClick={() =>
+                                    router.push(`/birthday/${birthday.id}`)
+                                  }
+                                >
+                                  <p className="text-lg col-span-2 text-left">
+                                    {birthday.name}
+                                  </p>
+                                  <p className="text-xl text-blue-600">
+                                    {format(
+                                      getDateFromYmdString(birthday.date || ""),
+                                      "M/dd"
+                                    )}
+                                  </p>
+                                  <p>
+                                    {birthday.id &&
+                                      getAgeForHumans(
+                                        getDateFromYmdString(
+                                          birthday.date || ""
+                                        )
+                                      )}
+                                  </p>
+                                  <p className="text-ellipsis overflow-hidden">
+                                    {birthday.category}
+                                  </p>
+                                  <p className="text-ellipsis overflow-hidden">
+                                    {birthday.parent}
+                                  </p>
+                                </li>
+                                <li
+                                  key={`${birthday.id || birthday.name}-mobile`}
+                                  className={`block lg:hidden border-t text-left px-4
+                                ${
+                                  !birthday.id
+                                    ? "bg-blue-100 hover:bg-blue-200 text-blue-800 py-2"
+                                    : "py-4 hover:bg-gray-100"
+                                }`}
+                                  onClick={() =>
+                                    router.push(`/birthday/${birthday.id}`)
+                                  }
+                                >
+                                  <div className="flex justify-between items-center">
+                                    <div>
+                                      <p className="text-2xl">
+                                        {birthday.name}
+                                      </p>
+                                      <div className="flex justify-start space-x-4 pt-1">
+                                        {birthday.id && (
+                                          <>
+                                            {getAgeForHumans(
+                                              getDateFromYmdString(
+                                                birthday.date || ""
+                                              )
+                                            ) && (
+                                              <p>
+                                                <span className="font-light text-sm">
+                                                  Age
+                                                </span>{" "}
+                                                <span className="font-medium">
+                                                  {getAgeForHumans(
+                                                    getDateFromYmdString(
+                                                      birthday.date || ""
+                                                    )
+                                                  )}
+                                                </span>
+                                              </p>
+                                            )}
+                                            {birthday.parent && (
+                                              <p className="text-ellipsis overflow-hidden">
+                                                <span className="font-light text-sm">
+                                                  Parent{" "}
+                                                </span>
+                                                <span className="font-medium">
+                                                  {birthday.parent}
+                                                </span>
+                                              </p>
+                                            )}
+                                          </>
+                                        )}
+                                      </div>
+                                    </div>
+                                    <p className="text-xl text-blue-600">
                                       {format(
                                         getDateFromYmdString(
                                           birthday.date || ""
                                         ),
                                         "M/dd"
                                       )}
-                                    </a>
-                                  </Link>
-                                </p>
-                                <p>
-                                  {birthday.id && (
-                                    <Link href={`/birthday/${birthday.id}`}>
-                                      <a>
-                                        {getAgeForHumans(
-                                          getDateFromYmdString(
-                                            birthday.date || ""
-                                          )
-                                        )}
-                                      </a>
-                                    </Link>
-                                  )}
-                                </p>
-                                <p className="text-ellipsis overflow-hidden">
-                                  <Link href={`/birthday/${birthday.id}`}>
-                                    <a>{birthday.category}</a>
-                                  </Link>
-                                </p>
-                                <p className="text-ellipsis overflow-hidden pr-4">
-                                  <Link href={`/birthday/${birthday.id}`}>
-                                    <a>{birthday.parent}</a>
-                                  </Link>
-                                </p>
-                              </li>
+                                    </p>
+                                  </div>
+                                </li>
+                              </>
                             )
                           )}
                         </ul>
