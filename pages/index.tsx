@@ -4,7 +4,7 @@ import { Provider } from "next-auth/providers";
 import { getProviders, signIn, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   GrFormCalendar,
   GrFormFilter,
@@ -192,11 +192,10 @@ function Home({ providers }: { providers: Provider[] }) {
                         <ul className="border-b">
                           {workingDates.map(
                             (birthday: NexusGenObjects["Birthday"]) => (
-                              <>
+                              <React.Fragment
+                                key={`${birthday.id || birthday.name}`}
+                              >
                                 <li
-                                  key={`${
-                                    birthday.id || birthday.name
-                                  }-desktop`}
                                   className={`hidden lg:grid lg:grid-cols-6 border-t text-left lg:text-center px-4 lg:px-8 cursor-pointer
                                 ${
                                   !birthday.id
@@ -232,7 +231,6 @@ function Home({ providers }: { providers: Provider[] }) {
                                   </p>
                                 </li>
                                 <li
-                                  key={`${birthday.id || birthday.name}-mobile`}
                                   className={`block lg:hidden border-t text-left px-4 cursor-pointer
                                 ${
                                   !birthday.id
@@ -293,7 +291,7 @@ function Home({ providers }: { providers: Provider[] }) {
                                     </p>
                                   </div>
                                 </li>
-                              </>
+                              </React.Fragment>
                             )
                           )}
                         </ul>
