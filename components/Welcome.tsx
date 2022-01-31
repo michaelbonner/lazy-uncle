@@ -3,7 +3,7 @@ import { signIn } from "next-auth/react";
 import React from "react";
 import { GrGithub, GrGoogle } from "react-icons/gr";
 
-const Welcome = ({ providers }: { providers: Provider[] }) => {
+const Welcome = ({ providers = [] }: { providers: Provider[] }) => {
   return (
     <div className="flex justify-center mt-8">
       <div className="flex flex-col gap-y-6">
