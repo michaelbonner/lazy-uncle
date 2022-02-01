@@ -45,7 +45,7 @@ const MainLayout = ({
         <meta name="theme-color" content="#25303F" />
       </Head>
 
-      <header className="flex justify-between px-4 lg:px-8">
+      <header className="flex justify-between px-2 lg:px-8">
         <h1 className="text-4xl font-semibold pt-4">
           <Link href="/">
             <a>
@@ -70,7 +70,7 @@ const MainLayout = ({
         )}
       </header>
       {children}
-      <footer className="px-4 lg:px-8 py-6 flex justify-between">
+      <footer className="px-2 lg:px-8 py-6 flex justify-between">
         <div>
           &copy; {new Date().getFullYear()}
           {` `}

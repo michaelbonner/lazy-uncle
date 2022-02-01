@@ -153,7 +153,7 @@ function Home({ providers }: { providers: Provider[] }) {
           <p className="py-12 text-center">Loading...</p>
         )}
         {sessionStatus !== "loading" && (
-          <main className="max-w-7xl px-4 mx-auto pb-8">
+          <main className="max-w-7xl px-2 mx-auto pb-8">
             {session?.user ? (
               <div>
                 <div className="flex lg:hidden justify-end items-center space-x-4">
@@ -174,11 +174,14 @@ function Home({ providers }: { providers: Provider[] }) {
                 <form
                   className={`${
                     showFilters ? "grid" : "hidden lg:grid"
-                  } grid-cols-3 gap-3 lg:gap-4 mt-4 max-w-3xl ml-auto`}
+                  } grid-cols-2 lg:grid-cols-3 gap-4 mt-4 max-w-3xl ml-auto px-4 bg-slate-50 lg:bg-transparent py-4 lg:py-0 rounded`}
                   onSubmit={() => {}}
                 >
-                  <div>
-                    <label className="block" htmlFor="nameFilter">
+                  <div className="hidden lg:block">
+                    <label
+                      className="block text-slate-700"
+                      htmlFor="nameFilter"
+                    >
                       Name
                     </label>
                     <input
@@ -190,7 +193,10 @@ function Home({ providers }: { providers: Provider[] }) {
                     />
                   </div>
                   <div>
-                    <label className="block" htmlFor="categoryFilter">
+                    <label
+                      className="block text-slate-700"
+                      htmlFor="categoryFilter"
+                    >
                       Category
                     </label>
                     <input
@@ -202,7 +208,10 @@ function Home({ providers }: { providers: Provider[] }) {
                     />
                   </div>
                   <div>
-                    <label className="block" htmlFor="parentFilter">
+                    <label
+                      className="block text-slate-700"
+                      htmlFor="parentFilter"
+                    >
                       Parent
                     </label>
                     <input
@@ -219,10 +228,10 @@ function Home({ providers }: { providers: Provider[] }) {
                   {birthdaysError && <p>Error :(</p>}
                   {workingDates && (
                     <div className="bg-white rounded-lg shadow-lg mt-8 text-slate-600">
-                      <div className="block lg:hidden">
-                        <div className="bg-blue-200 py-2 px-3 rounded-t-lg relative">
+                      <div className="sticky bg-slate-200 top-0 lg:hidden">
+                        <div className="bg-slate-300 py-2 px-3 rounded-t-lg relative">
                           <input
-                            className="block w-full py-3 px-4 rounded text-blue-700 focus:outline-none bg-blue-100 focus:bg-white border-0 focus:border-blue-400 placeholder:text-blue-300"
+                            className="block w-full py-3 px-4 rounded text-slate-700 focus:outline-none bg-slate-200 focus:bg-white border-0 focus:border-slate-400 placeholder:text-slate-300"
                             id="nameFilter"
                             onChange={(e) => setNameFilter(e.target.value)}
                             placeholder="Filter by name"
