@@ -6,14 +6,11 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { GrFormFilter } from "react-icons/gr";
-import {
-  HiOutlineCalendar,
-  HiOutlineSortAscending,
-  HiOutlineSortDescending,
-  HiSearch,
-} from "react-icons/hi";
+import { HiOutlineCalendar } from "react-icons/hi";
+import BirthdayFilterField from "../components/BirthdayFilterField";
 import CreateBirthdayForm from "../components/CreateBirthdayForm";
 import MainLayout from "../components/layout/MainLayout";
+import SortColumnHeader from "../components/SortColumnHeader";
 import UploadCsvBirthdayForm from "../components/UploadCsvBirthdayForm";
 import Welcome from "../components/Welcome";
 import { NexusGenObjects } from "../generated/nexus-typegen";
@@ -151,7 +148,16 @@ function Home({ providers }: { providers: Provider[] }) {
     <MainLayout title="Lazy Uncle">
       <>
         {sessionStatus === "loading" && (
-          <p className="py-12 text-center">Loading...</p>
+          <main className="max-w-7xl mx-auto pb-8 px-2 mt-4">
+            <div
+              className="bg-gray-50 rounded-lg shadow-lg mt-6 lg:mt-2 text-gray-600 flex items-center justify-center border-t-4 border-t-indigo-400 border-b-4 border-b-gray-400"
+              style={{ minHeight: `30vh` }}
+            >
+              <p className="text-2xl font-bold animate-pulse">
+                Loading birthdays
+              </p>
+            </div>
+          </main>
         )}
         {sessionStatus !== "loading" && (
           <main className="max-w-7xl mx-auto pb-8 px-2">
@@ -176,268 +182,207 @@ function Home({ providers }: { providers: Provider[] }) {
                 </div>
 
                 <div className="text-center">
-                  {birthdaysLoading && <p>Loading...</p>}
                   {birthdaysError && <p>Error :(</p>}
-                  {workingDates && (
-                    <div className="bg-gray-50 rounded-lg shadow-lg mt-6 lg:mt-2 text-gray-600">
-                      <div className="sticky bg-gray-700 top-0">
-                        <div className="bg-gray-300 py-2 lg:py-3 px-3 lg:px-6 rounded-t-lg grid lg:grid-cols-4 lg:gap-x-6 gap-y-2">
-                          <div className="relative lg:col-span-2">
-                            <input
-                              className="block w-full py-3 px-4 rounded-lg text-gray-700 focus:outline-none bg-gray-200 focus:bg-white border-0 focus:border-gray-400 placeholder:text-gray-400"
-                              id="nameFilter"
-                              onChange={(e) => setNameFilter(e.target.value)}
-                              placeholder="Filter by name"
-                              type="text"
-                              value={nameFilter}
-                            />
-                            <HiSearch className="text-xl text-gray-400 absolute right-3 top-4" />
-                          </div>
-                          <div
-                            className={`${
-                              showFilters ? "" : "hidden"
-                            } lg:block relative`}
-                          >
-                            <input
-                              className="block w-full py-3 px-4 rounded-lg text-gray-700 focus:outline-none bg-gray-200 focus:bg-white border-0 focus:border-gray-400 placeholder:text-gray-400"
-                              id="categoryFilter"
-                              onChange={(e) =>
-                                setCategoryFilter(e.target.value)
-                              }
-                              placeholder="Filter by category"
-                              type="text"
-                              value={categoryFilter}
-                            />
-                            <HiSearch className="text-xl text-gray-400 absolute right-3 top-4" />
-                          </div>
-                          <div
-                            className={`${
-                              showFilters ? "" : "hidden"
-                            } lg:block relative`}
-                          >
-                            <input
-                              className="block w-full py-3 px-4 rounded-lg text-gray-700 focus:outline-none bg-gray-200 focus:bg-white border-0 focus:border-gray-400 placeholder:text-gray-400"
-                              id="parentFilter"
-                              onChange={(e) => setParentFilter(e.target.value)}
-                              placeholder="Filter by parent"
-                              type="text"
-                              value={parentFilter}
-                            />
-                            <HiSearch className="text-xl text-gray-400 absolute right-3 top-4" />
-                          </div>
+                  <div className="bg-gray-50 rounded-lg shadow-lg mt-6 lg:mt-2 text-gray-600 border-b-4 border-b-gray-400">
+                    <div className="sticky bg-gray-700 top-0">
+                      <div className="bg-gray-300 py-2 lg:py-3 px-3 lg:px-6 rounded-t-lg grid lg:grid-cols-4 lg:gap-x-6 gap-y-2 border-t-indigo-400 border-t-4">
+                        <div className="relative lg:col-span-2">
+                          <BirthdayFilterField
+                            value={nameFilter}
+                            setValue={setNameFilter}
+                          />
+                        </div>
+                        <div
+                          className={`${
+                            showFilters ? "" : "hidden"
+                          } lg:block relative`}
+                        >
+                          <BirthdayFilterField
+                            value={categoryFilter}
+                            setValue={setCategoryFilter}
+                          />
+                        </div>
+                        <div
+                          className={`${
+                            showFilters ? "" : "hidden"
+                          } lg:block relative`}
+                        >
+                          <BirthdayFilterField
+                            value={parentFilter}
+                            setValue={setParentFilter}
+                          />
                         </div>
                       </div>
-                      <div className="hidden lg:grid lg:grid-cols-6 bg-indigo-800 px-4 lg:px-8 text-gray-100">
-                        <button
-                          className="flex space-x-1 items-center py-3 text-left text-xs font-medium uppercase tracking-wider col-span-2"
-                          type="button"
-                          onClick={() => {
-                            if (sortBy === "name_asc") {
-                              setSortBy("name_desc");
-                            } else {
-                              setSortBy("name_asc");
-                            }
-                          }}
-                        >
-                          <span>Name</span>
-                          {sortBy === "name_asc" && <HiOutlineSortDescending />}
-                          {sortBy === "name_desc" && <HiOutlineSortAscending />}
-                        </button>
-                        <button
-                          className="flex space-x-1 justify-center items-center py-3 text-xs font-medium uppercase tracking-wider"
-                          type="button"
-                          onClick={() => {
-                            if (sortBy === "date_asc") {
-                              setSortBy("date_desc");
-                            } else {
-                              setSortBy("date_asc");
-                            }
-                          }}
-                        >
-                          <span>Birthday</span>
-                          {sortBy === "date_asc" && <HiOutlineSortDescending />}
-                          {sortBy === "date_desc" && <HiOutlineSortAscending />}
-                        </button>
-                        <button
-                          className="flex space-x-1 justify-center items-center py-3 text-xs font-medium uppercase tracking-wider"
-                          type="button"
-                          onClick={() => {
-                            if (sortBy === "age_asc") {
-                              setSortBy("age_desc");
-                            } else {
-                              setSortBy("age_asc");
-                            }
-                          }}
-                        >
-                          <span>Age</span>
-                          {sortBy === "age_asc" && <HiOutlineSortDescending />}
-                          {sortBy === "age_desc" && <HiOutlineSortAscending />}
-                        </button>
-                        <button
-                          className="flex space-x-1 justify-center items-center py-3 text-xs font-medium uppercase tracking-wider"
-                          type="button"
-                          onClick={() => {
-                            if (sortBy === "category_asc") {
-                              setSortBy("category_desc");
-                            } else {
-                              setSortBy("category_asc");
-                            }
-                          }}
-                        >
-                          <span>Category</span>
-                          {sortBy === "category_asc" && (
-                            <HiOutlineSortDescending />
-                          )}
-                          {sortBy === "category_desc" && (
-                            <HiOutlineSortAscending />
-                          )}
-                        </button>
-                        <button
-                          className="flex space-x-1 justify-center items-center py-3 text-xs font-medium uppercase tracking-wider"
-                          type="button"
-                          onClick={() => {
-                            if (sortBy === "parent_asc") {
-                              setSortBy("parent_desc");
-                            } else {
-                              setSortBy("parent_asc");
-                            }
-                          }}
-                        >
-                          <span>Parent</span>
-                          {sortBy === "parent_asc" && (
-                            <HiOutlineSortDescending />
-                          )}
-                          {sortBy === "parent_desc" && (
-                            <HiOutlineSortAscending />
-                          )}
-                        </button>
-                      </div>
-                      {workingDates.length ? (
-                        <ul>
-                          {workingDates.map(
-                            (birthday: NexusGenObjects["Birthday"]) => (
-                              <React.Fragment
-                                key={`${birthday.id || birthday.name}`}
-                              >
-                                <li
-                                  className={`hidden lg:grid lg:grid-cols-6 border-t text-left lg:text-center px-4 lg:px-8 cursor-pointer
+                    </div>
+                    <div className="hidden lg:grid lg:grid-cols-6 bg-indigo-800 px-4 lg:px-8 text-gray-100">
+                      <SortColumnHeader
+                        ascendingString="name_asc"
+                        className="col-span-2"
+                        descendingString="name_desc"
+                        label="Name"
+                        setValue={setSortBy}
+                        value={sortBy}
+                      />
+                      <SortColumnHeader
+                        ascendingString="date_asc"
+                        className="justify-center"
+                        descendingString="date_desc"
+                        label="Date"
+                        setValue={setSortBy}
+                        value={sortBy}
+                      />
+                      <SortColumnHeader
+                        ascendingString="age_asc"
+                        className="justify-center"
+                        descendingString="age_desc"
+                        label="Age"
+                        setValue={setSortBy}
+                        value={sortBy}
+                      />
+                      <SortColumnHeader
+                        ascendingString="category_asc"
+                        className="justify-center"
+                        descendingString="category_desc"
+                        label="Category"
+                        setValue={setSortBy}
+                        value={sortBy}
+                      />
+                      <SortColumnHeader
+                        ascendingString="parent_asc"
+                        className="justify-center"
+                        descendingString="parent_desc"
+                        label="Parent"
+                        setValue={setSortBy}
+                        value={sortBy}
+                      />
+                    </div>
+                    {workingDates.length ? (
+                      <ul>
+                        {workingDates.map(
+                          (birthday: NexusGenObjects["Birthday"]) => (
+                            <React.Fragment
+                              key={`${birthday.id || birthday.name}`}
+                            >
+                              <li
+                                className={`hidden lg:grid lg:grid-cols-6 border-t text-left lg:text-center px-4 lg:px-8 cursor-pointer
                                 ${
                                   !birthday.id
                                     ? "bg-indigo-50 hover:bg-indigo-100 text-gray-800 py-2"
                                     : "py-4 hover:bg-gray-100"
                                 }`}
-                                  onClick={() => {
-                                    if (birthday.id) {
-                                      router.push(`/birthday/${birthday.id}`);
-                                    }
-                                  }}
+                                onClick={() => {
+                                  if (birthday.id) {
+                                    router.push(`/birthday/${birthday.id}`);
+                                  }
+                                }}
+                              >
+                                <p
+                                  className={`${
+                                    birthday.name === "Today"
+                                      ? "text-gray-500"
+                                      : "font-semibold text-left"
+                                  } col-span-2 text-lg`}
                                 >
-                                  <p
-                                    className={`${
-                                      birthday.name === "Today"
-                                        ? "text-gray-500"
-                                        : "font-semibold text-left"
-                                    } col-span-2 text-lg`}
-                                  >
-                                    {birthday.name}
-                                  </p>
+                                  {birthday.name}
+                                </p>
+                                <p className="text-xl text-indigo-600">
+                                  {format(
+                                    getDateFromYmdString(birthday.date || ""),
+                                    "M/dd"
+                                  )}
+                                </p>
+                                <p>
+                                  {birthday.id &&
+                                    getAgeForHumans(
+                                      getDateFromYmdString(birthday.date || "")
+                                    )}
+                                </p>
+                                <p className="text-ellipsis overflow-hidden">
+                                  {birthday.category}
+                                </p>
+                                <p className="text-ellipsis overflow-hidden">
+                                  {birthday.parent}
+                                </p>
+                              </li>
+                              <li
+                                className={`block lg:hidden border-t text-left px-4 cursor-pointer
+                                ${
+                                  !birthday.id
+                                    ? "bg-gray-100 hover:bg-gray-200 text-gray-800 py-2"
+                                    : "py-4 hover:bg-gray-100"
+                                }`}
+                                onClick={() => {
+                                  if (birthday.id) {
+                                    router.push(`/birthday/${birthday.id}`);
+                                  }
+                                }}
+                              >
+                                <div className="flex justify-between items-center">
+                                  <div>
+                                    <p className="text-2xl">{birthday.name}</p>
+                                    <div className="flex justify-start space-x-4 pt-1">
+                                      {birthday.id && (
+                                        <>
+                                          {getAgeForHumans(
+                                            getDateFromYmdString(
+                                              birthday.date || ""
+                                            )
+                                          ) && (
+                                            <p>
+                                              <span className="font-light text-sm">
+                                                Age
+                                              </span>{" "}
+                                              <span className="font-medium">
+                                                {getAgeForHumans(
+                                                  getDateFromYmdString(
+                                                    birthday.date || ""
+                                                  )
+                                                )}
+                                              </span>
+                                            </p>
+                                          )}
+                                          {birthday.parent && (
+                                            <p className="text-ellipsis overflow-hidden">
+                                              <span className="font-light text-sm">
+                                                Parent{" "}
+                                              </span>
+                                              <span className="font-medium">
+                                                {birthday.parent}
+                                              </span>
+                                            </p>
+                                          )}
+                                        </>
+                                      )}
+                                    </div>
+                                  </div>
                                   <p className="text-xl text-indigo-600">
                                     {format(
                                       getDateFromYmdString(birthday.date || ""),
                                       "M/dd"
                                     )}
                                   </p>
-                                  <p>
-                                    {birthday.id &&
-                                      getAgeForHumans(
-                                        getDateFromYmdString(
-                                          birthday.date || ""
-                                        )
-                                      )}
-                                  </p>
-                                  <p className="text-ellipsis overflow-hidden">
-                                    {birthday.category}
-                                  </p>
-                                  <p className="text-ellipsis overflow-hidden">
-                                    {birthday.parent}
-                                  </p>
-                                </li>
-                                <li
-                                  className={`block lg:hidden border-t text-left px-4 cursor-pointer
-                                ${
-                                  !birthday.id
-                                    ? "bg-gray-100 hover:bg-gray-200 text-gray-800 py-2"
-                                    : "py-4 hover:bg-gray-100"
-                                }`}
-                                  onClick={() => {
-                                    if (birthday.id) {
-                                      router.push(`/birthday/${birthday.id}`);
-                                    }
-                                  }}
-                                >
-                                  <div className="flex justify-between items-center">
-                                    <div>
-                                      <p className="text-2xl">
-                                        {birthday.name}
-                                      </p>
-                                      <div className="flex justify-start space-x-4 pt-1">
-                                        {birthday.id && (
-                                          <>
-                                            {getAgeForHumans(
-                                              getDateFromYmdString(
-                                                birthday.date || ""
-                                              )
-                                            ) && (
-                                              <p>
-                                                <span className="font-light text-sm">
-                                                  Age
-                                                </span>{" "}
-                                                <span className="font-medium">
-                                                  {getAgeForHumans(
-                                                    getDateFromYmdString(
-                                                      birthday.date || ""
-                                                    )
-                                                  )}
-                                                </span>
-                                              </p>
-                                            )}
-                                            {birthday.parent && (
-                                              <p className="text-ellipsis overflow-hidden">
-                                                <span className="font-light text-sm">
-                                                  Parent{" "}
-                                                </span>
-                                                <span className="font-medium">
-                                                  {birthday.parent}
-                                                </span>
-                                              </p>
-                                            )}
-                                          </>
-                                        )}
-                                      </div>
-                                    </div>
-                                    <p className="text-xl text-indigo-600">
-                                      {format(
-                                        getDateFromYmdString(
-                                          birthday.date || ""
-                                        ),
-                                        "M/dd"
-                                      )}
-                                    </p>
-                                  </div>
-                                </li>
-                              </React.Fragment>
-                            )
-                          )}
-                        </ul>
-                      ) : (
-                        <div className="py-10 px-8 text-gray-400 italic text-center">
-                          {birthdaysLoading
-                            ? "Loading..."
-                            : "No birthdays found"}
-                        </div>
-                      )}
-                    </div>
-                  )}
+                                </div>
+                              </li>
+                            </React.Fragment>
+                          )
+                        )}
+                      </ul>
+                    ) : (
+                      <div className="py-10 px-8 text-gray-400">
+                        {birthdaysLoading ? (
+                          <></>
+                        ) : (
+                          <div className="prose mx-auto">
+                            <h2>No birthdays found</h2>
+                            <p>
+                              Use the form below to add a birthday or two... or
+                              80
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
                 {birthdaysData?.birthdays?.length > 0 && (
                   <div className="flex justify-end mt-8 text-gray-200">
@@ -451,8 +396,8 @@ function Home({ providers }: { providers: Provider[] }) {
                     </Link>
                   </div>
                 )}
-                <div className="bg-gray-50 rounded-lg shadow-lg mt-24 text-gray-800">
-                  <div className="py-8 px-4 lg:px-8 mt-4 grid lg:grid-cols-12 gap-y-12 gap-x-8 items-center">
+                <div className="bg-gray-50 rounded-lg shadow-lg mt-24 text-gray-800 border-t-indigo-400 border-t-4 border-b-4 border-b-gray-400">
+                  <div className="py-12 px-4 lg:px-8 mt-4 grid lg:grid-cols-12 gap-y-12 gap-x-8 items-center">
                     <div className="lg:col-span-6">
                       <h3 className="text-2xl font-medium mb-4">
                         Add New Birthday
