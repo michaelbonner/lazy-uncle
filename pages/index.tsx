@@ -157,89 +157,74 @@ function Home({ providers }: { providers: Provider[] }) {
           <main className="max-w-7xl px-4 mx-auto pb-8">
             {session?.user ? (
               <div>
-                <div className="flex lg:hidden justify-end items-center space-x-4">
-                  <div>
+                <div className="flex justify-between lg:justify-end space-x-2 items-end">
+                  <div className="text-right mt-2 text-sm">
                     {workingDates.length ? workingDates.length - 1 : 0}/
                     {birthdaysData?.birthdays?.length} visible
                   </div>
-                  <button
-                    className="flex space-x-2 items-center py-2 px-4 border rounded-xl bg-white"
-                    onClick={() => {
-                      setShowFilters(!showFilters);
-                    }}
-                  >
-                    <GrFormFilter />
-                    <span>Toggle Filters</span>
-                  </button>
+                  <div className="flex lg:hidden justify-end items-center space-x-4 mt-4">
+                    <button
+                      className="flex space-x-2 items-center py-2 px-4 border rounded-md bg-blue-50 text-blue-800"
+                      onClick={() => {
+                        setShowFilters(!showFilters);
+                      }}
+                    >
+                      <GrFormFilter />
+                      <span>Toggle Additional Filters</span>
+                    </button>
+                  </div>
                 </div>
-                <form
-                  className={`${
-                    showFilters ? "grid" : "hidden lg:grid"
-                  } grid-cols-2 lg:grid-cols-3 gap-4 mt-4 max-w-3xl ml-auto px-4 bg-slate-50 lg:bg-transparent py-4 lg:py-0 rounded`}
-                  onSubmit={() => {}}
-                >
-                  <div className="hidden lg:block">
-                    <label
-                      className="block text-blue-200 text-sm pb-1"
-                      htmlFor="nameFilter"
-                    >
-                      Name
-                    </label>
-                    <input
-                      className="block w-full border-slate-300 rounded text-blue-800"
-                      id="nameFilter"
-                      onChange={(e) => setNameFilter(e.target.value)}
-                      type="text"
-                      value={nameFilter}
-                    />
-                  </div>
-                  <div>
-                    <label
-                      className="block text-blue-200 text-sm pb-1"
-                      htmlFor="categoryFilter"
-                    >
-                      Category
-                    </label>
-                    <input
-                      className="block w-full border-slate-300 rounded text-blue-800"
-                      id="categoryFilter"
-                      onChange={(e) => setCategoryFilter(e.target.value)}
-                      type="text"
-                      value={categoryFilter}
-                    />
-                  </div>
-                  <div>
-                    <label
-                      className="block text-blue-200 text-sm pb-1"
-                      htmlFor="parentFilter"
-                    >
-                      Parent
-                    </label>
-                    <input
-                      className="block w-full border-slate-300 rounded text-blue-800"
-                      id="parentFilter"
-                      onChange={(e) => setParentFilter(e.target.value)}
-                      type="text"
-                      value={parentFilter}
-                    />
-                  </div>
-                </form>
+
                 <div className="text-center">
                   {birthdaysLoading && <p>Loading...</p>}
                   {birthdaysError && <p>Error :(</p>}
                   {workingDates && (
-                    <div className="bg-white rounded-xl shadow-lg mt-8 text-slate-600">
-                      <div className="sticky bg-slate-200 top-0 lg:hidden">
-                        <div className="bg-slate-300 py-2 px-3 rounded-t-xl relative">
-                          <input
-                            className="block w-full py-3 px-4 rounded-lg text-slate-700 focus:outline-none bg-slate-200 focus:bg-white border-0 focus:border-slate-400 placeholder:text-slate-300"
-                            id="nameFilter"
-                            onChange={(e) => setNameFilter(e.target.value)}
-                            placeholder="Filter by name"
-                            type="text"
-                            value={nameFilter}
-                          />
-                          <HiSearch className="text-xl text-slate-400 absolute right-6 top-6" />
+                    <div className="bg-white rounded-xl shadow-lg mt-6 lg:mt-2 text-slate-600">
+                      <div className="sticky bg-blue-600 top-0">
+                        <div className="bg-slate-300 py-2 lg:py-3 px-3 lg:px-6 rounded-t-xl grid lg:grid-cols-4 lg:gap-x-6 gap-y-2">
+                          <div className="relative lg:col-span-2">
+                            <input
+                              className="block w-full py-3 px-4 rounded-lg text-slate-700 focus:outline-none bg-slate-200 focus:bg-white border-0 focus:border-slate-400 placeholder:text-slate-400"
+                              id="nameFilter"
+                              onChange={(e) => setNameFilter(e.target.value)}
+                              placeholder="Filter by name"
+                              type="text"
+                              value={nameFilter}
+                            />
+                            <HiSearch className="text-xl text-slate-400 absolute right-3 top-4" />
+                          </div>
+                          <div
+                            className={`${
+                              showFilters ? "" : "hidden"
+                            } lg:block relative`}
+                          >
+                            <input
+                              className="block w-full py-3 px-4 rounded-lg text-slate-700 focus:outline-none bg-slate-200 focus:bg-white border-0 focus:border-slate-400 placeholder:text-slate-400"
+                              id="categoryFilter"
+                              onChange={(e) =>
+                                setCategoryFilter(e.target.value)
+                              }
+                              placeholder="Filter by category"
+                              type="text"
+                              value={categoryFilter}
+                            />
+                            <HiSearch className="text-xl text-slate-400 absolute right-3 top-4" />
+                          </div>
+                          <div
+                            className={`${
+                              showFilters ? "" : "hidden"
+                            } lg:block relative`}
+                          >
+                            <input
+                              className="block w-full py-3 px-4 rounded-lg text-slate-700 focus:outline-none bg-slate-200 focus:bg-white border-0 focus:border-slate-400 placeholder:text-slate-400"
+                              id="parentFilter"
+                              onChange={(e) => setParentFilter(e.target.value)}
+                              placeholder="Filter by parent"
+                              type="text"
+                              value={parentFilter}
+                            />
+                            <HiSearch className="text-xl text-slate-400 absolute right-3 top-4" />
+                          </div>
                         </div>
                       </div>
                       <div className="hidden lg:grid lg:grid-cols-6 bg-white rounded-t-lg px-4 lg:px-8">

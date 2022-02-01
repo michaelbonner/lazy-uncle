@@ -59,7 +59,7 @@ const MainLayout = ({
           </Link>
         </h1>
         {session?.user && (
-          <div className="lg:flex items-center lg:space-x-4 text-right mt-4 lg:mt-0">
+          <div className="lg:flex items-center lg:space-x-4 text-right mt-8 lg:mt-0">
             <p className="hidden lg:block">
               Logged in as {session?.user?.email}
             </p>
