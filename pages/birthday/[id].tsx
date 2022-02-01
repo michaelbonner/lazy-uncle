@@ -44,11 +44,11 @@ const Birthday = ({ id }: { id: string }) => {
         ) : (
           <div className="px-4 lg:px-8 max-w-7xl mx-auto mt-8">
             <Link href="/">
-              <a className="underline text-blue-600">Back to all birthdays</a>
+              <a className="underline text-blue100">Back to all birthdays</a>
             </Link>
-            <div className="bg-white px-4 lg:px-8 py-8 pb-8 rounded-lg mt-4">
+            <div className="bg-white rounded-xl shadow-lg mt-12 text-blue-800 px-8 py-8">
               <div className="flex justify-between">
-                <h1 className="text-xl mt-4">
+                <h1 className="text-2xl font-medium mb-4">
                   Edit {birthdayData?.birthday?.name}&apos;s Birthday
                 </h1>
                 <h3 className="flex space-x-1 items-end">
@@ -61,14 +61,14 @@ const Birthday = ({ id }: { id: string }) => {
                   </span>
                 </h3>
               </div>
-              <div className="mt-6">
+              <div className="mt-6 lg:px-24">
                 <EditBirthdayForm birthday={birthdayData?.birthday} />
               </div>
             </div>
 
-            <div className="flex justify-end mt-12">
+            <div className="flex justify-end mt-8 mb-12">
               <button
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-100 bg-transparent hover:bg-red-700 hover:border-red-800 hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 onClick={() => {
                   if (
                     window.confirm(

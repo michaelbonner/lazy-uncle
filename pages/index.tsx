@@ -5,8 +5,9 @@ import { getProviders, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { GrFormCalendar, GrFormFilter } from "react-icons/gr";
+import { GrCalendar, GrFormFilter } from "react-icons/gr";
 import {
+  HiOutlineCalendar,
   HiOutlineSortAscending,
   HiOutlineSortDescending,
   HiSearch,
@@ -153,7 +154,7 @@ function Home({ providers }: { providers: Provider[] }) {
           <p className="py-12 text-center">Loading...</p>
         )}
         {sessionStatus !== "loading" && (
-          <main className="max-w-7xl px-2 mx-auto pb-8">
+          <main className="max-w-7xl px-4 mx-auto pb-8">
             {session?.user ? (
               <div>
                 <div className="flex lg:hidden justify-end items-center space-x-4">
@@ -162,7 +163,7 @@ function Home({ providers }: { providers: Provider[] }) {
                     {birthdaysData?.birthdays?.length} visible
                   </div>
                   <button
-                    className="flex space-x-2 items-center py-2 px-4 border rounded-lg bg-white"
+                    className="flex space-x-2 items-center py-2 px-4 border rounded-xl bg-white"
                     onClick={() => {
                       setShowFilters(!showFilters);
                     }}
@@ -179,13 +180,13 @@ function Home({ providers }: { providers: Provider[] }) {
                 >
                   <div className="hidden lg:block">
                     <label
-                      className="block text-slate-700"
+                      className="block text-blue-200 text-sm pb-1"
                       htmlFor="nameFilter"
                     >
                       Name
                     </label>
                     <input
-                      className="block w-full border-slate-300"
+                      className="block w-full border-slate-300 rounded text-blue-800"
                       id="nameFilter"
                       onChange={(e) => setNameFilter(e.target.value)}
                       type="text"
@@ -194,13 +195,13 @@ function Home({ providers }: { providers: Provider[] }) {
                   </div>
                   <div>
                     <label
-                      className="block text-slate-700"
+                      className="block text-blue-200 text-sm pb-1"
                       htmlFor="categoryFilter"
                     >
                       Category
                     </label>
                     <input
-                      className="block w-full border-slate-300"
+                      className="block w-full border-slate-300 rounded text-blue-800"
                       id="categoryFilter"
                       onChange={(e) => setCategoryFilter(e.target.value)}
                       type="text"
@@ -209,13 +210,13 @@ function Home({ providers }: { providers: Provider[] }) {
                   </div>
                   <div>
                     <label
-                      className="block text-slate-700"
+                      className="block text-blue-200 text-sm pb-1"
                       htmlFor="parentFilter"
                     >
                       Parent
                     </label>
                     <input
-                      className="block w-full border-slate-300"
+                      className="block w-full border-slate-300 rounded text-blue-800"
                       id="parentFilter"
                       onChange={(e) => setParentFilter(e.target.value)}
                       type="text"
@@ -227,11 +228,11 @@ function Home({ providers }: { providers: Provider[] }) {
                   {birthdaysLoading && <p>Loading...</p>}
                   {birthdaysError && <p>Error :(</p>}
                   {workingDates && (
-                    <div className="bg-white rounded-lg shadow-lg mt-8 text-slate-600">
+                    <div className="bg-white rounded-xl shadow-lg mt-8 text-slate-600">
                       <div className="sticky bg-slate-200 top-0 lg:hidden">
-                        <div className="bg-slate-300 py-2 px-3 rounded-t-lg relative">
+                        <div className="bg-slate-300 py-2 px-3 rounded-t-xl relative">
                           <input
-                            className="block w-full py-3 px-4 rounded text-slate-700 focus:outline-none bg-slate-200 focus:bg-white border-0 focus:border-slate-400 placeholder:text-slate-300"
+                            className="block w-full py-3 px-4 rounded-lg text-slate-700 focus:outline-none bg-slate-200 focus:bg-white border-0 focus:border-slate-400 placeholder:text-slate-300"
                             id="nameFilter"
                             onChange={(e) => setNameFilter(e.target.value)}
                             placeholder="Filter by name"
@@ -327,7 +328,7 @@ function Home({ providers }: { providers: Provider[] }) {
                         </button>
                       </div>
                       {workingDates.length ? (
-                        <ul className="border-b">
+                        <ul>
                           {workingDates.map(
                             (birthday: NexusGenObjects["Birthday"]) => (
                               <React.Fragment
@@ -448,25 +449,33 @@ function Home({ providers }: { providers: Provider[] }) {
                   )}
                 </div>
                 {birthdaysData?.birthdays?.length > 0 && (
-                  <div className="flex justify-end mt-8">
+                  <div className="flex justify-end mt-8 text-blue-200">
                     <Link
                       href={`webcal://${currentHost}/api/calendar-subscription/${session?.user?.id}`}
                     >
-                      <a className="flex items-center space-x-1 underline text-blue-600">
-                        <GrFormCalendar className="text-blue-600" />
+                      <a className="flex items-center space-x-2 underline text-blue-200 hover:text-blue-100 group transition-all">
+                        <HiOutlineCalendar className="text-blue-400 group-hover:text-blue-200 transition-all" />
                         <span>Subscribe to calendar</span>
                       </a>
                     </Link>
                   </div>
                 )}
-                <hr className="h-px bg-slate-900 my-12 mx-8" />
-                <div className="bg-white rounded-lg shadow-lg mt-12">
-                  <div className="border py-8 px-4 lg:px-8 mt-4">
-                    <h3 className="text-2xl mb-4">Add new birthday</h3>
-                    <CreateBirthdayForm />
-                    <hr className="h-px bg-slate-900 my-12 mx-8" />
-                    <h3 className="text-2xl mb-4">Import from CSV</h3>
-                    <UploadCsvBirthdayForm />
+                <hr className="h-px border-0 bg-blue-500 my-12 mx-8" />
+                <div className="bg-white rounded-xl shadow-lg mt-12 text-blue-800">
+                  <div className="py-8 px-4 lg:px-8 mt-4 grid lg:grid-cols-12 gap-y-12 gap-x-8 items-center">
+                    <div className="lg:col-span-6">
+                      <h3 className="text-2xl font-medium mb-4">
+                        Add New Birthday
+                      </h3>
+                      <CreateBirthdayForm />
+                    </div>
+                    <div className="text-center"></div>
+                    <div className="lg:pl-8 lg:col-span-5">
+                      <h3 className="text-2xl font-medium mb-4">
+                        Import Birthdays From CSV
+                      </h3>
+                      <UploadCsvBirthdayForm />
+                    </div>
                   </div>
                 </div>
               </div>

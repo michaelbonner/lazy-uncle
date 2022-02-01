@@ -14,7 +14,7 @@ const MainLayout = ({
   const { data: session } = useSession();
 
   return (
-    <div className="bg-slate-200 min-h-screen">
+    <div className="bg-blue-600 text-blue-50 min-h-screen">
       <Head>
         <title>{title}</title>
         <meta
@@ -45,14 +45,14 @@ const MainLayout = ({
         <meta name="theme-color" content="#25303F" />
       </Head>
 
-      <header className="flex justify-between px-2 lg:px-8">
+      <header className="flex justify-between px-4 lg:px-8">
         <h1 className="text-4xl font-semibold pt-4">
           <Link href="/">
             <a>
               <Image
                 alt="Lazy Uncle"
                 height={50}
-                src="/lazy-uncle.svg"
+                src="/lazy-uncle-white.svg"
                 width={160}
               />
             </a>
@@ -70,27 +70,24 @@ const MainLayout = ({
         )}
       </header>
       {children}
-      <footer className="px-2 lg:px-8 py-6 flex justify-between">
+      <footer className="px-4 lg:px-8 py-6 flex justify-between text-blue-200">
         <div>
           &copy; {new Date().getFullYear()}
           {` `}
-          <a
-            className="text-blue-600 underline"
-            href="https://michaelbonner.dev"
-          >
+          <a className="underline" href="https://michaelbonner.dev">
             Michael Bonner
           </a>
         </div>
         <div className="flex space-x-4">
           <a
-            className="flex items-center space-x-2 text-blue-500 underline"
+            className="flex items-center space-x-2 underline"
             href="https://github.com/sponsors/michaelbonner?o=esb"
           >
             <span>Sponsor Me</span>
           </a>
 
           <Link href="/policies">
-            <a className="text-blue-600 underline">Policies</a>
+            <a className="underline">Policies</a>
           </Link>
         </div>
       </footer>

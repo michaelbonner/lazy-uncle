@@ -43,9 +43,9 @@ const CreateBirthdayForm = () => {
         toast.success("Birthday created successfully");
       }}
     >
-      <div className="grid lg:grid-cols-4 gap-x-4">
+      <div className="grid lg:grid-cols-2 gap-x-4">
         <div>
-          <label className="block mt-4" htmlFor="name">
+          <label className="block mt-4 text-sm" htmlFor="name">
             Name
           </label>
           <input
@@ -57,7 +57,7 @@ const CreateBirthdayForm = () => {
           />
         </div>
         <div>
-          <label className="block mt-4" htmlFor="date">
+          <label className="block mt-4 text-sm" htmlFor="date">
             Birthday
           </label>
           <input
@@ -69,7 +69,7 @@ const CreateBirthdayForm = () => {
           />
         </div>
         <div>
-          <label className="block mt-4" htmlFor="category">
+          <label className="block mt-4 text-sm" htmlFor="category">
             Category (optional)
           </label>
           <input
@@ -81,7 +81,7 @@ const CreateBirthdayForm = () => {
           />
         </div>
         <div>
-          <label className="block mt-4" htmlFor="parent">
+          <label className="block mt-4 text-sm" htmlFor="parent">
             Parent (optional)
           </label>
           <input
