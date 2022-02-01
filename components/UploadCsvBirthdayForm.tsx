@@ -1,5 +1,4 @@
 import { useMutation } from "@apollo/client";
-import { Birthday } from "@prisma/client";
 import { parse as csvParse } from "csv-parse/browser/esm/sync";
 import { format, isValid, parse } from "date-fns";
 import { useSession } from "next-auth/react";

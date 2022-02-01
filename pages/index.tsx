@@ -5,7 +5,7 @@ import { getProviders, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { GrCalendar, GrFormFilter } from "react-icons/gr";
+import { GrFormFilter } from "react-icons/gr";
 import {
   HiOutlineCalendar,
   HiOutlineSortAscending,
