@@ -47,19 +47,23 @@ const Birthday = ({ id }: { id: string }) => {
               <a className="underline text-blue-600">Back to all birthdays</a>
             </Link>
             <div className="bg-white px-4 lg:px-8 py-8 pb-8 rounded-lg mt-4">
-              <h1 className="text-xl mt-4">
-                Edit {birthdayData?.birthday?.name}&apos;s Birthday
-              </h1>
-              <h3 className="flex space-x-1 items-end">
-                <span className="font-light text-sm">Age</span>
-                <span>
-                  {getAgeForHumans(
-                    getDateFromYmdString(birthdayData?.birthday?.date),
-                    true
-                  )}
-                </span>
-              </h3>
-              <EditBirthdayForm birthday={birthdayData?.birthday} />
+              <div className="flex justify-between">
+                <h1 className="text-xl mt-4">
+                  Edit {birthdayData?.birthday?.name}&apos;s Birthday
+                </h1>
+                <h3 className="flex space-x-1 items-end">
+                  <span className="font-light text-sm">Age</span>
+                  <span>
+                    {getAgeForHumans(
+                      getDateFromYmdString(birthdayData?.birthday?.date),
+                      true
+                    )}
+                  </span>
+                </h3>
+              </div>
+              <div className="mt-6">
+                <EditBirthdayForm birthday={birthdayData?.birthday} />
+              </div>
             </div>
 
             <div className="flex justify-end mt-12">
