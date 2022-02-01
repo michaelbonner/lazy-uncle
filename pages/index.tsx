@@ -347,7 +347,13 @@ function Home({ providers }: { providers: Provider[] }) {
                                     }
                                   }}
                                 >
-                                  <p className="text-lg col-span-2 text-left">
+                                  <p
+                                    className={`${
+                                      birthday.name === "Today"
+                                        ? "text-blue-500"
+                                        : "font-semibold text-left"
+                                    } col-span-2 text-lg`}
+                                  >
                                     {birthday.name}
                                   </p>
                                   <p className="text-xl text-blue-600">
