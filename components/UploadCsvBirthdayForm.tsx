@@ -87,13 +87,14 @@ const UploadCsvBirthdayForm = () => {
       <div>
         <div>
           <label className="block mt-4" htmlFor="csv">
-            <p>CSV</p>
             <p>Rows of name, date (yyyy-mm-dd), category, parent</p>
             <p>Example:</p>
-            <p>Mike,2020-01-02,NULL,NULL</p>
+            <p className="bg-white border border-dashed py-2 px-4">
+              <code>Mike,2020-01-02,NULL,NULL</code>
+            </p>
           </label>
           <input
-            className="block w-full border-gray-300 mt-2"
+            className=" my-4 block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
             id="csv"
             accept=".csv"
             onChange={handleFileUpload}

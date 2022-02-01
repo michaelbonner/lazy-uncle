@@ -70,7 +70,7 @@ const MainLayout = ({
         )}
       </header>
       {children}
-      <footer className="px-4 lg:px-8 py-6 flex justify-between text-gray-200">
+      <footer className="px-4 lg:px-8 py-6 lg:flex lg:justify-between text-gray-200 text-center">
         <div>
           &copy; {new Date().getFullYear()}
           {` `}
@@ -78,7 +78,7 @@ const MainLayout = ({
             Michael Bonner
           </a>
         </div>
-        <div className="flex space-x-4">
+        <div className="flex space-x-4 mt-4 lg:mt-0 justify-center">
           <a
             className="flex items-center space-x-2 underline"
             href="https://github.com/sponsors/michaelbonner?o=esb"

@@ -154,7 +154,7 @@ function Home({ providers }: { providers: Provider[] }) {
           <p className="py-12 text-center">Loading...</p>
         )}
         {sessionStatus !== "loading" && (
-          <main className="max-w-7xl px-4 mx-auto pb-8">
+          <main className="max-w-7xl mx-auto pb-8 px-2">
             {session?.user ? (
               <div>
                 <div className="flex justify-between lg:justify-end space-x-2 items-end">
@@ -227,7 +227,7 @@ function Home({ providers }: { providers: Provider[] }) {
                           </div>
                         </div>
                       </div>
-                      <div className="hidden lg:grid lg:grid-cols-6 bg-gray-600 px-4 lg:px-8 text-gray-100">
+                      <div className="hidden lg:grid lg:grid-cols-6 bg-indigo-700 px-4 lg:px-8 text-gray-100">
                         <button
                           className="flex space-x-1 items-center py-3 text-left text-xs font-medium uppercase tracking-wider col-span-2"
                           type="button"
