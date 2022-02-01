@@ -46,9 +46,9 @@ const Birthday = ({ id }: { id: string }) => {
             <Link href="/">
               <a className="underline text-blue100">Back to all birthdays</a>
             </Link>
-            <div className="bg-white rounded-xl shadow-lg mt-12 text-indigo-800 px-8 py-8">
-              <div className="flex justify-between">
-                <h1 className="text-2xl font-medium mb-4">
+            <div className="bg-white rounded-xl shadow-lg mt-4 text-gray-800 px-8 py-8">
+              <div className="flex items-center justify-between">
+                <h1 className="text-2xl font-medium">
                   Edit {birthdayData?.birthday?.name}&apos;s Birthday
                 </h1>
                 <h3 className="flex space-x-1 items-end">
