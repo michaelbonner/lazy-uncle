@@ -2,7 +2,7 @@ import { signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import React, { ReactElement } from "react";
+import React, { ReactElement, useEffect } from "react";
 
 const MainLayout = ({
   children,
@@ -12,6 +12,7 @@ const MainLayout = ({
   title: string;
 }) => {
   const { data: session } = useSession();
+
   return (
     <div className="bg-gray-100 min-h-screen">
       <Head>
@@ -58,9 +59,14 @@ const MainLayout = ({
           </Link>
         </h1>
         {session?.user && (
-          <button className="underline" onClick={() => signOut()}>
-            Sign out
-          </button>
+          <div className="lg:flex items-center lg:space-x-4 text-right mt-4 lg:mt-0">
+            <p className="hidden lg:block">
+              Logged in as {session?.user?.email}
+            </p>
+            <button className="underline" onClick={() => signOut()}>
+              Sign out
+            </button>
+          </div>
         )}
       </header>
       {children}
