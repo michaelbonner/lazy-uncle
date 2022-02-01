@@ -33,7 +33,7 @@ const Welcome = ({ providers = [] }: { providers: Provider[] }) => {
                             }
                             ${
                               provider.id === "github" &&
-                              `bg-gray-600 hover:bg-gray-700`
+                              `bg-slate-600 hover:bg-slate-700`
                             }
                             `}
                 onClick={() => signIn(provider.id)}

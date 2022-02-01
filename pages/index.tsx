@@ -9,6 +9,7 @@ import { GrFormCalendar, GrFormFilter } from "react-icons/gr";
 import {
   HiOutlineSortAscending,
   HiOutlineSortDescending,
+  HiSearch,
 } from "react-icons/hi";
 import CreateBirthdayForm from "../components/CreateBirthdayForm";
 import MainLayout from "../components/layout/MainLayout";
@@ -181,7 +182,7 @@ function Home({ providers }: { providers: Provider[] }) {
                       Name
                     </label>
                     <input
-                      className="block w-full border-gray-300"
+                      className="block w-full border-slate-300"
                       id="nameFilter"
                       onChange={(e) => setNameFilter(e.target.value)}
                       type="text"
@@ -193,7 +194,7 @@ function Home({ providers }: { providers: Provider[] }) {
                       Category
                     </label>
                     <input
-                      className="block w-full border-gray-300"
+                      className="block w-full border-slate-300"
                       id="categoryFilter"
                       onChange={(e) => setCategoryFilter(e.target.value)}
                       type="text"
@@ -205,7 +206,7 @@ function Home({ providers }: { providers: Provider[] }) {
                       Parent
                     </label>
                     <input
-                      className="block w-full border-gray-300"
+                      className="block w-full border-slate-300"
                       id="parentFilter"
                       onChange={(e) => setParentFilter(e.target.value)}
                       type="text"
@@ -217,10 +218,23 @@ function Home({ providers }: { providers: Provider[] }) {
                   {birthdaysLoading && <p>Loading...</p>}
                   {birthdaysError && <p>Error :(</p>}
                   {workingDates && (
-                    <div className="bg-white rounded-lg shadow-lg mt-8 text-gray-600">
+                    <div className="bg-white rounded-lg shadow-lg mt-8 text-slate-600">
+                      <div className="block lg:hidden">
+                        <div className="bg-blue-200 py-2 px-3 rounded-t-lg relative">
+                          <input
+                            className="block w-full py-3 px-4 rounded text-blue-700 focus:outline-none bg-blue-100 focus:bg-white border-0 focus:border-blue-400 placeholder:text-blue-300"
+                            id="nameFilter"
+                            onChange={(e) => setNameFilter(e.target.value)}
+                            placeholder="Filter by name"
+                            type="text"
+                            value={nameFilter}
+                          />
+                          <HiSearch className="text-xl text-slate-400 absolute right-6 top-6" />
+                        </div>
+                      </div>
                       <div className="hidden lg:grid lg:grid-cols-6 bg-white rounded-t-lg px-4 lg:px-8">
                         <button
-                          className="flex space-x-1 items-center py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider col-span-2"
+                          className="flex space-x-1 items-center py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider col-span-2"
                           type="button"
                           onClick={() => {
                             if (sortBy === "name_asc") {
@@ -235,7 +249,7 @@ function Home({ providers }: { providers: Provider[] }) {
                           {sortBy === "name_desc" && <HiOutlineSortAscending />}
                         </button>
                         <button
-                          className="flex space-x-1 justify-center items-center py-3 text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          className="flex space-x-1 justify-center items-center py-3 text-xs font-medium text-slate-500 uppercase tracking-wider"
                           type="button"
                           onClick={() => {
                             if (sortBy === "date_asc") {
@@ -250,7 +264,7 @@ function Home({ providers }: { providers: Provider[] }) {
                           {sortBy === "date_desc" && <HiOutlineSortAscending />}
                         </button>
                         <button
-                          className="flex space-x-1 justify-center items-center py-3 text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          className="flex space-x-1 justify-center items-center py-3 text-xs font-medium text-slate-500 uppercase tracking-wider"
                           type="button"
                           onClick={() => {
                             if (sortBy === "age_asc") {
@@ -265,7 +279,7 @@ function Home({ providers }: { providers: Provider[] }) {
                           {sortBy === "age_desc" && <HiOutlineSortAscending />}
                         </button>
                         <button
-                          className="flex space-x-1 justify-center items-center py-3 text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          className="flex space-x-1 justify-center items-center py-3 text-xs font-medium text-slate-500 uppercase tracking-wider"
                           type="button"
                           onClick={() => {
                             if (sortBy === "category_asc") {
@@ -284,7 +298,7 @@ function Home({ providers }: { providers: Provider[] }) {
                           )}
                         </button>
                         <button
-                          className="flex space-x-1 justify-center items-center py-3 text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          className="flex space-x-1 justify-center items-center py-3 text-xs font-medium text-slate-500 uppercase tracking-wider"
                           type="button"
                           onClick={() => {
                             if (sortBy === "parent_asc") {
@@ -315,7 +329,7 @@ function Home({ providers }: { providers: Provider[] }) {
                                 ${
                                   !birthday.id
                                     ? "bg-blue-100 hover:bg-blue-200 text-blue-800 py-2"
-                                    : "py-4 hover:bg-gray-100"
+                                    : "py-4 hover:bg-slate-100"
                                 }`}
                                   onClick={() => {
                                     if (birthday.id) {
@@ -352,7 +366,7 @@ function Home({ providers }: { providers: Provider[] }) {
                                 ${
                                   !birthday.id
                                     ? "bg-blue-100 hover:bg-blue-200 text-blue-800 py-2"
-                                    : "py-4 hover:bg-gray-100"
+                                    : "py-4 hover:bg-slate-100"
                                 }`}
                                   onClick={() => {
                                     if (birthday.id) {
@@ -415,7 +429,7 @@ function Home({ providers }: { providers: Provider[] }) {
                           )}
                         </ul>
                       ) : (
-                        <div className="py-10 px-8 text-gray-400 italic text-center">
+                        <div className="py-10 px-8 text-slate-400 italic text-center">
                           {birthdaysLoading
                             ? "Loading..."
                             : "No birthdays found"}
@@ -436,12 +450,12 @@ function Home({ providers }: { providers: Provider[] }) {
                     </Link>
                   </div>
                 )}
-                <hr className="h-px bg-gray-900 my-12 mx-8" />
+                <hr className="h-px bg-slate-900 my-12 mx-8" />
                 <div className="bg-white rounded-lg shadow-lg mt-12">
                   <div className="border py-8 px-4 lg:px-8 mt-4">
                     <h3 className="text-2xl mb-4">Add new birthday</h3>
                     <CreateBirthdayForm />
-                    <hr className="h-px bg-gray-900 my-12 mx-8" />
+                    <hr className="h-px bg-slate-900 my-12 mx-8" />
                     <h3 className="text-2xl mb-4">Import from CSV</h3>
                     <UploadCsvBirthdayForm />
                   </div>

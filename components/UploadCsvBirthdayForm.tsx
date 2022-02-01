@@ -91,7 +91,7 @@ const UploadCsvBirthdayForm = () => {
             CSV &ndash; rows of name, date (yyyy-mm-dd), category, parent
           </label>
           <input
-            className="block w-full border-gray-300"
+            className="block w-full border-slate-300"
             id="csv"
             accept=".csv"
             onChange={handleFileUpload}
