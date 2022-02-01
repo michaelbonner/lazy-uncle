@@ -164,7 +164,7 @@ function Home({ providers }: { providers: Provider[] }) {
                   </div>
                   <div className="flex lg:hidden justify-end items-center space-x-4 mt-4">
                     <button
-                      className="flex space-x-2 items-center py-2 px-4 border rounded-md bg-blue-50 text-blue-800"
+                      className="flex space-x-2 items-center py-2 px-4 border rounded-md bg-gray-50 text-gray-800"
                       onClick={() => {
                         setShowFilters(!showFilters);
                       }}
@@ -179,19 +179,19 @@ function Home({ providers }: { providers: Provider[] }) {
                   {birthdaysLoading && <p>Loading...</p>}
                   {birthdaysError && <p>Error :(</p>}
                   {workingDates && (
-                    <div className="bg-white rounded-xl shadow-lg mt-6 lg:mt-2 text-slate-600">
-                      <div className="sticky bg-blue-600 top-0">
-                        <div className="bg-slate-300 py-2 lg:py-3 px-3 lg:px-6 rounded-t-xl grid lg:grid-cols-4 lg:gap-x-6 gap-y-2">
+                    <div className="bg-gray-50 rounded-lg shadow-lg mt-6 lg:mt-2 text-gray-600">
+                      <div className="sticky bg-gray-700 top-0">
+                        <div className="bg-gray-300 py-2 lg:py-3 px-3 lg:px-6 rounded-t-lg grid lg:grid-cols-4 lg:gap-x-6 gap-y-2">
                           <div className="relative lg:col-span-2">
                             <input
-                              className="block w-full py-3 px-4 rounded-lg text-slate-700 focus:outline-none bg-slate-200 focus:bg-white border-0 focus:border-slate-400 placeholder:text-slate-400"
+                              className="block w-full py-3 px-4 rounded-lg text-gray-700 focus:outline-none bg-gray-200 focus:bg-white border-0 focus:border-gray-400 placeholder:text-gray-400"
                               id="nameFilter"
                               onChange={(e) => setNameFilter(e.target.value)}
                               placeholder="Filter by name"
                               type="text"
                               value={nameFilter}
                             />
-                            <HiSearch className="text-xl text-slate-400 absolute right-3 top-4" />
+                            <HiSearch className="text-xl text-gray-400 absolute right-3 top-4" />
                           </div>
                           <div
                             className={`${
@@ -199,7 +199,7 @@ function Home({ providers }: { providers: Provider[] }) {
                             } lg:block relative`}
                           >
                             <input
-                              className="block w-full py-3 px-4 rounded-lg text-slate-700 focus:outline-none bg-slate-200 focus:bg-white border-0 focus:border-slate-400 placeholder:text-slate-400"
+                              className="block w-full py-3 px-4 rounded-lg text-gray-700 focus:outline-none bg-gray-200 focus:bg-white border-0 focus:border-gray-400 placeholder:text-gray-400"
                               id="categoryFilter"
                               onChange={(e) =>
                                 setCategoryFilter(e.target.value)
@@ -208,7 +208,7 @@ function Home({ providers }: { providers: Provider[] }) {
                               type="text"
                               value={categoryFilter}
                             />
-                            <HiSearch className="text-xl text-slate-400 absolute right-3 top-4" />
+                            <HiSearch className="text-xl text-gray-400 absolute right-3 top-4" />
                           </div>
                           <div
                             className={`${
@@ -216,20 +216,20 @@ function Home({ providers }: { providers: Provider[] }) {
                             } lg:block relative`}
                           >
                             <input
-                              className="block w-full py-3 px-4 rounded-lg text-slate-700 focus:outline-none bg-slate-200 focus:bg-white border-0 focus:border-slate-400 placeholder:text-slate-400"
+                              className="block w-full py-3 px-4 rounded-lg text-gray-700 focus:outline-none bg-gray-200 focus:bg-white border-0 focus:border-gray-400 placeholder:text-gray-400"
                               id="parentFilter"
                               onChange={(e) => setParentFilter(e.target.value)}
                               placeholder="Filter by parent"
                               type="text"
                               value={parentFilter}
                             />
-                            <HiSearch className="text-xl text-slate-400 absolute right-3 top-4" />
+                            <HiSearch className="text-xl text-gray-400 absolute right-3 top-4" />
                           </div>
                         </div>
                       </div>
-                      <div className="hidden lg:grid lg:grid-cols-6 bg-white rounded-t-lg px-4 lg:px-8">
+                      <div className="hidden lg:grid lg:grid-cols-6 bg-gray-600 px-4 lg:px-8 text-gray-100">
                         <button
-                          className="flex space-x-1 items-center py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider col-span-2"
+                          className="flex space-x-1 items-center py-3 text-left text-xs font-medium uppercase tracking-wider col-span-2"
                           type="button"
                           onClick={() => {
                             if (sortBy === "name_asc") {
@@ -244,7 +244,7 @@ function Home({ providers }: { providers: Provider[] }) {
                           {sortBy === "name_desc" && <HiOutlineSortAscending />}
                         </button>
                         <button
-                          className="flex space-x-1 justify-center items-center py-3 text-xs font-medium text-slate-500 uppercase tracking-wider"
+                          className="flex space-x-1 justify-center items-center py-3 text-xs font-medium uppercase tracking-wider"
                           type="button"
                           onClick={() => {
                             if (sortBy === "date_asc") {
@@ -259,7 +259,7 @@ function Home({ providers }: { providers: Provider[] }) {
                           {sortBy === "date_desc" && <HiOutlineSortAscending />}
                         </button>
                         <button
-                          className="flex space-x-1 justify-center items-center py-3 text-xs font-medium text-slate-500 uppercase tracking-wider"
+                          className="flex space-x-1 justify-center items-center py-3 text-xs font-medium uppercase tracking-wider"
                           type="button"
                           onClick={() => {
                             if (sortBy === "age_asc") {
@@ -274,7 +274,7 @@ function Home({ providers }: { providers: Provider[] }) {
                           {sortBy === "age_desc" && <HiOutlineSortAscending />}
                         </button>
                         <button
-                          className="flex space-x-1 justify-center items-center py-3 text-xs font-medium text-slate-500 uppercase tracking-wider"
+                          className="flex space-x-1 justify-center items-center py-3 text-xs font-medium uppercase tracking-wider"
                           type="button"
                           onClick={() => {
                             if (sortBy === "category_asc") {
@@ -293,7 +293,7 @@ function Home({ providers }: { providers: Provider[] }) {
                           )}
                         </button>
                         <button
-                          className="flex space-x-1 justify-center items-center py-3 text-xs font-medium text-slate-500 uppercase tracking-wider"
+                          className="flex space-x-1 justify-center items-center py-3 text-xs font-medium uppercase tracking-wider"
                           type="button"
                           onClick={() => {
                             if (sortBy === "parent_asc") {
@@ -323,8 +323,8 @@ function Home({ providers }: { providers: Provider[] }) {
                                   className={`hidden lg:grid lg:grid-cols-6 border-t text-left lg:text-center px-4 lg:px-8 cursor-pointer
                                 ${
                                   !birthday.id
-                                    ? "bg-blue-100 hover:bg-blue-200 text-blue-800 py-2"
-                                    : "py-4 hover:bg-slate-100"
+                                    ? "bg-indigo-50 hover:bg-indigo-100 text-gray-800 py-2"
+                                    : "py-4 hover:bg-gray-100"
                                 }`}
                                   onClick={() => {
                                     if (birthday.id) {
@@ -335,13 +335,13 @@ function Home({ providers }: { providers: Provider[] }) {
                                   <p
                                     className={`${
                                       birthday.name === "Today"
-                                        ? "text-blue-500"
+                                        ? "text-gray-500"
                                         : "font-semibold text-left"
                                     } col-span-2 text-lg`}
                                   >
                                     {birthday.name}
                                   </p>
-                                  <p className="text-xl text-blue-600">
+                                  <p className="text-xl text-indigo-600">
                                     {format(
                                       getDateFromYmdString(birthday.date || ""),
                                       "M/dd"
@@ -366,8 +366,8 @@ function Home({ providers }: { providers: Provider[] }) {
                                   className={`block lg:hidden border-t text-left px-4 cursor-pointer
                                 ${
                                   !birthday.id
-                                    ? "bg-blue-100 hover:bg-blue-200 text-blue-800 py-2"
-                                    : "py-4 hover:bg-slate-100"
+                                    ? "bg-gray-100 hover:bg-gray-200 text-gray-800 py-2"
+                                    : "py-4 hover:bg-gray-100"
                                 }`}
                                   onClick={() => {
                                     if (birthday.id) {
@@ -415,7 +415,7 @@ function Home({ providers }: { providers: Provider[] }) {
                                         )}
                                       </div>
                                     </div>
-                                    <p className="text-xl text-blue-600">
+                                    <p className="text-xl text-indigo-600">
                                       {format(
                                         getDateFromYmdString(
                                           birthday.date || ""
@@ -430,7 +430,7 @@ function Home({ providers }: { providers: Provider[] }) {
                           )}
                         </ul>
                       ) : (
-                        <div className="py-10 px-8 text-slate-400 italic text-center">
+                        <div className="py-10 px-8 text-gray-400 italic text-center">
                           {birthdaysLoading
                             ? "Loading..."
                             : "No birthdays found"}
@@ -440,19 +440,19 @@ function Home({ providers }: { providers: Provider[] }) {
                   )}
                 </div>
                 {birthdaysData?.birthdays?.length > 0 && (
-                  <div className="flex justify-end mt-8 text-blue-200">
+                  <div className="flex justify-end mt-8 text-gray-200">
                     <Link
                       href={`webcal://${currentHost}/api/calendar-subscription/${session?.user?.id}`}
                     >
-                      <a className="flex items-center space-x-2 underline text-blue-200 hover:text-blue-100 group transition-all">
-                        <HiOutlineCalendar className="text-blue-400 group-hover:text-blue-200 transition-all" />
+                      <a className="flex items-center space-x-2 underline text-gray-200 hover:text-gray-100 group transition-all">
+                        <HiOutlineCalendar className="text-indigo-400 group-hover:text-gray-200 transition-all" />
                         <span>Subscribe to calendar</span>
                       </a>
                     </Link>
                   </div>
                 )}
-                <hr className="h-px border-0 bg-blue-500 my-12 mx-8" />
-                <div className="bg-white rounded-xl shadow-lg mt-12 text-blue-800">
+                <hr className="h-px border-0 bg-gray-600 my-12 mx-8" />
+                <div className="bg-gray-50 rounded-lg shadow-lg mt-12 text-gray-800">
                   <div className="py-8 px-4 lg:px-8 mt-4 grid lg:grid-cols-12 gap-y-12 gap-x-8 items-center">
                     <div className="lg:col-span-6">
                       <h3 className="text-2xl font-medium mb-4">

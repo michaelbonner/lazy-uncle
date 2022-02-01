@@ -44,7 +44,7 @@ const EditBirthdayForm = ({ birthday }: { birthday: Birthday }) => {
             Name
           </label>
           <input
-            className="block w-full border-slate-300 rounded h-12"
+            className="block w-full border-gray-300 rounded h-12"
             id="name"
             onChange={(e) => setName(e.target.value)}
             type="text"
@@ -56,7 +56,7 @@ const EditBirthdayForm = ({ birthday }: { birthday: Birthday }) => {
             Birthday
           </label>
           <input
-            className="block w-full border-slate-300 rounded h-12"
+            className="block w-full border-gray-300 rounded h-12"
             id="date"
             onChange={(e) => setDate(e.target.value)}
             type="date"
@@ -68,7 +68,7 @@ const EditBirthdayForm = ({ birthday }: { birthday: Birthday }) => {
             Category (optional)
           </label>
           <input
-            className="block w-full border-slate-300 rounded h-12"
+            className="block w-full border-gray-300 rounded h-12"
             id="category"
             onChange={(e) => setCategory(e.target.value)}
             type="text"
@@ -80,7 +80,7 @@ const EditBirthdayForm = ({ birthday }: { birthday: Birthday }) => {
             Parent (optional)
           </label>
           <input
-            className="block w-full border-slate-300 rounded h-12"
+            className="block w-full border-gray-300 rounded h-12"
             id="parent"
             onChange={(e) => setParent(e.target.value)}
             type="text"
@@ -90,7 +90,7 @@ const EditBirthdayForm = ({ birthday }: { birthday: Birthday }) => {
       </div>
       <div className="text-right">
         <button
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           type="submit"
         >
           Save Birthday

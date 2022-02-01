@@ -5,9 +5,9 @@ import { GrGithub, GrGoogle } from "react-icons/gr";
 
 const Welcome = ({ providers = [] }: { providers: Provider[] }) => {
   return (
-    <div className="flex justify-center mt-8 text-blue-100 py-24">
+    <div className="flex justify-center mt-8 text-gray-100 py-24">
       <div className="flex flex-col gap-y-6">
-        <div className="text-lg mb-2 prose prose-light text-blue-100">
+        <div className="text-lg mb-2 prose prose-light text-gray-100">
           <h1 className="text-white">
             Lazy Uncle helps you keep track of birthdays
           </h1>
@@ -17,7 +17,7 @@ const Welcome = ({ providers = [] }: { providers: Provider[] }) => {
             does just one job.
           </p>
           <p>
-            <strong className="text-blue-50">You can use it for free</strong>.
+            <strong className="text-indigo-50">You can use it for free</strong>.
             Sign in with GitHub or Google and add some birthdays. Let me know if
             you have any problems. I hope you enjoy it!
           </p>
@@ -28,14 +28,14 @@ const Welcome = ({ providers = [] }: { providers: Provider[] }) => {
               <button
                 key={provider.name}
                 className={`
-                            inline-flex space-x-2 items-center px-6 py-3 border border-transparent font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+                            inline-flex space-x-2 items-center px-6 py-3 border border-transparent font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500
                             ${
                               provider.id === "google" &&
                               `bg-red-500 hover:bg-red-600 text-red-50`
                             }
                             ${
                               provider.id === "github" &&
-                              `bg-slate-200 hover:bg-slate-100 text-slate-700`
+                              `bg-gray-200 hover:bg-gray-100 text-gray-700`
                             }
                             `}
                 onClick={() => signIn(provider.id)}

@@ -6,7 +6,7 @@ const Policies = () => {
   return (
     <MainLayout title="Policies">
       <div className="max-w-5xl mx-auto bg-white rounded-lg py-12 px-16 my-16">
-        <div className="px-4 text-slate-700 max-w-5xl prose">
+        <div className="px-4 text-gray-700 max-w-5xl prose">
           <h1>Privacy Policy and Terms of Service</h1>
           <h2>Privacy Policy</h2>
           <div>
