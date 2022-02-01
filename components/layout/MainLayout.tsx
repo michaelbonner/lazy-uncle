@@ -75,7 +75,14 @@ const MainLayout = ({
             Michael Bonner
           </a>
         </div>
-        <div>
+        <div className="flex space-x-4">
+          <a
+            className="flex items-center space-x-2 text-blue-500 underline"
+            href="https://github.com/sponsors/michaelbonner?o=esb"
+          >
+            <span>Sponsor Me</span>
+          </a>
+
           <Link href="/policies">
             <a className="text-blue-600 underline">Policies</a>
           </Link>
