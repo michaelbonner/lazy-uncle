@@ -227,7 +227,7 @@ function Home({ providers }: { providers: Provider[] }) {
                           </div>
                         </div>
                       </div>
-                      <div className="hidden lg:grid lg:grid-cols-6 bg-indigo-700 px-4 lg:px-8 text-gray-100">
+                      <div className="hidden lg:grid lg:grid-cols-6 bg-indigo-800 px-4 lg:px-8 text-gray-100">
                         <button
                           className="flex space-x-1 items-center py-3 text-left text-xs font-medium uppercase tracking-wider col-span-2"
                           type="button"
@@ -451,8 +451,7 @@ function Home({ providers }: { providers: Provider[] }) {
                     </Link>
                   </div>
                 )}
-                <hr className="h-px border-0 bg-gray-600 my-12 mx-8" />
-                <div className="bg-gray-50 rounded-lg shadow-lg mt-12 text-gray-800">
+                <div className="bg-gray-50 rounded-lg shadow-lg mt-24 text-gray-800">
                   <div className="py-8 px-4 lg:px-8 mt-4 grid lg:grid-cols-12 gap-y-12 gap-x-8 items-center">
                     <div className="lg:col-span-6">
                       <h3 className="text-2xl font-medium mb-4">
