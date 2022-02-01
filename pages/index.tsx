@@ -76,7 +76,7 @@ function Home({ providers }: { providers: Provider[] }) {
         });
       if (dates.length > 0) {
         const unsortedDates = [...dates];
-        if (sortBy.substring(0, 4) === "date") {
+        if (sortBy.substring(0, 4) === "date" && unsortedDates.length > 4) {
           unsortedDates.push({
             name: "Today",
             date: format(new Date(), "yyyy-MM-dd"),
