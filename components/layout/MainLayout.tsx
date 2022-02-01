@@ -14,7 +14,7 @@ const MainLayout = ({
   const { data: session } = useSession();
 
   return (
-    <div className="bg-slate-100 min-h-screen">
+    <div className="bg-slate-200 min-h-screen">
       <Head>
         <title>{title}</title>
         <meta
@@ -70,7 +70,7 @@ const MainLayout = ({
         )}
       </header>
       {children}
-      <footer className="bg-slate-100 px-4 lg:px-8 py-6 flex justify-between">
+      <footer className="px-4 lg:px-8 py-6 flex justify-between">
         <div>
           &copy; {new Date().getFullYear()}
           {` `}
