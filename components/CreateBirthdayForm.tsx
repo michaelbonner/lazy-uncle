@@ -49,7 +49,7 @@ const CreateBirthdayForm = () => {
             Name
           </label>
           <input
-            className="block w-full border-slate-300"
+            className="block w-full border-slate-300 rounded h-12"
             id="name"
             onChange={(e) => setName(e.target.value)}
             type="text"
@@ -61,7 +61,7 @@ const CreateBirthdayForm = () => {
             Birthday
           </label>
           <input
-            className="block w-full border-slate-300"
+            className="block w-full border-slate-300 rounded h-12"
             id="date"
             onChange={(e) => setDate(e.target.value)}
             type="date"
@@ -73,7 +73,7 @@ const CreateBirthdayForm = () => {
             Category (optional)
           </label>
           <input
-            className="block w-full border-slate-300"
+            className="block w-full border-slate-300 rounded h-12"
             id="category"
             onChange={(e) => setCategory(e.target.value)}
             type="text"
@@ -85,7 +85,7 @@ const CreateBirthdayForm = () => {
             Parent (optional)
           </label>
           <input
-            className="block w-full border-slate-300"
+            className="block w-full border-slate-300 rounded h-12"
             id="parent"
             onChange={(e) => setParent(e.target.value)}
             type="text"

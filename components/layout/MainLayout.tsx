@@ -89,6 +89,9 @@ const MainLayout = ({
           <Link href="/policies">
             <a className="underline">Policies</a>
           </Link>
+          <Link href="/contact">
+            <a className="underline">Contact</a>
+          </Link>
         </div>
       </footer>
     </div>
