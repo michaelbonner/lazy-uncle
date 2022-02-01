@@ -43,6 +43,14 @@ const MainLayout = ({
         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#25303F" />
         <meta name="msapplication-TileColor" content="#25303F" />
         <meta name="theme-color" content="#25303F" />
+        <meta
+          property="og:image"
+          content="https://www.lazyuncle.net/og-image.png"
+        />
+        <meta
+          property="og:image:url"
+          content="https://www.lazyuncle.net/og-image.png"
+        />
       </Head>
 
       <header className="flex justify-between px-4 lg:px-8">
