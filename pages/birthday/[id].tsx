@@ -12,6 +12,8 @@ import {
   GET_ALL_BIRTHDAYS_QUERY,
   GET_BIRTHDAY_BY_ID_QUERY,
 } from "../../graphql/Birthday";
+import getAgeForHumans from "../../shared/getAgeForHumans";
+import getDateFromYmdString from "../../shared/getDateFromYmdString";
 
 const Birthday = ({ id }: { id: string }) => {
   const { data: session, status: sessionStatus } = useSession();
@@ -48,6 +50,15 @@ const Birthday = ({ id }: { id: string }) => {
               <h1 className="text-xl mt-4">
                 Edit {birthdayData?.birthday?.name}&apos;s Birthday
               </h1>
+              <h3 className="flex space-x-1 items-end">
+                <span className="font-light text-sm">Age</span>
+                <span>
+                  {getAgeForHumans(
+                    getDateFromYmdString(birthdayData?.birthday?.date),
+                    true
+                  )}
+                </span>
+              </h3>
               <EditBirthdayForm birthday={birthdayData?.birthday} />
             </div>
 

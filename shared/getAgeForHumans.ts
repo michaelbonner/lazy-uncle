@@ -4,7 +4,10 @@ import {
   differenceInYears,
 } from "date-fns";
 
-export default function getAgeForHumans(birthday: Date): string {
+export default function getAgeForHumans(
+  birthday: Date,
+  alwaysShow: boolean = false
+): string {
   // weeks for infants
   if (differenceInMonths(new Date(), birthday) < 6) {
     return `${differenceInWeeks(new Date(), birthday)} weeks`;
@@ -16,7 +19,7 @@ export default function getAgeForHumans(birthday: Date): string {
   }
 
   // don't show age for 30 or older people
-  if (differenceInYears(new Date(), birthday) > 29) {
+  if (!alwaysShow && differenceInYears(new Date(), birthday) > 29) {
     return ``;
   }
 
