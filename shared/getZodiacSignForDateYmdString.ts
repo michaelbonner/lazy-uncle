@@ -1,6 +1,9 @@
 import { parseISO } from "date-fns";
 
 export default function getZodiacSignForDateYmdString(date: string): string {
+  if (!date) {
+    return "";
+  }
   const signs = [
     "Aries",
     "Taurus",

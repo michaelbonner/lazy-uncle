@@ -13,7 +13,8 @@
     "labelledby",
     "toastify",
     "typegen",
-    "webcal"
+    "webcal",
+    "zociac"
   ],
   "ignoreWords": [],
   "import": []

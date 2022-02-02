@@ -2,9 +2,11 @@ import React from "react";
 import { HiBackspace, HiSearch } from "react-icons/hi";
 
 const BirthdayFilterField = ({
+  label,
   setValue,
   value,
 }: {
+  label: string;
   // eslint-disable-next-line no-unused-vars
   setValue: (value: string) => void;
   value: string;
@@ -20,7 +22,7 @@ const BirthdayFilterField = ({
             setValue("");
           }
         }}
-        placeholder="Filter by name"
+        placeholder={`Filter by ${label}`}
         type="text"
         value={value}
       />

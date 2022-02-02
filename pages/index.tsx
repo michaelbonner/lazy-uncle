@@ -12,10 +12,12 @@ import MainLayout from "../components/layout/MainLayout";
 import SortColumnHeader from "../components/SortColumnHeader";
 import UploadCsvBirthdayForm from "../components/UploadCsvBirthdayForm";
 import Welcome from "../components/Welcome";
+import ZodiacSignCharacter from "../components/ZodiacSignCharacter";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import { GET_ALL_BIRTHDAYS_QUERY } from "../graphql/Birthday";
 import getAgeForHumans from "../shared/getAgeForHumans";
 import getDateFromYmdString from "../shared/getDateFromYmdString";
+import getZodiacSignForDateYmdString from "../shared/getZodiacSignForDateYmdString";
 
 function Home({ providers }: { providers: Provider[] }) {
   const { data: session, status: sessionStatus } = useSession();
@@ -25,6 +27,7 @@ function Home({ providers }: { providers: Provider[] }) {
   const [nameFilter, setNameFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [parentFilter, setParentFilter] = useState("");
+  const [zodiacSignFilter, setZodiacSignFilter] = useState("");
   const {
     data: birthdaysData,
     loading: birthdaysLoading,
@@ -69,6 +72,19 @@ function Home({ providers }: { providers: Provider[] }) {
             birthday?.parent
               ?.toLowerCase()
               .includes(parentFilter.toLowerCase()) || !birthday.id
+          );
+        })
+        .filter((birthday: NexusGenObjects["Birthday"]) => {
+          if (!zodiacSignFilter) {
+            return true;
+          }
+          const birthdayZodiacSign = getZodiacSignForDateYmdString(
+            birthday?.date || ""
+          );
+          return (
+            birthdayZodiacSign
+              .toLowerCase()
+              .includes(zodiacSignFilter.toLowerCase()) || !birthday.id
           );
         });
       if (dates.length > 0) {
@@ -131,6 +147,16 @@ function Home({ providers }: { providers: Provider[] }) {
               if (sortBy === "parent_desc") {
                 return (a.parent || "") > (b.parent || "") ? -1 : 1;
               }
+              if (sortBy === "sign_asc") {
+                const aZodiacSign = getZodiacSignForDateYmdString(a.date || "");
+                const bZodiacSign = getZodiacSignForDateYmdString(b.date || "");
+                return (aZodiacSign || "") > (bZodiacSign || "") ? 1 : -1;
+              }
+              if (sortBy === "sign_desc") {
+                const aZodiacSign = getZodiacSignForDateYmdString(a.date || "");
+                const bZodiacSign = getZodiacSignForDateYmdString(b.date || "");
+                return (aZodiacSign || "") > (bZodiacSign || "") ? -1 : 1;
+              }
 
               return 1;
             }
@@ -140,7 +166,14 @@ function Home({ providers }: { providers: Provider[] }) {
         setWorkingDates([]);
       }
     }
-  }, [birthdaysData, categoryFilter, nameFilter, parentFilter, sortBy]);
+  }, [
+    birthdaysData,
+    categoryFilter,
+    nameFilter,
+    parentFilter,
+    sortBy,
+    zodiacSignFilter,
+  ]);
 
   return (
     <MainLayout title="Lazy Uncle">
@@ -184,9 +217,10 @@ function Home({ providers }: { providers: Provider[] }) {
                   <div className="bg-gray-50 rounded-lg mt-2 lg:mt-0 text-gray-600 border-b-4 border-b-gray-400">
                     <div className="sticky top-0 z-10 pt-2 bg-indigo-700">
                       <div className="bg-gray-700">
-                        <div className="bg-gray-300 py-2 lg:py-3 px-3 lg:px-6 rounded-t-lg grid lg:grid-cols-4 lg:gap-x-6 gap-y-2 border-t-indigo-400 border-t-4">
+                        <div className="bg-gray-300 py-2 lg:py-3 px-3 lg:px-6 rounded-t-lg grid lg:grid-cols-5 lg:gap-x-6 gap-y-2 border-t-indigo-400 border-t-4">
                           <div className="relative lg:col-span-2">
                             <BirthdayFilterField
+                              label="Name"
                               value={nameFilter}
                               setValue={setNameFilter}
                             />
@@ -197,6 +231,7 @@ function Home({ providers }: { providers: Provider[] }) {
                             } lg:block relative`}
                           >
                             <BirthdayFilterField
+                              label="Category"
                               value={categoryFilter}
                               setValue={setCategoryFilter}
                             />
@@ -207,16 +242,28 @@ function Home({ providers }: { providers: Provider[] }) {
                             } lg:block relative`}
                           >
                             <BirthdayFilterField
+                              label="Parent"
                               value={parentFilter}
                               setValue={setParentFilter}
                             />
                           </div>
+                          <div
+                            className={`${
+                              showFilters ? "" : "hidden"
+                            } lg:block relative`}
+                          >
+                            <BirthdayFilterField
+                              label="Zodiac Sign"
+                              value={zodiacSignFilter}
+                              setValue={setZodiacSignFilter}
+                            />
+                          </div>
                         </div>
                       </div>
-                      <div className="hidden lg:grid lg:grid-cols-6 bg-indigo-800 px-4 lg:px-8 text-gray-100">
+                      <div className="hidden lg:grid lg:grid-cols-12 bg-indigo-800 px-4 lg:px-8 text-gray-100">
                         <SortColumnHeader
                           ascendingString="name_asc"
-                          className="col-span-2"
+                          className="col-span-3"
                           descendingString="name_desc"
                           label="Name"
                           setValue={setSortBy}
@@ -224,7 +271,7 @@ function Home({ providers }: { providers: Provider[] }) {
                         />
                         <SortColumnHeader
                           ascendingString="date_asc"
-                          className="justify-center"
+                          className="justify-center col-span-2"
                           descendingString="date_desc"
                           label="Date"
                           setValue={setSortBy}
@@ -232,7 +279,7 @@ function Home({ providers }: { providers: Provider[] }) {
                         />
                         <SortColumnHeader
                           ascendingString="age_asc"
-                          className="justify-center"
+                          className="justify-center col-span-2"
                           descendingString="age_desc"
                           label="Age"
                           setValue={setSortBy}
@@ -240,7 +287,7 @@ function Home({ providers }: { providers: Provider[] }) {
                         />
                         <SortColumnHeader
                           ascendingString="category_asc"
-                          className="justify-center"
+                          className="justify-center col-span-2"
                           descendingString="category_desc"
                           label="Category"
                           setValue={setSortBy}
@@ -248,9 +295,17 @@ function Home({ providers }: { providers: Provider[] }) {
                         />
                         <SortColumnHeader
                           ascendingString="parent_asc"
-                          className="justify-center"
+                          className="justify-center col-span-2"
                           descendingString="parent_desc"
                           label="Parent"
+                          setValue={setSortBy}
+                          value={sortBy}
+                        />
+                        <SortColumnHeader
+                          ascendingString="sign_asc"
+                          className="justify-center"
+                          descendingString="sign_desc"
+                          label="Sign"
                           setValue={setSortBy}
                           value={sortBy}
                         />
@@ -259,146 +314,129 @@ function Home({ providers }: { providers: Provider[] }) {
                     {workingDates.length ? (
                       <ul>
                         {workingDates.map(
-                          (birthday: NexusGenObjects["Birthday"]) => (
-                            <React.Fragment
-                              key={`${birthday.id || birthday.name}`}
-                            >
-                              {birthday.id ? (
-                                <li
-                                  className={`hidden lg:grid lg:grid-cols-6 border-t text-left lg:text-center px-4 lg:px-8 hover:bg-gray-100`}
-                                >
-                                  <p className={`text-left col-span-2 text-xl`}>
-                                    <Link href={`/birthday/${birthday.id}`}>
-                                      <a className="block py-4">
-                                        {birthday.name}
-                                      </a>
-                                    </Link>
-                                  </p>
-                                  <p className="text-xl text-indigo-600">
-                                    <Link href={`/birthday/${birthday.id}`}>
-                                      <a className="block py-4">
-                                        {format(
+                          (birthday: NexusGenObjects["Birthday"]) => {
+                            const birthDate = getDateFromYmdString(
+                              birthday.date || ""
+                            );
+                            const zodiacSign = getZodiacSignForDateYmdString(
+                              birthday.date || ""
+                            );
+                            return (
+                              <React.Fragment
+                                key={`${birthday.id || birthday.name}`}
+                              >
+                                {birthday.id ? (
+                                  <li
+                                    className={`hidden lg:grid lg:grid-cols-12 border-t text-left lg:text-center px-4 lg:px-8 hover:bg-gray-100`}
+                                  >
+                                    <p
+                                      className={`text-left col-span-3 text-xl`}
+                                    >
+                                      <Link href={`/birthday/${birthday.id}`}>
+                                        <a className="block py-4">
+                                          {birthday.name}
+                                        </a>
+                                      </Link>
+                                    </p>
+                                    <p className="text-xl text-indigo-600 col-span-2">
+                                      <Link href={`/birthday/${birthday.id}`}>
+                                        <a className="block py-4">
+                                          {format(birthDate, "M/dd")}
+                                        </a>
+                                      </Link>
+                                    </p>
+                                    <p className="block py-4  col-span-2">
+                                      {birthday.id &&
+                                        getAgeForHumans(
                                           getDateFromYmdString(
                                             birthday.date || ""
-                                          ),
-                                          "M/dd"
+                                          )
                                         )}
-                                      </a>
-                                    </Link>
-                                  </p>
-                                  <p className="block py-4">
-                                    {birthday.id &&
-                                      getAgeForHumans(
-                                        getDateFromYmdString(
-                                          birthday.date || ""
-                                        )
-                                      )}
-                                  </p>
-                                  <p className="text-ellipsis overflow-hidden relative">
-                                    <button
-                                      className="block py-4 w-full relative"
-                                      onClick={() =>
-                                        setCategoryFilter(
-                                          birthday.category || ""
-                                        )
-                                      }
-                                      type="button"
-                                    >
-                                      <span>{birthday.category}</span>
-                                    </button>
-                                    {categoryFilter &&
-                                      categoryFilter === birthday.category && (
-                                        <button
-                                          className="absolute right-10 top-4"
-                                          onClick={() => setCategoryFilter("")}
-                                        >
-                                          <HiBackspace className="text-xl text-gray-400" />
-                                        </button>
-                                      )}
-                                  </p>
-                                  <p className="text-ellipsis overflow-hidden relative">
-                                    <button
-                                      className="block py-4 w-full"
-                                      onClick={() =>
-                                        setParentFilter(birthday.parent || "")
-                                      }
-                                      type="button"
-                                    >
-                                      <span>{birthday.parent}</span>
-                                    </button>
-                                    {parentFilter &&
-                                      parentFilter === birthday.parent && (
-                                        <button
-                                          className="absolute right-10 top-4"
-                                          onClick={() => setParentFilter("")}
-                                        >
-                                          <HiBackspace className="text-xl text-gray-400" />
-                                        </button>
-                                      )}
-                                  </p>
-                                </li>
-                              ) : (
-                                <li
-                                  className={`hidden lg:grid lg:grid-cols-6 border-t text-left lg:text-center px-4 lg:px-8 bg-indigo-50 hover:bg-indigo-100 text-gray-800`}
-                                >
-                                  <p
-                                    className={`text-gray-500 col-span-2 text-lg py-4`}
+                                    </p>
+                                    <p className="text-ellipsis overflow-hidden relative col-span-2">
+                                      <button
+                                        className="block py-4 w-full relative"
+                                        onClick={() =>
+                                          setCategoryFilter(
+                                            birthday.category || ""
+                                          )
+                                        }
+                                        type="button"
+                                      >
+                                        <span>{birthday.category}</span>
+                                      </button>
+                                      {categoryFilter &&
+                                        categoryFilter ===
+                                          birthday.category && (
+                                          <button
+                                            className="absolute right-10 top-4"
+                                            onClick={() =>
+                                              setCategoryFilter("")
+                                            }
+                                          >
+                                            <HiBackspace className="text-xl text-gray-400" />
+                                          </button>
+                                        )}
+                                    </p>
+                                    <p className="text-ellipsis overflow-hidden relative col-span-2">
+                                      <button
+                                        className="block py-4 w-full"
+                                        onClick={() =>
+                                          setParentFilter(birthday.parent || "")
+                                        }
+                                        type="button"
+                                      >
+                                        <span>{birthday.parent}</span>
+                                      </button>
+                                      {parentFilter &&
+                                        parentFilter === birthday.parent && (
+                                          <button
+                                            className="absolute right-10 top-4"
+                                            onClick={() => setParentFilter("")}
+                                          >
+                                            <HiBackspace className="text-xl text-gray-400" />
+                                          </button>
+                                        )}
+                                    </p>
+                                    <p className="text-ellipsis overflow-hidden relative">
+                                      <button
+                                        className="block py-4 w-full"
+                                        onClick={() =>
+                                          setZodiacSignFilter(zodiacSign)
+                                        }
+                                        type="button"
+                                      >
+                                        <ZodiacSignCharacter
+                                          name={zodiacSign}
+                                        />
+                                        <br />
+                                        <span className="text-xs">
+                                          {zodiacSign}
+                                        </span>
+                                      </button>
+                                      {zodiacSignFilter &&
+                                        zodiacSignFilter === zodiacSign && (
+                                          <button
+                                            className="absolute right-10 top-4"
+                                            onClick={() =>
+                                              setZodiacSignFilter("")
+                                            }
+                                          >
+                                            <HiBackspace className="text-xl text-gray-400" />
+                                          </button>
+                                        )}
+                                    </p>
+                                  </li>
+                                ) : (
+                                  <li
+                                    className={`hidden lg:grid lg:grid-cols-12 border-t text-left lg:text-center px-4 lg:px-8 bg-indigo-50 hover:bg-indigo-100 text-gray-800`}
                                   >
-                                    {birthday.name}
-                                  </p>
-                                  <p className="text-xl text-indigo-600 py-4">
-                                    {format(
-                                      getDateFromYmdString(birthday.date || ""),
-                                      "M/dd"
-                                    )}
-                                  </p>
-                                </li>
-                              )}
-
-                              <li
-                                className={`block lg:hidden border-t text-left px-4 cursor-pointer py-4
-                                ${!birthday.id && "bg-gray-100 text-gray-800"}`}
-                              >
-                                <Link href={`/birthday/${birthday.id}`}>
-                                  <a className="flex justify-between items-center">
-                                    <div>
-                                      <p className="text-2xl">
-                                        {birthday.name}
-                                      </p>
-                                      {birthday.id && (
-                                        <div className="flex justify-start space-x-4 pt-1">
-                                          {getAgeForHumans(
-                                            getDateFromYmdString(
-                                              birthday.date || ""
-                                            )
-                                          ) && (
-                                            <p>
-                                              <span className="font-light text-sm">
-                                                Age
-                                              </span>{" "}
-                                              <span className="font-medium">
-                                                {getAgeForHumans(
-                                                  getDateFromYmdString(
-                                                    birthday.date || ""
-                                                  )
-                                                )}
-                                              </span>
-                                            </p>
-                                          )}
-                                          {birthday.parent && (
-                                            <p className="text-ellipsis overflow-hidden">
-                                              <span className="font-light text-sm">
-                                                Parent{" "}
-                                              </span>
-                                              <span className="font-medium">
-                                                {birthday.parent}
-                                              </span>
-                                            </p>
-                                          )}
-                                        </div>
-                                      )}
-                                    </div>
-                                    <p className="text-xl text-indigo-600">
+                                    <p
+                                      className={`text-gray-500 col-span-3 text-lg py-4`}
+                                    >
+                                      {birthday.name}
+                                    </p>
+                                    <p className="text-xl text-indigo-600 col-span-2 py-4">
                                       {format(
                                         getDateFromYmdString(
                                           birthday.date || ""
@@ -406,11 +444,70 @@ function Home({ providers }: { providers: Provider[] }) {
                                         "M/dd"
                                       )}
                                     </p>
-                                  </a>
-                                </Link>
-                              </li>
-                            </React.Fragment>
-                          )
+                                  </li>
+                                )}
+
+                                <li
+                                  className={`block lg:hidden border-t text-left px-4 cursor-pointer py-4
+                                ${!birthday.id && "bg-gray-100 text-gray-800"}`}
+                                >
+                                  <Link href={`/birthday/${birthday.id}`}>
+                                    <a className="flex justify-between items-center">
+                                      <div>
+                                        <p className="text-2xl">
+                                          {birthday.name}
+                                        </p>
+                                        {birthday.id && (
+                                          <div className="flex justify-start space-x-4 pt-1">
+                                            {getAgeForHumans(
+                                              getDateFromYmdString(
+                                                birthday.date || ""
+                                              )
+                                            ) && (
+                                              <p>
+                                                <span className="font-light text-sm">
+                                                  Age
+                                                </span>{" "}
+                                                <span className="font-medium">
+                                                  {getAgeForHumans(
+                                                    getDateFromYmdString(
+                                                      birthday.date || ""
+                                                    )
+                                                  )}
+                                                </span>
+                                              </p>
+                                            )}
+                                            {birthday.parent && (
+                                              <p className="text-ellipsis overflow-hidden">
+                                                <span className="font-light text-sm">
+                                                  Parent{" "}
+                                                </span>
+                                                <span className="font-medium">
+                                                  {birthday.parent}
+                                                </span>
+                                              </p>
+                                            )}
+                                          </div>
+                                        )}
+                                        <p className="flex space-x-2 items-center mt-1">
+                                          <ZodiacSignCharacter
+                                            className="text-sm"
+                                            name={zodiacSign}
+                                          />
+                                          <span className="text-xs">
+                                            {zodiacSign}
+                                          </span>
+                                        </p>
+                                      </div>
+                                      <p className="text-xl text-indigo-600">
+                                        {format(birthDate, "M/dd")}
+                                      </p>
+                                    </a>
+                                  </Link>
+                                </li>
+                              </React.Fragment>
+                            );
+                          }
                         )}
                       </ul>
                     ) : (
