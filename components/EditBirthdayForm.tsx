@@ -14,9 +14,12 @@ const EditBirthdayForm = ({ birthday }: { birthday: Birthday }) => {
   const [category, setCategory] = useState(birthday.category || "");
   const [parent, setParent] = useState(birthday.parent || "");
 
-  const [editBirthday] = useMutation(EDIT_BIRTHDAY_MUTATION, {
-    refetchQueries: [GET_BIRTHDAY_BY_ID_QUERY, "BirthdayById"],
-  });
+  const [editBirthday, { loading, error }] = useMutation(
+    EDIT_BIRTHDAY_MUTATION,
+    {
+      refetchQueries: [GET_BIRTHDAY_BY_ID_QUERY, "BirthdayById"],
+    }
+  );
 
   return (
     <form
@@ -87,8 +90,16 @@ const EditBirthdayForm = ({ birthday }: { birthday: Birthday }) => {
           />
         </div>
       </div>
+      {error && (
+        <div className="text-red-500 text-sm">
+          An error occurred while saving the birthday. Please try again.
+          <code>{error.message}</code>
+        </div>
+      )}
       <div className="text-right">
-        <PrimaryButton type="submit">Save Birthday</PrimaryButton>
+        <PrimaryButton disabled={loading} type="submit">
+          Save Birthday
+        </PrimaryButton>
       </div>
     </form>
   );

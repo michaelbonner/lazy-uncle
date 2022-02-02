@@ -14,9 +14,12 @@ const UploadCsvBirthdayForm = () => {
   const [birthdays, setBirthdays] = useState([]);
   const userId = session?.user?.id;
 
-  const [createBirthday] = useMutation(CREATE_BIRTHDAY_MUTATION, {
-    refetchQueries: [GET_ALL_BIRTHDAYS_QUERY, "Birthdays"],
-  });
+  const [createBirthday, { loading, error }] = useMutation(
+    CREATE_BIRTHDAY_MUTATION,
+    {
+      refetchQueries: [GET_ALL_BIRTHDAYS_QUERY, "Birthdays"],
+    }
+  );
 
   // handle file upload
   const handleFileUpload = (e: any) => {
@@ -97,8 +100,17 @@ const UploadCsvBirthdayForm = () => {
           />
         </div>
 
+        {error && (
+          <div className="text-red-500 text-sm">
+            An error occurred while creating the birthday. Please try again.
+            <code>{error.message}</code>
+          </div>
+        )}
+
         <div className="mt-4 lg:mt-0 flex justify-end">
-          <PrimaryButton type="submit">Upload CSV</PrimaryButton>
+          <PrimaryButton disabled={loading} type="submit">
+            Upload CSV
+          </PrimaryButton>
         </div>
       </div>
     </form>
