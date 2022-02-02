@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { ReactElement } from "react";
 
+import { RiBugFill, RiLightbulbFlashLine } from "react-icons/ri";
+
 const MainLayout = ({
   children,
   title = "Lazy Uncle",
@@ -86,19 +88,33 @@ const MainLayout = ({
             Michael Bonner
           </a>
         </div>
-        <div className="flex space-x-4 mt-4 lg:mt-0 justify-center">
+        <div className="flex flex-wrap space-x-6 mt-4 lg:mt-0 justify-center">
           <a
-            className="flex items-center space-x-2 underline"
+            className="underline pt-4 lg:pt-0 flex items-center space-x-1"
+            href="https://github.com/michaelbonner/lazy-uncle/issues/new?assignees=michaelbonner&labels=&template=bug_report.md&title="
+          >
+            <RiBugFill className="w-4 h-4" />
+            <span>Submit a bug report</span>
+          </a>
+          <a
+            className="underline pt-4 lg:pt-0 flex items-center space-x-1"
+            href="https://github.com/michaelbonner/lazy-uncle/issues/new?assignees=michaelbonner&labels=&template=feature_request.md&title="
+          >
+            <RiLightbulbFlashLine className="w-4 h-4" />
+            <span>Request a feature</span>
+          </a>
+          <a
+            className="underline pt-4 lg:pt-0"
             href="https://github.com/sponsors/michaelbonner?o=esb"
           >
-            <span>Sponsor Me</span>
+            Sponsor Me
           </a>
 
           <Link href="/policies">
-            <a className="underline">Policies</a>
+            <a className="underline pt-4 lg:pt-0">Policies</a>
           </Link>
           <Link href="/contact">
-            <a className="underline">Contact</a>
+            <a className="underline pt-4 lg:pt-0">Contact</a>
           </Link>
         </div>
       </footer>
