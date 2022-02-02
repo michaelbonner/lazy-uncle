@@ -94,7 +94,7 @@ const MainLayout = ({
             href="https://github.com/michaelbonner/lazy-uncle/issues/new?assignees=michaelbonner&labels=&template=bug_report.md&title="
           >
             <RiBugFill className="w-4 h-4" />
-            <span>Submit a bug report</span>
+            <span>Report a bug</span>
           </a>
           <a
             className="underline pt-4 lg:pt-0 flex items-center space-x-1"
