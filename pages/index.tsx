@@ -327,25 +327,25 @@ function Home({ providers }: { providers: Provider[] }) {
                               >
                                 {birthday.id ? (
                                   <li
-                                    className={`hidden lg:grid lg:grid-cols-12 border-t text-left lg:text-center px-4 lg:px-8 hover:bg-gray-100`}
+                                    className={`hidden lg:grid lg:grid-cols-12 items-center border-t text-left lg:text-center px-4 lg:px-8 hover:bg-gray-100`}
                                   >
                                     <p
                                       className={`text-left col-span-3 text-xl`}
                                     >
                                       <Link href={`/birthday/${birthday.id}`}>
-                                        <a className="block py-4">
+                                        <a className="block py-3">
                                           {birthday.name}
                                         </a>
                                       </Link>
                                     </p>
                                     <p className="text-xl text-indigo-600 col-span-2">
                                       <Link href={`/birthday/${birthday.id}`}>
-                                        <a className="block py-4">
+                                        <a className="block py-3">
                                           {format(birthDate, "M/dd")}
                                         </a>
                                       </Link>
                                     </p>
-                                    <p className="block py-4  col-span-2">
+                                    <p className="block py-3 col-span-2">
                                       {birthday.id &&
                                         getAgeForHumans(
                                           getDateFromYmdString(
@@ -353,18 +353,23 @@ function Home({ providers }: { providers: Provider[] }) {
                                           )
                                         )}
                                     </p>
-                                    <p className="text-ellipsis overflow-hidden relative col-span-2">
-                                      <button
-                                        className="block py-4 w-full relative"
-                                        onClick={() =>
-                                          setCategoryFilter(
-                                            birthday.category || ""
-                                          )
-                                        }
-                                        type="button"
-                                      >
-                                        <span>{birthday.category}</span>
-                                      </button>
+                                    <p className="text-ellipsis overflow-hidden relative col-span-2 h-full">
+                                      {birthday.category && (
+                                        <button
+                                          className="block w-full h-full hover:bg-gray-200 rounded"
+                                          onClick={() =>
+                                            setCategoryFilter(
+                                              categoryFilter ===
+                                                birthday.category
+                                                ? ""
+                                                : birthday.category || ""
+                                            )
+                                          }
+                                          type="button"
+                                        >
+                                          <span>{birthday.category}</span>
+                                        </button>
+                                      )}
                                       {categoryFilter &&
                                         categoryFilter ===
                                           birthday.category && (
@@ -378,16 +383,22 @@ function Home({ providers }: { providers: Provider[] }) {
                                           </button>
                                         )}
                                     </p>
-                                    <p className="text-ellipsis overflow-hidden relative col-span-2">
-                                      <button
-                                        className="block py-4 w-full"
-                                        onClick={() =>
-                                          setParentFilter(birthday.parent || "")
-                                        }
-                                        type="button"
-                                      >
-                                        <span>{birthday.parent}</span>
-                                      </button>
+                                    <p className="text-ellipsis overflow-hidden relative col-span-2 h-full">
+                                      {birthday.parent && (
+                                        <button
+                                          className="block w-full h-full hover:bg-gray-200 rounded"
+                                          onClick={() =>
+                                            setParentFilter(
+                                              parentFilter === birthday.parent
+                                                ? ""
+                                                : birthday.parent || ""
+                                            )
+                                          }
+                                          type="button"
+                                        >
+                                          <span>{birthday.parent}</span>
+                                        </button>
+                                      )}
                                       {parentFilter &&
                                         parentFilter === birthday.parent && (
                                           <button
@@ -398,18 +409,21 @@ function Home({ providers }: { providers: Provider[] }) {
                                           </button>
                                         )}
                                     </p>
-                                    <p className="text-ellipsis overflow-hidden relative">
+                                    <p className="text-ellipsis overflow-hidden relative h-full">
                                       <button
-                                        className="block py-4 w-full"
+                                        className="flex flex-col items-center justify-center w-full h-full hover:bg-gray-200 rounded"
                                         onClick={() =>
-                                          setZodiacSignFilter(zodiacSign)
+                                          setZodiacSignFilter(
+                                            zodiacSignFilter === zodiacSign
+                                              ? ""
+                                              : zodiacSign || ""
+                                          )
                                         }
                                         type="button"
                                       >
                                         <ZodiacSignCharacter
                                           name={zodiacSign}
                                         />
-                                        <br />
                                         <span className="text-xs">
                                           {zodiacSign}
                                         </span>
@@ -417,7 +431,7 @@ function Home({ providers }: { providers: Provider[] }) {
                                       {zodiacSignFilter &&
                                         zodiacSignFilter === zodiacSign && (
                                           <button
-                                            className="absolute right-10 top-4"
+                                            className="absolute right-0 top-4"
                                             onClick={() =>
                                               setZodiacSignFilter("")
                                             }
@@ -432,11 +446,11 @@ function Home({ providers }: { providers: Provider[] }) {
                                     className={`hidden lg:grid lg:grid-cols-12 border-t text-left lg:text-center px-4 lg:px-8 bg-indigo-50 hover:bg-indigo-100 text-gray-800`}
                                   >
                                     <p
-                                      className={`text-gray-500 col-span-3 text-lg py-4`}
+                                      className={`text-gray-500 col-span-3 text-lg py-3`}
                                     >
                                       {birthday.name}
                                     </p>
-                                    <p className="text-xl text-indigo-600 col-span-2 py-4">
+                                    <p className="text-xl text-indigo-600 col-span-2 py-3">
                                       {format(
                                         getDateFromYmdString(
                                           birthday.date || ""
@@ -448,7 +462,7 @@ function Home({ providers }: { providers: Provider[] }) {
                                 )}
 
                                 <li
-                                  className={`block lg:hidden border-t text-left px-4 cursor-pointer py-4
+                                  className={`block lg:hidden border-t text-left px-4 py-4
                                 ${!birthday.id && "bg-gray-100 text-gray-800"}`}
                                 >
                                   <Link href={`/birthday/${birthday.id}`}>
