@@ -52,9 +52,9 @@ const Policies = () => {
               of our practices around privacy and personal information. If you
               have any questions about how we handle user data and personal
               information, feel free to{" "}
-              <a className="underline" href="/contact">
-                contact me
-              </a>
+              <Link href="/contact">
+                <a className="underline">contact me</a>
+              </Link>
               .
             </p>
             <p>This policy is effective as of 10 January 2022.</p>
