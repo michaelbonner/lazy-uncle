@@ -164,7 +164,7 @@ function Home({ providers }: { providers: Provider[] }) {
             {session?.user ? (
               <div>
                 <div className="flex justify-between lg:justify-end space-x-2 items-end">
-                  <div className="text-right mt-2 text-sm">
+                  <div className="text-right mt-2 text-sm text-indigo-300">
                     {workingDates.length ? workingDates.length - 1 : 0}/
                     {birthdaysData?.birthdays?.length} visible
                   </div>
