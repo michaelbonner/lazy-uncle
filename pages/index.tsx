@@ -424,7 +424,7 @@ function Home({ providers }: { providers: Provider[] }) {
                             <h2>No birthdays found</h2>
                             <p>
                               Use the form below to add a birthday or two... or
-                              80
+                              38.
                             </p>
                           </div>
                         )}
