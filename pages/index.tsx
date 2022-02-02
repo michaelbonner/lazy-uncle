@@ -512,7 +512,6 @@ function Home({ providers }: { providers: Provider[] }) {
                                         )}
                                         <p className="flex space-x-2 items-center mt-1">
                                           <ZodiacSignCharacter
-                                            className="text-sm"
                                             name={zodiacSign}
                                           />
                                           <span className="text-xs">

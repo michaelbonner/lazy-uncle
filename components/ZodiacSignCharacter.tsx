@@ -1,35 +1,14 @@
+import Image from "next/image";
 import React, { ReactElement } from "react";
 
-interface ZodiacSignMap {
-  [key: string]: string;
-}
-
-const ZodiacSignCharacter = ({
-  className = "",
-  name,
-}: {
-  className?: string;
-  name: string;
-}): ReactElement => {
-  const signToUnicodeMap = {
-    Aries: "♈",
-    Taurus: "♉",
-    Gemini: "♊",
-    Cancer: "♋",
-    Leo: "♌",
-    Virgo: "♍",
-    Libra: "♎",
-    Scorpio: "♏",
-    Sagittarius: "♐",
-    Capricorn: "♑️",
-    Aquarius: "♒️",
-    Pisces: "♓️",
-  } as ZodiacSignMap;
-
+const ZodiacSignCharacter = ({ name }: { name: string }): ReactElement => {
   return (
-    <span className={className} title={name}>
-      {signToUnicodeMap[name]}
-    </span>
+    <Image
+      src={`/zodiac-symbols/${name}.svg`}
+      alt={name}
+      width="14"
+      height="14"
+    />
   );
 };
 export default ZodiacSignCharacter;
