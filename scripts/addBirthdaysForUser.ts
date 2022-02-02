@@ -46,6 +46,9 @@ async function main() {
     where: {
       email: email,
     },
+    include: {
+      birthdays: true,
+    },
   });
 
   if (!user) {
@@ -53,36 +56,30 @@ async function main() {
     return;
   }
 
-  // get birthdays user has already added
-  const userBirthdays = await prisma.birthday.findMany({
-    where: { userId: user.id },
-  });
-
-  // add new birthdays
-  csvBirthdays.map(async (birthday: Birthday) => {
-    const userBirthday = userBirthdays.find((userBirthday: Birthday) => {
-      return (
-        userBirthday.name === birthday.name &&
-        userBirthday.date === birthday.date
-      );
+  const birthdaysToAdd = csvBirthdays
+    .filter((csvBirthday: Birthday) => {
+      return user.birthdays.find((userBirthday) => {
+        return (
+          userBirthday.name === csvBirthday.name &&
+          userBirthday.date === csvBirthday.date
+        );
+      })
+        ? false
+        : true;
+    })
+    .map((csvBirthday: Birthday) => {
+      return {
+        ...csvBirthday,
+        userId: user.id,
+      } as Birthday;
     });
-    if (!userBirthday) {
-      console.log(`Adding birthday ${birthday.name} for user ${user.name}`);
-      await prisma.birthday.create({
-        data: {
-          name: birthday.name,
-          date: birthday.date,
-          category: birthday.category,
-          parent: birthday.parent,
-          user: {
-            connect: {
-              id: user.id,
-            },
-          },
-        },
-      });
-    }
-  });
+
+  await prisma.birthday.createMany({ data: birthdaysToAdd });
+
+  console.log(`Added ${birthdaysToAdd.length} birthdays for user ${email}`);
+  birthdaysToAdd.map((birthdayToAdd) =>
+    console.log(` - added ${birthdayToAdd.name}`)
+  );
 }
 
 main().catch((e) => {
