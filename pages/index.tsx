@@ -24,6 +24,7 @@ function Home({ providers }: { providers: Provider[] }) {
   const [workingDates, setWorkingDates] = useState<
     NexusGenObjects["Birthday"][]
   >([]);
+  const [workingDatesCount, setWorkingDatesCount] = useState(0);
   const [nameFilter, setNameFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [parentFilter, setParentFilter] = useState("");
@@ -96,6 +97,7 @@ function Home({ providers }: { providers: Provider[] }) {
         });
       if (dates.length > 0) {
         const unsortedDates = [...dates];
+        setWorkingDatesCount(unsortedDates.length);
         if (sortBy.substring(0, 4) === "date" && unsortedDates.length > 4) {
           unsortedDates.push({
             name: "Today",
@@ -203,8 +205,8 @@ function Home({ providers }: { providers: Provider[] }) {
               <div>
                 <div className="flex justify-between lg:justify-end space-x-2 items-end">
                   <div className="text-right mt-2 text-sm text-indigo-300">
-                    {workingDates.length ? workingDates.length - 1 : 0}/
-                    {birthdaysData?.birthdays?.length} visible
+                    {workingDatesCount}/{birthdaysData?.birthdays?.length}{" "}
+                    visible
                   </div>
                   <div className="flex lg:hidden justify-end items-center space-x-4 mt-4">
                     <button
