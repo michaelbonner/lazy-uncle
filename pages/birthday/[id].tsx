@@ -1,6 +1,5 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { NextPageContext } from "next";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
@@ -16,7 +15,6 @@ import getAgeForHumans from "../../shared/getAgeForHumans";
 import getDateFromYmdString from "../../shared/getDateFromYmdString";
 
 const Birthday = ({ id }: { id: string }) => {
-  const { data: session, status: sessionStatus } = useSession();
   const router = useRouter();
   const {
     data: birthdayData,
@@ -26,12 +24,10 @@ const Birthday = ({ id }: { id: string }) => {
     variables: { birthdayId: id },
   });
 
-  const [
-    deleteBirthday,
-    { data: deleteData, loading: deleteLoading, error: deleteError },
-  ] = useMutation(DELETE_BIRTHDAY_MUTATION, {
-    refetchQueries: [GET_ALL_BIRTHDAYS_QUERY, "Birthdays"],
-  });
+  const [deleteBirthday, { loading: deleteLoading, error: deleteError }] =
+    useMutation(DELETE_BIRTHDAY_MUTATION, {
+      refetchQueries: [GET_ALL_BIRTHDAYS_QUERY, "Birthdays"],
+    });
 
   return (
     <MainLayout title={`Birthday`}>
@@ -67,8 +63,14 @@ const Birthday = ({ id }: { id: string }) => {
             </div>
 
             <div className="flex justify-end mt-8 mb-12">
+              {deleteError && (
+                <p className="text-red-600 text-sm">
+                  Error deleting birthday: {deleteError.message}
+                </p>
+              )}
               <button
                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-gray-100 bg-transparent hover:bg-red-700 hover:border-red-800 hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                disabled={deleteLoading}
                 onClick={() => {
                   if (
                     window.confirm(

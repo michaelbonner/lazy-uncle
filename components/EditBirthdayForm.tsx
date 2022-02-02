@@ -14,12 +14,9 @@ const EditBirthdayForm = ({ birthday }: { birthday: Birthday }) => {
   const [category, setCategory] = useState(birthday.category || "");
   const [parent, setParent] = useState(birthday.parent || "");
 
-  const [editBirthday, { data, loading, error }] = useMutation(
-    EDIT_BIRTHDAY_MUTATION,
-    {
-      refetchQueries: [GET_BIRTHDAY_BY_ID_QUERY, "BirthdayById"],
-    }
-  );
+  const [editBirthday] = useMutation(EDIT_BIRTHDAY_MUTATION, {
+    refetchQueries: [GET_BIRTHDAY_BY_ID_QUERY, "BirthdayById"],
+  });
 
   return (
     <form
@@ -60,6 +57,7 @@ const EditBirthdayForm = ({ birthday }: { birthday: Birthday }) => {
             className="block w-full border-gray-300 rounded h-12"
             id="date"
             onChange={(e) => setDate(e.target.value)}
+            max={new Date().toISOString().split("T")[0]}
             type="date"
             value={date}
           />

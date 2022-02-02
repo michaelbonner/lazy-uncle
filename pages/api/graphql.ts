@@ -71,7 +71,7 @@ const Query = queryType({
 
     t.list.field("users", {
       type: "User",
-      resolve: (_parent, _args) => {
+      resolve: () => {
         return prisma.user.findMany({});
       },
     });
@@ -86,7 +86,7 @@ const Mutation = objectType({
       args: {
         birthdayId: nonNull(stringArg()),
       },
-      resolve: (_, { birthdayId }, ctx) => {
+      resolve: (_, { birthdayId }) => {
         return prisma.birthday.delete({
           where: { id: birthdayId || "" },
         });
@@ -102,7 +102,7 @@ const Mutation = objectType({
         parent: stringArg(),
         userId: nonNull(stringArg()),
       },
-      resolve: (_, { name, date, category, parent, userId }, ctx) => {
+      resolve: (_, { name, date, category, parent, userId }) => {
         return prisma.birthday.create({
           data: {
             name,
@@ -126,7 +126,7 @@ const Mutation = objectType({
         category: stringArg(),
         parent: stringArg(),
       },
-      resolve: (_, { id, name, date, category, parent }, ctx) => {
+      resolve: (_, { id, name, date, category, parent }) => {
         return prisma.birthday.update({
           where: {
             id: id,

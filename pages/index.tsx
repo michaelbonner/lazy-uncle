@@ -3,7 +3,6 @@ import { format } from "date-fns";
 import { Provider } from "next-auth/providers";
 import { getProviders, useSession } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { GrFormFilter } from "react-icons/gr";
 import { HiBackspace, HiOutlineCalendar } from "react-icons/hi";
@@ -36,7 +35,6 @@ function Home({ providers }: { providers: Provider[] }) {
   const [currentHost, setCurrentHost] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [sortBy, setSortBy] = useState("date_asc");
-  const router = useRouter();
 
   useEffect(() => {
     if (window.location.host) {

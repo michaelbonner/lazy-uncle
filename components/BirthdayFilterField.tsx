@@ -5,6 +5,7 @@ const BirthdayFilterField = ({
   setValue,
   value,
 }: {
+  // eslint-disable-next-line no-unused-vars
   setValue: (value: string) => void;
   value: string;
 }) => {

@@ -16,6 +16,7 @@ const SortColumnHeader = ({
   className?: string;
   descendingString: string;
   label: string;
+  // eslint-disable-next-line no-unused-vars
   setValue: (value: string) => void;
   value: string;
 }) => {

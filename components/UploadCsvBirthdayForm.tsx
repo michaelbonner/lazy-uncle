@@ -11,16 +11,12 @@ import PrimaryButton from "./PrimaryButton";
 
 const UploadCsvBirthdayForm = () => {
   const { data: session } = useSession();
-  const [csv, setCsv] = useState("");
   const [birthdays, setBirthdays] = useState([]);
   const userId = session?.user?.id;
 
-  const [createBirthday, { data, loading, error }] = useMutation(
-    CREATE_BIRTHDAY_MUTATION,
-    {
-      refetchQueries: [GET_ALL_BIRTHDAYS_QUERY, "Birthdays"],
-    }
-  );
+  const [createBirthday] = useMutation(CREATE_BIRTHDAY_MUTATION, {
+    refetchQueries: [GET_ALL_BIRTHDAYS_QUERY, "Birthdays"],
+  });
 
   // handle file upload
   const handleFileUpload = (e: any) => {
@@ -81,8 +77,6 @@ const UploadCsvBirthdayForm = () => {
             },
           });
         });
-
-        setCsv("");
       }}
     >
       <div>

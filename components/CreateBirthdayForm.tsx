@@ -1,6 +1,6 @@
 import { useMutation } from "@apollo/client";
 import { useSession } from "next-auth/react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { toast } from "react-toastify";
 import {
   CREATE_BIRTHDAY_MUTATION,
@@ -16,7 +16,7 @@ const CreateBirthdayForm = () => {
   const [parent, setParent] = useState("");
   const userId = session?.user?.id;
 
-  const [createBirthday, { data, loading, error }] = useMutation(
+  const [createBirthday, { loading, error }] = useMutation(
     CREATE_BIRTHDAY_MUTATION,
     {
       refetchQueries: [GET_ALL_BIRTHDAYS_QUERY, "Birthdays"],
@@ -65,6 +65,7 @@ const CreateBirthdayForm = () => {
             className="block w-full border-gray-300 rounded h-12"
             id="date"
             onChange={(e) => setDate(e.target.value)}
+            max={new Date().toISOString().split("T")[0]}
             type="date"
             value={date}
           />
@@ -95,7 +96,15 @@ const CreateBirthdayForm = () => {
         </div>
       </div>
       <div className="text-right">
-        <PrimaryButton type="submit">Add Birthday</PrimaryButton>
+        {error && (
+          <div className="text-red-500 text-sm">
+            An error occurred while creating the birthday. Please try again.
+            <code>{error.message}</code>
+          </div>
+        )}
+        <PrimaryButton disabled={loading} type="submit">
+          Add Birthday
+        </PrimaryButton>
       </div>
     </form>
   );
