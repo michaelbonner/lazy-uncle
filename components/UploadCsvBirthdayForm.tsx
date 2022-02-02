@@ -7,6 +7,7 @@ import {
   CREATE_BIRTHDAY_MUTATION,
   GET_ALL_BIRTHDAYS_QUERY,
 } from "../graphql/Birthday";
+import PrimaryButton from "./PrimaryButton";
 
 const UploadCsvBirthdayForm = () => {
   const { data: session } = useSession();
@@ -103,12 +104,7 @@ const UploadCsvBirthdayForm = () => {
         </div>
 
         <div className="mt-4 lg:mt-0 flex justify-end">
-          <button
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            type="submit"
-          >
-            Upload CSV
-          </button>
+          <PrimaryButton type="submit">Upload CSV</PrimaryButton>
         </div>
       </div>
     </form>

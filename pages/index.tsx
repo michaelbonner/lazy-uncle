@@ -269,9 +269,7 @@ function Home({ providers }: { providers: Provider[] }) {
                                 <li
                                   className={`hidden lg:grid lg:grid-cols-6 border-t text-left lg:text-center px-4 lg:px-8 hover:bg-gray-100`}
                                 >
-                                  <p
-                                    className={`text-left col-span-2 text-2xl`}
-                                  >
+                                  <p className={`text-left col-span-2 text-xl`}>
                                     <Link href={`/birthday/${birthday.id}`}>
                                       <a className="block py-4">
                                         {birthday.name}

@@ -6,6 +6,7 @@ import {
   EDIT_BIRTHDAY_MUTATION,
   GET_BIRTHDAY_BY_ID_QUERY,
 } from "../graphql/Birthday";
+import PrimaryButton from "./PrimaryButton";
 
 const EditBirthdayForm = ({ birthday }: { birthday: Birthday }) => {
   const [name, setName] = useState(birthday.name);
@@ -89,12 +90,7 @@ const EditBirthdayForm = ({ birthday }: { birthday: Birthday }) => {
         </div>
       </div>
       <div className="text-right">
-        <button
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          type="submit"
-        >
-          Save Birthday
-        </button>
+        <PrimaryButton type="submit">Save Birthday</PrimaryButton>
       </div>
     </form>
   );
