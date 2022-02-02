@@ -1,6 +1,6 @@
 // npx ts-node --compiler-options {\"module\":\"CommonJS\"} scripts/showUsersAndCountOfBirthdaysForUser
 
-import { PrismaClient, User } from "@prisma/client";
+import { Birthday, PrismaClient, User } from "@prisma/client";
 import prisma from "../lib/prisma";
 
 declare global {
@@ -9,15 +9,27 @@ declare global {
 }
 
 async function main() {
-  const users = await prisma.user.findMany({});
-  users.map(async (user: User) => {
-    const userBirthdays = await prisma.birthday.findMany({
-      where: { userId: user.id },
-    });
-
-    console.log(`${user.name} - ${user.email}`);
-    console.log(` - Birthdays: ${userBirthdays.length}`);
+  const users = await prisma.user.findMany({
+    orderBy: [
+      {
+        name: "asc",
+      },
+    ],
+    include: {
+      birthdays: true,
+    },
   });
+
+  users.map(
+    async (
+      user: User & {
+        birthdays: Birthday[];
+      }
+    ) => {
+      console.log(`${user.name} - ${user.email}`);
+      console.log(` - Birthdays: ${user.birthdays.length}`);
+    }
+  );
 }
 
 main().catch((e) => {
