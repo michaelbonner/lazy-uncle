@@ -5,7 +5,7 @@ import { GrGithub, GrGoogle } from "react-icons/gr";
 
 const Welcome = ({ providers = [] }: { providers: Provider[] }) => {
   return (
-    <div className="flex justify-center mt-8 text-gray-100 py-24">
+    <div className="flex justify-center mt-8 text-gray-100 py-12 lg:py-24 px-4">
       <div className="flex flex-col gap-y-6">
         <div className="text-lg mb-2 prose prose-light text-gray-100">
           <h1 className="text-white">
@@ -22,13 +22,13 @@ const Welcome = ({ providers = [] }: { providers: Provider[] }) => {
             you have any problems. I hope you enjoy it!
           </p>
         </div>
-        <div className="flex items-end space-x-4 mt-4 mb-1">
+        <div className="lg:flex items-end lg:space-x-4 mt-4 mb-1">
           {Object.values(providers).map((provider) => {
             return (
               <button
                 key={provider.name}
                 className={`
-                            inline-flex space-x-2 items-center px-6 py-3 border border-transparent font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500
+                            w-full lg:w-auto inline-flex justify-center space-x-2 mt-4 items-center px-6 py-3 border border-transparent font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500
                             ${
                               provider.id === "google" &&
                               `bg-red-500 hover:bg-red-600 text-red-50`
