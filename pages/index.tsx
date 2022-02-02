@@ -32,6 +32,7 @@ function Home({ providers }: { providers: Provider[] }) {
     data: birthdaysData,
     loading: birthdaysLoading,
     error: birthdaysError,
+    refetch: birthdaysRefetch,
   } = useQuery(GET_ALL_BIRTHDAYS_QUERY, {
     variables: { userId: session?.user?.id },
   });
@@ -44,6 +45,12 @@ function Home({ providers }: { providers: Provider[] }) {
       setCurrentHost(window.location.host);
     }
   }, []);
+
+  useEffect(() => {
+    const refetchQuery = () => birthdaysRefetch();
+    window.addEventListener("focus", refetchQuery);
+    return () => window.removeEventListener("focus", refetchQuery);
+  });
 
   useEffect(() => {
     if (birthdaysData?.birthdays?.length > 0) {
