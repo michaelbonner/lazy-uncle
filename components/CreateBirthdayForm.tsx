@@ -14,6 +14,7 @@ const CreateBirthdayForm = () => {
   const [date, setDate] = useState("");
   const [category, setCategory] = useState("");
   const [parent, setParent] = useState("");
+  const [notes, setNotes] = useState("");
   const userId = session?.user?.id;
 
   const [createBirthday, { loading, error }] = useMutation(
@@ -34,6 +35,7 @@ const CreateBirthdayForm = () => {
             date,
             category: category.trim(),
             parent: parent.trim(),
+            notes: notes.trim(),
             userId,
           },
         });
@@ -41,6 +43,7 @@ const CreateBirthdayForm = () => {
         setDate("");
         setCategory("");
         setParent("");
+        setNotes("");
         toast.success("Birthday created successfully");
       }}
     >
@@ -94,6 +97,18 @@ const CreateBirthdayForm = () => {
             value={parent}
           />
         </div>
+      </div>
+      <div>
+        <label className="block text-sm" htmlFor="notes">
+          Notes
+        </label>
+        <textarea
+          className="block w-full border-gray-300 rounded h-12"
+          id="notes"
+          onChange={(e) => setNotes(e.target.value)}
+        >
+          {notes}
+        </textarea>
       </div>
       <div className="text-right">
         {error && (

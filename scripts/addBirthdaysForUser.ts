@@ -28,6 +28,7 @@ async function loadCsvBirthdays(): Promise<Birthday[]> {
       date: row[1],
       category: row[2] !== "NULL" ? row[2] : null,
       parent: row[3] !== "NULL" ? row[3] : null,
+      notes: row[4] !== "NULL" ? row[4] : null,
     };
   }) as Birthday[];
 }

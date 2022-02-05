@@ -33,6 +33,7 @@ export interface NexusGenObjects {
     date?: string | null; // String
     id?: string | null; // String
     name?: string | null; // String
+    notes?: string | null; // String
     parent?: string | null; // String
   }
   Mutation: {};
@@ -60,6 +61,7 @@ export interface NexusGenFieldTypes {
     date: string | null; // String
     id: string | null; // String
     name: string | null; // String
+    notes: string | null; // String
     parent: string | null; // String
     user: NexusGenRootTypes['User'] | null; // User
   }
@@ -87,6 +89,7 @@ export interface NexusGenFieldTypeNames {
     date: 'String'
     id: 'String'
     name: 'String'
+    notes: 'String'
     parent: 'String'
     user: 'User'
   }
@@ -114,6 +117,7 @@ export interface NexusGenArgTypes {
       category?: string | null; // String
       date: string; // String!
       name: string; // String!
+      notes?: string | null; // String
       parent?: string | null; // String
       userId: string; // String!
     }
@@ -125,6 +129,7 @@ export interface NexusGenArgTypes {
       date: string; // String!
       id: string; // String!
       name: string; // String!
+      notes?: string | null; // String
       parent?: string | null; // String
     }
   }

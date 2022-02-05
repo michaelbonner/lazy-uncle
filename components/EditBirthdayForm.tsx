@@ -13,6 +13,7 @@ const EditBirthdayForm = ({ birthday }: { birthday: Birthday }) => {
   const [date, setDate] = useState(birthday.date);
   const [category, setCategory] = useState(birthday.category || "");
   const [parent, setParent] = useState(birthday.parent || "");
+  const [notes, setNotes] = useState(birthday.notes || "");
 
   const [editBirthday, { loading, error }] = useMutation(
     EDIT_BIRTHDAY_MUTATION,
@@ -33,6 +34,7 @@ const EditBirthdayForm = ({ birthday }: { birthday: Birthday }) => {
             date,
             category: category.trim(),
             parent: parent.trim(),
+            notes: notes.trim(),
           },
         });
 
@@ -89,6 +91,18 @@ const EditBirthdayForm = ({ birthday }: { birthday: Birthday }) => {
             value={parent}
           />
         </div>
+      </div>
+      <div>
+        <label className="block" htmlFor="parent">
+          Notes (optional)
+        </label>
+        <textarea
+          className="block w-full border-gray-300 rounded h-12"
+          id="parent"
+          onChange={(e) => setNotes(e.target.value)}
+        >
+          {notes}
+        </textarea>
       </div>
       {error && (
         <div className="text-red-500 text-sm">

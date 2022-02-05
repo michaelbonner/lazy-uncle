@@ -7,14 +7,15 @@ type Birthday {
   date: String
   id: String
   name: String
+  notes: String
   parent: String
   user: User
 }
 
 type Mutation {
-  createBirthday(category: String, date: String!, name: String!, parent: String, userId: String!): Birthday
+  createBirthday(category: String, date: String!, name: String!, notes: String, parent: String, userId: String!): Birthday
   deleteBirthday(birthdayId: String!): Birthday
-  editBirthday(category: String, date: String!, id: String!, name: String!, parent: String): Birthday
+  editBirthday(category: String, date: String!, id: String!, name: String!, notes: String, parent: String): Birthday
 }
 
 type Query {

@@ -47,6 +47,7 @@ const UploadCsvBirthdayForm = () => {
               ),
               category: row[2] !== "NULL" ? row[2] : null,
               parent: row[3] !== "NULL" ? row[3] : null,
+              notes: row[4] !== "NULL" ? row[4] : null,
             };
           });
 
@@ -69,13 +70,14 @@ const UploadCsvBirthdayForm = () => {
       onSubmit={async (e) => {
         e.preventDefault();
         birthdays.forEach(async (birthday: any) => {
-          const { name, date, category, parent } = birthday;
+          const { name, date, category, parent, notes } = birthday;
           await createBirthday({
             variables: {
               name,
               date,
               category,
               parent,
+              notes,
               userId,
             },
           });
@@ -85,10 +87,10 @@ const UploadCsvBirthdayForm = () => {
       <div>
         <div>
           <label className="block mt-4" htmlFor="csv">
-            <p>Rows of name, date (yyyy-mm-dd), category, parent</p>
+            <p>Rows of name, date (yyyy-mm-dd), category, parent, notes</p>
             <p>Example:</p>
             <p className="bg-white border border-dashed py-2 px-4">
-              <code>Mike,2020-01-02,NULL,NULL</code>
+              <code>Mike,2020-01-02,NULL,NULL,Likes the Browns</code>
             </p>
           </label>
           <input
