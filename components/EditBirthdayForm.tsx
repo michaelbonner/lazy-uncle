@@ -100,9 +100,8 @@ const EditBirthdayForm = ({ birthday }: { birthday: Birthday }) => {
           className="block w-full border-gray-300 rounded h-12"
           id="parent"
           onChange={(e) => setNotes(e.target.value)}
-        >
-          {notes}
-        </textarea>
+          value={notes}
+        />
       </div>
       {error && (
         <div className="text-red-500 text-sm">

@@ -106,9 +106,8 @@ const CreateBirthdayForm = () => {
           className="block w-full border-gray-300 rounded h-12"
           id="notes"
           onChange={(e) => setNotes(e.target.value)}
-        >
-          {notes}
-        </textarea>
+          value={notes}
+        />
       </div>
       <div className="text-right">
         {error && (
