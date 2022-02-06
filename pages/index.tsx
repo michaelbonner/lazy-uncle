@@ -1,7 +1,7 @@
 import { Provider } from "next-auth/providers";
 import { getProviders, useSession } from "next-auth/react";
 import React from "react";
-import BirthdaysContainer from "../components/BirthDaysContainer";
+import BirthdaysContainer from "../components/BirthdaysContainer";
 import MainLayout from "../components/layout/MainLayout";
 import Welcome from "../components/Welcome";
 
