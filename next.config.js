@@ -1,11 +1,16 @@
 /** @type {import('next').NextConfig} */
 const withPWA = require("next-pwa");
 
-const nextConfig = {
+const settings = {
+  env: {},
+  devIndicators: {
+    autoPrerender: false,
+  },
   reactStrictMode: true,
   pwa: {
     dest: "public",
   },
 };
 
-module.exports = withPWA(nextConfig);
+module.exports =
+  process.env.NODE_ENV === "development" ? settings : withPWA(settings);

@@ -2,10 +2,12 @@ import React from "react";
 import { HiBackspace, HiSearch } from "react-icons/hi";
 
 const BirthdayFilterField = ({
+  disabled,
   label,
   setValue,
   value,
 }: {
+  disabled: boolean;
   label: string;
   // eslint-disable-next-line no-unused-vars
   setValue: (value: string) => void;
@@ -15,6 +17,7 @@ const BirthdayFilterField = ({
     <div>
       <input
         className="block w-full py-3 px-4 rounded-lg text-gray-700 focus:outline-none bg-gray-200 focus:bg-white border-0 focus:border-gray-400 placeholder:text-gray-400"
+        disabled={disabled}
         id={value}
         onChange={(e) => setValue(e.target.value)}
         onKeyUp={(e) => {
