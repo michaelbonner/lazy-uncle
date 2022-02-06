@@ -57,7 +57,16 @@ const BirthdayRow: React.FC<Props> = ({
           </p>
           <p className="block py-3 col-span-2">
             {birthday.id &&
-              getAgeForHumans(getDateFromYmdString(birthday.date || ""))}
+            getAgeForHumans(getDateFromYmdString(birthday.date || "")) ? (
+              getAgeForHumans(getDateFromYmdString(birthday.date || ""))
+            ) : (
+              <span className="sr-only">
+                {getAgeForHumans(
+                  getDateFromYmdString(birthday.date || ""),
+                  true
+                )}
+              </span>
+            )}
           </p>
           <p className="text-ellipsis overflow-hidden relative col-span-2 h-full">
             {birthday.category && (
@@ -162,7 +171,7 @@ const BirthdayRow: React.FC<Props> = ({
                 <div className="flex justify-start space-x-4 pt-1">
                   {getAgeForHumans(
                     getDateFromYmdString(birthday.date || "")
-                  ) && (
+                  ) ? (
                     <p>
                       <span className="font-light text-sm">Age</span>{" "}
                       <span className="font-medium">
@@ -171,6 +180,13 @@ const BirthdayRow: React.FC<Props> = ({
                         )}
                       </span>
                     </p>
+                  ) : (
+                    <span className="sr-only">
+                      {getAgeForHumans(
+                        getDateFromYmdString(birthday.date || ""),
+                        true
+                      )}
+                    </span>
                   )}
                   {birthday.parent && (
                     <p className="text-ellipsis overflow-hidden">
