@@ -1,5 +1,10 @@
-import { useEditor, EditorContent, Editor } from "@tiptap/react";
+import { Editor, EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import {
+  MdFormatListNumbered,
+  MdOutlineFormatListBulleted,
+} from "react-icons/md";
+import { IoArrowUndo, IoArrowRedo } from "react-icons/io5";
 
 const MenuBar = ({ editor }: { editor: Editor | null }) => {
   if (!editor) {
@@ -9,33 +14,33 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
   const buttonClassName = `py-1 px-2`;
 
   return (
-    <div className="flex flex-wrap bg-white border">
+    <div className="flex flex-wrap items-end bg-white border">
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleBold().run()}
         className={`${buttonClassName} ${
           editor.isActive("bold") ? "font-semibold" : ""
-        }`}
+        } font-bold`}
       >
-        bold
+        B
       </button>
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleItalic().run()}
         className={`${buttonClassName} ${
           editor.isActive("italic") ? "font-semibold" : ""
-        }`}
+        } italic`}
       >
-        italic
+        i
       </button>
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleStrike().run()}
         className={`${buttonClassName} ${
           editor.isActive("strike") ? "font-semibold" : ""
-        }`}
+        } line-through`}
       >
-        strike
+        s
       </button>
       <button
         type="button"
@@ -50,8 +55,8 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
         type="button"
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
         className={`${buttonClassName} ${
-          editor.isActive("heading", { level: 1 }) ? "font-semibold" : ""
-        }`}
+          editor.isActive("heading", { level: 1 }) ? "font-bold" : "font-medium"
+        } text-2xl`}
       >
         h1
       </button>
@@ -59,8 +64,8 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
         type="button"
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
         className={`${buttonClassName} ${
-          editor.isActive("heading", { level: 2 }) ? "font-semibold" : ""
-        }`}
+          editor.isActive("heading", { level: 2 }) ? "font-bold" : "font-medium"
+        } text-xl`}
       >
         h2
       </button>
@@ -68,8 +73,8 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
         type="button"
         onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
         className={`${buttonClassName} ${
-          editor.isActive("heading", { level: 3 }) ? "font-semibold" : ""
-        }`}
+          editor.isActive("heading", { level: 3 }) ? "font-bold" : "font-medium"
+        } text-lg`}
       >
         h3
       </button>
@@ -80,7 +85,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           editor.isActive("bulletList") ? "font-semibold" : ""
         }`}
       >
-        bullet list
+        <MdOutlineFormatListBulleted />
       </button>
       <button
         type="button"
@@ -89,7 +94,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           editor.isActive("orderedList") ? "font-semibold" : ""
         }`}
       >
-        ordered list
+        <MdFormatListNumbered />
       </button>
 
       <button
@@ -97,14 +102,14 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
         type="button"
         onClick={() => editor.chain().focus().undo().run()}
       >
-        undo
+        <IoArrowUndo />
       </button>
       <button
         className={buttonClassName}
         type="button"
         onClick={() => editor.chain().focus().redo().run()}
       >
-        redo
+        <IoArrowRedo />
       </button>
     </div>
   );
