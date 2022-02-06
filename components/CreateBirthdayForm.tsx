@@ -7,6 +7,7 @@ import {
   GET_ALL_BIRTHDAYS_QUERY,
 } from "../graphql/Birthday";
 import PrimaryButton from "./PrimaryButton";
+import TextEdit from "./TextEdit";
 
 const CreateBirthdayForm = () => {
   const { data: session } = useSession();
@@ -61,6 +62,7 @@ const CreateBirthdayForm = () => {
             className="block w-full border-gray-300 rounded h-12"
             id="name"
             onChange={(e) => setName(e.target.value)}
+            required={true}
             type="text"
             value={name}
           />
@@ -74,6 +76,7 @@ const CreateBirthdayForm = () => {
             id="date"
             onChange={(e) => setDate(e.target.value)}
             max={new Date().toISOString().split("T")[0]}
+            required={true}
             type="date"
             value={date}
           />
@@ -105,13 +108,11 @@ const CreateBirthdayForm = () => {
       </div>
       <div>
         <label className="block text-sm" htmlFor="notes">
-          Notes
+          Notes (optional)
         </label>
-        <textarea
-          className="block w-full border-gray-300 rounded h-12"
-          id="notes"
-          onChange={(e) => setNotes(e.target.value)}
-          value={notes}
+        <TextEdit
+          content={notes}
+          setContent={(value: string) => setNotes(value)}
         />
       </div>
       <div className="text-right">

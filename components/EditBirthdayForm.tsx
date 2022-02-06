@@ -7,6 +7,7 @@ import {
   GET_BIRTHDAY_BY_ID_QUERY,
 } from "../graphql/Birthday";
 import PrimaryButton from "./PrimaryButton";
+import TextEdit from "./TextEdit";
 
 const EditBirthdayForm = ({ birthday }: { birthday: Birthday }) => {
   const [name, setName] = useState(birthday.name);
@@ -98,14 +99,12 @@ const EditBirthdayForm = ({ birthday }: { birthday: Birthday }) => {
         </div>
       </div>
       <div>
-        <label className="block" htmlFor="parent">
+        <label className="block text-sm" htmlFor="notes">
           Notes (optional)
         </label>
-        <textarea
-          className="block w-full border-gray-300 rounded h-12"
-          id="parent"
-          onChange={(e) => setNotes(e.target.value)}
-          value={notes}
+        <TextEdit
+          content={notes}
+          setContent={(value: string) => setNotes(value)}
         />
       </div>
       {error && (
@@ -116,7 +115,7 @@ const EditBirthdayForm = ({ birthday }: { birthday: Birthday }) => {
       )}
       <div className="text-right">
         <PrimaryButton disabled={loading} type="submit">
-          Save Birthday
+          Save Birthday Details
         </PrimaryButton>
       </div>
     </form>
