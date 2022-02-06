@@ -22,6 +22,7 @@ export const CREATE_BIRTHDAY_MUTATION = gql`
       category
       parent
       notes
+      __typename
     }
   }
 `;
@@ -49,6 +50,7 @@ export const EDIT_BIRTHDAY_MUTATION = gql`
       category
       parent
       notes
+      __typename
     }
   }
 `;
@@ -62,6 +64,7 @@ export const GET_ALL_BIRTHDAYS_QUERY = gql`
       category
       parent
       notes
+      __typename
     }
   }
 `;
@@ -75,6 +78,7 @@ export const GET_BIRTHDAY_BY_ID_QUERY = gql`
       category
       parent
       notes
+      __typename
     }
   }
 `;
