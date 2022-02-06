@@ -5,6 +5,7 @@ import Link from "next/link";
 import React, { ReactElement } from "react";
 
 import { RiBugFill, RiLightbulbFlashLine } from "react-icons/ri";
+import ClientOnly from "../ClientOnly";
 
 const MainLayout = ({
   children,
@@ -79,7 +80,7 @@ const MainLayout = ({
           </div>
         )}
       </header>
-      {children}
+      <ClientOnly>{children}</ClientOnly>
       <footer className="px-4 lg:px-8 py-6 lg:flex lg:justify-between text-gray-200 text-center">
         <div>
           &copy; {new Date().getFullYear()}
