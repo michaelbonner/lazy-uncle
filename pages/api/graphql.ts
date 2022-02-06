@@ -82,18 +82,6 @@ const Query = queryType({
 const Mutation = objectType({
   name: "Mutation",
   definition(t) {
-    t.nullable.field("deleteBirthday", {
-      type: "Birthday",
-      args: {
-        birthdayId: nonNull(stringArg()),
-      },
-      resolve: (_, { birthdayId }) => {
-        return prisma.birthday.delete({
-          where: { id: birthdayId || "" },
-        });
-      },
-    });
-
     t.field("createBirthday", {
       type: "Birthday",
       args: {
@@ -142,6 +130,18 @@ const Mutation = objectType({
             parent,
             notes,
           },
+        });
+      },
+    });
+
+    t.field("deleteBirthday", {
+      type: "Birthday",
+      args: {
+        birthdayId: nonNull(stringArg()),
+      },
+      resolve: (_, { birthdayId }) => {
+        return prisma.birthday.delete({
+          where: { id: birthdayId || "" },
         });
       },
     });
