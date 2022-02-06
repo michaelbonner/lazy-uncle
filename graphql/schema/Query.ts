@@ -47,9 +47,16 @@ export const Query = queryType({
         birthdayId: nonNull(stringArg()),
       },
       resolve: async (_, args, ctx) => {
-        return ctx.prisma.birthday.findUnique({
+        const birthday = await ctx.prisma.birthday.findUnique({
           where: { id: args.birthdayId },
         });
+
+        // don't show birthdays to other users
+        if (birthday.userId !== ctx.user.id) {
+          return {};
+        }
+
+        return birthday;
       },
     });
 
