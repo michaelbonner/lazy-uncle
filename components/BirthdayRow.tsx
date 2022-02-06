@@ -158,16 +158,16 @@ const BirthdayRow: React.FC<Props> = ({
         className={`block lg:hidden border-t text-left px-4 py-4
                         ${!birthday.id && "bg-gray-100 text-gray-800"}`}
       >
-        <Link href={`/birthday/${birthday.id}`}>
-          <a className="flex justify-between items-center">
-            <div>
-              <p className="text-2xl flex items-center space-x-2">
-                <span>{birthday.name}</span>
-                {notesTextOnly && (
-                  <HiOutlinePaperClip className="text-sm text-gray-400" />
-                )}
-              </p>
-              {birthday.id && (
+        {birthday.id ? (
+          <Link href={`/birthday/${birthday.id}`}>
+            <a className="flex justify-between items-center">
+              <div>
+                <p className="text-2xl flex items-center space-x-2">
+                  <span>{birthday.name}</span>
+                  {notesTextOnly && (
+                    <HiOutlinePaperClip className="text-sm text-gray-400" />
+                  )}
+                </p>
                 <div className="flex justify-start space-x-4 pt-1">
                   {getAgeForHumans(
                     getDateFromYmdString(birthday.date || "")
@@ -195,17 +195,23 @@ const BirthdayRow: React.FC<Props> = ({
                     </p>
                   )}
                 </div>
-              )}
-              <p className="flex space-x-2 items-center mt-1">
-                <ZodiacSignCharacter name={zodiacSign} />
-                <span className="text-xs">{zodiacSign}</span>
+                <p className="flex space-x-2 items-center mt-1">
+                  <ZodiacSignCharacter name={zodiacSign} />
+                  <span className="text-xs">{zodiacSign}</span>
+                </p>
+              </div>
+              <p className="text-xl text-indigo-600">
+                {format(birthDate, "M/dd")}
               </p>
-            </div>
-            <p className="text-xl text-indigo-600">
-              {format(birthDate, "M/dd")}
+            </a>
+          </Link>
+        ) : (
+          <div>
+            <p className="text-2xl flex items-center space-x-2">
+              <span>{birthday.name}</span>
             </p>
-          </a>
-        </Link>
+          </div>
+        )}
       </li>
     </>
   );
