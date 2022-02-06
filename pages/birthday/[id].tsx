@@ -33,67 +33,69 @@ const Birthday = ({ id }: { id: string }) => {
     <MainLayout title={`Birthday`}>
       <>
         {birthdayError && <p>Error loading birthday</p>}
-        {birthdayLoading ? (
-          <div className="px-2 lg:px-8 max-w-7xl mx-auto mt-8 text-center py-36">
-            <p>Loading...</p>
+        <div className="px-2 lg:px-8 max-w-7xl mx-auto mt-8">
+          <Link href="/">
+            <a className="px-4 lg:px-0 underline text-blue100">
+              Back to all birthdays
+            </a>
+          </Link>
+          <div className="bg-white rounded-xl shadow-lg mt-4 text-gray-800 px-4 py-8">
+            {birthdayLoading ? (
+              <div className="flex items-center justify-center min-h-[300px]">
+                <div>Loading...</div>
+              </div>
+            ) : (
+              <>
+                <div className="lg:flex lg:items-center justify-between">
+                  <h1 className="text-2xl font-medium">
+                    Edit {birthdayData?.birthday?.name}&apos;s Birthday
+                  </h1>
+                  <h3 className="flex space-x-1 items-end">
+                    <span className="font-light text-sm">Age</span>
+                    <span>
+                      {getAgeForHumans(
+                        getDateFromYmdString(birthdayData?.birthday?.date),
+                        true
+                      )}
+                    </span>
+                  </h3>
+                </div>
+                <div className="mt-6 lg:px-24">
+                  <EditBirthdayForm birthday={birthdayData?.birthday} />
+                </div>
+              </>
+            )}
           </div>
-        ) : (
-          <div className="px-2 lg:px-8 max-w-7xl mx-auto mt-8">
-            <Link href="/">
-              <a className="px-4 lg:px-0 underline text-blue100">
-                Back to all birthdays
-              </a>
-            </Link>
-            <div className="bg-white rounded-xl shadow-lg mt-4 text-gray-800 px-4 py-8">
-              <div className="lg:flex lg:items-center justify-between">
-                <h1 className="text-2xl font-medium">
-                  Edit {birthdayData?.birthday?.name}&apos;s Birthday
-                </h1>
-                <h3 className="flex space-x-1 items-end">
-                  <span className="font-light text-sm">Age</span>
-                  <span>
-                    {getAgeForHumans(
-                      getDateFromYmdString(birthdayData?.birthday?.date),
-                      true
-                    )}
-                  </span>
-                </h3>
-              </div>
-              <div className="mt-6 lg:px-24">
-                <EditBirthdayForm birthday={birthdayData?.birthday} />
-              </div>
-            </div>
 
-            <div className="flex justify-end mt-8 mb-12">
-              {deleteError && (
-                <p className="text-red-600 text-sm">
-                  Error deleting birthday: {deleteError.message}
-                </p>
-              )}
-              <button
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-gray-100 bg-transparent hover:bg-red-700 hover:border-red-800 hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                disabled={deleteLoading}
-                onClick={() => {
-                  if (
-                    window.confirm(
-                      "Are you sure you want to delete this birthday?"
-                    )
-                  ) {
-                    deleteBirthday({
-                      variables: {
-                        birthdayId: birthdayData?.birthday?.id,
-                      },
-                    });
-                    toast.info("Birthday deleted successfully!");
-                    router.push("/");
-                  }
-                }}
-              >
-                Delete Birthday
-              </button>
-            </div>
+          <div className="flex justify-end mt-8 mb-12">
+            {deleteError && (
+              <p className="text-red-600 text-sm">
+                Error deleting birthday: {deleteError.message}
+              </p>
+            )}
+            <button
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-gray-100 bg-transparent hover:bg-red-700 hover:border-red-800 hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              disabled={deleteLoading}
+              onClick={() => {
+                if (
+                  window.confirm(
+                    "Are you sure you want to delete this birthday?"
+                  )
+                ) {
+                  deleteBirthday({
+                    variables: {
+                      birthdayId: birthdayData?.birthday?.id,
+                    },
+                  });
+                  toast.info("Birthday deleted successfully!");
+                  router.push("/");
+                }
+              }}
+            >
+              Delete Birthday
+            </button>
           </div>
-        )}
+        </div>
       </>
     </MainLayout>
   );
