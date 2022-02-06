@@ -107,7 +107,7 @@ const CreateBirthdayForm = () => {
         </div>
       </div>
       <div>
-        <label className="block text-sm" htmlFor="notes">
+        <label className="block" htmlFor="notes">
           Notes (optional)
         </label>
         <TextEdit
