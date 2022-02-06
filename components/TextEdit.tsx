@@ -14,7 +14,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
   const buttonClassName = `py-1 px-2`;
 
   return (
-    <div className="flex flex-wrap items-end bg-white border">
+    <div className="flex flex-wrap items-end bg-white border border-b-0 rounded-t pb-2">
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleBold().run()}
@@ -129,7 +129,7 @@ const TextEdit = ({
     editorProps: {
       attributes: {
         class:
-          "border border-gray-300 rounded bg-white min-w-full w-full py-2 px-4 prose focus:outline-none",
+          "border border-gray-300 rounded-b bg-white min-w-full w-full py-2 px-4 prose focus:outline-none min-h-[200px]",
       },
     },
     onUpdate: ({ editor }) => {
