@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { NextPageContext } from "next";
+import { GetServerSideProps } from "next";
+import { getSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
@@ -42,7 +43,9 @@ const Birthday = ({ id }: { id: string }) => {
           <div className="bg-white rounded-xl shadow-lg mt-4 text-gray-800 px-4 py-8">
             {birthdayLoading ? (
               <div className="flex items-center justify-center min-h-[300px]">
-                <div>Loading...</div>
+                <div className="prose mx-auto animate-pulse">
+                  <h2>Loading birthday...</h2>
+                </div>
               </div>
             ) : (
               <>
@@ -101,10 +104,17 @@ const Birthday = ({ id }: { id: string }) => {
   );
 };
 
-export async function getServerSideProps(context: NextPageContext) {
+export const getServerSideProps: GetServerSideProps = async (context) => {
   const { id } = context.query;
+  const session = await getSession(context);
 
-  return { props: { id } };
-}
+  if (!session?.user) {
+    context.res.statusCode = 302;
+    context.res.setHeader("Location", `/`);
+    return { props: {} };
+  }
+
+  return { props: { id, session } };
+};
 
 export default Birthday;

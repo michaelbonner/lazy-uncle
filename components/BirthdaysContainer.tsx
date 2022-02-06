@@ -308,7 +308,11 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
           ) : (
             <div className="py-10 px-8 text-gray-400">
               {birthdaysLoading ? (
-                <></>
+                <div className="flex items-center justify-center min-h-[300px]">
+                  <div className="prose mx-auto animate-pulse">
+                    <h2>Loading birthdays...</h2>
+                  </div>
+                </div>
               ) : (
                 <div className="prose mx-auto">
                   <h2>No birthdays found</h2>
