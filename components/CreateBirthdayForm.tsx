@@ -18,10 +18,7 @@ const CreateBirthdayForm = () => {
   const userId = session?.user?.id;
 
   const [createBirthday, { loading, error }] = useMutation(
-    CREATE_BIRTHDAY_MUTATION,
-    {
-      refetchQueries: [GET_ALL_BIRTHDAYS_QUERY, "Birthdays"],
-    }
+    CREATE_BIRTHDAY_MUTATION
   );
 
   return (
@@ -38,6 +35,14 @@ const CreateBirthdayForm = () => {
             notes: notes.trim(),
             userId,
           },
+          refetchQueries: [
+            {
+              query: GET_ALL_BIRTHDAYS_QUERY,
+              variables: {
+                userId: session?.user?.id,
+              },
+            },
+          ],
         });
         setName("");
         setDate("");

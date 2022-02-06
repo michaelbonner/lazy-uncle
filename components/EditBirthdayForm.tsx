@@ -16,10 +16,7 @@ const EditBirthdayForm = ({ birthday }: { birthday: Birthday }) => {
   const [notes, setNotes] = useState(birthday.notes || "");
 
   const [editBirthday, { loading, error }] = useMutation(
-    EDIT_BIRTHDAY_MUTATION,
-    {
-      refetchQueries: [GET_BIRTHDAY_BY_ID_QUERY, "BirthdayById"],
-    }
+    EDIT_BIRTHDAY_MUTATION
   );
 
   return (
@@ -36,6 +33,14 @@ const EditBirthdayForm = ({ birthday }: { birthday: Birthday }) => {
             parent: parent.trim(),
             notes: notes.trim(),
           },
+          refetchQueries: [
+            {
+              query: GET_BIRTHDAY_BY_ID_QUERY,
+              variables: {
+                birthdayId: birthday.id,
+              },
+            },
+          ],
         });
 
         toast.success("Birthday updated successfully");

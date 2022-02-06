@@ -15,10 +15,7 @@ const UploadCsvBirthdayForm = () => {
   const userId = session?.user?.id;
 
   const [createBirthday, { loading, error }] = useMutation(
-    CREATE_BIRTHDAY_MUTATION,
-    {
-      refetchQueries: [GET_ALL_BIRTHDAYS_QUERY, "Birthdays"],
-    }
+    CREATE_BIRTHDAY_MUTATION
   );
 
   // handle file upload
@@ -80,6 +77,14 @@ const UploadCsvBirthdayForm = () => {
               notes,
               userId,
             },
+            refetchQueries: [
+              {
+                query: GET_ALL_BIRTHDAYS_QUERY,
+                variables: {
+                  userId: session?.user?.id,
+                },
+              },
+            ],
           });
         });
       }}
