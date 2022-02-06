@@ -293,15 +293,18 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
           {workingDates.length ? (
             <ul>
               {workingDates.map((birthday: NexusGenObjects["Birthday"]) => {
-                <BirthdayRow
-                  birthday={birthday}
-                  categoryFilter={categoryFilter}
-                  parentFilter={parentFilter}
-                  setCategoryFilter={setCategoryFilter}
-                  setParentFilter={setParentFilter}
-                  setZodiacSignFilter={setZodiacSignFilter}
-                  zodiacSignFilter={zodiacSignFilter}
-                />;
+                return (
+                  <BirthdayRow
+                    birthday={birthday}
+                    categoryFilter={categoryFilter}
+                    key={`${birthday.id || birthday.name}`}
+                    parentFilter={parentFilter}
+                    setCategoryFilter={setCategoryFilter}
+                    setParentFilter={setParentFilter}
+                    setZodiacSignFilter={setZodiacSignFilter}
+                    zodiacSignFilter={zodiacSignFilter}
+                  />
+                );
               })}
             </ul>
           ) : (
