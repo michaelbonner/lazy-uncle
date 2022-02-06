@@ -1,7 +1,7 @@
 import { useMutation } from "@apollo/client";
-import { Birthday } from "@prisma/client";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
+import { NexusGenObjects } from "../generated/nexus-typegen";
 import {
   EDIT_BIRTHDAY_MUTATION,
   GET_BIRTHDAY_BY_ID_QUERY,
@@ -9,7 +9,11 @@ import {
 import PrimaryButton from "./PrimaryButton";
 import TextEdit from "./TextEdit";
 
-const EditBirthdayForm = ({ birthday }: { birthday: Birthday }) => {
+const EditBirthdayForm = ({
+  birthday,
+}: {
+  birthday: NexusGenObjects["Birthday"];
+}) => {
   const [name, setName] = useState(birthday.name);
   const [date, setDate] = useState(birthday.date);
   const [category, setCategory] = useState(birthday.category || "");
@@ -28,7 +32,7 @@ const EditBirthdayForm = ({ birthday }: { birthday: Birthday }) => {
         await editBirthday({
           variables: {
             id: birthday.id,
-            name: name.trim(),
+            name: name?.trim(),
             date,
             category: category.trim(),
             parent: parent.trim(),
@@ -56,8 +60,9 @@ const EditBirthdayForm = ({ birthday }: { birthday: Birthday }) => {
             className="block w-full border-gray-300 rounded h-12"
             id="name"
             onChange={(e) => setName(e.target.value)}
+            required={true}
             type="text"
-            value={name}
+            value={name || ""}
           />
         </div>
         <div>
@@ -69,8 +74,9 @@ const EditBirthdayForm = ({ birthday }: { birthday: Birthday }) => {
             id="date"
             onChange={(e) => setDate(e.target.value)}
             max={new Date().toISOString().split("T")[0]}
+            required={true}
             type="date"
-            value={date}
+            value={date || ""}
           />
         </div>
         <div>
