@@ -2,10 +2,7 @@ import { useMutation } from "@apollo/client";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { NexusGenObjects } from "../generated/nexus-typegen";
-import {
-  EDIT_BIRTHDAY_MUTATION,
-  GET_BIRTHDAY_BY_ID_QUERY,
-} from "../graphql/Birthday";
+import { EDIT_BIRTHDAY_MUTATION } from "../graphql/Birthday";
 import PrimaryButton from "./PrimaryButton";
 import TextEdit from "./TextEdit";
 
@@ -38,14 +35,6 @@ const EditBirthdayForm = ({
             parent: parent.trim(),
             notes: notes.trim(),
           },
-          refetchQueries: [
-            {
-              query: GET_BIRTHDAY_BY_ID_QUERY,
-              variables: {
-                birthdayId: birthday.id,
-              },
-            },
-          ],
         });
 
         toast.success("Birthday updated successfully");
@@ -105,7 +94,7 @@ const EditBirthdayForm = ({
         </div>
       </div>
       <div>
-        <label className="block text-sm" htmlFor="notes">
+        <label className="block" htmlFor="notes">
           Notes (optional)
         </label>
         <TextEdit
