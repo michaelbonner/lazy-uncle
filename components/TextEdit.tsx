@@ -16,6 +16,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
   return (
     <div className="flex flex-wrap items-end bg-white border border-b-0 rounded-t pb-2">
       <button
+        aria-label="bold"
         type="button"
         onClick={() => editor.chain().focus().toggleBold().run()}
         className={`${buttonClassName} ${
@@ -25,6 +26,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
         B
       </button>
       <button
+        aria-label="italic"
         type="button"
         onClick={() => editor.chain().focus().toggleItalic().run()}
         className={`${buttonClassName} ${
@@ -34,6 +36,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
         i
       </button>
       <button
+        aria-label="strike through"
         type="button"
         onClick={() => editor.chain().focus().toggleStrike().run()}
         className={`${buttonClassName} ${
@@ -43,6 +46,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
         s
       </button>
       <button
+        aria-label="paragraph"
         type="button"
         onClick={() => editor.chain().focus().setParagraph().run()}
         className={`${buttonClassName} ${
@@ -52,6 +56,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
         paragraph
       </button>
       <button
+        aria-label="heading 1"
         type="button"
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
         className={`${buttonClassName} ${
@@ -61,6 +66,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
         h1
       </button>
       <button
+        aria-label="heading 2"
         type="button"
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
         className={`${buttonClassName} ${
@@ -70,6 +76,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
         h2
       </button>
       <button
+        aria-label="heading 3"
         type="button"
         onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
         className={`${buttonClassName} ${
@@ -79,6 +86,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
         h3
       </button>
       <button
+        aria-label="bullet list"
         type="button"
         onClick={() => editor.chain().focus().toggleBulletList().run()}
         className={`${buttonClassName} ${
@@ -88,6 +96,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
         <MdOutlineFormatListBulleted />
       </button>
       <button
+        aria-label="ordered list"
         type="button"
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
         className={`${buttonClassName} ${
@@ -98,6 +107,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
       </button>
 
       <button
+        aria-label="undo"
         className={buttonClassName}
         type="button"
         onClick={() => editor.chain().focus().undo().run()}
@@ -105,6 +115,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
         <IoArrowUndo />
       </button>
       <button
+        aria-label="redo"
         className={buttonClassName}
         type="button"
         onClick={() => editor.chain().focus().redo().run()}
