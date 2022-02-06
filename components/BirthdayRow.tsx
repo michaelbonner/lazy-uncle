@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import Link from "next/link";
 import React from "react";
-import { HiBackspace } from "react-icons/hi";
+import { HiBackspace, HiOutlinePaperClip } from "react-icons/hi";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import getAgeForHumans from "../shared/getAgeForHumans";
 import getDateFromYmdString from "../shared/getDateFromYmdString";
@@ -32,16 +32,22 @@ const BirthdayRow: React.FC<Props> = ({
 }) => {
   const birthDate = getDateFromYmdString(birthday.date || "");
   const zodiacSign = getZodiacSignForDateYmdString(birthday.date || "");
+  const notesTextOnly = birthday?.notes?.replace(/<\/?[^>]+(>|$)/g, "");
 
   return (
-    <React.Fragment key={`${birthday.id || birthday.name}`}>
+    <>
       {birthday.id ? (
         <li
           className={`hidden lg:grid lg:grid-cols-12 items-center border-t text-left lg:text-center px-4 lg:px-8 hover:bg-gray-100`}
         >
           <p className={`text-left col-span-3 text-xl`}>
             <Link href={`/birthday/${birthday.id}`}>
-              <a className="block py-3">{birthday.name}</a>
+              <a className="flex space-x-2 items-center py-3">
+                <span>{birthday.name}</span>{" "}
+                {notesTextOnly && (
+                  <HiOutlinePaperClip className="text-sm text-gray-400" />
+                )}
+              </a>
             </Link>
           </p>
           <p className="text-xl text-indigo-600 col-span-2">
@@ -146,7 +152,12 @@ const BirthdayRow: React.FC<Props> = ({
         <Link href={`/birthday/${birthday.id}`}>
           <a className="flex justify-between items-center">
             <div>
-              <p className="text-2xl">{birthday.name}</p>
+              <p className="text-2xl flex items-center space-x-2">
+                <span>{birthday.name}</span>
+                {notesTextOnly && (
+                  <HiOutlinePaperClip className="text-sm text-gray-400" />
+                )}
+              </p>
               {birthday.id && (
                 <div className="flex justify-start space-x-4 pt-1">
                   {getAgeForHumans(
@@ -180,7 +191,7 @@ const BirthdayRow: React.FC<Props> = ({
           </a>
         </Link>
       </li>
-    </React.Fragment>
+    </>
   );
 };
 export default BirthdayRow;
