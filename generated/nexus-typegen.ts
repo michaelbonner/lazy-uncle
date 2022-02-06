@@ -137,9 +137,6 @@ export interface NexusGenArgTypes {
     birthday: { // args
       birthdayId: string; // String!
     }
-    birthdays: { // args
-      userId: string; // String!
-    }
   }
 }
 

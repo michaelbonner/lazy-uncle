@@ -28,9 +28,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
     loading: birthdaysLoading,
     error: birthdaysError,
     refetch: birthdaysRefetch,
-  } = useQuery(GET_ALL_BIRTHDAYS_QUERY, {
-    variables: { userId },
-  });
+  } = useQuery(GET_ALL_BIRTHDAYS_QUERY);
   const [currentHost, setCurrentHost] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [sortBy, setSortBy] = useState("date_asc");

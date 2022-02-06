@@ -5,7 +5,7 @@ import { parse } from "csv-parse/sync";
 import fs from "fs";
 import path from "path";
 import { argv } from "process";
-import prisma from "../lib/prisma";
+import { prisma } from "../lib/prisma";
 
 declare global {
   // eslint-disable-next-line no-unused-vars

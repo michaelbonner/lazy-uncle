@@ -56,8 +56,8 @@ export const EDIT_BIRTHDAY_MUTATION = gql`
 `;
 
 export const GET_ALL_BIRTHDAYS_QUERY = gql`
-  query Birthdays($userId: String!) {
-    birthdays(userId: $userId) {
+  query Birthdays {
+    birthdays {
       id
       name
       date

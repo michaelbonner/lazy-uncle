@@ -39,9 +39,6 @@ const CreateBirthdayForm = () => {
           refetchQueries: [
             {
               query: GET_ALL_BIRTHDAYS_QUERY,
-              variables: {
-                userId: session?.user?.id,
-              },
             },
           ],
         });
