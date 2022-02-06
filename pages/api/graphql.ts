@@ -1,4 +1,5 @@
 import { ApolloServer } from "apollo-server-micro";
+import { IncomingMessage, ServerResponse } from "http";
 import cors from "micro-cors";
 import { RequestHandler } from "next/dist/server/next";
 import { createContext } from "../../graphql/context";
@@ -26,7 +27,10 @@ async function getApolloServerHandler() {
   return apolloServerHandler;
 }
 
-const handler: RequestHandler = async (req, res) => {
+const handler: RequestHandler = async (
+  req: IncomingMessage,
+  res: ServerResponse
+) => {
   const apolloServerHandler = await getApolloServerHandler();
 
   if (req.method === "OPTIONS") {
