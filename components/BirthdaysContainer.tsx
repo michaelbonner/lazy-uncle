@@ -203,7 +203,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
               <div className="bg-gray-300 py-2 lg:py-3 px-3 lg:px-6 rounded-t-lg grid lg:grid-cols-5 lg:gap-x-6 gap-y-2 border-t-indigo-400 border-t-4">
                 <div className="relative lg:col-span-2">
                   <BirthdayFilterField
-                    disabled={!birthdaysData?.length}
+                    disabled={!birthdaysData?.length && !workingDates.length}
                     label="Name"
                     value={nameFilter}
                     setValue={setNameFilter}
@@ -213,7 +213,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                   className={`${showFilters ? "" : "hidden"} lg:block relative`}
                 >
                   <BirthdayFilterField
-                    disabled={!birthdaysData?.length}
+                    disabled={!birthdaysData?.length && !workingDates.length}
                     label="Category"
                     value={categoryFilter}
                     setValue={setCategoryFilter}
@@ -223,7 +223,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                   className={`${showFilters ? "" : "hidden"} lg:block relative`}
                 >
                   <BirthdayFilterField
-                    disabled={!birthdaysData?.length}
+                    disabled={!birthdaysData?.length && !workingDates.length}
                     label="Parent"
                     value={parentFilter}
                     setValue={setParentFilter}
@@ -233,7 +233,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                   className={`${showFilters ? "" : "hidden"} lg:block relative`}
                 >
                   <BirthdayFilterField
-                    disabled={!birthdaysData?.length}
+                    disabled={!birthdaysData?.length && !workingDates.length}
                     label="Zodiac Sign"
                     value={zodiacSignFilter}
                     setValue={setZodiacSignFilter}
