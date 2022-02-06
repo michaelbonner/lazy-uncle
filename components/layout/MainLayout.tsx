@@ -74,7 +74,10 @@ const MainLayout = ({
             <p className="hidden lg:block">
               Logged in as {session?.user?.email}
             </p>
-            <button className="underline" onClick={() => signOut()}>
+            <button
+              className="underline"
+              onClick={() => signOut({ callbackUrl: "/" })}
+            >
               Sign out
             </button>
           </div>
