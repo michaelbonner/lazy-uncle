@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import Link from "next/link";
 import React from "react";
+import { GiBalloons } from "react-icons/gi";
 import { HiBackspace, HiOutlinePaperClip } from "react-icons/hi";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import getAgeForHumans from "../shared/getAgeForHumans";
@@ -33,6 +34,8 @@ const BirthdayRow: React.FC<Props> = ({
   const birthDate = getDateFromYmdString(birthday.date || "");
   const zodiacSign = getZodiacSignForDateYmdString(birthday.date || "");
   const notesTextOnly = birthday?.notes?.replace(/<\/?[^>]+(>|$)/g, "");
+  const todaysDateMonthAndDay = format(new Date(), "MM-dd");
+  const birthDateMonthAndDay = format(birthDate, "MM-dd");
 
   return (
     <>
@@ -43,6 +46,11 @@ const BirthdayRow: React.FC<Props> = ({
           <p className={`text-left col-span-3 text-xl`}>
             <Link href={`/birthday/${birthday.id}`}>
               <a className="flex space-x-2 items-center py-3">
+                {todaysDateMonthAndDay === birthDateMonthAndDay && (
+                  <span title={`Today is ${birthday.name}'s birthday!`}>
+                    <GiBalloons className="text-rose-500 right-0 top-0 text-lg" />
+                  </span>
+                )}
                 <span>{birthday.name}</span>{" "}
                 {notesTextOnly && (
                   <HiOutlinePaperClip className="text-sm text-gray-400" />
@@ -163,6 +171,11 @@ const BirthdayRow: React.FC<Props> = ({
             <a className="flex justify-between items-center">
               <div>
                 <p className="text-2xl flex items-center space-x-2">
+                  {todaysDateMonthAndDay === birthDateMonthAndDay && (
+                    <span title={`Today is ${birthday.name}'s birthday!`}>
+                      <GiBalloons className="text-rose-500 right-0 top-0 text-lg" />
+                    </span>
+                  )}
                   <span>{birthday.name}</span>
                   {notesTextOnly && (
                     <HiOutlinePaperClip className="text-sm text-gray-400" />
