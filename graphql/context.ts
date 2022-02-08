@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { IncomingMessage } from "http";
 import { getSession } from "next-auth/react";
 import { NexusGenObjects } from "../generated/nexus-typegen";
-import { prisma } from "../lib/prisma";
+import prisma from "../lib/prisma";
 
 export type Context = {
   prisma: PrismaClient;
