@@ -27,6 +27,9 @@ export const Birthday = objectType({
     t.string("category");
     t.string("parent");
     t.string("notes");
+    t.field("createdAt", {
+      type: "DateTime",
+    });
     t.nullable.field("user", {
       type: "User",
       resolve: (parent, args, ctx) =>

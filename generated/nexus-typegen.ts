@@ -4,9 +4,23 @@
  */
 
 
-
-
-
+import type { core } from "nexus"
+declare global {
+  interface NexusGenCustomInputMethods<TypeName extends string> {
+    /**
+     * A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+     */
+    date<FieldName extends string>(fieldName: FieldName, opts?: core.CommonInputFieldConfig<TypeName, FieldName>): void // "DateTime";
+  }
+}
+declare global {
+  interface NexusGenCustomOutputMethods<TypeName extends string> {
+    /**
+     * A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+     */
+    date<FieldName extends string>(fieldName: FieldName, ...opts: core.ScalarOutSpread<TypeName, FieldName>): void // "DateTime";
+  }
+}
 
 
 declare global {
@@ -25,11 +39,13 @@ export interface NexusGenScalars {
   Float: number
   Boolean: boolean
   ID: string
+  DateTime: any
 }
 
 export interface NexusGenObjects {
   Birthday: { // root type
     category?: string | null; // String
+    createdAt?: NexusGenScalars['DateTime'] | null; // DateTime
     date?: string | null; // String
     id?: string | null; // String
     name?: string | null; // String
@@ -58,6 +74,7 @@ export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 export interface NexusGenFieldTypes {
   Birthday: { // field return type
     category: string | null; // String
+    createdAt: NexusGenScalars['DateTime'] | null; // DateTime
     date: string | null; // String
     id: string | null; // String
     name: string | null; // String
@@ -86,6 +103,7 @@ export interface NexusGenFieldTypes {
 export interface NexusGenFieldTypeNames {
   Birthday: { // field return type name
     category: 'String'
+    createdAt: 'DateTime'
     date: 'String'
     id: 'String'
     name: 'String'

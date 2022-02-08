@@ -1,7 +1,7 @@
-import { nonNull, objectType, stringArg } from "nexus";
+import { extendType, nonNull, stringArg } from "nexus";
 
-export const Mutation = objectType({
-  name: "Mutation",
+export const Mutation = extendType({
+  type: "Mutation",
   definition(t) {
     t.field("createBirthday", {
       type: "Birthday",
@@ -22,6 +22,7 @@ export const Mutation = objectType({
             parent,
             notes,
             userId,
+            createdAt: new Date(),
           },
         });
       },

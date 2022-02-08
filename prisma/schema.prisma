@@ -47,6 +47,7 @@ model Birthday {
   category  String?
   parent    String?
   notes     String?
+  createdAt DateTime?
   user      User      @relation(fields: [userId], references: [id])
   userId    String    @db.ObjectId
 }
@@ -57,6 +58,7 @@ model User {
   name          String?
   emailVerified DateTime?
   image         String?
+  createdAt     DateTime?
   accounts      Account[]
   sessions      Session[]
   birthdays     Birthday[]

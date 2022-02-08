@@ -26,6 +26,16 @@ const options = {
       return session;
     },
   },
+  events: {
+    async createUser({ user }: { user: User }) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          createdAt: new Date(),
+        },
+      });
+    },
+  },
 };
 
 const authHandler: NextApiHandler = (req, res) => NextAuth(req, res, options);
