@@ -58,7 +58,7 @@ const BirthdayRow: React.FC<Props> = ({
               </a>
             </Link>
           </p>
-          <p className="text-xl text-indigo-600 col-span-2">
+          <p className="text-xl text-teal-600 col-span-2">
             <Link href={`/birthday/${birthday.id}`}>
               <a className="block py-3">{format(birthDate, "M/dd")}</a>
             </Link>
@@ -151,12 +151,12 @@ const BirthdayRow: React.FC<Props> = ({
         </li>
       ) : (
         <li
-          className={`hidden lg:grid lg:grid-cols-12 border-t text-left lg:text-center px-4 lg:px-8 bg-indigo-50 hover:bg-indigo-100 text-gray-800`}
+          className={`hidden lg:grid lg:grid-cols-12 border-t text-left lg:text-center px-4 lg:px-8 bg-gray-200 text-gray-800`}
         >
-          <p className={`text-gray-500 col-span-3 text-lg py-3`}>
+          <p className={`text-gray-500 col-span-3 text-lg py-2`}>
             {birthday.name}
           </p>
-          <p className="text-xl text-indigo-600 col-span-2 py-3">
+          <p className="text-xl text-teal-600 col-span-2 py-2">
             {format(getDateFromYmdString(birthday.date || ""), "M/dd")}
           </p>
         </li>
@@ -213,7 +213,7 @@ const BirthdayRow: React.FC<Props> = ({
                   <span className="text-xs">{zodiacSign}</span>
                 </p>
               </div>
-              <p className="text-xl text-indigo-600">
+              <p className="text-xl text-teal-600">
                 {format(birthDate, "M/dd")}
               </p>
             </a>

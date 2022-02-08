@@ -36,11 +36,11 @@ const Birthday = ({ id }: { id: string }) => {
         {birthdayError && <p>Error loading birthday</p>}
         <div className="px-2 lg:px-8 max-w-7xl mx-auto mt-8">
           <Link href="/">
-            <a className="px-4 lg:px-0 underline text-blue100">
+            <a className="px-4 lg:px-0 underline text-teal100">
               Back to all birthdays
             </a>
           </Link>
-          <div className="bg-white rounded-xl shadow-lg mt-4 text-gray-800 px-4 py-8">
+          <div className="bg-white rounded-xl mt-4 text-gray-800 px-4 py-8">
             {birthdayLoading ? (
               <div className="flex items-center justify-center min-h-[300px]">
                 <div className="prose mx-auto animate-pulse">
@@ -77,7 +77,7 @@ const Birthday = ({ id }: { id: string }) => {
               </p>
             )}
             <button
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-gray-100 bg-transparent hover:bg-red-700 hover:border-red-800 hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-gray-100 bg-transparent hover:bg-red-700 hover:border-red-800 hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
               disabled={deleteLoading}
               onClick={() => {
                 if (

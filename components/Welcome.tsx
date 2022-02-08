@@ -17,7 +17,7 @@ const Welcome = ({ providers = [] }: { providers: Provider[] }) => {
             does just one job.
           </p>
           <p>
-            <strong className="text-indigo-50">You can use it for free</strong>.
+            <strong className="text-teal-50">You can use it for free</strong>.
             Sign in with GitHub or Google and add some birthdays. Let me know if
             you have any problems. I hope you enjoy it!
           </p>
@@ -28,7 +28,7 @@ const Welcome = ({ providers = [] }: { providers: Provider[] }) => {
               <button
                 key={provider.name}
                 className={`
-                            w-full lg:w-auto inline-flex justify-center space-x-2 mt-4 items-center px-6 py-3 border border-transparent font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500
+                            w-full lg:w-auto inline-flex justify-center space-x-2 mt-4 items-center px-6 py-3 border border-transparent font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500
                             ${
                               provider.id === "google" &&
                               `bg-red-500 hover:bg-red-600 text-red-50`
