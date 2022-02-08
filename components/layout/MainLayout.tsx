@@ -43,9 +43,9 @@ const MainLayout = ({
           href="/favicon-16x16.png"
         />
         <link rel="manifest" href="/site.webmanifest" />
-        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#25303F" />
-        <meta name="msapplication-TileColor" content="#25303F" />
-        <meta name="theme-color" content="#25303F" />
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#13b8a6" />
+        <meta name="msapplication-TileColor" content="#13b8a6" />
+        <meta name="theme-color" content="#ffffff" />
         <meta
           property="og:image"
           content="https://www.lazyuncle.net/og-image.png"
