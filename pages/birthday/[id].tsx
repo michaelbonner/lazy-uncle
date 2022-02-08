@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { toast } from "react-toastify";
+import EditBirthdayForm from "../../components/EditBirthdayForm";
 import MainLayout from "../../components/layout/MainLayout";
 import {
   DELETE_BIRTHDAY_MUTATION,
