@@ -16,7 +16,7 @@ export async function createContext({
 }): Promise<Context> {
   const session = await getSession({ req });
 
-  // if the user is not logged in, omit returning the user and accessToken
+  // if the user is not logged in, omit returning the user
   if (!session) return { prisma, user: {} };
 
   const { user } = session;

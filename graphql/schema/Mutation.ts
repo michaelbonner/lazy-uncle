@@ -21,9 +21,7 @@ export const Mutation = objectType({
             category,
             parent,
             notes,
-            user: {
-              connect: { id: userId || "" },
-            },
+            userId,
           },
         });
       },
