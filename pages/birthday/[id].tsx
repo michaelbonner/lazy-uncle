@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { toast } from "react-toastify";
-import EditBirthdayForm from "../../components/EditBirthdayForm";
 import MainLayout from "../../components/layout/MainLayout";
 import {
   DELETE_BIRTHDAY_MUTATION,
@@ -26,9 +25,7 @@ const Birthday = ({ id }: { id: string }) => {
   });
 
   const [deleteBirthday, { loading: deleteLoading, error: deleteError }] =
-    useMutation(DELETE_BIRTHDAY_MUTATION, {
-      refetchQueries: [GET_ALL_BIRTHDAYS_QUERY, "Birthdays"],
-    });
+    useMutation(DELETE_BIRTHDAY_MUTATION);
 
   return (
     <MainLayout title={`Birthday`}>
@@ -89,6 +86,11 @@ const Birthday = ({ id }: { id: string }) => {
                     variables: {
                       birthdayId: birthdayData?.birthday?.id,
                     },
+                    refetchQueries: [
+                      {
+                        query: GET_ALL_BIRTHDAYS_QUERY,
+                      },
+                    ],
                   });
                   toast.info("Birthday deleted successfully!");
                   router.push("/");
