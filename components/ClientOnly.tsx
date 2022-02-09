@@ -1,11 +1,6 @@
-import { ReactElement, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 
-export default function ClientOnly({
-  children,
-  ...delegated
-}: {
-  children: ReactElement;
-}) {
+const ClientOnly: FC<{}> = ({ children, ...delegated }) => {
   const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
@@ -17,4 +12,5 @@ export default function ClientOnly({
   }
 
   return <div {...delegated}>{children}</div>;
-}
+};
+export default ClientOnly;
