@@ -11,8 +11,8 @@ import TextEdit from "./TextEdit";
 
 const CreateBirthdayForm = () => {
   const { data: session } = useSession();
-  const [name, setName] = useState("test");
-  const [date, setDate] = useState("2021-12-31");
+  const [name, setName] = useState("");
+  const [date, setDate] = useState("");
   const [category, setCategory] = useState("");
   const [parent, setParent] = useState("");
   const [notes, setNotes] = useState("");
