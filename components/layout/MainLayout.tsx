@@ -17,7 +17,7 @@ const MainLayout = ({
   const { data: session } = useSession();
 
   return (
-    <div className="bg-teal-600 text-gray-50 min-h-screen">
+    <div className="bg-teal-600 text-gray-50 min-h-screen flex flex-col justify-between">
       <Head>
         <title>{title}</title>
         <meta
