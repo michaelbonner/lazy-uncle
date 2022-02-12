@@ -13,6 +13,9 @@ const Policies = () => {
           </p>
           <div className="flex space-x-4">
             <p>
+              <a href="https://michaelbonner.dev/">Personal Site</a>
+            </p>
+            <p>
               <a href="https://github.com/michaelbonner">Github</a>
             </p>
             <p>
