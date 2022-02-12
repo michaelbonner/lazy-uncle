@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.ptr__pull-down .lds-ellipsis div {
+  @apply bg-teal-100;
+}
+
+.ptr__pull-down .ptr__pull-down--pull-more div p {
+  @apply hidden;
+}
