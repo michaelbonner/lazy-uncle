@@ -60,7 +60,7 @@ const BirthdayRow: React.FC<Props> = ({
           </p>
           <p className="text-xl text-teal-600 col-span-2">
             <Link href={`/birthday/${birthday.id}`}>
-              <a className="block py-3">{format(birthDate, "M/dd")}</a>
+              <a className="block py-3">{format(birthDate, "MMM d")}</a>
             </Link>
           </p>
           <p className="block py-3 col-span-2">
@@ -157,7 +157,7 @@ const BirthdayRow: React.FC<Props> = ({
             {birthday.name}
           </p>
           <p className="text-xl text-teal-600 col-span-2 py-2">
-            {format(getDateFromYmdString(birthday.date || ""), "M/dd")}
+            {format(getDateFromYmdString(birthday.date || ""), "MMM d")}
           </p>
         </li>
       )}
@@ -214,7 +214,7 @@ const BirthdayRow: React.FC<Props> = ({
                 </p>
               </div>
               <p className="text-xl text-teal-600">
-                {format(birthDate, "M/dd")}
+                {format(birthDate, "MMM d")}
               </p>
             </a>
           </Link>
