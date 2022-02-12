@@ -15,5 +15,5 @@ div.ptr {
 }
 
 .ptr .ptr__children {
-  @apply overflow-visible;
+  @apply overflow-visible !important;
 }
