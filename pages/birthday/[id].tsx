@@ -32,9 +32,9 @@ const Birthday = ({ id }: { id: string }) => {
     <MainLayout title={`Birthday`}>
       <>
         {birthdayError && <p>Error loading birthday</p>}
-        <div className="px-2 lg:px-8 max-w-7xl mx-auto mt-8">
+        <div className="px-2 md:px-8 max-w-7xl mx-auto mt-8">
           <Link href="/">
-            <a className="px-4 lg:px-0 underline text-teal100">
+            <a className="px-4 md:px-0 underline text-teal100">
               Back to all birthdays
             </a>
           </Link>
@@ -47,7 +47,7 @@ const Birthday = ({ id }: { id: string }) => {
               </div>
             ) : (
               <>
-                <div className="lg:flex lg:items-center justify-between">
+                <div className="md:flex md:items-center justify-between">
                   <h1 className="text-2xl font-medium">
                     Edit {birthdayData?.birthday?.name}&apos;s Birthday
                   </h1>
@@ -61,7 +61,7 @@ const Birthday = ({ id }: { id: string }) => {
                     </span>
                   </h3>
                 </div>
-                <div className="mt-6 lg:px-24">
+                <div className="mt-6 md:px-24">
                   <EditBirthdayForm birthday={birthdayData?.birthday} />
                 </div>
               </>

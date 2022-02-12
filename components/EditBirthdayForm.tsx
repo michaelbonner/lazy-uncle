@@ -40,7 +40,7 @@ const EditBirthdayForm = ({
         toast.success("Birthday updated successfully");
       }}
     >
-      <div className="grid lg:grid-cols-2 gap-x-4">
+      <div className="grid md:grid-cols-2 gap-x-4">
         <div>
           <label className="block mt-4" htmlFor="name">
             Name

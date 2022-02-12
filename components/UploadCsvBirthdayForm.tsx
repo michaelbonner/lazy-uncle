@@ -111,7 +111,7 @@ const UploadCsvBirthdayForm = () => {
           </div>
         )}
 
-        <div className="mt-4 lg:mt-0 flex justify-end">
+        <div className="mt-4 md:mt-0 flex justify-end">
           <PrimaryButton disabled={loading} type="submit">
             Upload CSV
           </PrimaryButton>

@@ -119,7 +119,7 @@ const MainLayout = ({
         />
       </Head>
 
-      <header className="flex justify-between px-4 lg:px-8">
+      <header className="flex justify-between px-4 md:px-8">
         <h1 className="text-4xl font-semibold pt-4">
           <Link href="/">
             <a>
@@ -133,8 +133,8 @@ const MainLayout = ({
           </Link>
         </h1>
         {session?.user && (
-          <div className="lg:flex items-center lg:space-x-4 text-right mt-8 lg:mt-0">
-            <p className="hidden lg:block">
+          <div className="md:flex items-center md:space-x-4 text-right mt-8 md:mt-0">
+            <p className="hidden md:block">
               Logged in as {session?.user?.email}
             </p>
             <button
@@ -147,7 +147,7 @@ const MainLayout = ({
         )}
       </header>
       <ClientOnly>{children}</ClientOnly>
-      <footer className="px-4 lg:px-8 py-6 lg:flex lg:justify-between text-gray-200 text-center">
+      <footer className="px-4 md:px-8 py-6 md:flex md:justify-between text-gray-200 text-center">
         <div>
           &copy; {new Date().getFullYear()}
           {` `}
@@ -155,33 +155,33 @@ const MainLayout = ({
             Michael Bonner
           </a>
         </div>
-        <div className="flex flex-wrap space-x-6 mt-4 lg:mt-0 justify-center">
+        <div className="flex flex-wrap space-x-6 mt-4 md:mt-0 justify-center">
           <a
-            className="underline pt-4 lg:pt-0 flex items-center space-x-1"
+            className="underline pt-4 md:pt-0 flex items-center space-x-1"
             href="https://github.com/michaelbonner/lazy-uncle/issues/new?assignees=michaelbonner&labels=&template=bug_report.md&title="
           >
             <RiBugFill className="w-4 h-4" />
             <span>Report a bug</span>
           </a>
           <a
-            className="underline pt-4 lg:pt-0 flex items-center space-x-1"
+            className="underline pt-4 md:pt-0 flex items-center space-x-1"
             href="https://github.com/michaelbonner/lazy-uncle/issues/new?assignees=michaelbonner&labels=&template=feature_request.md&title="
           >
             <RiLightbulbFlashLine className="w-4 h-4" />
             <span>Request a feature</span>
           </a>
           <a
-            className="underline pt-4 lg:pt-0"
+            className="underline pt-4 md:pt-0"
             href="https://github.com/sponsors/michaelbonner?o=esb"
           >
             Sponsor Me
           </a>
 
           <Link href="/policies">
-            <a className="underline pt-4 lg:pt-0">Policies</a>
+            <a className="underline pt-4 md:pt-0">Policies</a>
           </Link>
           <Link href="/contact">
-            <a className="underline pt-4 lg:pt-0">Contact</a>
+            <a className="underline pt-4 md:pt-0">Contact</a>
           </Link>
         </div>
       </footer>

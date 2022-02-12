@@ -178,11 +178,11 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
 
   return (
     <div>
-      <div className="flex justify-between lg:justify-end space-x-2 items-end">
+      <div className="flex justify-between md:justify-end space-x-2 items-end">
         <div className="text-right mt-2 text-sm text-teal-300">
           {workingDatesCount}/{birthdaysData?.birthdays?.length} visible
         </div>
-        <div className="flex lg:hidden justify-end items-center space-x-4 mt-4">
+        <div className="flex md:hidden justify-end items-center space-x-4 mt-4">
           <button
             className="flex space-x-2 items-center py-2 px-4 border rounded-md bg-teal-50 text-gray-800 text-sm"
             onClick={() => {
@@ -197,11 +197,11 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
 
       <div className="text-center">
         {birthdaysError && <p>Error :(</p>}
-        <div className="bg-gray-50 rounded-lg mt-2 lg:mt-0 text-gray-600 border-b-4 border-b-gray-400">
+        <div className="bg-gray-50 rounded-lg mt-2 md:mt-0 text-gray-600 border-b-4 border-b-gray-400">
           <div className="sticky top-0 z-10 pt-2 bg-teal-600">
             <div className="bg-teal-600">
-              <div className="bg-gray-300 py-2 lg:py-3 px-3 lg:px-6 rounded-t-lg grid lg:grid-cols-5 lg:gap-x-6 gap-y-2 border-t-gray-400 border-t-4">
-                <div className="relative lg:col-span-2">
+              <div className="bg-gray-300 py-2 md:py-3 px-3 md:px-6 rounded-t-lg grid md:grid-cols-5 md:gap-x-6 gap-y-2 border-t-gray-400 border-t-4">
+                <div className="relative md:col-span-2">
                   <BirthdayFilterField
                     disabled={!birthdaysData?.length && !workingDates.length}
                     label="Name"
@@ -210,7 +210,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                   />
                 </div>
                 <div
-                  className={`${showFilters ? "" : "hidden"} lg:block relative`}
+                  className={`${showFilters ? "" : "hidden"} md:block relative`}
                 >
                   <BirthdayFilterField
                     disabled={!birthdaysData?.length && !workingDates.length}
@@ -220,7 +220,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                   />
                 </div>
                 <div
-                  className={`${showFilters ? "" : "hidden"} lg:block relative`}
+                  className={`${showFilters ? "" : "hidden"} md:block relative`}
                 >
                   <BirthdayFilterField
                     disabled={!birthdaysData?.length && !workingDates.length}
@@ -230,7 +230,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                   />
                 </div>
                 <div
-                  className={`${showFilters ? "" : "hidden"} lg:block relative`}
+                  className={`${showFilters ? "" : "hidden"} md:block relative`}
                 >
                   <BirthdayFilterField
                     disabled={!birthdaysData?.length && !workingDates.length}
@@ -241,7 +241,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                 </div>
               </div>
             </div>
-            <div className="hidden lg:grid lg:grid-cols-12 bg-teal-800 px-4 lg:px-8 text-gray-100">
+            <div className="hidden md:grid md:grid-cols-12 bg-teal-800 px-4 md:px-8 text-gray-100">
               <SortColumnHeader
                 ascendingString="name_asc"
                 className="col-span-3"
@@ -340,13 +340,13 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
         </div>
       )}
       <div className="bg-gray-50 rounded-lg mt-24 text-gray-800 border-t-gray-400 border-t-4 border-b-4 border-b-gray-400">
-        <div className="py-12 px-4 lg:px-8 mt-4 grid lg:grid-cols-12 gap-y-12 gap-x-8 items-center">
-          <div className="lg:col-span-6">
+        <div className="py-12 px-4 md:px-8 mt-4 grid md:grid-cols-12 gap-y-12 gap-x-8 items-center">
+          <div className="md:col-span-6">
             <h3 className="text-2xl font-medium mb-4">Add New Birthday</h3>
             <CreateBirthdayForm />
           </div>
           <div className="text-center"></div>
-          <div className="lg:pl-8 lg:col-span-5">
+          <div className="md:pl-8 md:col-span-5">
             <h3 className="text-2xl font-medium mb-4">
               Import Birthdays From CSV
             </h3>

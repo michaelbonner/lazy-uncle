@@ -41,7 +41,7 @@ const BirthdayRow: React.FC<Props> = ({
     <>
       {birthday.id ? (
         <li
-          className={`hidden lg:grid lg:grid-cols-12 items-center border-t text-left lg:text-center px-4 lg:px-8 hover:bg-gray-100`}
+          className={`hidden md:grid md:grid-cols-12 items-center border-t text-left md:text-center px-4 md:px-8 hover:bg-gray-100`}
         >
           <p className={`text-left col-span-3 text-xl`}>
             <Link href={`/birthday/${birthday.id}`}>
@@ -151,7 +151,7 @@ const BirthdayRow: React.FC<Props> = ({
         </li>
       ) : (
         <li
-          className={`hidden lg:grid lg:grid-cols-12 border-t text-left lg:text-center px-4 lg:px-8 bg-gray-200 text-gray-800`}
+          className={`hidden md:grid md:grid-cols-12 border-t text-left md:text-center px-4 md:px-8 bg-gray-200 text-gray-800`}
         >
           <p className={`text-gray-500 col-span-3 text-lg py-2`}>
             {birthday.name}
@@ -163,7 +163,7 @@ const BirthdayRow: React.FC<Props> = ({
       )}
 
       <li
-        className={`block lg:hidden border-t text-left px-4 py-4
+        className={`block md:hidden border-t text-left px-4 py-4
                         ${!birthday.id && "bg-gray-100 text-gray-800"}`}
       >
         {birthday.id ? (
