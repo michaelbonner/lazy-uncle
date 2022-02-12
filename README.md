@@ -8,6 +8,7 @@ I just wanted to create a little app to keep track of birthdays. That's pretty m
 
 - React
 - Next.js
+- MongoDB
 - NextAuth
 - Prisma
 - Apollo (server and client)
