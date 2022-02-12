@@ -19,17 +19,20 @@ const MainLayout = ({
   return (
     <div className="bg-teal-600 text-gray-50 min-h-screen flex flex-col justify-between">
       <Head>
+        {/* General */}
         <title>{title}</title>
         <meta
           name="description"
           content="An easy way to keep track of birthdays"
         />
         <link rel="icon" href="/favicon.ico" />
-        <link
-          rel="apple-touch-icon"
-          sizes="180x180"
-          href="/apple-touch-icon.png"
-        />
+
+        {/* PWA */}
+        <link rel="manifest" href="/site.webmanifest" />
+        <meta name="theme-color" content="#0f766e" />
+        <meta name="msapplication-TileColor" content="#13b8a6" />
+
+        {/* Icons */}
         <link
           rel="icon"
           type="image/png"
@@ -42,10 +45,6 @@ const MainLayout = ({
           sizes="16x16"
           href="/favicon-16x16.png"
         />
-        <link rel="manifest" href="/site.webmanifest" />
-        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#13b8a6" />
-        <meta name="msapplication-TileColor" content="#13b8a6" />
-        <meta name="theme-color" content="#edf8fb" />
         <meta
           property="og:image"
           content="https://www.lazyuncle.net/og-image.png"
@@ -54,6 +53,20 @@ const MainLayout = ({
           property="og:image:url"
           content="https://www.lazyuncle.net/og-image.png"
         />
+
+        {/* Apple specific */}
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-touch-fullscreen" content="yes" />
+        <meta name="apple-mobile-web-app-title" content="Lazy Uncle" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/apple-touch-icon.png"
+        />
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#13b8a6" />
+
         <link
           href="/splashscreens/iphone5_splash.png"
           media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)"
