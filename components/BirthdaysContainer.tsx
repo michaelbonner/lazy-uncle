@@ -202,7 +202,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
         </div>
 
         <div className="text-center">
-          {birthdaysError && <p>Error :(</p>}
+          {birthdaysError && <p>{birthdaysError}</p>}
           <div className="bg-gray-50 rounded-lg mt-2 md:mt-0 text-gray-600 border-b-4 border-b-gray-400">
             <div className="sticky top-0 z-10 pt-2 bg-teal-600">
               <div className="bg-teal-600">
