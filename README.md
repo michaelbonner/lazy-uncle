@@ -1,5 +1,7 @@
 # Lazy Uncle
 
+![test workflow](https://github.com/michaelbonner/lazy-uncle/actions/workflows/test.yml/badge.svg)
+
 ![Lazy Uncle](./public/github-banner.png)
 
 I just wanted to create a little app to keep track of birthdays. That's pretty much it. You can use the app for free here: [https://www.lazyuncle.net/](https://www.lazyuncle.net/). If you feel like contributing please do. Just fork this repo and send me a PR.
