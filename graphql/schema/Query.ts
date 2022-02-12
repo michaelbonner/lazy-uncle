@@ -11,7 +11,7 @@ export const User = objectType({
       resolve: (parent, args, ctx) =>
         ctx.prisma.user
           .findUnique({
-            where: { id: parent.id || "" },
+            where: { id: parent.id || "6207fdc99b6c9796ff8e7d01" },
           })
           .birthdays(),
     });
@@ -67,7 +67,7 @@ export const Query = queryType({
       type: "Birthday",
       resolve: (_, args, ctx) => {
         return ctx.prisma.birthday.findMany({
-          where: { userId: ctx.user.id },
+          where: { userId: ctx.user.id || "6207fdc99b6c9796ff8e7d01" },
         });
       },
     });
