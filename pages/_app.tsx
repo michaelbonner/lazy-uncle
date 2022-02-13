@@ -6,6 +6,7 @@ import TagManager from "react-gtm-module";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import client from "../lib/apollo";
+import { SearchProvider } from "../providers/SearchProvider";
 import "../styles/globals.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -16,7 +17,9 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <SessionProvider session={pageProps.session}>
       <ApolloProvider client={client}>
-        <Component {...pageProps} />
+        <SearchProvider>
+          <Component {...pageProps} />
+        </SearchProvider>
         <ToastContainer
           position="top-right"
           autoClose={5000}

@@ -1,12 +1,13 @@
 import { useQuery } from "@apollo/client";
 import { format } from "date-fns";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { GrFormFilter } from "react-icons/gr";
 import { HiOutlineCalendar } from "react-icons/hi";
 import PullToRefresh from "react-simple-pull-to-refresh";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import { GET_ALL_BIRTHDAYS_QUERY } from "../graphql/Birthday";
+import { SearchContext } from "../providers/SearchProvider";
 import getDateFromYmdString from "../shared/getDateFromYmdString";
 import getZodiacSignForDateYmdString from "../shared/getZodiacSignForDateYmdString";
 import BirthdayFilterField from "./BirthdayFilterField";
@@ -20,10 +21,16 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
     NexusGenObjects["Birthday"][]
   >([]);
   const [workingDatesCount, setWorkingDatesCount] = useState(0);
-  const [nameFilter, setNameFilter] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("");
-  const [parentFilter, setParentFilter] = useState("");
-  const [zodiacSignFilter, setZodiacSignFilter] = useState("");
+  const {
+    nameFilter,
+    setNameFilter,
+    categoryFilter,
+    setCategoryFilter,
+    parentFilter,
+    setParentFilter,
+    zodiacSignFilter,
+    setZodiacSignFilter,
+  } = useContext(SearchContext);
   const {
     data: birthdaysData,
     loading: birthdaysLoading,
