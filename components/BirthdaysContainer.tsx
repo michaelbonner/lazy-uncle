@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import Link from "next/link";
 import React, { useContext, useEffect, useState } from "react";
 import { GrFormFilter } from "react-icons/gr";
-import { HiOutlineCalendar } from "react-icons/hi";
+import { HiOutlineCalendar, HiXCircle } from "react-icons/hi";
 import PullToRefresh from "react-simple-pull-to-refresh";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import { GET_ALL_BIRTHDAYS_QUERY } from "../graphql/Birthday";
@@ -22,6 +22,8 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
   >([]);
   const [workingDatesCount, setWorkingDatesCount] = useState(0);
   const {
+    isFiltered,
+    clearFilters,
     nameFilter,
     setNameFilter,
     categoryFilter,
@@ -194,8 +196,20 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
     <PullToRefresh onRefresh={handleRefresh}>
       <div>
         <div className="flex justify-between md:justify-end space-x-2 items-end">
-          <div className="text-right mt-2 text-sm text-teal-300">
-            {workingDatesCount}/{birthdaysData?.birthdays?.length} visible
+          <div className="pl-2 md:pl-0 md:flex md:space-x-4 items-center">
+            <button
+              className={`${
+                isFiltered ? "text-teal-50" : "text-teal-500"
+              } flex items-center space-x-1`}
+              disabled={!isFiltered}
+              onClick={() => clearFilters()}
+            >
+              <HiXCircle />
+              <span>Clear Filters</span>
+            </button>
+            <div className="md:text-right text-sm text-teal-300">
+              {workingDatesCount}/{birthdaysData?.birthdays?.length} visible
+            </div>
           </div>
           <div className="flex md:hidden justify-end items-center space-x-4 mt-4">
             <button
