@@ -167,6 +167,26 @@ const MainLayout = ({
           media="screen and (device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
           href="/splashscreens/icon_1536x2048.png"
         />
+        <link
+          rel="apple-touch-startup-image"
+          media="@media only screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+          href="/splashscreens/icon_1170x2532.png"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          media="@media only screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)"
+          href="/splashscreens/icon_2532x1170.png"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          media="@media only screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+          href="/splashscreens/icon_1284x2778.png"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          media="@media only screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)"
+          href="/splashscreens/icon_2778x1284.png"
+        />
       </Head>
 
       <header className="flex justify-between px-4 md:px-8">
