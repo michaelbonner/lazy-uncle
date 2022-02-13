@@ -30,6 +30,10 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
     setParentFilter,
     zodiacSignFilter,
     setZodiacSignFilter,
+    sortBy,
+    setSortBy,
+    showFilters,
+    setShowFilters,
   } = useContext(SearchContext);
   const {
     data: birthdaysData,
@@ -38,8 +42,6 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
     refetch: birthdaysRefetch,
   } = useQuery(GET_ALL_BIRTHDAYS_QUERY);
   const [currentHost, setCurrentHost] = useState("");
-  const [showFilters, setShowFilters] = useState(false);
-  const [sortBy, setSortBy] = useState("date_asc");
 
   useEffect(() => {
     if (window.location.host) {
