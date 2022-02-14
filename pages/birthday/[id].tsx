@@ -8,6 +8,7 @@ import { HiChevronLeft } from "react-icons/hi";
 import { toast } from "react-toastify";
 import EditBirthdayForm from "../../components/EditBirthdayForm";
 import MainLayout from "../../components/layout/MainLayout";
+import LoadingSpinner from "../../components/LoadingSpinner";
 import {
   DELETE_BIRTHDAY_MUTATION,
   GET_ALL_BIRTHDAYS_QUERY,
@@ -43,9 +44,7 @@ const Birthday = ({ id }: { id: string }) => {
           <div className="bg-white rounded-xl mt-4 text-gray-800 px-4 py-8">
             {birthdayLoading ? (
               <div className="flex items-center justify-center min-h-[300px]">
-                <div className="prose mx-auto animate-pulse">
-                  <h2>Loading birthday...</h2>
-                </div>
+                <LoadingSpinner spinnerTextColor="text-teal-40" />
               </div>
             ) : (
               <>

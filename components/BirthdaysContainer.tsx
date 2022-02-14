@@ -14,6 +14,7 @@ import getZodiacSignForDateYmdString from "../shared/getZodiacSignForDateYmdStri
 import BirthdayFilterField from "./BirthdayFilterField";
 import BirthdayRow from "./BirthdayRow";
 import CreateBirthdayForm from "./CreateBirthdayForm";
+import LoadingSpinner from "./LoadingSpinner";
 import SortColumnHeader from "./SortColumnHeader";
 import UploadCsvBirthdayForm from "./UploadCsvBirthdayForm";
 
@@ -362,9 +363,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
               <div className="py-10 px-8 text-gray-400">
                 {sessionStatus === "loading" || birthdaysLoading ? (
                   <div className="flex items-center justify-center min-h-[300px]">
-                    <div className="prose mx-auto animate-pulse">
-                      <h2>Loading birthdays...</h2>
-                    </div>
+                    <LoadingSpinner spinnerTextColor="text-teal-40" />
                   </div>
                 ) : (
                   <div className="prose mx-auto">
