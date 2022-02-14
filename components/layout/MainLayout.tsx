@@ -17,7 +17,7 @@ const MainLayout = ({
   const { data: session } = useSession();
 
   return (
-    <div className="bg-teal-600 text-gray-50 min-h-screen flex flex-col justify-between">
+    <div className="min-h-screen flex flex-col justify-between">
       <Head>
         {/* General */}
         <title>{title}</title>
@@ -195,7 +195,7 @@ const MainLayout = ({
             <a>
               <Image
                 alt="Lazy Uncle"
-                height={50}
+                height={47}
                 src="/lazy-uncle-white.svg"
                 width={160}
               />
