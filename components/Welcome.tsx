@@ -1,9 +1,22 @@
-import { Provider } from "next-auth/providers";
-import { signIn } from "next-auth/react";
-import React from "react";
+import { ClientSafeProvider, getProviders, signIn } from "next-auth/react";
+import React, { useEffect } from "react";
 import { GrGithub, GrGoogle } from "react-icons/gr";
 
-const Welcome = ({ providers = [] }: { providers: Provider[] }) => {
+const Welcome = () => {
+  const [providers, setProviders] = React.useState<ClientSafeProvider | Object>(
+    {}
+  );
+
+  useEffect(() => {
+    const getAuthProviders = async () => {
+      const authProviders = await getProviders();
+      if (authProviders) {
+        setProviders(authProviders);
+      }
+    };
+    getAuthProviders();
+  }, []);
+
   return (
     <div className="flex justify-center mt-8 text-gray-100 py-12 md:py-24 px-4">
       <div className="flex flex-col gap-y-6">
@@ -23,11 +36,12 @@ const Welcome = ({ providers = [] }: { providers: Provider[] }) => {
           </p>
         </div>
         <div className="md:flex items-end md:space-x-4 mt-4 mb-1">
-          {Object.values(providers).map((provider) => {
-            return (
-              <button
-                key={provider.name}
-                className={`
+          {providers &&
+            Object.values(providers).map((provider) => {
+              return (
+                <button
+                  key={provider.name}
+                  className={`
                             w-full md:w-auto inline-flex justify-center space-x-2 mt-4 items-center px-6 py-3 border border-transparent font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500
                             ${
                               provider.id === "google" &&
@@ -38,14 +52,14 @@ const Welcome = ({ providers = [] }: { providers: Provider[] }) => {
                               `bg-gray-200 hover:bg-gray-100 text-gray-700`
                             }
                             `}
-                onClick={() => signIn(provider.id)}
-              >
-                {provider.id === "github" && <GrGithub />}
-                {provider.id === "google" && <GrGoogle />}
-                <span>Sign in with {provider.name}</span>
-              </button>
-            );
-          })}
+                  onClick={() => signIn(provider.id)}
+                >
+                  {provider.id === "github" && <GrGithub />}
+                  {provider.id === "google" && <GrGoogle />}
+                  <span>Sign in with {provider.name}</span>
+                </button>
+              );
+            })}
         </div>
       </div>
     </div>
