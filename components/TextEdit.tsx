@@ -14,114 +14,148 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
   const buttonClassName = `py-1 px-2`;
 
   return (
-    <div className="flex flex-wrap items-end bg-white border border-b-0 rounded-t pb-2">
-      <button
-        aria-label="bold"
-        type="button"
-        onClick={() => editor.chain().focus().toggleBold().run()}
-        className={`${buttonClassName} ${
-          editor.isActive("bold") ? "font-semibold" : ""
-        } font-bold`}
-      >
-        B
-      </button>
-      <button
-        aria-label="italic"
-        type="button"
-        onClick={() => editor.chain().focus().toggleItalic().run()}
-        className={`${buttonClassName} ${
-          editor.isActive("italic") ? "font-semibold" : ""
-        } italic`}
-      >
-        i
-      </button>
-      <button
-        aria-label="strike through"
-        type="button"
-        onClick={() => editor.chain().focus().toggleStrike().run()}
-        className={`${buttonClassName} ${
-          editor.isActive("strike") ? "font-semibold" : ""
-        } line-through`}
-      >
-        s
-      </button>
-      <button
-        aria-label="paragraph"
-        type="button"
-        onClick={() => editor.chain().focus().setParagraph().run()}
-        className={`${buttonClassName} ${
-          editor.isActive("paragraph") ? "font-semibold" : ""
-        }`}
-      >
-        paragraph
-      </button>
-      <button
-        aria-label="heading 1"
-        type="button"
-        onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-        className={`${buttonClassName} ${
-          editor.isActive("heading", { level: 1 }) ? "font-bold" : "font-medium"
-        } text-2xl`}
-      >
-        h1
-      </button>
-      <button
-        aria-label="heading 2"
-        type="button"
-        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-        className={`${buttonClassName} ${
-          editor.isActive("heading", { level: 2 }) ? "font-bold" : "font-medium"
-        } text-xl`}
-      >
-        h2
-      </button>
-      <button
-        aria-label="heading 3"
-        type="button"
-        onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-        className={`${buttonClassName} ${
-          editor.isActive("heading", { level: 3 }) ? "font-bold" : "font-medium"
-        } text-lg`}
-      >
-        h3
-      </button>
-      <button
-        aria-label="bullet list"
-        type="button"
-        onClick={() => editor.chain().focus().toggleBulletList().run()}
-        className={`${buttonClassName} ${
-          editor.isActive("bulletList") ? "font-semibold" : ""
-        }`}
-      >
-        <MdOutlineFormatListBulleted />
-      </button>
-      <button
-        aria-label="ordered list"
-        type="button"
-        onClick={() => editor.chain().focus().toggleOrderedList().run()}
-        className={`${buttonClassName} ${
-          editor.isActive("orderedList") ? "font-semibold" : ""
-        }`}
-      >
-        <MdFormatListNumbered />
-      </button>
+    <div className="flex flex-wrap items-end bg-gray-100 px-2 rounded-t pb-2 sticky top-0 z-10 border">
+      <div>
+        <button
+          aria-label="bold"
+          type="button"
+          onClick={() => editor.chain().focus().toggleBold().run()}
+          className={`${buttonClassName} ${
+            editor.isActive("bold")
+              ? "font-bold bg-white rounded shadow-sm"
+              : ""
+          } font-bold`}
+        >
+          B
+        </button>
+        <button
+          aria-label="italic"
+          type="button"
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+          className={`${buttonClassName} ${
+            editor.isActive("italic")
+              ? "font-bold bg-white rounded shadow-sm"
+              : ""
+          } italic`}
+        >
+          i
+        </button>
+        <button
+          aria-label="strike through"
+          type="button"
+          onClick={() => editor.chain().focus().toggleStrike().run()}
+          className={`${buttonClassName} ${
+            editor.isActive("strike")
+              ? "font-bold bg-white rounded shadow-sm"
+              : ""
+          } line-through`}
+        >
+          s
+        </button>
+      </div>
+      <div>
+        <button
+          aria-label="paragraph"
+          type="button"
+          onClick={() => editor.chain().focus().setParagraph().run()}
+          className={`${buttonClassName} ${
+            editor.isActive("paragraph")
+              ? "font-bold bg-white rounded shadow-sm"
+              : ""
+          }`}
+        >
+          paragraph
+        </button>
+        <button
+          aria-label="heading 1"
+          type="button"
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 1 }).run()
+          }
+          className={`${buttonClassName} ${
+            editor.isActive("heading", { level: 1 })
+              ? "font-bold bg-white rounded shadow-sm"
+              : "font-normal"
+          } text-2xl`}
+        >
+          h1
+        </button>
+        <button
+          aria-label="heading 2"
+          type="button"
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 2 }).run()
+          }
+          className={`${buttonClassName} ${
+            editor.isActive("heading", { level: 2 })
+              ? "font-bold bg-white rounded shadow-sm"
+              : "font-normal"
+          } text-xl`}
+        >
+          h2
+        </button>
+        <button
+          aria-label="heading 3"
+          type="button"
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 3 }).run()
+          }
+          className={`${buttonClassName} ${
+            editor.isActive("heading", { level: 3 })
+              ? "font-bold bg-white rounded shadow-sm"
+              : "font-normal"
+          } text-lg`}
+        >
+          h3
+        </button>
+      </div>
 
-      <button
-        aria-label="undo"
-        className={buttonClassName}
-        type="button"
-        onClick={() => editor.chain().focus().undo().run()}
-      >
-        <IoArrowUndo />
-      </button>
-      <button
-        aria-label="redo"
-        className={buttonClassName}
-        type="button"
-        onClick={() => editor.chain().focus().redo().run()}
-      >
-        <IoArrowRedo />
-      </button>
+      <div>
+        <button
+          aria-label="bullet list"
+          type="button"
+          onClick={() => editor.chain().focus().toggleBulletList().run()}
+          className={`${buttonClassName} ${
+            editor.isActive("bulletList")
+              ? "font-bold bg-white rounded shadow-sm"
+              : ""
+          }`}
+        >
+          <MdOutlineFormatListBulleted />
+        </button>
+
+        <button
+          aria-label="ordered list"
+          type="button"
+          onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          className={`${buttonClassName} ${
+            editor.isActive("orderedList")
+              ? "font-bold bg-white rounded shadow-sm"
+              : ""
+          }`}
+        >
+          <MdFormatListNumbered />
+        </button>
+      </div>
+
+      <div>
+        <button
+          aria-label="undo"
+          className={buttonClassName}
+          type="button"
+          onClick={() => editor.chain().focus().undo().run()}
+        >
+          <IoArrowUndo />
+        </button>
+        <button
+          aria-label="redo"
+          className={buttonClassName}
+          type="button"
+          onClick={() => editor.chain().focus().redo().run()}
+        >
+          <IoArrowRedo />
+        </button>
+      </div>
     </div>
   );
 };
@@ -140,7 +174,7 @@ const TextEdit = ({
     editorProps: {
       attributes: {
         class:
-          "border border-gray-300 rounded-b bg-white min-w-full w-full py-2 px-4 prose focus:outline-none min-h-[200px]",
+          "border border-t-0 border-gray-300 rounded-b bg-white min-w-full w-full py-2 px-4 prose focus:outline-none min-h-[200px]",
       },
     },
     onUpdate: ({ editor }) => {
@@ -150,10 +184,10 @@ const TextEdit = ({
   });
 
   return (
-    <>
+    <div>
       <MenuBar editor={editor} />
       <EditorContent editor={editor} />
-    </>
+    </div>
   );
 };
 

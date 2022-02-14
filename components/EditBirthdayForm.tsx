@@ -108,7 +108,7 @@ const EditBirthdayForm = ({
           <code>{error.message}</code>
         </div>
       )}
-      <div className="text-right">
+      <div className="text-right sticky bottom-2">
         <PrimaryButton disabled={loading} type="submit">
           Save Birthday Details
         </PrimaryButton>
