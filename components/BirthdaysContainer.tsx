@@ -1,5 +1,6 @@
 import { useQuery } from "@apollo/client";
 import { format } from "date-fns";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React, { useContext, useEffect, useState } from "react";
 import { GrFormFilter } from "react-icons/gr";
@@ -44,6 +45,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
     refetch: birthdaysRefetch,
   } = useQuery(GET_ALL_BIRTHDAYS_QUERY);
   const [currentHost, setCurrentHost] = useState("");
+  const { status: sessionStatus } = useSession();
 
   useEffect(() => {
     if (window.location.host) {
@@ -346,7 +348,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
               </ul>
             ) : (
               <div className="py-10 px-8 text-gray-400">
-                {birthdaysLoading ? (
+                {sessionStatus === "loading" || birthdaysLoading ? (
                   <div className="flex items-center justify-center min-h-[300px]">
                     <div className="prose mx-auto animate-pulse">
                       <h2>Loading birthdays...</h2>
