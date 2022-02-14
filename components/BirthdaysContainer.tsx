@@ -234,7 +234,10 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                 <div className="bg-gray-300 py-2 md:py-3 px-3 md:px-6 rounded-t-lg grid md:grid-cols-5 md:gap-x-6 gap-y-2 border-t-gray-400 border-t-4">
                   <div className="relative md:col-span-2">
                     <BirthdayFilterField
-                      disabled={!birthdaysData?.length && !workingDates.length}
+                      disabled={
+                        !birthdaysData?.birthdays?.length &&
+                        !workingDates.length
+                      }
                       label="Name"
                       value={nameFilter}
                       setValue={setNameFilter}
@@ -246,7 +249,10 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                     } md:block relative`}
                   >
                     <BirthdayFilterField
-                      disabled={!birthdaysData?.length && !workingDates.length}
+                      disabled={
+                        !birthdaysData?.birthdays?.length &&
+                        !workingDates.length
+                      }
                       label="Category"
                       value={categoryFilter}
                       setValue={setCategoryFilter}
@@ -258,7 +264,10 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                     } md:block relative`}
                   >
                     <BirthdayFilterField
-                      disabled={!birthdaysData?.length && !workingDates.length}
+                      disabled={
+                        !birthdaysData?.birthdays?.length &&
+                        !workingDates.length
+                      }
                       label="Parent"
                       value={parentFilter}
                       setValue={setParentFilter}
@@ -270,7 +279,10 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                     } md:block relative`}
                   >
                     <BirthdayFilterField
-                      disabled={!birthdaysData?.length && !workingDates.length}
+                      disabled={
+                        !birthdaysData?.birthdays?.length &&
+                        !workingDates.length
+                      }
                       label="Zodiac Sign"
                       value={zodiacSignFilter}
                       setValue={setZodiacSignFilter}
