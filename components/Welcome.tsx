@@ -35,7 +35,7 @@ const Welcome = () => {
             you have any problems. I hope you enjoy it!
           </p>
         </div>
-        <div className="md:flex items-end md:space-x-4 mt-4 mb-1">
+        <div className="md:flex items-end md:space-x-4 mt-4 mb-1 min-h-[80px]">
           {providers &&
             Object.values(providers).map((provider) => {
               return (
