@@ -75,9 +75,13 @@ async function main() {
       } as Birthday;
     });
 
+  if (!birthdaysToAdd.length) {
+    console.log("No birthdays to add");
+    return;
+  }
   await prisma.birthday.createMany({ data: birthdaysToAdd });
 
-  console.log(`Added ${birthdaysToAdd.length} birthdays for user ${email}`);
+  console.log(`Added ${birthdaysToAdd.length} birthday(s) for user ${email}`);
   birthdaysToAdd.map((birthdayToAdd) =>
     console.log(` - added ${birthdayToAdd.name}`)
   );
