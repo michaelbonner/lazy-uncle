@@ -195,7 +195,7 @@ const MainLayout = ({
             <a>
               <Image
                 alt="Lazy Uncle"
-                height={50}
+                height={47}
                 src="/lazy-uncle-white.svg"
                 width={160}
               />
