@@ -1,6 +1,7 @@
 import { parse, setYear } from "date-fns";
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../lib/prisma";
+import { getOrdinalNumber } from "../../../shared/getOrdinalNumber";
 
 const ics = require("ics");
 
@@ -28,8 +29,14 @@ export default async function handler(
         userBirthday,
         +new Date().getFullYear() + index
       );
+      const age = birthDate.getFullYear() - userBirthday.getFullYear();
+      if (age < 0) {
+        continue;
+      }
       events.push({
-        title: `${birthday.name}'s Birthday`,
+        title: `${birthday.name}'s${
+          age > 30 || age < 1 ? "" : ` ${getOrdinalNumber(age)}`
+        } Birthday`,
         start: [
           birthDate.getFullYear(),
           birthDate.getMonth() + 1,
