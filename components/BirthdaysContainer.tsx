@@ -1,6 +1,7 @@
 import { useQuery } from "@apollo/client";
 import { format } from "date-fns";
 import { useSession } from "next-auth/react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import React, { useContext, useEffect, useState } from "react";
 import { GrFormFilter } from "react-icons/gr";
@@ -13,10 +14,11 @@ import getDateFromYmdString from "../shared/getDateFromYmdString";
 import getZodiacSignForDateYmdString from "../shared/getZodiacSignForDateYmdString";
 import BirthdayFilterField from "./BirthdayFilterField";
 import BirthdayRow from "./BirthdayRow";
-import CreateBirthdayForm from "./CreateBirthdayForm";
 import LoadingSpinner from "./LoadingSpinner";
 import SortColumnHeader from "./SortColumnHeader";
-import UploadCsvBirthdayForm from "./UploadCsvBirthdayForm";
+
+const UploadCsvBirthdayForm = dynamic(() => import("./UploadCsvBirthdayForm"));
+const CreateBirthdayForm = dynamic(() => import("./CreateBirthdayForm"));
 
 const BirthdaysContainer = ({ userId }: { userId: string }) => {
   const [workingDates, setWorkingDates] = useState<

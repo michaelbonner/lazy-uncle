@@ -1,9 +1,13 @@
 import { useSession } from "next-auth/react";
+import dynamic from "next/dynamic";
 import React from "react";
-import BirthdaysContainer from "../components/BirthdaysContainer";
 import MainLayout from "../components/layout/MainLayout";
 import LoadingSpinner from "../components/LoadingSpinner";
 import Welcome from "../components/Welcome";
+
+const BirthdaysContainer = dynamic(
+  () => import("../components/BirthdaysContainer")
+);
 
 function Home() {
   const { data: session, status: sessionStatus } = useSession();

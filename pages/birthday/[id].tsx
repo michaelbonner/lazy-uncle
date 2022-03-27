@@ -1,12 +1,12 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { HiChevronLeft } from "react-icons/hi";
 import { toast } from "react-toastify";
-import EditBirthdayForm from "../../components/EditBirthdayForm";
 import MainLayout from "../../components/layout/MainLayout";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import {
@@ -16,6 +16,10 @@ import {
 } from "../../graphql/Birthday";
 import getAgeForHumans from "../../shared/getAgeForHumans";
 import getDateFromYmdString from "../../shared/getDateFromYmdString";
+
+const EditBirthdayForm = dynamic(
+  () => import("../../components/EditBirthdayForm")
+);
 
 const Birthday = ({ id }: { id: string }) => {
   const router = useRouter();
