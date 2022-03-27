@@ -9,6 +9,7 @@ interface Birthdate {
   title: string;
   start: [number, number, number];
   end: [number, number, number];
+  busyStatus: "BUSY" | "FREE" | "TENTATIVE" | "OOF";
 }
 
 export default async function handler(
@@ -47,6 +48,7 @@ export default async function handler(
           birthDate.getMonth() + 1,
           birthDate.getDate(),
         ],
+        busyStatus: "FREE",
       });
     }
   });
