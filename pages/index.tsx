@@ -1,5 +1,3 @@
-import { Session } from "next-auth";
-import { Provider } from "next-auth/providers";
 import { useSession } from "next-auth/react";
 import React from "react";
 import BirthdaysContainer from "../components/BirthdaysContainer";
@@ -7,8 +5,8 @@ import MainLayout from "../components/layout/MainLayout";
 import LoadingSpinner from "../components/LoadingSpinner";
 import Welcome from "../components/Welcome";
 
-function Home({ session }: { providers: Provider[]; session: Session }) {
-  const { status: sessionStatus } = useSession();
+function Home() {
+  const { data: session, status: sessionStatus } = useSession();
 
   return (
     <MainLayout title="Lazy Uncle">
