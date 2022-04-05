@@ -20,7 +20,7 @@ export default function getAgeForHumans(
 
   // don't show age for 30 or older people
   if (!alwaysShow && differenceInYears(new Date(), birthday) > 29) {
-    return ``;
+    return `30+`;
   }
 
   // default to years

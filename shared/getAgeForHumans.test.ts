@@ -21,9 +21,12 @@ describe("get age for humans", () => {
     expect(getAgeForHumans(subYears(new Date(), 20))).toEqual("20");
   });
   it("a date of 30 years ago returns nothing", () => {
-    expect(getAgeForHumans(subYears(new Date(), 30))).toEqual("");
+    expect(getAgeForHumans(subYears(new Date(), 30))).toEqual("30+");
   });
   it("a date of 30 years ago returns age if alwaysShow is set to true", () => {
     expect(getAgeForHumans(subYears(new Date(), 30), true)).toEqual("30");
+  });
+  it("a date of 40 years ago returns age if alwaysShow is set to true", () => {
+    expect(getAgeForHumans(subYears(new Date(), 40), true)).toEqual("40");
   });
 });

@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { addYears, differenceInDays, format, isFuture, parse } from "date-fns";
 import Link from "next/link";
 import React from "react";
 import { GiBalloons } from "react-icons/gi";
@@ -36,6 +36,16 @@ const BirthdayRow: React.FC<Props> = ({
   const notesTextOnly = birthday?.notes?.replace(/<\/?[^>]+(>|$)/g, "");
   const todaysDateMonthAndDay = format(new Date(), "MM-dd");
   const birthDateMonthAndDay = format(birthDate, "MM-dd");
+  const age = getAgeForHumans(getDateFromYmdString(birthday.date || ""));
+  const actualAge = getAgeForHumans(
+    getDateFromYmdString(birthday.date || ""),
+    true
+  );
+  const thisYearBirthday = parse(birthDateMonthAndDay, "MM-dd", new Date());
+  const nextBirthday = isFuture(thisYearBirthday)
+    ? thisYearBirthday
+    : addYears(thisYearBirthday, 1);
+  const daysFromNow = differenceInDays(nextBirthday, new Date());
 
   return (
     <>
@@ -43,7 +53,9 @@ const BirthdayRow: React.FC<Props> = ({
         <li
           className={`hidden md:grid md:grid-cols-12 items-center border-t text-left md:text-center px-4 md:px-8 hover:bg-gray-100`}
         >
-          <p className={`text-left col-span-3 text-xl`}>
+          <p
+            className={`text-left col-span-3 text-xl flex justify-between items-center`}
+          >
             <Link href={`/birthday/${birthday.id}`}>
               <a className="flex space-x-2 items-center py-3">
                 {todaysDateMonthAndDay === birthDateMonthAndDay && (
@@ -57,6 +69,11 @@ const BirthdayRow: React.FC<Props> = ({
                 )}
               </a>
             </Link>
+            {daysFromNow > 0 && daysFromNow < 14 && (
+              <p className="text-gray-600 text-xs">
+                <span className="text-orange-500">{daysFromNow}</span> days away
+              </p>
+            )}
           </p>
           <p className="text-xl text-teal-600 col-span-2">
             <Link href={`/birthday/${birthday.id}`}>
@@ -64,16 +81,10 @@ const BirthdayRow: React.FC<Props> = ({
             </Link>
           </p>
           <p className="block py-3 col-span-2">
-            {birthday.id &&
-            getAgeForHumans(getDateFromYmdString(birthday.date || "")) ? (
-              getAgeForHumans(getDateFromYmdString(birthday.date || ""))
+            {birthday.id && age ? (
+              <span title={actualAge}>{age}</span>
             ) : (
-              <span className="sr-only">
-                {getAgeForHumans(
-                  getDateFromYmdString(birthday.date || ""),
-                  true
-                )}
-              </span>
+              <span className="sr-only">{actualAge}</span>
             )}
           </p>
           <p className="text-ellipsis overflow-hidden relative col-span-2 h-full">
