@@ -70,9 +70,9 @@ const BirthdayRow: React.FC<Props> = ({
               </a>
             </Link>
             {daysFromNow > 0 && daysFromNow < 14 && (
-              <p className="text-gray-600 text-xs">
+              <span className="text-gray-600 text-xs">
                 <span className="text-orange-500">{daysFromNow}</span> days away
-              </p>
+              </span>
             )}
           </p>
           <p className="text-xl text-teal-600 col-span-2">
