@@ -53,11 +53,11 @@ const BirthdayRow: React.FC<Props> = ({
         <li
           className={`hidden md:grid md:grid-cols-12 items-center border-t text-left md:text-center px-4 md:px-8 hover:bg-gray-100`}
         >
-          <p
-            className={`text-left col-span-3 text-xl flex justify-between items-center`}
-          >
-            <Link href={`/birthday/${birthday.id}`}>
-              <a className="flex space-x-2 items-center py-3">
+          <Link href={`/birthday/${birthday.id}`}>
+            <a
+              className={`text-left col-span-3 text-xl flex justify-between items-center`}
+            >
+              <span className="flex space-x-2 items-center py-3">
                 {todaysDateMonthAndDay === birthDateMonthAndDay && (
                   <span title={`Today is ${birthday.name}'s birthday!`}>
                     <GiBalloons className="text-rose-500 right-0 top-0 text-lg" />
@@ -67,14 +67,15 @@ const BirthdayRow: React.FC<Props> = ({
                 {notesTextOnly && (
                   <HiOutlinePaperClip className="text-sm text-gray-400" />
                 )}
-              </a>
-            </Link>
-            {daysFromNow > 0 && daysFromNow < 14 && (
-              <span className="text-gray-600 text-xs">
-                <span className="text-orange-500">{daysFromNow}</span> days away
               </span>
-            )}
-          </p>
+              {daysFromNow > 0 && daysFromNow < 14 && (
+                <span className="text-gray-600 text-xs">
+                  <span className="text-orange-500">{daysFromNow}</span> days
+                  away
+                </span>
+              )}
+            </a>
+          </Link>
           <p className="text-xl text-teal-600 col-span-2">
             <Link href={`/birthday/${birthday.id}`}>
               <a className="block py-3">{format(birthDate, "MMM d")}</a>
