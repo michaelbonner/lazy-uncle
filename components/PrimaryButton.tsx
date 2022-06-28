@@ -1,6 +1,7 @@
-import React, { FC } from "react";
+import { FC, ReactElement } from "react";
 
 const PrimaryButton: FC<{
+  children: ReactElement | string;
   disabled?: boolean;
   type?: "button" | "reset" | "submit" | undefined;
 }> = ({ type = "button", children, disabled = false }) => {

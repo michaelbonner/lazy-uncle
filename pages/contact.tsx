@@ -1,7 +1,7 @@
 import React from "react";
 import MainLayout from "../components/layout/MainLayout";
 
-const Policies = () => {
+const Contact = () => {
   return (
     <MainLayout title="Contact Michael Bonner">
       <div className="max-w-5xl mx-4 md:mx-auto bg-white rounded-lg py-12 px-4 md:px-16 my-16">
@@ -30,4 +30,4 @@ const Policies = () => {
     </MainLayout>
   );
 };
-export default Policies;
+export default Contact;

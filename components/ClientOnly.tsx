@@ -1,6 +1,9 @@
-import { FC, useEffect, useState } from "react";
+import { FC, ReactElement, useEffect, useState } from "react";
 
-const ClientOnly: FC<{}> = ({ children, ...delegated }) => {
+const ClientOnly: FC<{ children: ReactElement }> = ({
+  children,
+  ...delegated
+}) => {
   const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {

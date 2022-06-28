@@ -1,4 +1,4 @@
-import { createContext, FC, useEffect, useState } from "react";
+import { createContext, FC, ReactNode, useEffect, useState } from "react";
 
 type ContextProps = {
   isFiltered: boolean;
@@ -42,7 +42,11 @@ const initialState = {
 
 export const SearchContext = createContext<ContextProps>(initialState);
 
-export const SearchProvider: FC = ({ children }) => {
+type SearchProviderProps = {
+  children: ReactNode;
+};
+
+export const SearchProvider: FC<SearchProviderProps> = ({ children }) => {
   const [isFiltered, setIsFiltered] = useState(false);
   const [nameFilter, setNameFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
