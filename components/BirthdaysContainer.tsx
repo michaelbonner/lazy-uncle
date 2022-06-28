@@ -3,10 +3,9 @@ import { format } from "date-fns";
 import { useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import React, { useContext, useEffect, useState } from "react";
-import { GrFormFilter } from "react-icons/gr";
+import { useContext, useEffect, useState } from "react";
+import { GrFormFilter, GrRefresh } from "react-icons/gr";
 import { HiOutlineCalendar, HiXCircle } from "react-icons/hi";
-import PullToRefresh from "react-simple-pull-to-refresh";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import { GET_ALL_BIRTHDAYS_QUERY } from "../graphql/Birthday";
 import { SearchContext } from "../providers/SearchProvider";
@@ -198,214 +197,214 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
   };
 
   return (
-    <PullToRefresh onRefresh={handleRefresh}>
-      <div>
-        <div className="flex justify-between md:justify-end space-x-2 items-end">
-          <div className="pl-2 md:pl-0 md:flex md:space-x-4 items-center">
-            <button
-              className={`${
-                isFiltered ? "text-teal-50" : "text-teal-500"
-              } flex items-center space-x-1`}
-              disabled={!isFiltered}
-              onClick={() => clearFilters()}
-            >
-              <HiXCircle />
-              <span>Clear Filters</span>
-            </button>
-            <div className="md:text-right text-sm text-teal-300">
-              {workingDatesCount}/{birthdaysData?.birthdays?.length} visible
-            </div>
-          </div>
-          <div className="flex md:hidden justify-end items-center space-x-4 mt-4">
-            <button
-              className="flex space-x-2 items-center py-2 px-4 border rounded-md bg-teal-50 text-gray-800 text-sm"
-              onClick={() => {
-                setShowFilters(!showFilters);
-              }}
-            >
-              <GrFormFilter />
-              <span>Toggle Additional Filters</span>
-            </button>
+    <div>
+      <div className="flex justify-between md:justify-end space-x-2 items-end">
+        <div className="pl-2 md:pl-0 md:flex md:space-x-4 items-center">
+          <button
+            className={`${
+              isFiltered ? "text-teal-50" : "text-teal-500"
+            } flex items-center space-x-1`}
+            disabled={!isFiltered}
+            onClick={() => clearFilters()}
+          >
+            <HiXCircle />
+            <span>Clear Filters</span>
+          </button>
+          <div className="md:text-right text-sm text-teal-300">
+            {workingDatesCount}/{birthdaysData?.birthdays?.length} visible
           </div>
         </div>
+        <div className="flex md:hidden justify-end items-center space-x-4 mt-4">
+          <button
+            className="flex space-x-2 items-center py-2 px-4 border rounded-md bg-teal-50 text-gray-800 text-sm"
+            onClick={() => {
+              setShowFilters(!showFilters);
+            }}
+          >
+            <GrFormFilter />
+            <span>Toggle Additional Filters</span>
+          </button>
+        </div>
+      </div>
 
-        <div className="text-center">
-          {birthdaysError && <p className="pt-3">{birthdaysError.message}</p>}
-          <div className="bg-gray-50 rounded-lg mt-2 md:mt-0 text-gray-600 border-b-4 border-b-gray-400">
-            <div className="sticky top-0 z-10 pt-2 bg-teal-600">
-              <div className="bg-teal-600">
-                <div className="bg-gray-300 py-2 md:py-3 px-3 md:px-6 rounded-t-lg grid md:grid-cols-5 md:gap-x-6 gap-y-2 border-t-gray-400 border-t-4">
-                  <div className="relative md:col-span-2">
-                    <BirthdayFilterField
-                      disabled={
-                        !birthdaysData?.birthdays?.length &&
-                        !workingDates.length
-                      }
-                      label="Name"
-                      value={nameFilter}
-                      setValue={setNameFilter}
-                    />
-                  </div>
-                  <div
-                    className={`${
-                      showFilters ? "" : "hidden"
-                    } md:block relative`}
+      <div>birthdaysLoading: {birthdaysLoading.toString()}</div>
+
+      <div className="text-center">
+        {birthdaysError && <p className="pt-3">{birthdaysError.message}</p>}
+        <div className="bg-gray-50 rounded-lg mt-2 md:mt-0 text-gray-600 border-b-4 border-b-gray-400">
+          <div className="sticky top-0 z-10 pt-2 bg-teal-600">
+            <div className="bg-teal-600">
+              <div className="bg-gray-300 py-2 md:py-3 px-3 md:px-6 rounded-t-lg grid grid-cols-5 md:gap-x-6 gap-y-2 border-t-gray-400 border-t-4">
+                <div className="relative col-span-4 md:col-span-2">
+                  <BirthdayFilterField
+                    disabled={
+                      !birthdaysData?.birthdays?.length && !workingDates.length
+                    }
+                    label="Name"
+                    value={nameFilter}
+                    setValue={setNameFilter}
+                  />
+                </div>
+                <div className="flex md:hidden">
+                  <button
+                    className="bg-gray-200 ml-2 w-full flex items-center justify-center rounded-md"
+                    onClick={handleRefresh}
                   >
-                    <BirthdayFilterField
-                      disabled={
-                        !birthdaysData?.birthdays?.length &&
-                        !workingDates.length
-                      }
-                      label="Category"
-                      value={categoryFilter}
-                      setValue={setCategoryFilter}
+                    <GrRefresh
+                      className={`${birthdaysLoading && "animate-spin"}`}
                     />
-                  </div>
-                  <div
-                    className={`${
-                      showFilters ? "" : "hidden"
-                    } md:block relative`}
-                  >
-                    <BirthdayFilterField
-                      disabled={
-                        !birthdaysData?.birthdays?.length &&
-                        !workingDates.length
-                      }
-                      label="Parent"
-                      value={parentFilter}
-                      setValue={setParentFilter}
-                    />
-                  </div>
-                  <div
-                    className={`${
-                      showFilters ? "" : "hidden"
-                    } md:block relative`}
-                  >
-                    <BirthdayFilterField
-                      disabled={
-                        !birthdaysData?.birthdays?.length &&
-                        !workingDates.length
-                      }
-                      label="Zodiac Sign"
-                      value={zodiacSignFilter}
-                      setValue={setZodiacSignFilter}
-                    />
-                  </div>
+                  </button>
+                </div>
+                <div
+                  className={`${showFilters ? "" : "hidden"} md:block relative`}
+                >
+                  <BirthdayFilterField
+                    disabled={
+                      !birthdaysData?.birthdays?.length && !workingDates.length
+                    }
+                    label="Category"
+                    value={categoryFilter}
+                    setValue={setCategoryFilter}
+                  />
+                </div>
+                <div
+                  className={`${showFilters ? "" : "hidden"} md:block relative`}
+                >
+                  <BirthdayFilterField
+                    disabled={
+                      !birthdaysData?.birthdays?.length && !workingDates.length
+                    }
+                    label="Parent"
+                    value={parentFilter}
+                    setValue={setParentFilter}
+                  />
+                </div>
+                <div
+                  className={`${showFilters ? "" : "hidden"} md:block relative`}
+                >
+                  <BirthdayFilterField
+                    disabled={
+                      !birthdaysData?.birthdays?.length && !workingDates.length
+                    }
+                    label="Zodiac Sign"
+                    value={zodiacSignFilter}
+                    setValue={setZodiacSignFilter}
+                  />
                 </div>
               </div>
-              <div className="hidden md:grid md:grid-cols-12 bg-teal-800 px-4 md:px-8 text-gray-100">
-                <SortColumnHeader
-                  ascendingString="name_asc"
-                  className="col-span-3"
-                  descendingString="name_desc"
-                  label="Name"
-                  setValue={setSortBy}
-                  value={sortBy}
-                />
-                <SortColumnHeader
-                  ascendingString="date_asc"
-                  className="justify-center col-span-2"
-                  descendingString="date_desc"
-                  label="Date"
-                  setValue={setSortBy}
-                  value={sortBy}
-                />
-                <SortColumnHeader
-                  ascendingString="age_asc"
-                  className="justify-center col-span-2"
-                  descendingString="age_desc"
-                  label="Age"
-                  setValue={setSortBy}
-                  value={sortBy}
-                />
-                <SortColumnHeader
-                  ascendingString="category_asc"
-                  className="justify-center col-span-2"
-                  descendingString="category_desc"
-                  label="Category"
-                  setValue={setSortBy}
-                  value={sortBy}
-                />
-                <SortColumnHeader
-                  ascendingString="parent_asc"
-                  className="justify-center col-span-2"
-                  descendingString="parent_desc"
-                  label="Parent"
-                  setValue={setSortBy}
-                  value={sortBy}
-                />
-                <SortColumnHeader
-                  ascendingString="sign_asc"
-                  className="justify-center"
-                  descendingString="sign_desc"
-                  label="Sign"
-                  setValue={setSortBy}
-                  value={sortBy}
-                />
-              </div>
             </div>
-            {workingDates.length ? (
-              <ul>
-                {workingDates.map((birthday: NexusGenObjects["Birthday"]) => {
-                  return (
-                    <BirthdayRow
-                      birthday={birthday}
-                      categoryFilter={categoryFilter}
-                      key={`${birthday.id || birthday.name}`}
-                      parentFilter={parentFilter}
-                      setCategoryFilter={setCategoryFilter}
-                      setParentFilter={setParentFilter}
-                      setZodiacSignFilter={setZodiacSignFilter}
-                      zodiacSignFilter={zodiacSignFilter}
-                    />
-                  );
-                })}
-              </ul>
-            ) : (
-              <div className="py-10 px-8 text-gray-400">
-                {sessionStatus === "loading" || birthdaysLoading ? (
-                  <div className="flex items-center justify-center min-h-[300px]">
-                    <LoadingSpinner spinnerTextColor="text-teal-40" />
-                  </div>
-                ) : (
-                  <div className="prose mx-auto">
-                    <h2>No birthdays found</h2>
-                    <p>Use the form below to add a birthday or two... or 38.</p>
-                  </div>
-                )}
-              </div>
-            )}
+            <div className="hidden md:grid md:grid-cols-12 bg-teal-800 px-4 md:px-8 text-gray-100">
+              <SortColumnHeader
+                ascendingString="name_asc"
+                className="col-span-3"
+                descendingString="name_desc"
+                label="Name"
+                setValue={setSortBy}
+                value={sortBy}
+              />
+              <SortColumnHeader
+                ascendingString="date_asc"
+                className="justify-center col-span-2"
+                descendingString="date_desc"
+                label="Date"
+                setValue={setSortBy}
+                value={sortBy}
+              />
+              <SortColumnHeader
+                ascendingString="age_asc"
+                className="justify-center col-span-2"
+                descendingString="age_desc"
+                label="Age"
+                setValue={setSortBy}
+                value={sortBy}
+              />
+              <SortColumnHeader
+                ascendingString="category_asc"
+                className="justify-center col-span-2"
+                descendingString="category_desc"
+                label="Category"
+                setValue={setSortBy}
+                value={sortBy}
+              />
+              <SortColumnHeader
+                ascendingString="parent_asc"
+                className="justify-center col-span-2"
+                descendingString="parent_desc"
+                label="Parent"
+                setValue={setSortBy}
+                value={sortBy}
+              />
+              <SortColumnHeader
+                ascendingString="sign_asc"
+                className="justify-center"
+                descendingString="sign_desc"
+                label="Sign"
+                setValue={setSortBy}
+                value={sortBy}
+              />
+            </div>
           </div>
+          {workingDates.length ? (
+            <ul>
+              {workingDates.map((birthday: NexusGenObjects["Birthday"]) => {
+                return (
+                  <BirthdayRow
+                    birthday={birthday}
+                    categoryFilter={categoryFilter}
+                    key={`${birthday.id || birthday.name}`}
+                    parentFilter={parentFilter}
+                    setCategoryFilter={setCategoryFilter}
+                    setParentFilter={setParentFilter}
+                    setZodiacSignFilter={setZodiacSignFilter}
+                    zodiacSignFilter={zodiacSignFilter}
+                  />
+                );
+              })}
+            </ul>
+          ) : (
+            <div className="py-10 px-8 text-gray-400">
+              {sessionStatus === "loading" || birthdaysLoading ? (
+                <div className="flex items-center justify-center min-h-[300px]">
+                  <LoadingSpinner spinnerTextColor="text-teal-40" />
+                </div>
+              ) : (
+                <div className="prose mx-auto">
+                  <h2>No birthdays found</h2>
+                  <p>Use the form below to add a birthday or two... or 38.</p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
-        {birthdaysData?.birthdays?.length > 0 && (
-          <div className="flex justify-end mt-8 text-gray-200">
-            <Link
-              href={`webcal://${currentHost}/api/calendar-subscription/${userId}`}
-            >
-              <a className="flex items-center space-x-2 underline text-gray-200 hover:text-gray-100 group transition-all">
-                <HiOutlineCalendar className="text-teal-400 group-hover:text-gray-200 transition-all" />
-                <span>Subscribe to calendar</span>
-              </a>
-            </Link>
+      </div>
+      {birthdaysData?.birthdays?.length > 0 && (
+        <div className="flex justify-end mt-8 text-gray-200">
+          <Link
+            href={`webcal://${currentHost}/api/calendar-subscription/${userId}`}
+          >
+            <a className="flex items-center space-x-2 underline text-gray-200 hover:text-gray-100 group transition-all">
+              <HiOutlineCalendar className="text-teal-400 group-hover:text-gray-200 transition-all" />
+              <span>Subscribe to calendar</span>
+            </a>
+          </Link>
+        </div>
+      )}
+      <div className="bg-gray-50 rounded-lg mt-24 text-gray-800 border-t-gray-400 border-t-4 border-b-4 border-b-gray-400">
+        <div className="py-12 px-4 md:px-8 mt-4 grid md:grid-cols-12 gap-y-12 gap-x-8 items-center">
+          <div className="md:col-span-6">
+            <h3 className="text-2xl font-medium mb-4">Add New Birthday</h3>
+            <CreateBirthdayForm />
           </div>
-        )}
-        <div className="bg-gray-50 rounded-lg mt-24 text-gray-800 border-t-gray-400 border-t-4 border-b-4 border-b-gray-400">
-          <div className="py-12 px-4 md:px-8 mt-4 grid md:grid-cols-12 gap-y-12 gap-x-8 items-center">
-            <div className="md:col-span-6">
-              <h3 className="text-2xl font-medium mb-4">Add New Birthday</h3>
-              <CreateBirthdayForm />
-            </div>
-            <div className="text-center"></div>
-            <div className="md:pl-8 md:col-span-5">
-              <h3 className="text-2xl font-medium mb-4">
-                Import Birthdays From CSV
-              </h3>
-              <UploadCsvBirthdayForm />
-            </div>
+          <div className="text-center"></div>
+          <div className="md:pl-8 md:col-span-5">
+            <h3 className="text-2xl font-medium mb-4">
+              Import Birthdays From CSV
+            </h3>
+            <UploadCsvBirthdayForm />
           </div>
         </div>
       </div>
-    </PullToRefresh>
+    </div>
   );
 };
 export default BirthdaysContainer;

@@ -11,18 +11,6 @@ div.ptr {
   @apply overflow-visible;
 }
 
-.ptr__pull-down .lds-ellipsis div {
-  @apply bg-teal-100;
-}
-
-.ptr__pull-down .ptr__pull-down--pull-more div p {
-  @apply hidden;
-}
-
-.ptr .ptr__children {
-  @apply overflow-visible !important;
-}
-
 .circle__svg {
   animation: 2s linear infinite both circle__svg;
 }
