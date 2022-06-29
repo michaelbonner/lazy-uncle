@@ -76,7 +76,7 @@ const BirthdayRow: React.FC<Props> = ({
               )}
             </a>
           </Link>
-          <p className="text-xl text-teal-600 col-span-2">
+          <p className="text-xl text-cyan-600 col-span-2">
             <Link href={`/birthday/${birthday.id}`}>
               <a className="block py-3">{format(birthDate, "MMM d")}</a>
             </Link>
@@ -168,7 +168,7 @@ const BirthdayRow: React.FC<Props> = ({
           <p className={`text-gray-500 col-span-3 text-lg py-2`}>
             {birthday.name}
           </p>
-          <p className="text-xl text-teal-600 col-span-2 py-2">
+          <p className="text-xl text-cyan-600 col-span-2 py-2">
             {format(getDateFromYmdString(birthday.date || ""), "MMM d")}
           </p>
         </li>
@@ -225,7 +225,7 @@ const BirthdayRow: React.FC<Props> = ({
                   <span className="text-xs">{zodiacSign}</span>
                 </p>
               </div>
-              <p className="text-xl text-teal-600">
+              <p className="text-xl text-cyan-600">
                 {format(birthDate, "MMM d")}
               </p>
             </a>

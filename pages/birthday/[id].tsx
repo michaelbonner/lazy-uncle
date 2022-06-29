@@ -40,7 +40,7 @@ const Birthday = ({ id }: { id: string }) => {
         {birthdayError && <p>Error loading birthday</p>}
         <div className="px-2 md:px-8 max-w-7xl mx-auto mt-8">
           <Link href="/">
-            <a className="flex space-x-1 items-center md:px-0 underline text-teal-100">
+            <a className="flex space-x-1 items-center md:px-0 underline text-cyan-100">
               <HiChevronLeft className="mt-1 w-6 h-6" />
               <span>Back to all birthdays</span>
             </a>
@@ -48,7 +48,7 @@ const Birthday = ({ id }: { id: string }) => {
           <div className="bg-white rounded-xl mt-4 text-gray-800 px-4 py-8">
             {birthdayLoading ? (
               <div className="flex items-center justify-center min-h-[300px]">
-                <LoadingSpinner spinnerTextColor="text-teal-40" />
+                <LoadingSpinner spinnerTextColor="text-cyan-40" />
               </div>
             ) : (
               <>
@@ -80,7 +80,7 @@ const Birthday = ({ id }: { id: string }) => {
               </p>
             )}
             <button
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-gray-100 bg-transparent hover:bg-red-700 hover:border-red-800 hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-gray-100 bg-transparent hover:bg-red-700 hover:border-red-800 hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
               disabled={deleteLoading}
               onClick={() => {
                 if (

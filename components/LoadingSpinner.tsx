@@ -1,7 +1,7 @@
 import React from "react";
 
 const LoadingSpinner = ({
-  spinnerTextColor = "text-teal-50",
+  spinnerTextColor = "text-cyan-50",
 }: {
   spinnerTextColor?: string;
 }) => {

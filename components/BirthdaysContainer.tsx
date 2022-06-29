@@ -202,7 +202,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
         <div className="pl-2 md:pl-0 md:flex md:space-x-4 items-center">
           <button
             className={`${
-              isFiltered ? "text-teal-50" : "text-teal-500"
+              isFiltered ? "text-cyan-50" : "text-cyan-500"
             } flex items-center space-x-1`}
             disabled={!isFiltered}
             onClick={() => clearFilters()}
@@ -210,13 +210,13 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
             <HiXCircle />
             <span>Clear Filters</span>
           </button>
-          <div className="md:text-right text-sm text-teal-300">
+          <div className="md:text-right text-sm text-cyan-300">
             {workingDatesCount}/{birthdaysData?.birthdays?.length} visible
           </div>
         </div>
         <div className="flex md:hidden justify-end items-center space-x-4 mt-4">
           <button
-            className="flex space-x-2 items-center py-2 px-4 border rounded-md bg-teal-50 text-gray-800 text-sm"
+            className="flex space-x-2 items-center py-2 px-4 border rounded-md bg-cyan-50 text-gray-800 text-sm"
             onClick={() => {
               setShowFilters(!showFilters);
             }}
@@ -230,8 +230,8 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
       <div className="text-center">
         {birthdaysError && <p className="pt-3">{birthdaysError.message}</p>}
         <div className="bg-gray-50 rounded-lg mt-2 md:mt-0 text-gray-600 border-b-4 border-b-gray-400">
-          <div className="sticky top-0 z-10 pt-2 bg-teal-600">
-            <div className="bg-teal-600">
+          <div className="sticky top-0 z-10 pt-2 bg-cyan-600">
+            <div className="bg-cyan-600">
               <div className="bg-gray-300 py-2 md:py-3 px-3 md:px-6 rounded-t-lg grid grid-cols-5 md:gap-x-6 gap-y-2 border-t-gray-400 border-t-4">
                 <div className="relative col-span-4 md:col-span-2">
                   <BirthdayFilterField
@@ -291,7 +291,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                 </div>
               </div>
             </div>
-            <div className="hidden md:grid md:grid-cols-12 bg-teal-800 px-4 md:px-8 text-gray-100">
+            <div className="hidden md:grid md:grid-cols-12 bg-cyan-800 px-4 md:px-8 text-gray-100">
               <SortColumnHeader
                 ascendingString="name_asc"
                 className="col-span-3"
@@ -363,7 +363,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
             <div className="py-10 px-8 text-gray-400">
               {sessionStatus === "loading" || birthdaysLoading ? (
                 <div className="flex items-center justify-center min-h-[300px]">
-                  <LoadingSpinner spinnerTextColor="text-teal-40" />
+                  <LoadingSpinner spinnerTextColor="text-cyan-40" />
                 </div>
               ) : (
                 <div className="prose mx-auto">
@@ -381,7 +381,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
             href={`webcal://${currentHost}/api/calendar-subscription/${userId}`}
           >
             <a className="flex items-center space-x-2 underline text-gray-200 hover:text-gray-100 group transition-all">
-              <HiOutlineCalendar className="text-teal-400 group-hover:text-gray-200 transition-all" />
+              <HiOutlineCalendar className="text-cyan-400 group-hover:text-gray-200 transition-all" />
               <span>Subscribe to calendar</span>
             </a>
           </Link>
