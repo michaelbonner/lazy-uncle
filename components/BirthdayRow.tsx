@@ -1,4 +1,4 @@
-import { addYears, differenceInDays, format, isFuture, parse } from "date-fns";
+import { format } from "date-fns";
 import Link from "next/link";
 import React from "react";
 import { GiBalloons } from "react-icons/gi";
@@ -6,6 +6,7 @@ import { HiBackspace, HiOutlinePaperClip } from "react-icons/hi";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import getAgeForHumans from "../shared/getAgeForHumans";
 import getDateFromYmdString from "../shared/getDateFromYmdString";
+import { getDaysUntilNextBirthday } from "../shared/getDaysUntilNextBirthday";
 import getZodiacSignForDateYmdString from "../shared/getZodiacSignForDateYmdString";
 import ZodiacSignCharacter from "./ZodiacSignCharacter";
 
@@ -41,11 +42,8 @@ const BirthdayRow: React.FC<Props> = ({
     getDateFromYmdString(birthday.date || ""),
     true
   );
-  const thisYearBirthday = parse(birthDateMonthAndDay, "MM-dd", new Date());
-  const nextBirthday = isFuture(thisYearBirthday)
-    ? thisYearBirthday
-    : addYears(thisYearBirthday, 1);
-  const daysFromNow = differenceInDays(nextBirthday, new Date());
+
+  const daysFromNow = getDaysUntilNextBirthday(birthday);
 
   return (
     <>
@@ -58,7 +56,7 @@ const BirthdayRow: React.FC<Props> = ({
               className={`text-left col-span-3 text-xl flex justify-between items-center`}
             >
               <span className="flex space-x-2 items-center py-3">
-                {todaysDateMonthAndDay === birthDateMonthAndDay && (
+                {daysFromNow === 0 && (
                   <span title={`Today is ${birthday.name}'s birthday!`}>
                     <GiBalloons className="text-rose-500 right-0 top-0 text-lg" />
                   </span>

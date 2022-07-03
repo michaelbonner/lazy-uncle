@@ -10,6 +10,7 @@ import { NexusGenObjects } from "../generated/nexus-typegen";
 import { GET_ALL_BIRTHDAYS_QUERY } from "../graphql/Birthday";
 import { SearchContext } from "../providers/SearchProvider";
 import getDateFromYmdString from "../shared/getDateFromYmdString";
+import { getDaysUntilNextBirthday } from "../shared/getDaysUntilNextBirthday";
 import getZodiacSignForDateYmdString from "../shared/getZodiacSignForDateYmdString";
 import BirthdayFilterField from "./BirthdayFilterField";
 import BirthdayRow from "./BirthdayRow";
@@ -48,6 +49,9 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
   } = useQuery(GET_ALL_BIRTHDAYS_QUERY);
   const [currentHost, setCurrentHost] = useState("");
   const { status: sessionStatus } = useSession();
+  const [upcomingBirthdays, setUpcomingBirthdays] = useState<
+    NexusGenObjects["Birthday"][]
+  >([]);
 
   useEffect(() => {
     if (window.location.host) {
@@ -192,12 +196,61 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
     zodiacSignFilter,
   ]);
 
+  useEffect(() => {
+    if (birthdaysData?.birthdays?.length < 1) {
+      return;
+    }
+
+    const upcoming = birthdaysData?.birthdays?.filter(
+      (birthday: NexusGenObjects["Birthday"]) => {
+        return (
+          getDaysUntilNextBirthday(birthday) <= 7 ||
+          getDaysUntilNextBirthday(birthday) > 364
+        );
+      }
+    );
+
+    setUpcomingBirthdays(
+      upcoming.sort(
+        (a: NexusGenObjects["Birthday"], b: NexusGenObjects["Birthday"]) => {
+          const aDaysUntilNextBirthday = getDaysUntilNextBirthday(a);
+          const bDaysUntilNextBirthday = getDaysUntilNextBirthday(b);
+          return aDaysUntilNextBirthday > bDaysUntilNextBirthday ? 1 : -1;
+        }
+      )
+    );
+  }, [birthdaysData]);
+
   const handleRefresh = async () => {
     await birthdaysRefetch();
   };
 
   return (
     <div>
+      {upcomingBirthdays?.length > 0 && (
+        <div className="flex gap-x-8 items-center border-t-4 border-b-4 border-gray-300 bg-gray-100 text-cyan-800 py-4 px-8 rounded-lg shadow-lg mb-4">
+          <h2 className="text-2xl font-medium">Upcoming Birthdays</h2>
+          <div className="flex gap-x-6 gap-y-2 items-center flex-wrap">
+            {upcomingBirthdays.map((birthday: NexusGenObjects["Birthday"]) => {
+              const daysLabel =
+                getDaysUntilNextBirthday(birthday) === 0 ? (
+                  <span className="font-bold">Today</span>
+                ) : (
+                  <span>
+                    <span className="font-light">in </span>
+                    {getDaysUntilNextBirthday(birthday)} days
+                  </span>
+                );
+              return (
+                <div key={birthday.id}>
+                  <span className="font-light">{birthday.name}</span>{" "}
+                  {daysLabel}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
       <div className="flex justify-between md:justify-end space-x-2 items-end">
         <div className="pl-2 md:pl-0 md:flex md:space-x-4 items-center">
           <button
