@@ -11,7 +11,11 @@ export const config = {
   },
 };
 
-const apolloServer = new ApolloServer({ context: createContext, schema });
+const apolloServer = new ApolloServer({
+  cache: "bounded",
+  context: createContext,
+  schema,
+});
 
 let apolloServerHandler: RequestHandler;
 
