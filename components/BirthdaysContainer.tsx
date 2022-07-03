@@ -211,7 +211,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
     );
 
     setUpcomingBirthdays(
-      upcoming.sort(
+      upcoming?.sort(
         (a: NexusGenObjects["Birthday"], b: NexusGenObjects["Birthday"]) => {
           const aDaysUntilNextBirthday = getDaysUntilNextBirthday(a);
           const bDaysUntilNextBirthday = getDaysUntilNextBirthday(b);
@@ -228,7 +228,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
   return (
     <div>
       {upcomingBirthdays?.length > 0 && (
-        <div className="flex gap-x-8 items-center border-t-4 border-b-4 border-gray-300 bg-gray-100 text-cyan-800 py-4 px-8 rounded-lg shadow-lg mb-4">
+        <div className="md:flex gap-x-8 items-center border-t-4 border-b-4 border-gray-300 bg-gray-100 text-cyan-800 py-4 px-8 rounded-lg shadow-lg mb-4">
           <h2 className="text-2xl font-medium">Upcoming Birthdays</h2>
           <div className="flex gap-x-6 gap-y-2 items-center flex-wrap">
             {upcomingBirthdays.map((birthday: NexusGenObjects["Birthday"]) => {
