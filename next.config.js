@@ -7,9 +7,6 @@ const settings = {
     locales: ["en-US"],
     defaultLocale: "en-US",
   },
-  devIndicators: {
-    autoPrerender: false,
-  },
   reactStrictMode: true,
   pwa: {
     dest: "public",
