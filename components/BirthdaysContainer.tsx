@@ -307,7 +307,9 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                   </button>
                 </div>
                 <div
-                  className={`${showFilters ? "" : "hidden"} md:block relative`}
+                  className={`${
+                    showFilters ? "" : "hidden"
+                  } col-span-4 md:block relative`}
                 >
                   <BirthdayFilterField
                     disabled={
@@ -319,7 +321,9 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                   />
                 </div>
                 <div
-                  className={`${showFilters ? "" : "hidden"} md:block relative`}
+                  className={`${
+                    showFilters ? "" : "hidden"
+                  } col-span-4 md:block relative`}
                 >
                   <BirthdayFilterField
                     disabled={
@@ -331,7 +335,9 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                   />
                 </div>
                 <div
-                  className={`${showFilters ? "" : "hidden"} md:block relative`}
+                  className={`${
+                    showFilters ? "" : "hidden"
+                  } col-span-4 md:block relative`}
                 >
                   <BirthdayFilterField
                     disabled={
