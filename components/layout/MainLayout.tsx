@@ -25,7 +25,7 @@ const MainLayout = ({
           name="description"
           content="An easy way to keep track of birthdays"
         />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.png" />
 
         {/* PWA */}
         <link rel="manifest" href="/site.webmanifest" />
