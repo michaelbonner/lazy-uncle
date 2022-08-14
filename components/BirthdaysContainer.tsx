@@ -285,8 +285,8 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
         <div className="bg-gray-50 rounded-lg mt-2 md:mt-0 text-gray-600 border-b-4 border-b-gray-400">
           <div className="sticky top-0 z-10 pt-2 bg-cyan-600">
             <div className="bg-cyan-600">
-              <div className="bg-gray-300 py-2 md:py-3 px-3 md:px-6 rounded-t-lg grid grid-cols-5 md:gap-x-6 gap-y-2 border-t-gray-400 border-t-4">
-                <div className="relative col-span-4 md:col-span-2">
+              <div className="bg-gray-300 py-2 md:py-3 px-3 md:px-6 rounded-t-lg grid grid-cols-5 md:grid-cols-9 md:gap-x-6 gap-y-2 border-t-gray-400 border-t-4">
+                <div className="relative col-span-4 md:col-span-3">
                   <BirthdayFilterField
                     disabled={
                       !birthdaysData?.birthdays?.length && !workingDates.length
@@ -309,7 +309,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                 <div
                   className={`${
                     showFilters ? "" : "hidden"
-                  } col-span-4 md:block relative`}
+                  } col-span-4 md:col-span-2 md:block relative`}
                 >
                   <BirthdayFilterField
                     disabled={
@@ -323,7 +323,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                 <div
                   className={`${
                     showFilters ? "" : "hidden"
-                  } col-span-4 md:block relative`}
+                  } col-span-4 md:col-span-2 md:block relative`}
                 >
                   <BirthdayFilterField
                     disabled={
@@ -337,7 +337,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                 <div
                   className={`${
                     showFilters ? "" : "hidden"
-                  } col-span-4 md:block relative`}
+                  } col-span-4 md:col-span-2 md:block relative`}
                 >
                   <BirthdayFilterField
                     disabled={
