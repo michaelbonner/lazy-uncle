@@ -25,10 +25,13 @@ const MainLayout = ({
           name="description"
           content="An easy way to keep track of birthdays"
         />
-        <link rel="icon" href="/favicon.png" />
+        <link rel="icon" href="https://www.lazyuncle.net/favicon.png" />
 
         {/* PWA */}
-        <link rel="manifest" href="/site.webmanifest" />
+        <link
+          rel="manifest"
+          href="https://www.lazyuncle.net/site.webmanifest"
+        />
         <meta name="theme-color" content="#0891b2" />
         <meta name="msapplication-TileColor" content="#0891b2" />
 
@@ -53,9 +56,13 @@ const MainLayout = ({
         <link
           rel="apple-touch-icon"
           sizes="180x180"
-          href="/apple-touch-icon.png"
+          href="https://www.lazyuncle.net/apple-touch-icon.png"
         />
-        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#13b8a6" />
+        <link
+          rel="mask-icon"
+          href="https://www.lazyuncle.net/safari-pinned-tab.svg"
+          color="#13b8a6"
+        />
       </Head>
 
       <header className="flex justify-between px-4 md:px-8">
