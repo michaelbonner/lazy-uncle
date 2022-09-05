@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { getOrdinalNumber } from "./getOrdinalNumber";
 
 describe("get ordinal number for number", () => {

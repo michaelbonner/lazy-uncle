@@ -1,6 +1,6 @@
 # Lazy Uncle
 
-![Test Jest Tests and Build workflow](https://github.com/michaelbonner/lazy-uncle/actions/workflows/test.yml/badge.svg)
+![Tests and Build workflow](https://github.com/michaelbonner/lazy-uncle/actions/workflows/test.yml/badge.svg)
 
 ![Lazy Uncle](./public/github-banner.png)
 

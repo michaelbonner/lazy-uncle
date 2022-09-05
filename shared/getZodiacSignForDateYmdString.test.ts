@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import getZodiacSignForDate from "./getZodiacSignForDateYmdString";
 
 describe("get zodiac sign for date", () => {

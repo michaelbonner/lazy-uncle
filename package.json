@@ -3,12 +3,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "jest && next build",
+    "build": "vitest run && next build",
     "start": "next start",
     "lint": "next lint",
     "generate": "prisma generate",
     "postinstall": "prisma generate",
-    "test": "jest"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@apollo/client": "^3.6.9",
@@ -36,8 +38,6 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.2",
-    "@testing-library/jest-dom": "^5.16.4",
-    "@testing-library/react": "^13.3.0",
     "@types/micro-cors": "^0.1.2",
     "@types/node": "^18.0.0",
     "@types/react": "^18.0.14",
@@ -45,12 +45,11 @@
     "autoprefixer": "^10.4.7",
     "eslint": "^8.18.0",
     "eslint-config-next": "^12.2.0",
-    "jest": "^28.1.3",
     "postcss": "^8.4.14",
     "prisma": "^4.0.0",
     "tailwindcss": "^3.1.4",
-    "ts-jest": "^28.0.5",
     "ts-node": "^10.8.1",
-    "typescript": "^4.7.4"
+    "typescript": "^4.7.4",
+    "vitest": "^0.23.1"
   }
 }
