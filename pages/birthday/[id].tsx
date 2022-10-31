@@ -39,11 +39,13 @@ const Birthday = ({ id }: { id: string }) => {
       <>
         {birthdayError && <p>Error loading birthday</p>}
         <div className="px-2 md:px-8 max-w-7xl mx-auto mt-8">
-          <Link href="/">
-            <a className="flex space-x-1 items-center md:px-0 underline text-cyan-100">
-              <HiChevronLeft className="mt-1 w-6 h-6" />
-              <span>Back to all birthdays</span>
-            </a>
+          <Link
+            href="/"
+            className="flex space-x-1 items-center md:px-0 underline text-cyan-100">
+
+            <HiChevronLeft className="mt-1 w-6 h-6" />
+            <span>Back to all birthdays</span>
+
           </Link>
           <div className="bg-white rounded-xl mt-4 text-gray-800 px-4 py-8">
             {birthdayLoading ? (

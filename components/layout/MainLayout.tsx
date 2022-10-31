@@ -68,14 +68,14 @@ const MainLayout = ({
       <header className="flex justify-between px-4 md:px-8">
         <h1 className="text-4xl font-semibold pt-4">
           <Link href="/">
-            <a>
-              <Image
-                alt="Lazy Uncle"
-                height={47}
-                src="/lazy-uncle-white.svg"
-                width={160}
-              />
-            </a>
+
+            <Image
+              alt="Lazy Uncle"
+              height={47}
+              src="/lazy-uncle-white.svg"
+              width={160}
+            />
+
           </Link>
         </h1>
         {session?.user && (
@@ -123,11 +123,11 @@ const MainLayout = ({
             Sponsor Me
           </a>
 
-          <Link href="/policies">
-            <a className="underline pt-4 md:pt-0">Policies</a>
+          <Link href="/policies" className="underline pt-4 md:pt-0">
+            Policies
           </Link>
-          <Link href="/contact">
-            <a className="underline pt-4 md:pt-0">Contact</a>
+          <Link href="/contact" className="underline pt-4 md:pt-0">
+            Contact
           </Link>
         </div>
       </footer>

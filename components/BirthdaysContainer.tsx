@@ -438,11 +438,11 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
         <div className="flex justify-end mt-8 text-gray-200">
           <Link
             href={`webcal://${currentHost}/api/calendar-subscription/${userId}`}
-          >
-            <a className="flex items-center space-x-2 underline text-gray-200 hover:text-gray-100 group transition-all">
-              <HiOutlineCalendar className="text-cyan-400 group-hover:text-gray-200 transition-all" />
-              <span>Subscribe to calendar</span>
-            </a>
+            className="flex items-center space-x-2 underline text-gray-200 hover:text-gray-100 group transition-all">
+
+            <HiOutlineCalendar className="text-cyan-400 group-hover:text-gray-200 transition-all" />
+            <span>Subscribe to calendar</span>
+
           </Link>
         </div>
       )}

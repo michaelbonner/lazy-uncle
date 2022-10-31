@@ -14,8 +14,8 @@ const Policies = () => {
               Your privacy is important to us. It is Lazy Uncle&apos;s policy to
               respect your privacy regarding any information we may collect from
               you across our website,{" "}
-              <Link href="/">
-                <a className="underline">https://lazyuncle.net/</a>
+              <Link href="/" className="underline">
+                https://lazyuncle.net/
               </Link>
               , and other sites we own and operate.
             </p>
@@ -52,8 +52,8 @@ const Policies = () => {
               of our practices around privacy and personal information. If you
               have any questions about how we handle user data and personal
               information, feel free to{" "}
-              <Link href="/contact">
-                <a className="underline">contact me</a>
+              <Link href="/contact" className="underline">
+                contact me
               </Link>
               .
             </p>
@@ -64,8 +64,8 @@ const Policies = () => {
             <h3>1. Terms</h3>
             <p>
               By accessing the website at{" "}
-              <Link href="/">
-                <a className="underline">https://lazyuncle.net/</a>
+              <Link href="/" className="underline">
+                https://lazyuncle.net/
               </Link>
               , you are agreeing to be bound by these terms of service, all
               applicable laws and regulations, and agree that you are
