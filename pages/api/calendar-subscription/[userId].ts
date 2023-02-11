@@ -3,8 +3,6 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../lib/prisma";
 import { getOrdinalNumber } from "../../../shared/getOrdinalNumber";
 
-const ics = require("ics");
-
 interface Birthdate {
   title: string;
   start: [number, number, number];
@@ -16,6 +14,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<string>
 ) {
+  const ics = require("ics");
+
   const birthdays = await prisma.birthday.findMany({
     where: {
       userId: req.query.userId as string,
