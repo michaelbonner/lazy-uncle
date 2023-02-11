@@ -6,6 +6,7 @@ import TagManager from "react-gtm-module";
 import { ToastContainer } from "react-toastify";
 import client from "../lib/apollo";
 import { SearchProvider } from "../providers/SearchProvider";
+import { PageLoadingProgress } from "../components/PageLoadingProgress";
 
 import "react-toastify/dist/ReactToastify.css";
 import "../styles/globals.css";
@@ -18,6 +19,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <SessionProvider session={pageProps.session}>
       <ApolloProvider client={client}>
+        <PageLoadingProgress />
         <SearchProvider>
           <Component {...pageProps} />
         </SearchProvider>

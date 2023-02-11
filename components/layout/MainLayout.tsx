@@ -68,7 +68,6 @@ const MainLayout = ({
       <header className="flex justify-between px-4 md:px-8">
         <h1 className="text-4xl font-semibold pt-4">
           <Link href="/">
-
             <Image
               alt="Lazy Uncle"
               height={47}
@@ -76,7 +75,6 @@ const MainLayout = ({
               src="/lazy-uncle-white.svg"
               width={160}
             />
-
           </Link>
         </h1>
         {session?.user && (
