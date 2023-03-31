@@ -2,7 +2,7 @@ import { signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import React, { ReactElement } from "react";
+import { ReactElement } from "react";
 
 import { RiBugFill, RiLightbulbFlashLine } from "react-icons/ri";
 import ClientOnly from "../ClientOnly";
