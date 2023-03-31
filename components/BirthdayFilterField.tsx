@@ -1,4 +1,3 @@
-import React from "react";
 import { HiBackspace, HiSearch } from "react-icons/hi";
 
 const BirthdayFilterField = ({
@@ -16,7 +15,7 @@ const BirthdayFilterField = ({
   return (
     <div>
       <input
-        className="block w-full py-3 px-4 rounded-lg text-gray-700 focus:outline-none bg-gray-200 focus:bg-white border-0 focus:border-gray-400 placeholder:text-gray-400"
+        className="block w-full rounded-lg border-0 bg-gray-200 px-4 py-3 text-gray-700 placeholder:text-gray-400 focus:border-gray-400 focus:bg-white focus:outline-none"
         disabled={disabled}
         id={value}
         onChange={(e) => setValue(e.target.value)}
@@ -31,11 +30,11 @@ const BirthdayFilterField = ({
       />
       {value && (
         <HiBackspace
-          className="text-xl text-gray-400 absolute right-10 top-4"
+          className="absolute right-10 top-4 text-xl text-gray-400"
           onClick={() => setValue("")}
         />
       )}
-      <HiSearch className="text-xl text-gray-400 absolute right-3 top-4" />
+      <HiSearch className="absolute right-3 top-4 text-xl text-gray-400" />
     </div>
   );
 };

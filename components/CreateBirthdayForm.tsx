@@ -1,6 +1,6 @@
 import { useMutation } from "@apollo/client";
 import { useSession } from "next-auth/react";
-import React, { useState } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
 import {
   CREATE_BIRTHDAY_MUTATION,
@@ -51,13 +51,13 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
         onSubmit();
       }}
     >
-      <div className="grid md:grid-cols-2 gap-x-4">
+      <div className="grid gap-x-4 md:grid-cols-2">
         <div>
-          <label className="block mt-4 text-sm" htmlFor="name">
+          <label className="mt-4 block text-sm" htmlFor="name">
             Name
           </label>
           <input
-            className="block w-full border-gray-300 rounded h-12"
+            className="block h-12 w-full rounded border-gray-300"
             id="name"
             onChange={(e) => setName(e.target.value)}
             required={true}
@@ -66,11 +66,11 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
           />
         </div>
         <div>
-          <label className="block mt-4 text-sm" htmlFor="date">
+          <label className="mt-4 block text-sm" htmlFor="date">
             Birthday
           </label>
           <input
-            className="block w-full border-gray-300 rounded h-12"
+            className="block h-12 w-full rounded border-gray-300"
             id="date"
             onChange={(e) => setDate(e.target.value)}
             max={new Date().toISOString().split("T")[0]}
@@ -80,11 +80,11 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
           />
         </div>
         <div>
-          <label className="block mt-4 text-sm" htmlFor="category">
+          <label className="mt-4 block text-sm" htmlFor="category">
             Category (optional)
           </label>
           <input
-            className="block w-full border-gray-300 rounded h-12"
+            className="block h-12 w-full rounded border-gray-300"
             id="category"
             onChange={(e) => setCategory(e.target.value)}
             type="text"
@@ -92,11 +92,11 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
           />
         </div>
         <div>
-          <label className="block mt-4 text-sm" htmlFor="parent">
+          <label className="mt-4 block text-sm" htmlFor="parent">
             Parent (optional)
           </label>
           <input
-            className="block w-full border-gray-300 rounded h-12"
+            className="block h-12 w-full rounded border-gray-300"
             id="parent"
             onChange={(e) => setParent(e.target.value)}
             type="text"
@@ -115,7 +115,7 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
       </div>
       <div className="text-right">
         {error && (
-          <div className="text-red-500 text-sm">
+          <div className="text-sm text-red-500">
             An error occurred while creating the birthday. Please try again.
             <code>{error.message}</code>
           </div>

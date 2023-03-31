@@ -1,11 +1,10 @@
-import React from "react";
 import MainLayout from "../components/layout/MainLayout";
 
 const Contact = () => {
   return (
     <MainLayout title="Contact Michael Bonner">
-      <div className="max-w-5xl mx-4 md:mx-auto bg-white rounded-lg py-12 px-4 md:px-16 my-16">
-        <div className="px-4 text-gray-700 max-w-5xl prose">
+      <div className="mx-4 my-16 max-w-5xl rounded-lg bg-white px-4 py-12 md:mx-auto md:px-16">
+        <div className="prose max-w-5xl px-4 text-gray-700">
           <h1 className="text-gray-800">Contact Michael Bonner</h1>
           <p>
             Here&apos;s a couple links to get in touch with me. I would give you

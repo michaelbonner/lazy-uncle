@@ -1,12 +1,11 @@
 import Link from "next/link";
-import React from "react";
 import MainLayout from "../components/layout/MainLayout";
 
 const Policies = () => {
   return (
     <MainLayout title="Policies">
-      <div className="max-w-5xl mx-4 md:mx-auto bg-white rounded-lg py-12 px-4 md:px-16 my-16">
-        <div className="px-4 text-gray-700 max-w-5xl prose">
+      <div className="mx-4 my-16 max-w-5xl rounded-lg bg-white px-4 py-12 md:mx-auto md:px-16">
+        <div className="prose max-w-5xl px-4 text-gray-700">
           <h1>Privacy Policy and Terms of Service</h1>
           <h2>Privacy Policy</h2>
           <div>

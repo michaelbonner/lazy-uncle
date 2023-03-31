@@ -1,9 +1,8 @@
 import { useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
-import React from "react";
-import MainLayout from "../components/layout/MainLayout";
 import LoadingSpinner from "../components/LoadingSpinner";
 import Welcome from "../components/Welcome";
+import MainLayout from "../components/layout/MainLayout";
 
 const BirthdaysContainer = dynamic(
   () => import("../components/BirthdaysContainer")
@@ -14,7 +13,7 @@ function Home() {
 
   return (
     <MainLayout title="Lazy Uncle">
-      <main className="max-w-7xl mx-auto pb-8 px-2">
+      <main className="mx-auto max-w-7xl px-2 pb-8">
         {sessionStatus === "loading" && (
           <div className="flex items-center justify-center">
             <LoadingSpinner />

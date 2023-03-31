@@ -68,9 +68,9 @@ export const PageLoadingProgress = () => {
   }, [router]);
 
   return (
-    <div className="absolute z-30 top-0 left-0 right-0 h-1">
+    <div className="absolute left-0 right-0 top-0 z-30 h-1">
       <div
-        className="h-1 shadow-sm bg-cyan-50 transition-all duration-500"
+        className="h-1 bg-cyan-50 shadow-sm transition-all duration-500"
         style={{
           width: `${widthPercentage}%`,
           opacity: loaderIsVisible ? 1 : 0,

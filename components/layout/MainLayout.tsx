@@ -17,7 +17,7 @@ const MainLayout = ({
   const { data: session } = useSession();
 
   return (
-    <div className="min-h-screen flex flex-col justify-between">
+    <div className="flex min-h-screen flex-col justify-between">
       <Head>
         {/* General */}
         <title>{title}</title>
@@ -66,7 +66,7 @@ const MainLayout = ({
       </Head>
 
       <header className="flex justify-between px-4 md:px-8">
-        <h1 className="text-4xl font-semibold pt-4">
+        <h1 className="pt-4 text-4xl font-semibold">
           <Link href="/">
             <Image
               alt="Lazy Uncle"
@@ -78,7 +78,7 @@ const MainLayout = ({
           </Link>
         </h1>
         {session?.user && (
-          <div className="md:flex items-center md:space-x-4 text-right mt-8 md:mt-0">
+          <div className="mt-8 items-center text-right md:mt-0 md:flex md:space-x-4">
             <p className="hidden md:block">
               Logged in as {session?.user?.email}
             </p>
@@ -92,7 +92,7 @@ const MainLayout = ({
         )}
       </header>
       <ClientOnly>{children}</ClientOnly>
-      <footer className="px-4 md:px-8 py-6 md:flex md:justify-between text-gray-200 text-center">
+      <footer className="px-4 py-6 text-center text-gray-200 md:flex md:justify-between md:px-8">
         <div>
           &copy; {new Date().getFullYear()}
           {` `}
@@ -100,32 +100,32 @@ const MainLayout = ({
             Michael Bonner
           </a>
         </div>
-        <div className="flex flex-wrap space-x-6 mt-4 md:mt-0 justify-center">
+        <div className="mt-4 flex flex-wrap justify-center space-x-6 md:mt-0">
           <a
-            className="underline pt-4 md:pt-0 flex items-center space-x-1"
+            className="flex items-center space-x-1 pt-4 underline md:pt-0"
             href="https://github.com/michaelbonner/lazy-uncle/issues/new?assignees=michaelbonner&labels=&template=bug_report.md&title="
           >
-            <RiBugFill className="w-4 h-4" />
+            <RiBugFill className="h-4 w-4" />
             <span>Report a bug</span>
           </a>
           <a
-            className="underline pt-4 md:pt-0 flex items-center space-x-1"
+            className="flex items-center space-x-1 pt-4 underline md:pt-0"
             href="https://github.com/michaelbonner/lazy-uncle/issues/new?assignees=michaelbonner&labels=&template=feature_request.md&title="
           >
-            <RiLightbulbFlashLine className="w-4 h-4" />
+            <RiLightbulbFlashLine className="h-4 w-4" />
             <span>Request a feature</span>
           </a>
           <a
-            className="underline pt-4 md:pt-0"
+            className="pt-4 underline md:pt-0"
             href="https://github.com/sponsors/michaelbonner?o=esb"
           >
             Sponsor Me
           </a>
 
-          <Link href="/policies" className="underline pt-4 md:pt-0">
+          <Link href="/policies" className="pt-4 underline md:pt-0">
             Policies
           </Link>
-          <Link href="/contact" className="underline pt-4 md:pt-0">
+          <Link href="/contact" className="pt-4 underline md:pt-0">
             Contact
           </Link>
         </div>

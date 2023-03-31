@@ -1,10 +1,10 @@
 import { Editor, EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import { IoArrowRedo, IoArrowUndo } from "react-icons/io5";
 import {
   MdFormatListNumbered,
   MdOutlineFormatListBulleted,
 } from "react-icons/md";
-import { IoArrowUndo, IoArrowRedo } from "react-icons/io5";
 
 const MenuBar = ({ editor }: { editor: Editor | null }) => {
   if (!editor) {
@@ -14,7 +14,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
   const buttonClassName = `py-1 px-2`;
 
   return (
-    <div className="flex flex-wrap items-end bg-gray-100 px-2 rounded-t pb-2 sticky top-0 z-10 border">
+    <div className="sticky top-0 z-10 flex flex-wrap items-end rounded-t border bg-gray-100 px-2 pb-2">
       <div>
         <button
           aria-label="bold"
@@ -22,7 +22,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           onClick={() => editor.chain().focus().toggleBold().run()}
           className={`${buttonClassName} ${
             editor.isActive("bold")
-              ? "font-bold bg-white rounded shadow-sm"
+              ? "rounded bg-white font-bold shadow-sm"
               : ""
           } font-bold`}
         >
@@ -34,7 +34,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           onClick={() => editor.chain().focus().toggleItalic().run()}
           className={`${buttonClassName} ${
             editor.isActive("italic")
-              ? "font-bold bg-white rounded shadow-sm"
+              ? "rounded bg-white font-bold shadow-sm"
               : ""
           } italic`}
         >
@@ -46,7 +46,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           onClick={() => editor.chain().focus().toggleStrike().run()}
           className={`${buttonClassName} ${
             editor.isActive("strike")
-              ? "font-bold bg-white rounded shadow-sm"
+              ? "rounded bg-white font-bold shadow-sm"
               : ""
           } line-through`}
         >
@@ -60,7 +60,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           onClick={() => editor.chain().focus().setParagraph().run()}
           className={`${buttonClassName} ${
             editor.isActive("paragraph")
-              ? "font-bold bg-white rounded shadow-sm"
+              ? "rounded bg-white font-bold shadow-sm"
               : ""
           }`}
         >
@@ -74,7 +74,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           }
           className={`${buttonClassName} ${
             editor.isActive("heading", { level: 1 })
-              ? "font-bold bg-white rounded shadow-sm"
+              ? "rounded bg-white font-bold shadow-sm"
               : "font-normal"
           } text-2xl`}
         >
@@ -88,7 +88,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           }
           className={`${buttonClassName} ${
             editor.isActive("heading", { level: 2 })
-              ? "font-bold bg-white rounded shadow-sm"
+              ? "rounded bg-white font-bold shadow-sm"
               : "font-normal"
           } text-xl`}
         >
@@ -102,7 +102,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           }
           className={`${buttonClassName} ${
             editor.isActive("heading", { level: 3 })
-              ? "font-bold bg-white rounded shadow-sm"
+              ? "rounded bg-white font-bold shadow-sm"
               : "font-normal"
           } text-lg`}
         >
@@ -117,7 +117,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           className={`${buttonClassName} ${
             editor.isActive("bulletList")
-              ? "font-bold bg-white rounded shadow-sm"
+              ? "rounded bg-white font-bold shadow-sm"
               : ""
           }`}
         >
@@ -130,7 +130,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
           className={`${buttonClassName} ${
             editor.isActive("orderedList")
-              ? "font-bold bg-white rounded shadow-sm"
+              ? "rounded bg-white font-bold shadow-sm"
               : ""
           }`}
         >

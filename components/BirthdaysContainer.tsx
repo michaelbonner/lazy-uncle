@@ -230,9 +230,9 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
   return (
     <div>
       {upcomingBirthdays?.length > 0 && (
-        <div className="md:flex gap-x-8 items-center border-t-4 border-b-4 border-gray-300 bg-gray-100 text-cyan-800 py-4 px-8 rounded-lg shadow-lg my-4">
+        <div className="my-4 items-center gap-x-8 rounded-lg border-b-4 border-t-4 border-gray-300 bg-gray-100 px-8 py-4 text-cyan-800 shadow-lg md:flex">
           <h2 className="text-2xl font-medium">Upcoming Birthdays</h2>
-          <div className="mt-3 md:mt-0 flex gap-x-6 gap-y-2 items-center flex-wrap">
+          <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 md:mt-0">
             {upcomingBirthdays.map((birthday: NexusGenObjects["Birthday"]) => {
               const daysLabel =
                 getDaysUntilNextBirthday(birthday) === 0 ? (
@@ -253,8 +253,8 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
           </div>
         </div>
       )}
-      <div className="flex justify-between md:justify-end space-x-2 items-end">
-        <div className="pl-2 md:pl-0 md:flex md:space-x-4 items-center">
+      <div className="flex items-end justify-between space-x-2 md:justify-end">
+        <div className="items-center pl-2 md:flex md:space-x-4 md:pl-0">
           <button
             className={`${
               isFiltered ? "text-cyan-50" : "text-cyan-500"
@@ -265,13 +265,13 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
             <HiXCircle />
             <span>Clear Filters</span>
           </button>
-          <div className="md:text-right text-sm text-cyan-300">
+          <div className="text-sm text-cyan-300 md:text-right">
             {workingDatesCount}/{birthdaysData?.birthdays?.length} visible
           </div>
         </div>
-        <div className="flex md:hidden justify-end items-center space-x-4 mt-4">
+        <div className="mt-4 flex items-center justify-end space-x-4 md:hidden">
           <button
-            className="flex space-x-2 items-center py-2 px-4 border rounded-md bg-cyan-50 text-gray-800 text-sm"
+            className="flex items-center space-x-2 rounded-md border bg-cyan-50 px-4 py-2 text-sm text-gray-800"
             onClick={() => {
               setShowFilters(!showFilters);
             }}
@@ -289,19 +289,19 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
 
       <div className="text-center">
         {birthdaysError && <p className="pt-3">{birthdaysError.message}</p>}
-        <div className="bg-gray-50 rounded-lg mt-2 md:mt-0 text-gray-600 border-b-4 border-b-gray-400">
-          <div className="sticky top-0 z-10 pt-2 bg-cyan-600">
+        <div className="mt-2 rounded-lg border-b-4 border-b-gray-400 bg-gray-50 text-gray-600 md:mt-0">
+          <div className="sticky top-0 z-10 bg-cyan-600 pt-2">
             <div className="bg-cyan-600">
-              <div className="bg-gray-300 py-2 md:py-3 px-3 md:px-6 rounded-t-lg flex gap-x-2 gap-y-2 border-t-gray-400 border-t-4">
+              <div className="flex gap-x-2 gap-y-2 rounded-t-lg border-t-4 border-t-gray-400 bg-gray-300 px-3 py-2 md:px-6 md:py-3">
                 <button
-                  className="bg-gray-200 flex items-center justify-center rounded-md px-4"
+                  className="flex items-center justify-center rounded-md bg-gray-200 px-4"
                   onClick={() =>
                     setIsAddBirthdayDialogVisible(!isAddBirthdayDialogVisible)
                   }
                 >
                   +
                 </button>
-                <div className="relative grow-1 w-full min-w-[220px]">
+                <div className="grow-1 relative w-full min-w-[220px]">
                   <BirthdayFilterField
                     disabled={
                       !birthdaysData?.birthdays?.length && !workingDates.length
@@ -313,7 +313,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                 </div>
                 <div className="flex md:hidden">
                   <button
-                    className="bg-gray-200 ml-2 w-full flex items-center justify-center rounded-md"
+                    className="ml-2 flex w-full items-center justify-center rounded-md bg-gray-200"
                     onClick={handleRefresh}
                   >
                     <GrRefresh
@@ -324,7 +324,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                 <div
                   className={`${
                     showFilters ? "" : "hidden"
-                  } min-w-[220px] md:block relative`}
+                  } relative min-w-[220px] md:block`}
                 >
                   <BirthdayFilterField
                     disabled={
@@ -338,7 +338,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                 <div
                   className={`${
                     showFilters ? "" : "hidden"
-                  } min-w-[220px] md:block relative`}
+                  } relative min-w-[220px] md:block`}
                 >
                   <BirthdayFilterField
                     disabled={
@@ -352,7 +352,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                 <div
                   className={`${
                     showFilters ? "" : "hidden"
-                  } min-w-[220px] md:block relative`}
+                  } relative min-w-[220px] md:block`}
                 >
                   <BirthdayFilterField
                     disabled={
@@ -365,7 +365,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                 </div>
               </div>
             </div>
-            <div className="hidden md:grid md:grid-cols-12 bg-cyan-800 px-4 md:px-8 text-gray-100">
+            <div className="hidden bg-cyan-800 px-4 text-gray-100 md:grid md:grid-cols-12 md:px-8">
               <SortColumnHeader
                 ascendingString="name_asc"
                 className="col-span-3"
@@ -376,7 +376,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
               />
               <SortColumnHeader
                 ascendingString="date_asc"
-                className="justify-center col-span-2"
+                className="col-span-2 justify-center"
                 descendingString="date_desc"
                 label="Date"
                 setValue={setSortBy}
@@ -384,7 +384,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
               />
               <SortColumnHeader
                 ascendingString="age_asc"
-                className="justify-center col-span-2"
+                className="col-span-2 justify-center"
                 descendingString="age_desc"
                 label="Age"
                 setValue={setSortBy}
@@ -392,7 +392,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
               />
               <SortColumnHeader
                 ascendingString="category_asc"
-                className="justify-center col-span-2"
+                className="col-span-2 justify-center"
                 descendingString="category_desc"
                 label="Category"
                 setValue={setSortBy}
@@ -400,7 +400,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
               />
               <SortColumnHeader
                 ascendingString="parent_asc"
-                className="justify-center col-span-2"
+                className="col-span-2 justify-center"
                 descendingString="parent_desc"
                 label="Parent"
                 setValue={setSortBy}
@@ -434,9 +434,9 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
               })}
             </ul>
           ) : (
-            <div className="py-10 px-8 text-gray-400">
+            <div className="px-8 py-10 text-gray-400">
               {sessionStatus === "loading" || birthdaysLoading ? (
-                <div className="flex items-center justify-center min-h-[300px]">
+                <div className="flex min-h-[300px] items-center justify-center">
                   <LoadingSpinner spinnerTextColor="text-cyan-40" />
                 </div>
               ) : (
@@ -450,20 +450,20 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
         </div>
       </div>
       {birthdaysData?.birthdays?.length > 0 && (
-        <div className="flex justify-end mt-8 text-gray-200">
+        <div className="mt-8 flex justify-end text-gray-200">
           <Link
             href={`webcal://${currentHost}/api/calendar-subscription/${userId}`}
-            className="flex items-center space-x-2 underline text-gray-200 hover:text-gray-100 group transition-all"
+            className="group flex items-center space-x-2 text-gray-200 underline transition-all hover:text-gray-100"
           >
-            <HiOutlineCalendar className="text-cyan-400 group-hover:text-gray-200 transition-all" />
+            <HiOutlineCalendar className="text-cyan-400 transition-all group-hover:text-gray-200" />
             <span>Subscribe to calendar</span>
           </Link>
         </div>
       )}
-      <div className="bg-gray-50 rounded-lg mt-24 text-gray-800 border-t-gray-400 border-t-4 border-b-4 border-b-gray-400">
-        <div className="py-12 px-4 md:px-8 mt-4">
+      <div className="mt-24 rounded-lg border-b-4 border-t-4 border-b-gray-400 border-t-gray-400 bg-gray-50 text-gray-800">
+        <div className="mt-4 px-4 py-12 md:px-8">
           <div className="max-w-2xl">
-            <h3 className="text-2xl font-medium mb-4">
+            <h3 className="mb-4 text-2xl font-medium">
               Import Birthdays From CSV
             </h3>
             <UploadCsvBirthdayForm />

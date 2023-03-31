@@ -1,12 +1,10 @@
-import React from "react";
-
 const LoadingSpinner = ({
   spinnerTextColor = "text-cyan-50",
 }: {
   spinnerTextColor?: string;
 }) => {
   return (
-    <div className="circle w-16 h-16 mx-auto">
+    <div className="circle mx-auto h-16 w-16">
       <svg
         className="circle__svg"
         viewBox="0 0 100 100"

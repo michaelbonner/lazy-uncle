@@ -1,5 +1,5 @@
 import { useMutation } from "@apollo/client";
-import React, { useState } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import { EDIT_BIRTHDAY_MUTATION } from "../graphql/Birthday";
@@ -44,13 +44,13 @@ const EditBirthdayForm = ({
         toast.success("Birthday updated successfully");
       }}
     >
-      <div className="grid md:grid-cols-2 gap-x-4">
+      <div className="grid gap-x-4 md:grid-cols-2">
         <div>
-          <label className="block mt-4" htmlFor="name">
+          <label className="mt-4 block" htmlFor="name">
             Name
           </label>
           <input
-            className="block w-full border-gray-300 rounded h-12"
+            className="block h-12 w-full rounded border-gray-300"
             id="name"
             onChange={(e) => setName(e.target.value)}
             required={true}
@@ -59,11 +59,11 @@ const EditBirthdayForm = ({
           />
         </div>
         <div>
-          <label className="block mt-4" htmlFor="date">
+          <label className="mt-4 block" htmlFor="date">
             Birthday
           </label>
           <input
-            className="block w-full border-gray-300 rounded h-12"
+            className="block h-12 w-full rounded border-gray-300"
             id="date"
             onChange={(e) => setDate(e.target.value)}
             max={new Date().toISOString().split("T")[0]}
@@ -73,11 +73,11 @@ const EditBirthdayForm = ({
           />
         </div>
         <div>
-          <label className="block mt-4" htmlFor="category">
+          <label className="mt-4 block" htmlFor="category">
             Category (optional)
           </label>
           <input
-            className="block w-full border-gray-300 rounded h-12"
+            className="block h-12 w-full rounded border-gray-300"
             id="category"
             onChange={(e) => setCategory(e.target.value)}
             type="text"
@@ -85,11 +85,11 @@ const EditBirthdayForm = ({
           />
         </div>
         <div>
-          <label className="block mt-4" htmlFor="parent">
+          <label className="mt-4 block" htmlFor="parent">
             Parent (optional)
           </label>
           <input
-            className="block w-full border-gray-300 rounded h-12"
+            className="block h-12 w-full rounded border-gray-300"
             id="parent"
             onChange={(e) => setParent(e.target.value)}
             type="text"
@@ -107,15 +107,15 @@ const EditBirthdayForm = ({
         />
       </div>
       {error && (
-        <div className="text-red-500 text-sm">
+        <div className="text-sm text-red-500">
           An error occurred while saving the birthday. Please try again.
           <code>{error.message}</code>
         </div>
       )}
-      <div className="text-right sticky bottom-2 flex justify-end items-center gap-4">
+      <div className="sticky bottom-2 flex items-center justify-end gap-4 text-right">
         {handleClose && (
           <button
-            className="inline-flex items-center px-4 py-2 border border-transparent font-medium rounded-md shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
+            className="inline-flex items-center rounded-md border border-transparent px-4 py-2 font-medium shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
             onClick={handleClose}
             type="button"
           >

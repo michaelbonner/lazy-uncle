@@ -2,7 +2,7 @@ import { useMutation } from "@apollo/client";
 import { parse as csvParse } from "csv-parse/browser/esm/sync";
 import { format, isValid, parse } from "date-fns";
 import { useSession } from "next-auth/react";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   CREATE_BIRTHDAY_MUTATION,
   GET_ALL_BIRTHDAYS_QUERY,
@@ -88,15 +88,15 @@ const UploadCsvBirthdayForm = () => {
     >
       <div>
         <div>
-          <label className="block mt-4" htmlFor="csv">
+          <label className="mt-4 block" htmlFor="csv">
             <p>Rows of name, date (yyyy-mm-dd), category, parent, notes</p>
             <p>Example:</p>
-            <p className="bg-white border border-dashed py-2 px-4">
+            <p className="border border-dashed bg-white px-4 py-2">
               <code>Mike,2020-01-02,NULL,NULL,Likes the Browns</code>
             </p>
           </label>
           <input
-            className=" my-4 block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-cyan-600 focus:outline-none"
+            className=" m-0 my-4 block w-full rounded border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-1.5 text-base font-normal text-gray-700 transition ease-in-out focus:border-cyan-600 focus:bg-white focus:text-gray-700 focus:outline-none"
             id="csv"
             accept=".csv"
             onChange={handleFileUpload}
@@ -105,13 +105,13 @@ const UploadCsvBirthdayForm = () => {
         </div>
 
         {error && (
-          <div className="text-red-500 text-sm">
+          <div className="text-sm text-red-500">
             An error occurred while creating the birthday. Please try again.
             <code>{error.message}</code>
           </div>
         )}
 
-        <div className="mt-4 md:mt-0 flex justify-end">
+        <div className="mt-4 flex justify-end md:mt-0">
           <PrimaryButton disabled={loading} type="submit">
             Upload CSV
           </PrimaryButton>

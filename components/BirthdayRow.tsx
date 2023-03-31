@@ -51,18 +51,18 @@ const BirthdayRow: React.FC<Props> = ({
     <>
       {birthday.id ? (
         <li
-          className={`hidden md:grid md:grid-cols-12 items-center border-t text-left md:text-center px-4 md:px-8 hover:bg-gray-100`}
+          className={`hidden items-center border-t px-4 text-left hover:bg-gray-100 md:grid md:grid-cols-12 md:px-8 md:text-center`}
         >
           <button
             onClick={() => {
               setIsEditBirthdayDialogOpen(true);
             }}
-            className={`text-left col-span-3 text-xl flex justify-between items-center`}
+            className={`col-span-3 flex items-center justify-between text-left text-xl`}
           >
-            <span className="flex space-x-2 items-center py-3">
+            <span className="flex items-center space-x-2 py-3">
               {daysFromNow === 0 && (
                 <span title={`Today is ${birthday.name}'s birthday!`}>
-                  <GiBalloons className="text-rose-500 right-0 top-0 text-lg" />
+                  <GiBalloons className="right-0 top-0 text-lg text-rose-500" />
                 </span>
               )}
               <span>{birthday.name}</span>{" "}
@@ -71,12 +71,12 @@ const BirthdayRow: React.FC<Props> = ({
               )}
             </span>
             {daysFromNow > 0 && daysFromNow < 14 && (
-              <span className="text-gray-600 text-xs">
+              <span className="text-xs text-gray-600">
                 <span className="text-orange-500">{daysFromNow}</span> days away
               </span>
             )}
           </button>
-          <p className="text-xl text-cyan-600 col-span-2">
+          <p className="col-span-2 text-xl text-cyan-600">
             <button
               onClick={() => {
                 setIsEditBirthdayDialogOpen(true);
@@ -86,17 +86,17 @@ const BirthdayRow: React.FC<Props> = ({
               {format(birthDate, "MMM d")}
             </button>
           </p>
-          <p className="block py-3 col-span-2">
+          <p className="col-span-2 block py-3">
             {birthday.id && age ? (
               <span title={actualAge}>{age}</span>
             ) : (
               <span className="sr-only">{actualAge}</span>
             )}
           </p>
-          <p className="text-ellipsis overflow-hidden relative col-span-2 h-full">
+          <p className="relative col-span-2 h-full overflow-hidden text-ellipsis">
             {birthday.category && (
               <button
-                className="block w-full h-full hover:bg-gray-200 rounded"
+                className="block h-full w-full rounded hover:bg-gray-200"
                 onClick={() =>
                   setCategoryFilter(
                     categoryFilter === birthday.category
@@ -118,10 +118,10 @@ const BirthdayRow: React.FC<Props> = ({
               </button>
             )}
           </p>
-          <p className="text-ellipsis overflow-hidden relative col-span-2 h-full">
+          <p className="relative col-span-2 h-full overflow-hidden text-ellipsis">
             {birthday.parent && (
               <button
-                className="block w-full h-full hover:bg-gray-200 rounded"
+                className="block h-full w-full rounded hover:bg-gray-200"
                 onClick={() =>
                   setParentFilter(
                     parentFilter === birthday.parent
@@ -143,9 +143,9 @@ const BirthdayRow: React.FC<Props> = ({
               </button>
             )}
           </p>
-          <p className="text-ellipsis overflow-hidden relative h-full">
+          <p className="relative h-full overflow-hidden text-ellipsis">
             <button
-              className="flex flex-col items-center justify-center w-full h-full hover:bg-gray-200 rounded"
+              className="flex h-full w-full flex-col items-center justify-center rounded hover:bg-gray-200"
               onClick={() =>
                 setZodiacSignFilter(
                   zodiacSignFilter === zodiacSign ? "" : zodiacSign || ""
@@ -168,19 +168,19 @@ const BirthdayRow: React.FC<Props> = ({
         </li>
       ) : (
         <li
-          className={`hidden md:grid md:grid-cols-12 border-t text-left md:text-center px-4 md:px-8 bg-gray-200 text-gray-800`}
+          className={`hidden border-t bg-gray-200 px-4 text-left text-gray-800 md:grid md:grid-cols-12 md:px-8 md:text-center`}
         >
-          <p className={`text-gray-500 col-span-3 text-lg py-2`}>
+          <p className={`col-span-3 py-2 text-lg text-gray-500`}>
             {birthday.name}
           </p>
-          <p className="text-xl text-cyan-600 col-span-2 py-2">
+          <p className="col-span-2 py-2 text-xl text-cyan-600">
             {format(getDateFromYmdString(birthday.date || ""), "MMM d")}
           </p>
         </li>
       )}
 
       <li
-        className={`block md:hidden border-t text-left px-4 py-4
+        className={`block border-t px-4 py-4 text-left md:hidden
                       ${!birthday.id && "bg-gray-100 text-gray-800"}`}
       >
         {birthday.id ? (
@@ -188,13 +188,13 @@ const BirthdayRow: React.FC<Props> = ({
             onClick={() => {
               setIsEditBirthdayDialogOpen(true);
             }}
-            className="flex justify-between items-center"
+            className="flex items-center justify-between"
           >
             <div>
-              <p className="text-2xl flex items-center space-x-2">
+              <p className="flex items-center space-x-2 text-2xl">
                 {todaysDateMonthAndDay === birthDateMonthAndDay && (
                   <span title={`Today is ${birthday.name}'s birthday!`}>
-                    <GiBalloons className="text-rose-500 right-0 top-0 text-lg" />
+                    <GiBalloons className="right-0 top-0 text-lg text-rose-500" />
                   </span>
                 )}
                 <span>{birthday.name}</span>
@@ -205,7 +205,7 @@ const BirthdayRow: React.FC<Props> = ({
               <div className="flex justify-start space-x-4 pt-1">
                 {getAgeForHumans(getDateFromYmdString(birthday.date || "")) ? (
                   <p>
-                    <span className="font-light text-sm">Age</span>{" "}
+                    <span className="text-sm font-light">Age</span>{" "}
                     <span className="font-medium">
                       {getAgeForHumans(
                         getDateFromYmdString(birthday.date || "")
@@ -221,13 +221,13 @@ const BirthdayRow: React.FC<Props> = ({
                   </span>
                 )}
                 {birthday.parent && (
-                  <p className="text-ellipsis overflow-hidden">
-                    <span className="font-light text-sm">Parent </span>
+                  <p className="overflow-hidden text-ellipsis">
+                    <span className="text-sm font-light">Parent </span>
                     <span className="font-medium">{birthday.parent}</span>
                   </p>
                 )}
               </div>
-              <p className="flex space-x-2 items-center mt-1">
+              <p className="mt-1 flex items-center space-x-2">
                 <ZodiacSignCharacter name={zodiacSign} />
                 <span className="text-xs">{zodiacSign}</span>
               </p>
@@ -238,7 +238,7 @@ const BirthdayRow: React.FC<Props> = ({
           </button>
         ) : (
           <div>
-            <p className="text-2xl flex items-center space-x-2">
+            <p className="flex items-center space-x-2 text-2xl">
               <span>{birthday.name}</span>
             </p>
           </div>

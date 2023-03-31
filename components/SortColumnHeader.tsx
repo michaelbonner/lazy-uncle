@@ -1,4 +1,3 @@
-import React from "react";
 import {
   HiOutlineSortAscending,
   HiOutlineSortDescending,
@@ -22,7 +21,7 @@ const SortColumnHeader = ({
 }) => {
   return (
     <button
-      className={`flex space-x-1 items-center py-3 text-left text-xs font-medium uppercase tracking-wider ${className}`}
+      className={`flex items-center space-x-1 py-3 text-left text-xs font-medium uppercase tracking-wider ${className}`}
       type="button"
       onClick={() => {
         if (value === ascendingString) {
