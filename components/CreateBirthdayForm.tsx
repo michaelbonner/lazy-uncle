@@ -9,7 +9,7 @@ import {
 import PrimaryButton from "./PrimaryButton";
 import TextEdit from "./TextEdit";
 
-const CreateBirthdayForm = () => {
+const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
   const { data: session } = useSession();
   const [name, setName] = useState("");
   const [date, setDate] = useState("");
@@ -48,6 +48,7 @@ const CreateBirthdayForm = () => {
         setParent("");
         setNotes("");
         toast.success("Birthday created successfully");
+        onSubmit();
       }}
     >
       <div className="grid md:grid-cols-2 gap-x-4">
