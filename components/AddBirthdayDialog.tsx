@@ -43,7 +43,7 @@ const AddBirthdayDialog = ({
                   >
                     Add New Birthday
                   </Dialog.Title>
-                  <CreateBirthdayForm />
+                  <CreateBirthdayForm onSubmit={handleClose} />
                 </Dialog.Panel>
               </Transition.Child>
             </div>
