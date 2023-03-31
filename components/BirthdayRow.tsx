@@ -188,7 +188,7 @@ const BirthdayRow: React.FC<Props> = ({
             onClick={() => {
               setIsEditBirthdayDialogOpen(true);
             }}
-            className="flex items-center justify-between"
+            className="flex w-full items-center justify-between"
           >
             <div>
               <p className="flex items-center space-x-2 text-2xl">

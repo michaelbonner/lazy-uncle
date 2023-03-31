@@ -1,5 +1,6 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
+import { HiX } from "react-icons/hi";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import EditBirthdayForm from "./EditBirthdayForm";
 
@@ -40,12 +41,17 @@ const EditBirthdayDialog = ({
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel className="w-full max-w-lg transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                  <Dialog.Title
-                    as="h3"
-                    className="text-lg font-medium leading-6 text-gray-900"
-                  >
-                    Edit {birthday.name}
-                  </Dialog.Title>
+                  <div className="flex items-center justify-between">
+                    <Dialog.Title
+                      as="h3"
+                      className="text-lg font-medium leading-6 text-gray-900"
+                    >
+                      Edit {birthday.name}
+                    </Dialog.Title>
+                    <button onClick={handleClose}>
+                      <HiX className="h-8 w-8 p-1" />
+                    </button>
+                  </div>
                   <EditBirthdayForm
                     birthday={birthday}
                     handleClose={handleClose}
