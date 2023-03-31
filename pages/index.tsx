@@ -12,8 +12,6 @@ const BirthdaysContainer = dynamic(
 function Home() {
   const { data: session, status: sessionStatus } = useSession();
 
-  console.log("session", session);
-
   return (
     <MainLayout title="Lazy Uncle">
       <main className="max-w-7xl mx-auto pb-8 px-2">

@@ -12,11 +12,6 @@ export const PageLoadingProgress = () => {
   let timeout = useRef<NodeJS.Timeout | null>(null);
   let interval = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(
-    () => console.log("widthPercentage", widthPercentage),
-    [widthPercentage]
-  );
-
   useEffect(() => {
     const handleStart = () => {
       setWidthPercentage(15);
