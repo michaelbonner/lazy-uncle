@@ -8,8 +8,10 @@ import TextEdit from "./TextEdit";
 
 const EditBirthdayForm = ({
   birthday,
+  handleClose,
 }: {
   birthday: NexusGenObjects["Birthday"];
+  handleClose?: () => void;
 }) => {
   const [name, setName] = useState(birthday.name);
   const [date, setDate] = useState(birthday.date);
@@ -36,6 +38,8 @@ const EditBirthdayForm = ({
             notes: notes.trim(),
           },
         });
+
+        handleClose && handleClose();
 
         toast.success("Birthday updated successfully");
       }}
@@ -108,7 +112,16 @@ const EditBirthdayForm = ({
           <code>{error.message}</code>
         </div>
       )}
-      <div className="text-right sticky bottom-2">
+      <div className="text-right sticky bottom-2 flex justify-end items-center gap-4">
+        {handleClose && (
+          <button
+            className="inline-flex items-center px-4 py-2 border border-transparent font-medium rounded-md shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
+            onClick={handleClose}
+            type="button"
+          >
+            Cancel
+          </button>
+        )}
         <PrimaryButton disabled={loading} type="submit">
           Save Birthday Details
         </PrimaryButton>
