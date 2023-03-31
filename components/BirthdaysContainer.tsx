@@ -17,8 +17,8 @@ import BirthdayRow from "./BirthdayRow";
 import LoadingSpinner from "./LoadingSpinner";
 import SortColumnHeader from "./SortColumnHeader";
 
+const AddBirthdayDialog = dynamic(() => import("./AddBirthdayDialog"));
 const UploadCsvBirthdayForm = dynamic(() => import("./UploadCsvBirthdayForm"));
-const CreateBirthdayForm = dynamic(() => import("./CreateBirthdayForm"));
 
 const BirthdaysContainer = ({ userId }: { userId: string }) => {
   const [workingDates, setWorkingDates] = useState<
@@ -52,6 +52,8 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
   const [upcomingBirthdays, setUpcomingBirthdays] = useState<
     NexusGenObjects["Birthday"][]
   >([]);
+  const [isAddBirthdayDialogVisible, setIsAddBirthdayDialogVisible] =
+    useState(false);
 
   useEffect(() => {
     if (window.location.host) {
@@ -280,13 +282,26 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
         </div>
       </div>
 
+      <AddBirthdayDialog
+        isOpen={isAddBirthdayDialogVisible}
+        handleClose={() => setIsAddBirthdayDialogVisible(false)}
+      />
+
       <div className="text-center">
         {birthdaysError && <p className="pt-3">{birthdaysError.message}</p>}
         <div className="bg-gray-50 rounded-lg mt-2 md:mt-0 text-gray-600 border-b-4 border-b-gray-400">
           <div className="sticky top-0 z-10 pt-2 bg-cyan-600">
             <div className="bg-cyan-600">
-              <div className="bg-gray-300 py-2 md:py-3 px-3 md:px-6 rounded-t-lg grid grid-cols-5 md:grid-cols-9 md:gap-x-6 gap-y-2 border-t-gray-400 border-t-4">
-                <div className="relative col-span-4 md:col-span-3">
+              <div className="bg-gray-300 py-2 md:py-3 px-3 md:px-6 rounded-t-lg flex gap-x-2 gap-y-2 border-t-gray-400 border-t-4">
+                <button
+                  className="bg-gray-200 flex items-center justify-center rounded-md px-4"
+                  onClick={() =>
+                    setIsAddBirthdayDialogVisible(!isAddBirthdayDialogVisible)
+                  }
+                >
+                  +
+                </button>
+                <div className="relative grow-1 w-full min-w-[220px]">
                   <BirthdayFilterField
                     disabled={
                       !birthdaysData?.birthdays?.length && !workingDates.length
@@ -302,14 +317,14 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                     onClick={handleRefresh}
                   >
                     <GrRefresh
-                      className={`${birthdaysLoading && "animate-spin"}`}
+                      className={`${birthdaysLoading && "animate-spin"} w-10`}
                     />
                   </button>
                 </div>
                 <div
                   className={`${
                     showFilters ? "" : "hidden"
-                  } col-span-4 md:col-span-2 md:block relative`}
+                  } min-w-[220px] md:block relative`}
                 >
                   <BirthdayFilterField
                     disabled={
@@ -323,7 +338,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                 <div
                   className={`${
                     showFilters ? "" : "hidden"
-                  } col-span-4 md:col-span-2 md:block relative`}
+                  } min-w-[220px] md:block relative`}
                 >
                   <BirthdayFilterField
                     disabled={
@@ -337,7 +352,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                 <div
                   className={`${
                     showFilters ? "" : "hidden"
-                  } col-span-4 md:col-span-2 md:block relative`}
+                  } min-w-[220px] md:block relative`}
                 >
                   <BirthdayFilterField
                     disabled={
@@ -438,22 +453,16 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
         <div className="flex justify-end mt-8 text-gray-200">
           <Link
             href={`webcal://${currentHost}/api/calendar-subscription/${userId}`}
-            className="flex items-center space-x-2 underline text-gray-200 hover:text-gray-100 group transition-all">
-
+            className="flex items-center space-x-2 underline text-gray-200 hover:text-gray-100 group transition-all"
+          >
             <HiOutlineCalendar className="text-cyan-400 group-hover:text-gray-200 transition-all" />
             <span>Subscribe to calendar</span>
-
           </Link>
         </div>
       )}
       <div className="bg-gray-50 rounded-lg mt-24 text-gray-800 border-t-gray-400 border-t-4 border-b-4 border-b-gray-400">
-        <div className="py-12 px-4 md:px-8 mt-4 grid md:grid-cols-12 gap-y-12 gap-x-8 items-center">
-          <div className="md:col-span-6">
-            <h3 className="text-2xl font-medium mb-4">Add New Birthday</h3>
-            <CreateBirthdayForm />
-          </div>
-          <div className="text-center"></div>
-          <div className="md:pl-8 md:col-span-5">
+        <div className="py-12 px-4 md:px-8 mt-4">
+          <div className="max-w-2xl">
             <h3 className="text-2xl font-medium mb-4">
               Import Birthdays From CSV
             </h3>
