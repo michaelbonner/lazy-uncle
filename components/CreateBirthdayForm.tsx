@@ -113,12 +113,21 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
           setContent={(value: string) => setNotes(value)}
         />
       </div>
-      <div className="text-right">
-        {error && (
-          <div className="text-sm text-red-500">
-            An error occurred while creating the birthday. Please try again.
-            <code>{error.message}</code>
-          </div>
+      {error && (
+        <div className="text-sm text-red-500">
+          An error occurred while creating the birthday. Please try again.
+          <code>{error.message}</code>
+        </div>
+      )}
+      <div className="flex items-center justify-end gap-4 text-right">
+        {onSubmit && (
+          <button
+            className="inline-flex items-center rounded-md border border-transparent px-4 py-2 font-medium hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
+            onClick={onSubmit}
+            type="button"
+          >
+            Cancel
+          </button>
         )}
         <PrimaryButton disabled={loading} type="submit">
           Add Birthday

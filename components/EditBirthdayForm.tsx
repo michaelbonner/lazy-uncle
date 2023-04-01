@@ -115,7 +115,7 @@ const EditBirthdayForm = ({
       <div className="sticky bottom-2 flex items-center justify-end gap-4 text-right">
         {handleClose && (
           <button
-            className="inline-flex items-center rounded-md border border-transparent px-4 py-2 font-medium shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
+            className="inline-flex items-center rounded-md border border-transparent px-4 py-2 font-medium hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
             onClick={handleClose}
             type="button"
           >
