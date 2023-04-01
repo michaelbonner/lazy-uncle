@@ -65,9 +65,9 @@ model User {
   emailVerified DateTime?
   image         String?
   createdAt     DateTime?
-  Account       Account[]
-  Session       Session[]
-  Birthday      Birthday[]
+  accounts      Account[]
+  sessions      Session[]
+  birthdays     Birthday[]
 }
 
 model VerificationToken {
