@@ -57,7 +57,7 @@ const BirthdayRow: React.FC<Props> = ({
             onClick={() => {
               setIsEditBirthdayDialogOpen(true);
             }}
-            className={`col-span-3 flex items-center justify-between text-left text-xl`}
+            className={`col-span-3 flex items-center justify-between gap-2 text-left text-xl md:justify-start`}
           >
             <span className="flex items-center space-x-2 py-3">
               {daysFromNow === 0 && (
