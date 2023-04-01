@@ -55,6 +55,15 @@ export default async function handler(
 
   const { error, value } = ics.createEvents(events);
 
+  // 1 hour
+  const secondsToCache = 60 * 60;
+  // 1 day
+  const secondsToReturnStaleWhileRevalidate = 60 * 60 * 24;
+  res.setHeader(
+    "Cache-Control",
+    `public, s-maxage=${secondsToCache}, stale-while-revalidate=${secondsToReturnStaleWhileRevalidate}`
+  );
+
   if (error) {
     res.status(400).send(error.toString());
   }
