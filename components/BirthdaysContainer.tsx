@@ -4,8 +4,10 @@ import { useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useContext, useEffect, useMemo, useState } from "react";
-import { GrDown, GrFormFilter, GrRefresh } from "react-icons/gr";
+import { BsFillCaretDownFill } from "react-icons/bs";
+import { GrFormFilter, GrRefresh } from "react-icons/gr";
 import { HiOutlineCalendar, HiXCircle } from "react-icons/hi";
+import classNames from "../functions/classNames";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import { GET_ALL_BIRTHDAYS_QUERY } from "../graphql/Birthday";
 import { SearchContext } from "../providers/SearchProvider";
@@ -400,7 +402,10 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
             <ul>
               <li>
                 <button
-                  className="flex w-full items-center justify-center gap-2 py-2"
+                  className={classNames(
+                    "flex w-full items-center justify-center gap-2 py-2 text-cyan-700",
+                    "hover:bg-gray-100"
+                  )}
                   onClick={() => {
                     const desktopTodayElement: HTMLElement | null =
                       document.querySelector("#desktop-today");
@@ -426,7 +431,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                   type="button"
                 >
                   <span>Jump to today</span>
-                  <GrDown />
+                  <BsFillCaretDownFill />
                 </button>
               </li>
               {workingDates.map((birthday: NexusGenObjects["Birthday"]) => {
