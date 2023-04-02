@@ -41,7 +41,7 @@ const Birthday = ({ id }: { id: string }) => {
         {birthdayError && <p>Error loading birthday</p>}
         <div className="mx-auto mt-8 max-w-7xl px-2 md:px-8">
           <Link
-            href="/"
+            href="/birthdays"
             className="flex items-center space-x-1 text-cyan-100 underline md:px-0"
           >
             <HiChevronLeft className="mt-1 h-6 w-6" />
@@ -101,7 +101,7 @@ const Birthday = ({ id }: { id: string }) => {
                     ],
                   });
                   toast("Birthday deleted");
-                  router.push("/");
+                  router.push("/birthdays");
                 }
               }}
             >
