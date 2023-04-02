@@ -22,7 +22,7 @@ export const Home: NextPage<HomeProps> = ({ session }) => {
   return (
     <MainLayout title="Lazy Uncle">
       <main className="mx-auto max-w-7xl px-2 pb-8">
-        <Welcome />
+        {!session?.user?.id && <Welcome />}
       </main>
     </MainLayout>
   );
