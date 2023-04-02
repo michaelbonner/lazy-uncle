@@ -2,6 +2,7 @@ import { useMutation } from "@apollo/client";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import classNames from "../functions/classNames";
 import {
   CREATE_BIRTHDAY_MUTATION,
   GET_ALL_BIRTHDAYS_QUERY,
@@ -122,7 +123,11 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
       <div className="flex items-center justify-end gap-4 text-right">
         {onSubmit && (
           <button
-            className="inline-flex items-center rounded-md border border-transparent px-4 py-2 font-medium hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
+            className={classNames(
+              "inline-flex items-center rounded-md border border-transparent px-4 py-2 font-medium",
+              "hover:bg-gray-100",
+              "focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+            )}
             onClick={onSubmit}
             type="button"
           >

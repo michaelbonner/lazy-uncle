@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { GiBalloons } from "react-icons/gi";
 import { HiBackspace, HiOutlinePaperClip } from "react-icons/hi";
 import { NexusGenObjects } from "../generated/nexus-typegen";
@@ -34,6 +34,8 @@ const BirthdayRow: React.FC<Props> = ({
 }) => {
   const [isEditBirthdayDialogOpen, setIsEditBirthdayDialogOpen] =
     useState(false);
+  const [isEditBirthdayDialogMounted, setIsEditBirthdayDialogMounted] =
+    useState(false);
   const birthDate = getDateFromYmdString(birthday.date || "");
   const zodiacSign = getZodiacSignForDateYmdString(birthday.date || "");
   const notesTextOnly = birthday?.notes?.replace(/<\/?[^>]+(>|$)/g, "");
@@ -46,6 +48,14 @@ const BirthdayRow: React.FC<Props> = ({
   );
 
   const daysFromNow = getDaysUntilNextBirthday(birthday);
+
+  useEffect(() => {
+    if (isEditBirthdayDialogOpen) {
+      setIsEditBirthdayDialogMounted(true);
+    } else {
+      setTimeout(() => setIsEditBirthdayDialogMounted(false), 200);
+    }
+  }, [isEditBirthdayDialogOpen]);
 
   return (
     <>
@@ -244,7 +254,7 @@ const BirthdayRow: React.FC<Props> = ({
           </div>
         )}
 
-        {isEditBirthdayDialogOpen && (
+        {isEditBirthdayDialogMounted && (
           <EditBirthdayDialog
             birthday={birthday}
             isOpen={isEditBirthdayDialogOpen}

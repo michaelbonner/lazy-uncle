@@ -1,6 +1,7 @@
 import { useMutation } from "@apollo/client";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import classNames from "../functions/classNames";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import { EDIT_BIRTHDAY_MUTATION } from "../graphql/Birthday";
 import PrimaryButton from "./PrimaryButton";
@@ -115,7 +116,11 @@ const EditBirthdayForm = ({
       <div className="sticky bottom-2 flex items-center justify-end gap-4 text-right">
         {handleClose && (
           <button
-            className="inline-flex items-center rounded-md border border-transparent px-4 py-2 font-medium hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
+            className={classNames(
+              "inline-flex items-center rounded-md border border-transparent px-4 py-2 font-medium",
+              "hover:bg-gray-100",
+              "focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+            )}
             onClick={handleClose}
             type="button"
           >
