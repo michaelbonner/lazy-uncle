@@ -1,14 +1,13 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { GetServerSideProps } from "next";
-import { getSession } from "next-auth/react";
+import { getServerSession } from "next-auth/next";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React from "react";
 import { HiChevronLeft } from "react-icons/hi";
 import { toast } from "react-toastify";
-import MainLayout from "../../components/layout/MainLayout";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import MainLayout from "../../components/layout/MainLayout";
 import {
   DELETE_BIRTHDAY_MUTATION,
   GET_ALL_BIRTHDAYS_QUERY,
@@ -16,9 +15,11 @@ import {
 } from "../../graphql/Birthday";
 import getAgeForHumans from "../../shared/getAgeForHumans";
 import getDateFromYmdString from "../../shared/getDateFromYmdString";
+import { authOptions } from "../api/auth/[...nextauth]";
 
 const EditBirthdayForm = dynamic(
-  () => import("../../components/EditBirthdayForm")
+  () => import("../../components/EditBirthdayForm"),
+  { loading: () => <div>Loading form...</div> }
 );
 
 const Birthday = ({ id }: { id: string }) => {
@@ -38,27 +39,27 @@ const Birthday = ({ id }: { id: string }) => {
     <MainLayout title={`Birthday`}>
       <>
         {birthdayError && <p>Error loading birthday</p>}
-        <div className="px-2 md:px-8 max-w-7xl mx-auto mt-8">
+        <div className="mx-auto mt-8 max-w-7xl px-2 md:px-8">
           <Link
             href="/"
-            className="flex space-x-1 items-center md:px-0 underline text-cyan-100"
+            className="flex items-center space-x-1 text-cyan-100 underline md:px-0"
           >
-            <HiChevronLeft className="mt-1 w-6 h-6" />
+            <HiChevronLeft className="mt-1 h-6 w-6" />
             <span>Back to all birthdays</span>
           </Link>
-          <div className="bg-white rounded-xl mt-4 text-gray-800 px-4 py-8">
+          <div className="mt-4 rounded-xl bg-white px-4 py-8 text-gray-800">
             {birthdayLoading ? (
-              <div className="flex items-center justify-center min-h-[300px]">
+              <div className="flex min-h-[300px] items-center justify-center">
                 <LoadingSpinner spinnerTextColor="text-cyan-40" />
               </div>
             ) : (
               <>
-                <div className="md:flex md:items-center justify-between">
+                <div className="justify-between md:flex md:items-center">
                   <h1 className="text-2xl font-medium">
                     Edit {birthdayData?.birthday?.name}&apos;s Birthday
                   </h1>
-                  <h3 className="flex space-x-1 items-end">
-                    <span className="font-light text-sm">Age</span>
+                  <h3 className="flex items-end space-x-1">
+                    <span className="text-sm font-light">Age</span>
                     <span>
                       {getAgeForHumans(
                         getDateFromYmdString(birthdayData?.birthday?.date),
@@ -74,14 +75,14 @@ const Birthday = ({ id }: { id: string }) => {
             )}
           </div>
 
-          <div className="flex justify-end mt-8 mb-12">
+          <div className="mb-12 mt-8 flex justify-end">
             {deleteError && (
-              <p className="text-red-600 text-sm">
+              <p className="text-sm text-red-600">
                 Error deleting birthday: {deleteError.message}
               </p>
             )}
             <button
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-gray-100 bg-transparent hover:bg-red-700 hover:border-red-800 hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
+              className="inline-flex items-center rounded-md border border-transparent bg-transparent px-4 py-2 text-sm font-medium text-gray-100 hover:border-red-800 hover:bg-red-700 hover:shadow focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
               disabled={deleteLoading}
               onClick={() => {
                 if (
@@ -115,13 +116,16 @@ const Birthday = ({ id }: { id: string }) => {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { id } = context.query;
-  const session = await getSession(context);
+  const session = await getServerSession(context.req, context.res, authOptions);
 
   if (!session?.user) {
     context.res.statusCode = 302;
     context.res.setHeader("Location", `/`);
     return { props: {} };
   }
+
+  delete session?.user?.createdAt;
+  delete session?.user?.emailVerified;
 
   return { props: { id, session } };
 };

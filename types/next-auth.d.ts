@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import "next-auth";
 
 declare module "next-auth" {
   /**
@@ -9,6 +9,8 @@ declare module "next-auth" {
       id: string;
       email?: string | null;
       name?: string | null;
+      createdAt?: number | null;
+      emailVerified?: number | null;
     };
   }
 }

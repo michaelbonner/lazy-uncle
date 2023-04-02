@@ -5,7 +5,8 @@ import Welcome from "../components/Welcome";
 import MainLayout from "../components/layout/MainLayout";
 
 const BirthdaysContainer = dynamic(
-  () => import("../components/BirthdaysContainer")
+  () => import("../components/BirthdaysContainer"),
+  { loading: () => <div>Loading birthdays...</div> }
 );
 
 function Home() {

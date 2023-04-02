@@ -11,5 +11,9 @@ const settings = {
   reactStrictMode: true,
 };
 
-module.exports =
-  process.env.NODE_ENV === "development" ? settings : withPWA(settings);
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE === "true",
+});
+module.exports = withBundleAnalyzer(
+  process.env.NODE_ENV === "development" ? settings : withPWA(settings)
+);
