@@ -3,8 +3,8 @@ import { format } from "date-fns";
 import { useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useContext, useEffect, useState } from "react";
-import { GrFormFilter, GrRefresh } from "react-icons/gr";
+import { useContext, useEffect, useMemo, useState } from "react";
+import { GrDown, GrFormFilter, GrRefresh } from "react-icons/gr";
 import { HiOutlineCalendar, HiXCircle } from "react-icons/hi";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import { GET_ALL_BIRTHDAYS_QUERY } from "../graphql/Birthday";
@@ -21,10 +21,6 @@ const AddBirthdayDialog = dynamic(() => import("./AddBirthdayDialog"));
 const UploadCsvBirthdayForm = dynamic(() => import("./UploadCsvBirthdayForm"));
 
 const BirthdaysContainer = ({ userId }: { userId: string }) => {
-  const [workingDates, setWorkingDates] = useState<
-    NexusGenObjects["Birthday"][]
-  >([]);
-  const [workingDatesCount, setWorkingDatesCount] = useState(0);
   const {
     isFiltered,
     clearFilters,
@@ -46,14 +42,158 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
     loading: birthdaysLoading,
     error: birthdaysError,
     refetch: birthdaysRefetch,
-  } = useQuery(GET_ALL_BIRTHDAYS_QUERY);
+  } = useQuery(GET_ALL_BIRTHDAYS_QUERY, {
+    fetchPolicy: "cache-and-network",
+  });
   const [currentHost, setCurrentHost] = useState("");
   const { status: sessionStatus } = useSession();
-  const [upcomingBirthdays, setUpcomingBirthdays] = useState<
-    NexusGenObjects["Birthday"][]
-  >([]);
   const [isAddBirthdayDialogVisible, setIsAddBirthdayDialogVisible] =
     useState(false);
+
+  const workingDates: NexusGenObjects["Birthday"][] = useMemo(() => {
+    if (!birthdaysData?.birthdays?.length) {
+      return [];
+    }
+
+    const dates = birthdaysData.birthdays
+      .filter((birthday: NexusGenObjects["Birthday"]) => {
+        return (
+          birthday?.name?.toLowerCase().includes(nameFilter.toLowerCase()) ||
+          !birthday.id
+        );
+      })
+      .filter((birthday: NexusGenObjects["Birthday"]) => {
+        if (!categoryFilter) {
+          return true;
+        }
+        return (
+          birthday?.category
+            ?.toLowerCase()
+            .includes(categoryFilter.toLowerCase()) || !birthday.id
+        );
+      })
+      .filter((birthday: NexusGenObjects["Birthday"]) => {
+        if (!parentFilter) {
+          return true;
+        }
+        return (
+          birthday?.parent
+            ?.toLowerCase()
+            .includes(parentFilter.toLowerCase()) || !birthday.id
+        );
+      })
+      .filter((birthday: NexusGenObjects["Birthday"]) => {
+        if (!zodiacSignFilter) {
+          return true;
+        }
+        const birthdayZodiacSign = getZodiacSignForDateYmdString(
+          birthday?.date || ""
+        );
+        return (
+          birthdayZodiacSign
+            .toLowerCase()
+            .includes(zodiacSignFilter.toLowerCase()) || !birthday.id
+        );
+      });
+
+    if (dates.length < 1) return [];
+
+    const unsortedDates = [...dates];
+    if (sortBy.substring(0, 4) === "date" && unsortedDates.length > 4) {
+      unsortedDates.push({
+        name: "Today",
+        date: format(new Date(), "yyyy-MM-dd"),
+      });
+    }
+    return unsortedDates.sort(
+      (a: NexusGenObjects["Birthday"], b: NexusGenObjects["Birthday"]) => {
+        if (sortBy === "date_asc") {
+          const aDate = format(getDateFromYmdString(a.date || ""), "MM-dd");
+          const bDate = format(getDateFromYmdString(b.date || ""), "MM-dd");
+          return aDate > bDate ? 1 : -1;
+        }
+        if (sortBy === "date_desc") {
+          const aDate = format(getDateFromYmdString(a.date || ""), "MM-dd");
+          const bDate = format(getDateFromYmdString(b.date || ""), "MM-dd");
+          return aDate > bDate ? -1 : 1;
+        }
+        if (sortBy === "name_asc") {
+          return (a.name || "") > (b.name || "") ? 1 : -1;
+        }
+        if (sortBy === "name_desc") {
+          return (a.name || "") > (b.name || "") ? -1 : 1;
+        }
+        if (sortBy === "age_asc") {
+          return (a.date || "") > (b.date || "") ? 1 : -1;
+        }
+        if (sortBy === "age_desc") {
+          return (a.date || "") > (b.date || "") ? -1 : 1;
+        }
+        if (sortBy === "category_asc") {
+          return (a.category || "") > (b.category || "") ? 1 : -1;
+        }
+        if (sortBy === "category_desc") {
+          return (a.category || "") > (b.category || "") ? -1 : 1;
+        }
+        if (sortBy === "parent_asc") {
+          return (a.parent || "") > (b.parent || "") ? 1 : -1;
+        }
+        if (sortBy === "parent_desc") {
+          return (a.parent || "") > (b.parent || "") ? -1 : 1;
+        }
+        if (sortBy === "sign_asc") {
+          const aZodiacSign = getZodiacSignForDateYmdString(a.date || "");
+          const bZodiacSign = getZodiacSignForDateYmdString(b.date || "");
+          return (aZodiacSign || "") > (bZodiacSign || "") ? 1 : -1;
+        }
+        if (sortBy === "sign_desc") {
+          const aZodiacSign = getZodiacSignForDateYmdString(a.date || "");
+          const bZodiacSign = getZodiacSignForDateYmdString(b.date || "");
+          return (aZodiacSign || "") > (bZodiacSign || "") ? -1 : 1;
+        }
+
+        return 1;
+      }
+    );
+  }, [
+    birthdaysData,
+    categoryFilter,
+    nameFilter,
+    parentFilter,
+    sortBy,
+    zodiacSignFilter,
+  ]);
+
+  const workingDatesCount = useMemo(() => {
+    return workingDates.length;
+  }, [workingDates]);
+
+  const upcomingBirthdays: NexusGenObjects["Birthday"][] = useMemo(() => {
+    if (birthdaysData?.birthdays?.length < 1) {
+      return [];
+    }
+
+    const upcoming = birthdaysData?.birthdays?.filter(
+      (birthday: NexusGenObjects["Birthday"]) => {
+        return (
+          getDaysUntilNextBirthday(birthday) <= 7 ||
+          getDaysUntilNextBirthday(birthday) > 364
+        );
+      }
+    );
+
+    return upcoming?.sort(
+      (a: NexusGenObjects["Birthday"], b: NexusGenObjects["Birthday"]) => {
+        const aDaysUntilNextBirthday = getDaysUntilNextBirthday(a);
+        const bDaysUntilNextBirthday = getDaysUntilNextBirthday(b);
+        return aDaysUntilNextBirthday > bDaysUntilNextBirthday ? 1 : -1;
+      }
+    );
+  }, [birthdaysData]);
+
+  const handleRefresh = async () => {
+    await birthdaysRefetch();
+  };
 
   useEffect(() => {
     if (window.location.host) {
@@ -66,166 +206,6 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
     window.addEventListener("focus", refetchQuery);
     return () => window.removeEventListener("focus", refetchQuery);
   });
-
-  useEffect(() => {
-    if (birthdaysData?.birthdays?.length > 0) {
-      const dates = birthdaysData.birthdays
-        .filter((birthday: NexusGenObjects["Birthday"]) => {
-          return (
-            birthday?.name?.toLowerCase().includes(nameFilter.toLowerCase()) ||
-            !birthday.id
-          );
-        })
-        .filter((birthday: NexusGenObjects["Birthday"]) => {
-          if (!categoryFilter) {
-            return true;
-          }
-          return (
-            birthday?.category
-              ?.toLowerCase()
-              .includes(categoryFilter.toLowerCase()) || !birthday.id
-          );
-        })
-        .filter((birthday: NexusGenObjects["Birthday"]) => {
-          if (!parentFilter) {
-            return true;
-          }
-          return (
-            birthday?.parent
-              ?.toLowerCase()
-              .includes(parentFilter.toLowerCase()) || !birthday.id
-          );
-        })
-        .filter((birthday: NexusGenObjects["Birthday"]) => {
-          if (!zodiacSignFilter) {
-            return true;
-          }
-          const birthdayZodiacSign = getZodiacSignForDateYmdString(
-            birthday?.date || ""
-          );
-          return (
-            birthdayZodiacSign
-              .toLowerCase()
-              .includes(zodiacSignFilter.toLowerCase()) || !birthday.id
-          );
-        });
-      if (dates.length > 0) {
-        const unsortedDates = [...dates];
-        setWorkingDatesCount(unsortedDates.length);
-        if (sortBy.substring(0, 4) === "date" && unsortedDates.length > 4) {
-          unsortedDates.push({
-            name: "Today",
-            date: format(new Date(), "yyyy-MM-dd"),
-          });
-        }
-        setWorkingDates(
-          unsortedDates.sort(
-            (
-              a: NexusGenObjects["Birthday"],
-              b: NexusGenObjects["Birthday"]
-            ) => {
-              if (sortBy === "date_asc") {
-                const aDate = format(
-                  getDateFromYmdString(a.date || ""),
-                  "MM-dd"
-                );
-                const bDate = format(
-                  getDateFromYmdString(b.date || ""),
-                  "MM-dd"
-                );
-                return aDate > bDate ? 1 : -1;
-              }
-              if (sortBy === "date_desc") {
-                const aDate = format(
-                  getDateFromYmdString(a.date || ""),
-                  "MM-dd"
-                );
-                const bDate = format(
-                  getDateFromYmdString(b.date || ""),
-                  "MM-dd"
-                );
-                return aDate > bDate ? -1 : 1;
-              }
-              if (sortBy === "name_asc") {
-                return (a.name || "") > (b.name || "") ? 1 : -1;
-              }
-              if (sortBy === "name_desc") {
-                return (a.name || "") > (b.name || "") ? -1 : 1;
-              }
-              if (sortBy === "age_asc") {
-                return (a.date || "") > (b.date || "") ? 1 : -1;
-              }
-              if (sortBy === "age_desc") {
-                return (a.date || "") > (b.date || "") ? -1 : 1;
-              }
-              if (sortBy === "category_asc") {
-                return (a.category || "") > (b.category || "") ? 1 : -1;
-              }
-              if (sortBy === "category_desc") {
-                return (a.category || "") > (b.category || "") ? -1 : 1;
-              }
-              if (sortBy === "parent_asc") {
-                return (a.parent || "") > (b.parent || "") ? 1 : -1;
-              }
-              if (sortBy === "parent_desc") {
-                return (a.parent || "") > (b.parent || "") ? -1 : 1;
-              }
-              if (sortBy === "sign_asc") {
-                const aZodiacSign = getZodiacSignForDateYmdString(a.date || "");
-                const bZodiacSign = getZodiacSignForDateYmdString(b.date || "");
-                return (aZodiacSign || "") > (bZodiacSign || "") ? 1 : -1;
-              }
-              if (sortBy === "sign_desc") {
-                const aZodiacSign = getZodiacSignForDateYmdString(a.date || "");
-                const bZodiacSign = getZodiacSignForDateYmdString(b.date || "");
-                return (aZodiacSign || "") > (bZodiacSign || "") ? -1 : 1;
-              }
-
-              return 1;
-            }
-          )
-        );
-      } else {
-        setWorkingDates([]);
-      }
-    }
-  }, [
-    birthdaysData,
-    categoryFilter,
-    nameFilter,
-    parentFilter,
-    sortBy,
-    zodiacSignFilter,
-  ]);
-
-  useEffect(() => {
-    if (birthdaysData?.birthdays?.length < 1) {
-      return;
-    }
-
-    const upcoming = birthdaysData?.birthdays?.filter(
-      (birthday: NexusGenObjects["Birthday"]) => {
-        return (
-          getDaysUntilNextBirthday(birthday) <= 7 ||
-          getDaysUntilNextBirthday(birthday) > 364
-        );
-      }
-    );
-
-    setUpcomingBirthdays(
-      upcoming?.sort(
-        (a: NexusGenObjects["Birthday"], b: NexusGenObjects["Birthday"]) => {
-          const aDaysUntilNextBirthday = getDaysUntilNextBirthday(a);
-          const bDaysUntilNextBirthday = getDaysUntilNextBirthday(b);
-          return aDaysUntilNextBirthday > bDaysUntilNextBirthday ? 1 : -1;
-        }
-      )
-    );
-  }, [birthdaysData]);
-
-  const handleRefresh = async () => {
-    await birthdaysRefetch();
-  };
 
   return (
     <div>
@@ -418,6 +398,12 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
           </div>
           {workingDates.length ? (
             <ul>
+              <li>
+                <button className="flex w-full items-center justify-center gap-2 py-2">
+                  <span>Jump to today</span>
+                  <GrDown />
+                </button>
+              </li>
               {workingDates.map((birthday: NexusGenObjects["Birthday"]) => {
                 return (
                   <BirthdayRow
