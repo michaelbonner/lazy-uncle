@@ -4,8 +4,8 @@ import { getServerSession } from "next-auth/next";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import toast from "react-hot-toast";
 import { HiChevronLeft } from "react-icons/hi";
-import { toast } from "react-toastify";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import MainLayout from "../../components/layout/MainLayout";
 import {
@@ -100,7 +100,7 @@ const Birthday = ({ id }: { id: string }) => {
                       },
                     ],
                   });
-                  toast.info("Birthday deleted successfully!");
+                  toast("Birthday deleted");
                   router.push("/");
                 }
               }}

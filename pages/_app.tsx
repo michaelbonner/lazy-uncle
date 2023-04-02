@@ -3,12 +3,11 @@ import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
 import { useEffect } from "react";
 import TagManager from "react-gtm-module";
-import { ToastContainer } from "react-toastify";
+import { Toaster } from "react-hot-toast";
 import { PageLoadingProgress } from "../components/PageLoadingProgress";
 import client from "../lib/apollo";
 import { SearchProvider } from "../providers/SearchProvider";
 
-import "react-toastify/dist/ReactToastify.css";
 import "../styles/globals.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -23,18 +22,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <SearchProvider>
           <Component {...pageProps} />
         </SearchProvider>
-        <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-        />
+        <Toaster />
       </ApolloProvider>
     </SessionProvider>
   );

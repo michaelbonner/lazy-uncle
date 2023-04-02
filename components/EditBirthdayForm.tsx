@@ -1,8 +1,8 @@
 import { useMutation } from "@apollo/client";
 import dynamic from "next/dynamic";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { IoTrashOutline } from "react-icons/io5";
-import { toast } from "react-toastify";
 import classNames from "../functions/classNames";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import {
@@ -59,7 +59,7 @@ const EditBirthdayForm = ({
 
           handleClose && handleClose();
 
-          toast.success("Birthday updated successfully");
+          toast.success("Birthday updated");
         }}
       >
         <div className="grid gap-x-4 md:grid-cols-2">
@@ -160,7 +160,7 @@ const EditBirthdayForm = ({
                       },
                     ],
                   });
-                  toast.info("Birthday deleted successfully!");
+                  toast("Birthday deleted");
                   handleClose && handleClose();
                 }
               }}

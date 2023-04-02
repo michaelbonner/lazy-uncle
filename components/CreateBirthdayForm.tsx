@@ -2,7 +2,7 @@ import { useMutation } from "@apollo/client";
 import { useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
 import { useState } from "react";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 import classNames from "../functions/classNames";
 import {
   CREATE_BIRTHDAY_MUTATION,
@@ -56,7 +56,7 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
         setCategory("");
         setParent("");
         setNotes("");
-        toast.success("Birthday created successfully");
+        toast.success("Birthday created");
         onSubmit();
       }}
     >
