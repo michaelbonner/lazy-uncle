@@ -1,5 +1,6 @@
 import { useMutation } from "@apollo/client";
 import { useSession } from "next-auth/react";
+import dynamic from "next/dynamic";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import classNames from "../functions/classNames";
@@ -8,7 +9,14 @@ import {
   GET_ALL_BIRTHDAYS_QUERY,
 } from "../graphql/Birthday";
 import PrimaryButton from "./PrimaryButton";
-import TextEdit from "./TextEdit";
+
+const TextEdit = dynamic(() => import("./TextEdit"), {
+  loading: () => (
+    <div className="flex h-full min-h-[50vh] w-full items-center justify-center rounded-lg border-b-4 border-t-4 bg-white text-center text-gray-800">
+      <p className="animate-pulse">Loading editor...</p>
+    </div>
+  ),
+});
 
 const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
   const { data: session } = useSession();
