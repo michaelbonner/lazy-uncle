@@ -1,18 +1,12 @@
-import { useMutation, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth/next";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useRouter } from "next/router";
-import toast from "react-hot-toast";
 import { HiChevronLeft } from "react-icons/hi";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import MainLayout from "../../components/layout/MainLayout";
-import {
-  DELETE_BIRTHDAY_MUTATION,
-  GET_ALL_BIRTHDAYS_QUERY,
-  GET_BIRTHDAY_BY_ID_QUERY,
-} from "../../graphql/Birthday";
+import { GET_BIRTHDAY_BY_ID_QUERY } from "../../graphql/Birthday";
 import getAgeForHumans from "../../shared/getAgeForHumans";
 import getDateFromYmdString from "../../shared/getDateFromYmdString";
 import { authOptions } from "../api/auth/[...nextauth]";
@@ -23,7 +17,6 @@ const EditBirthdayForm = dynamic(
 );
 
 const Birthday = ({ id }: { id: string }) => {
-  const router = useRouter();
   const {
     data: birthdayData,
     loading: birthdayLoading,
@@ -31,9 +24,6 @@ const Birthday = ({ id }: { id: string }) => {
   } = useQuery(GET_BIRTHDAY_BY_ID_QUERY, {
     variables: { birthdayId: id },
   });
-
-  const [deleteBirthday, { loading: deleteLoading, error: deleteError }] =
-    useMutation(DELETE_BIRTHDAY_MUTATION);
 
   return (
     <MainLayout title={`Birthday`}>
@@ -54,7 +44,7 @@ const Birthday = ({ id }: { id: string }) => {
               </div>
             ) : (
               <>
-                <div className="justify-between md:flex md:items-center">
+                <div className="justify-between md:flex md:items-center md:px-8">
                   <h1 className="text-2xl font-medium">
                     Edit {birthdayData?.birthday?.name}&apos;s Birthday
                   </h1>
@@ -73,40 +63,6 @@ const Birthday = ({ id }: { id: string }) => {
                 </div>
               </>
             )}
-          </div>
-
-          <div className="mb-12 mt-8 flex justify-end">
-            {deleteError && (
-              <p className="text-sm text-red-600">
-                Error deleting birthday: {deleteError.message}
-              </p>
-            )}
-            <button
-              className="inline-flex items-center rounded-md border border-transparent bg-transparent px-4 py-2 text-sm font-medium text-gray-100 hover:border-red-800 hover:bg-red-700 hover:shadow focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
-              disabled={deleteLoading}
-              onClick={() => {
-                if (
-                  window.confirm(
-                    "Are you sure you want to delete this birthday?"
-                  )
-                ) {
-                  deleteBirthday({
-                    variables: {
-                      birthdayId: birthdayData?.birthday?.id,
-                    },
-                    refetchQueries: [
-                      {
-                        query: GET_ALL_BIRTHDAYS_QUERY,
-                      },
-                    ],
-                  });
-                  toast("Birthday deleted");
-                  router.push("/birthdays");
-                }
-              }}
-            >
-              Delete Birthday
-            </button>
           </div>
         </div>
       </>

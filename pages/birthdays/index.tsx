@@ -3,11 +3,11 @@ import { Session, getServerSession } from "next-auth";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import MainLayout from "../components/layout/MainLayout";
-import { authOptions } from "./api/auth/[...nextauth]";
+import MainLayout from "../../components/layout/MainLayout";
+import { authOptions } from "../api/auth/[...nextauth]";
 
 const BirthdaysContainer = dynamic(
-  () => import("../components/BirthdaysContainer"),
+  () => import("../../components/BirthdaysContainer"),
   {
     loading: () => (
       <div className="flex h-full min-h-[50vh] w-full items-center justify-center rounded-lg border-b-4 border-t-4 bg-white text-center text-gray-800">
