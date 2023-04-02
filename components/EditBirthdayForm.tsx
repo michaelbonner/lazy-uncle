@@ -177,7 +177,7 @@ const EditBirthdayForm = ({
               </button>
             )}
             <PrimaryButton disabled={loading} type="submit">
-              Save Birthday Details
+              Save Birthday
             </PrimaryButton>
           </div>
         </div>
