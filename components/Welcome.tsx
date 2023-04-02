@@ -18,9 +18,9 @@ const Welcome = () => {
   }, []);
 
   return (
-    <div className="flex justify-center mt-8 text-gray-100 py-12 md:py-24 px-4">
+    <div className="mt-8 flex justify-center px-4 py-12 text-gray-100 md:py-24">
       <div className="flex flex-col gap-y-6">
-        <div className="text-lg mb-2 prose prose-light text-gray-100">
+        <div className="prose-light prose mb-2 text-lg text-gray-100">
           <h1 className="text-white">
             Lazy Uncle helps you keep track of birthdays
           </h1>
@@ -35,21 +35,21 @@ const Welcome = () => {
             you have any problems. I hope you enjoy it!
           </p>
         </div>
-        <div className="md:flex items-end md:space-x-4 mt-4 mb-1 min-h-[80px]">
+        <div className="mb-1 mt-4 min-h-[80px] items-end md:flex md:space-x-4">
           {providers &&
             Object.values(providers).map((provider) => {
               return (
                 <button
                   key={provider.name}
                   className={`
-                            w-full md:w-auto inline-flex justify-center space-x-2 mt-4 items-center px-6 py-3 border border-transparent font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500
+                            mt-4 inline-flex w-full items-center justify-center space-x-2 rounded-md border border-transparent px-6 py-3 font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 md:w-auto
                             ${
                               provider.id === "google" &&
-                              `bg-red-500 hover:bg-red-600 text-red-50`
+                              `bg-red-600 text-red-50 hover:bg-red-700`
                             }
                             ${
                               provider.id === "github" &&
-                              `bg-gray-200 hover:bg-gray-100 text-gray-700`
+                              `bg-gray-200 text-gray-700 hover:bg-gray-100`
                             }
                             `}
                   onClick={() => signIn(provider.id)}
