@@ -165,7 +165,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
   ]);
 
   const workingDatesCount = useMemo(() => {
-    return workingDates.length;
+    return workingDates.filter((date) => date.name !== "Today").length;
   }, [workingDates]);
 
   const upcomingBirthdays: NexusGenObjects["Birthday"][] = useMemo(() => {
@@ -396,7 +396,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
               />
             </div>
           </div>
-          {workingDates.length ? (
+          {workingDatesCount ? (
             <ul>
               <li>
                 <button className="flex w-full items-center justify-center gap-2 py-2">
