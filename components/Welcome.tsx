@@ -1,6 +1,7 @@
 import { ClientSafeProvider, getProviders, signIn } from "next-auth/react";
 import React, { useEffect } from "react";
 import { GrGithub, GrGoogle } from "react-icons/gr";
+import classNames from "../functions/classNames";
 
 const Welcome = () => {
   const [providers, setProviders] = React.useState<ClientSafeProvider | Object>(
@@ -41,17 +42,13 @@ const Welcome = () => {
               return (
                 <button
                   key={provider.name}
-                  className={`
-                            mt-4 inline-flex w-full items-center justify-center space-x-2 rounded-md border border-transparent px-6 py-3 font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 md:w-auto
-                            ${
-                              provider.id === "google" &&
-                              `bg-red-600 text-red-50 hover:bg-red-700`
-                            }
-                            ${
-                              provider.id === "github" &&
-                              `bg-gray-200 text-gray-700 hover:bg-gray-100`
-                            }
-                            `}
+                  className={classNames(
+                    `mt-4 inline-flex w-full items-center justify-center space-x-2 rounded-md border border-transparent px-6 py-3 font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 md:w-auto`,
+                    provider.id === "google" &&
+                      `bg-red-600 text-white hover:bg-red-700`,
+                    provider.id === "github" &&
+                      `bg-gray-200 text-gray-700 hover:bg-gray-100`
+                  )}
                   onClick={() => signIn(provider.id)}
                 >
                   {provider.id === "github" && <GrGithub />}
