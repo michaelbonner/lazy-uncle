@@ -21,6 +21,7 @@
     "keymap",
     "labelledby",
     "maxage",
+    "nextauth",
     "prosemirror",
     "splashscreens",
     "tiptap",
