@@ -5,7 +5,7 @@ import { HiX } from "react-icons/hi";
 
 const CreateBirthdayForm = dynamic(() => import("./CreateBirthdayForm"), {
   loading: () => (
-    <div className="flex h-full min-h-[50vh] w-full items-center justify-center rounded-lg border-b-4 border-t-4 bg-white text-center text-gray-800">
+    <div className="flex h-full min-h-[250px] w-full items-center justify-center rounded-lg border-b-4 border-t-4 bg-white text-center text-gray-800">
       <p className="animate-pulse">Loading form...</p>
     </div>
   ),
