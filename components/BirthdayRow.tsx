@@ -2,6 +2,7 @@ import { format } from "date-fns";
 import React, { useEffect, useState } from "react";
 import { GiBalloons } from "react-icons/gi";
 import { HiBackspace, HiOutlinePaperClip } from "react-icons/hi";
+import classNames from "../functions/classNames";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import getAgeForHumans from "../shared/getAgeForHumans";
 import getDateFromYmdString from "../shared/getDateFromYmdString";
@@ -179,6 +180,7 @@ const BirthdayRow: React.FC<Props> = ({
       ) : (
         <li
           className={`hidden border-t bg-gray-200 px-4 text-left text-gray-800 md:grid md:grid-cols-12 md:px-8 md:text-center`}
+          id="desktop-today"
         >
           <p className={`col-span-3 py-2 text-lg text-gray-500`}>
             {birthday.name}
@@ -190,8 +192,11 @@ const BirthdayRow: React.FC<Props> = ({
       )}
 
       <li
-        className={`block border-t px-4 py-4 text-left md:hidden
-                      ${!birthday.id && "bg-gray-100 text-gray-800"}`}
+        className={classNames(
+          "block border-t px-4 py-4 text-left md:hidden",
+          !birthday.id && "bg-gray-100 text-gray-800"
+        )}
+        id={birthday.id ? `birthday-${birthday.id}` : "mobile-today"}
       >
         {birthday.id ? (
           <button

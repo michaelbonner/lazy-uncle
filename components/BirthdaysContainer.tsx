@@ -399,7 +399,32 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
           {workingDatesCount ? (
             <ul>
               <li>
-                <button className="flex w-full items-center justify-center gap-2 py-2">
+                <button
+                  className="flex w-full items-center justify-center gap-2 py-2"
+                  onClick={() => {
+                    const desktopTodayElement: HTMLElement | null =
+                      document.querySelector("#desktop-today");
+                    const mobileTodayElement: HTMLElement | null =
+                      document.querySelector("#mobile-today");
+
+                    if (desktopTodayElement || mobileTodayElement) {
+                      if (desktopTodayElement?.offsetTop) {
+                        window.scrollTo({
+                          top: desktopTodayElement?.offsetTop - 124,
+                          behavior: "smooth",
+                        });
+                      }
+
+                      if (mobileTodayElement?.offsetTop) {
+                        window.scrollTo({
+                          top: mobileTodayElement?.offsetTop - 76,
+                          behavior: "smooth",
+                        });
+                      }
+                    }
+                  }}
+                  type="button"
+                >
                   <span>Jump to today</span>
                   <GrDown />
                 </button>
