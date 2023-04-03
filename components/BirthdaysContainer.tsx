@@ -19,8 +19,15 @@ import BirthdayRow from "./BirthdayRow";
 import LoadingSpinner from "./LoadingSpinner";
 import SortColumnHeader from "./SortColumnHeader";
 
-const AddBirthdayDialog = dynamic(() => import("./AddBirthdayDialog"));
-const UploadCsvBirthdayForm = dynamic(() => import("./UploadCsvBirthdayForm"));
+const AddBirthdayDialog = dynamic(() => import("./AddBirthdayDialog"), {
+  ssr: false,
+});
+const UploadCsvBirthdayForm = dynamic(() => import("./UploadCsvBirthdayForm"), {
+  ssr: false,
+});
+const OnboardingWalkthrough = dynamic(() => import("./OnboardingWalkthrough"), {
+  ssr: false,
+});
 
 const BirthdaysContainer = ({ userId }: { userId: string }) => {
   const {
@@ -170,6 +177,10 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
     return workingDates.filter((date) => date.name !== "Today").length;
   }, [workingDates]);
 
+  const birthdaysCount = useMemo(() => {
+    return birthdaysData?.birthdays?.length || 0;
+  }, [birthdaysData]);
+
   const upcomingBirthdays: NexusGenObjects["Birthday"][] = useMemo(() => {
     if (birthdaysData?.birthdays?.length < 1) {
       return [];
@@ -211,6 +222,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
 
   return (
     <div>
+      {!birthdaysLoading && !birthdaysCount && <OnboardingWalkthrough />}
       {upcomingBirthdays?.length > 0 && (
         <div className="my-4 items-center gap-x-8 rounded-lg border-b-4 border-t-4 border-gray-300 bg-gray-100 px-8 py-4 text-cyan-800 shadow-lg md:flex">
           <h2 className="text-2xl font-medium">Upcoming Birthdays</h2>
@@ -240,7 +252,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
           <button
             className={`${
               isFiltered ? "text-cyan-50" : "text-cyan-500"
-            } flex items-center space-x-1`}
+            } js-clear-filters flex items-center space-x-1`}
             disabled={!isFiltered}
             onClick={() => clearFilters()}
           >
@@ -276,7 +288,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
             <div className="bg-cyan-600">
               <div className="flex gap-x-2 gap-y-2 rounded-t-lg border-t-4 border-t-gray-400 bg-gray-300 px-3 py-2 md:px-6 md:py-3">
                 <button
-                  className="flex items-center justify-center rounded-md bg-gray-200 px-4"
+                  className="js-add-birthday-button flex items-center justify-center rounded-md bg-gray-200 px-4"
                   onClick={() =>
                     setIsAddBirthdayDialogVisible(!isAddBirthdayDialogVisible)
                   }
@@ -469,7 +481,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
         <div className="mt-8 flex justify-end text-gray-200">
           <Link
             href={`webcal://${currentHost}/api/calendar-subscription/${userId}`}
-            className="group flex items-center space-x-2 text-gray-200 underline transition-all hover:text-gray-100"
+            className="js-subscribe-to-calendar group flex items-center space-x-2 text-gray-200 underline transition-all hover:text-gray-100"
           >
             <HiOutlineCalendar className="text-cyan-400 transition-all group-hover:text-gray-200" />
             <span>Subscribe to calendar</span>

@@ -45,7 +45,8 @@
     "react-dom": "18.2.0",
     "react-gtm-module": "^2.0.11",
     "react-hot-toast": "^2.4.0",
-    "react-icons": "^4.7.1"
+    "react-icons": "^4.7.1",
+    "shepherd.js": "^11.1.1"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.9",
