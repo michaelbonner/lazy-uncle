@@ -477,17 +477,15 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
           )}
         </div>
       </div>
-      {birthdaysData?.birthdays?.length > 0 && (
-        <div className="mt-8 flex justify-end text-gray-200">
-          <Link
-            href={`webcal://${currentHost}/api/calendar-subscription/${userId}`}
-            className="js-subscribe-to-calendar group flex items-center space-x-2 text-gray-200 underline transition-all hover:text-gray-100"
-          >
-            <HiOutlineCalendar className="text-cyan-400 transition-all group-hover:text-gray-200" />
-            <span>Subscribe to calendar</span>
-          </Link>
-        </div>
-      )}
+      <div className="mt-8 flex justify-end text-gray-200">
+        <Link
+          href={`webcal://${currentHost}/api/calendar-subscription/${userId}`}
+          className="js-subscribe-to-calendar group flex items-center space-x-2 text-gray-200 underline transition-all hover:text-gray-100"
+        >
+          <HiOutlineCalendar className="text-cyan-400 transition-all group-hover:text-gray-200" />
+          <span>Subscribe to calendar</span>
+        </Link>
+      </div>
       <div className="mt-24 rounded-lg border-b-4 border-t-4 border-b-gray-400 border-t-gray-400 bg-gray-50 text-gray-800">
         <div className="mt-4 px-4 py-12 md:px-8">
           <div className="max-w-2xl">
