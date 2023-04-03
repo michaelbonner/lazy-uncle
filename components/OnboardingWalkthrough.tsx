@@ -13,6 +13,10 @@ const tour = new Shepherd.Tour({
 const OnboardingWalkthrough = memo(() => {
   if (tour.isActive()) return null;
 
+  // don't make people see it more than once
+  if (localStorage.getItem("lazy-uncle:onboardingWalkthroughCompleted"))
+    return null;
+
   tour.addStep({
     id: "add-birthday",
     text: "Add a birthday to get started!",
@@ -73,11 +77,15 @@ const OnboardingWalkthrough = memo(() => {
       {
         text: "Done",
         action: () => {
-            tour.complete()
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            })
+          tour.complete();
+          localStorage.setItem(
+            "lazy-uncle:onboardingWalkthroughCompleted",
+            `${new Date().getTime()}`
+          );
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          });
         },
       },
     ],
