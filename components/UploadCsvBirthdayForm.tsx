@@ -3,6 +3,7 @@ import { parse as csvParse } from "csv-parse/browser/esm/sync";
 import { format, isValid, parse } from "date-fns";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
+import { toast } from "react-hot-toast";
 import {
   CREATE_BIRTHDAY_MUTATION,
   GET_ALL_BIRTHDAYS_QUERY,
@@ -27,7 +28,7 @@ const UploadCsvBirthdayForm = () => {
         const parsedData = csvParse(data?.target?.result);
         const parsedBirthdays = parsedData
           .filter((row: any) => {
-            if (!isValid(parse(row[1], "yyyy-MM-dd", new Date()))) {
+            if (!isValid(new Date(row[1]))) {
               return false;
             }
             return true;
@@ -66,7 +67,8 @@ const UploadCsvBirthdayForm = () => {
       className="flex flex-col space-y-6"
       onSubmit={async (e) => {
         e.preventDefault();
-        birthdays.forEach(async (birthday: any) => {
+
+        for await (const birthday of birthdays) {
           const { name, date, category, parent, notes } = birthday;
           await createBirthday({
             variables: {
@@ -83,33 +85,44 @@ const UploadCsvBirthdayForm = () => {
               },
             ],
           });
-        });
+          (e.target as HTMLFormElement).reset();
+        }
+        toast.success(`${birthdays.length} birthdays created successfully`);
       }}
     >
-      <div>
+      <div className="grid gap-4">
         <div>
-          <label className="mt-4 block" htmlFor="csv">
-            <p>Rows of name, date (yyyy-mm-dd), category, parent, notes</p>
-            <p>Example:</p>
-            <p className="border border-dashed bg-white px-4 py-2">
+          <div>
+            <label
+              className="mb-2 block text-sm font-medium text-gray-900"
+              htmlFor="csv"
+            >
+              Upload file
+            </label>
+            <input
+              className="block w-full cursor-pointer rounded-none border-0 border-gray-300 bg-gray-50 text-sm text-gray-900 focus:outline-none"
+              id="csv"
+              accept=".csv"
+              onChange={handleFileUpload}
+              required
+              type="file"
+            />
+            <p className="mt-1 text-sm text-gray-500">
+              Rows of name, date (yyyy-mm-dd), category, parent, notes
+            </p>
+            <p className="mt-1 text-sm text-gray-500">Example:</p>
+            <p className="mt-1 border border-dashed bg-white px-4 py-2 text-sm text-gray-500">
               <code>Mike,2020-01-02,NULL,NULL,Likes the Browns</code>
             </p>
-          </label>
-          <input
-            className=" m-0 my-4 block w-full rounded border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-1.5 text-base font-normal text-gray-700 transition ease-in-out focus:border-cyan-600 focus:bg-white focus:text-gray-700 focus:outline-none"
-            id="csv"
-            accept=".csv"
-            onChange={handleFileUpload}
-            type="file"
-          />
-        </div>
-
-        {error && (
-          <div className="text-sm text-red-500">
-            An error occurred while creating the birthday. Please try again.
-            <code>{error.message}</code>
           </div>
-        )}
+
+          {error && (
+            <div className="text-sm text-red-500">
+              An error occurred while creating the birthday. Please try again.
+              <code>{error.message}</code>
+            </div>
+          )}
+        </div>
 
         <div className="mt-4 flex justify-end md:mt-0">
           <PrimaryButton disabled={loading} type="submit">
