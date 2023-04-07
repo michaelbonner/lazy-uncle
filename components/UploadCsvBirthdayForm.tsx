@@ -1,6 +1,6 @@
 import { useMutation } from "@apollo/client";
 import { parse as csvParse } from "csv-parse/browser/esm/sync";
-import { format, isValid, parse } from "date-fns";
+import { format, isValid } from "date-fns";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
@@ -39,10 +39,7 @@ const UploadCsvBirthdayForm = () => {
           .map((row: any) => {
             return {
               name: row[0],
-              date: format(
-                parse(row[1], "yyyy-MM-dd", new Date()),
-                "yyyy-MM-dd"
-              ),
+              date: format(new Date(row[1]), "yyyy-MM-dd"),
               category: row[2] !== "NULL" ? row[2] : null,
               parent: row[3] !== "NULL" ? row[3] : null,
               notes: row[4] !== "NULL" ? row[4] : null,
