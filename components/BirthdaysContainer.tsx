@@ -7,6 +7,7 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import { BsFillCaretDownFill } from "react-icons/bs";
 import { GrFormFilter, GrRefresh } from "react-icons/gr";
 import { HiOutlineCalendar, HiXCircle } from "react-icons/hi";
+import { IoAddCircleOutline } from "react-icons/io5";
 import classNames from "../functions/classNames";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import { GET_ALL_BIRTHDAYS_QUERY } from "../graphql/Birthday";
@@ -288,12 +289,17 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
             <div className="bg-cyan-600">
               <div className="flex gap-x-2 gap-y-2 rounded-t-lg border-t-4 border-t-gray-400 bg-gray-300 px-3 py-2 md:px-6 md:py-3">
                 <button
-                  className="js-add-birthday-button flex items-center justify-center rounded-md bg-gray-200 px-4"
+                  className={classNames(
+                    "js-add-birthday-button flex h-12 w-12 items-center justify-center rounded-lg bg-cyan-800 p-3 text-cyan-50 transition-colors",
+                    "hover:bg-cyan-700"
+                  )}
+                  title="Add Birthday"
                   onClick={() =>
                     setIsAddBirthdayDialogVisible(!isAddBirthdayDialogVisible)
                   }
+                  type="button"
                 >
-                  +
+                  <IoAddCircleOutline className="h-5 w-5" />
                 </button>
                 <div className="grow-1 relative w-full min-w-[220px]">
                   <BirthdayFilterField
@@ -475,6 +481,21 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
               )}
             </div>
           )}
+          <div className={classNames("px-4 py-2", "lg:px-8")}>
+            <button
+              className={classNames(
+                "flex w-full items-center justify-center gap-2 rounded-md bg-gray-200 px-4 py-2 transition-colors",
+                "hover:bg-gray-300"
+              )}
+              onClick={() =>
+                setIsAddBirthdayDialogVisible(!isAddBirthdayDialogVisible)
+              }
+              type="button"
+            >
+              <IoAddCircleOutline />
+              <span>Add a birthday</span>
+            </button>
+          </div>
         </div>
       </div>
       <div className="mt-8 flex justify-end text-gray-200">
