@@ -20,7 +20,6 @@
     "@next/bundle-analyzer": "^13.4.9",
     "@prisma/client": "^5.0.0",
     "@tailwindcss/forms": "^0.5.3",
-    "@tiptap/pm": "^2.0.3",
     "@tiptap/react": "^2.0.3",
     "@tiptap/starter-kit": "^2.0.3",
     "csv-parse": "^5.4.0",
