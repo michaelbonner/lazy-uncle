@@ -10,10 +10,10 @@ I just wanted to create a little app to keep track of birthdays. That's pretty m
 
 - React
 - Next.js
-- MongoDB
+- PlanetScale
 - NextAuth
 - Prisma
-- Apollo (server and client)
+- Apollo client
 - Tailwind CSS
 
 ## Getting Started
