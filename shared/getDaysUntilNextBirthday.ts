@@ -16,6 +16,7 @@ export const getDaysUntilNextBirthday = (
   const birthDate = getDateFromYmdString(birthday.date || "");
   const birthDateMonthAndDay = format(birthDate, "MM-dd");
   const thisYearBirthday = parse(birthDateMonthAndDay, "MM-dd", new Date());
+
   const nextBirthday =
     isFuture(thisYearBirthday) || isToday(thisYearBirthday)
       ? thisYearBirthday

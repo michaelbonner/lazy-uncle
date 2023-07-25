@@ -190,8 +190,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
     const upcoming = birthdaysData?.birthdays?.filter(
       (birthday: NexusGenObjects["Birthday"]) => {
         return (
-          getDaysUntilNextBirthday(birthday) <= 7 ||
-          getDaysUntilNextBirthday(birthday) > 364
+          getDaysUntilNextBirthday(birthday) <= 7
         );
       }
     );
