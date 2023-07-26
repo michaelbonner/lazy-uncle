@@ -97,7 +97,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
           return true;
         }
         const birthdayZodiacSign = getZodiacSignForDateYmdString(
-          birthday?.date || ""
+          birthday?.date || "",
         );
         return (
           birthdayZodiacSign
@@ -163,7 +163,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
         }
 
         return 1;
-      }
+      },
     );
   }, [
     birthdaysData,
@@ -189,10 +189,8 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
 
     const upcoming = birthdaysData?.birthdays?.filter(
       (birthday: NexusGenObjects["Birthday"]) => {
-        return (
-          getDaysUntilNextBirthday(birthday) <= 7
-        );
-      }
+        return getDaysUntilNextBirthday(birthday) <= 7;
+      },
     );
 
     return upcoming?.sort(
@@ -200,7 +198,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
         const aDaysUntilNextBirthday = getDaysUntilNextBirthday(a);
         const bDaysUntilNextBirthday = getDaysUntilNextBirthday(b);
         return aDaysUntilNextBirthday > bDaysUntilNextBirthday ? 1 : -1;
-      }
+      },
     );
   }, [birthdaysData]);
 
@@ -220,6 +218,21 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
     return () => window.removeEventListener("focus", refetchQuery);
   });
 
+  const getDaysLabel = (daysUntil: number) => {
+    if (daysUntil === 0) {
+      return <span className="font-bold">Today</span>;
+    }
+    if (daysUntil === 1) {
+      return <span className="font-bold">Tomorrow</span>;
+    }
+    return (
+      <span>
+        <span className="font-light">in </span>
+        {daysUntil} days
+      </span>
+    );
+  };
+
   return (
     <div>
       {!birthdaysLoading && !birthdaysCount && <OnboardingWalkthrough />}
@@ -228,19 +241,11 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
           <h2 className="text-2xl font-medium">Upcoming Birthdays</h2>
           <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 md:mt-0">
             {upcomingBirthdays.map((birthday: NexusGenObjects["Birthday"]) => {
-              const daysLabel =
-                getDaysUntilNextBirthday(birthday) === 0 ? (
-                  <span className="font-bold">Today</span>
-                ) : (
-                  <span>
-                    <span className="font-light">in </span>
-                    {getDaysUntilNextBirthday(birthday)} days
-                  </span>
-                );
+              const daysUntil = getDaysUntilNextBirthday(birthday);
               return (
                 <div key={birthday.id}>
                   <span className="font-light">{birthday.name}</span>{" "}
-                  {daysLabel}
+                  {getDaysLabel(daysUntil)}
                 </div>
               );
             })}
@@ -290,7 +295,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                 <button
                   className={classNames(
                     "js-add-birthday-button flex h-12 w-12 items-center justify-center rounded-lg bg-cyan-800 p-3 text-cyan-50 transition-colors",
-                    "hover:bg-cyan-700"
+                    "hover:bg-cyan-700",
                   )}
                   title="Add Birthday"
                   onClick={() =>
@@ -421,7 +426,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                 <button
                   className={classNames(
                     "flex w-full items-center justify-center gap-2 py-2 text-cyan-700",
-                    "hover:bg-gray-100"
+                    "hover:bg-gray-100",
                   )}
                   onClick={() => {
                     const desktopTodayElement: HTMLElement | null =
@@ -484,7 +489,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
             <button
               className={classNames(
                 "flex w-full items-center justify-center gap-2 rounded-md bg-gray-200 px-4 py-2 transition-colors",
-                "hover:bg-gray-300"
+                "hover:bg-gray-300",
               )}
               onClick={() =>
                 setIsAddBirthdayDialogVisible(!isAddBirthdayDialogVisible)
