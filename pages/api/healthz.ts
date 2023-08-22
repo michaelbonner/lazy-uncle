@@ -1,13 +1,7 @@
 import prisma from "../../lib/prisma";
 import { NextApiRequest, NextApiResponse } from "next";
 
-const CHECK_FREQUENCY = 10000;
-let dbCheckVal: Boolean | Promise<Boolean> = false;
-setInterval(() => {
-  dbCheckVal = checkDatabase();
-}, CHECK_FREQUENCY);
-
-const main = (
+const main = async (
   req: NextApiRequest,
   resp: NextApiResponse<{
     message: string;
@@ -15,7 +9,7 @@ const main = (
 ) => {
   const message = [];
 
-  if (!dbCheckVal) {
+  if ((await checkDB()) != true) {
     message.push("DB CHECK FAILED");
   }
 
@@ -28,7 +22,7 @@ const main = (
 
 export default main;
 
-const checkDatabase = async () => {
+const checkDB = async () => {
   try {
     const val = await prisma.$queryRaw<{ okay: number }[]>`SELECT 1 as okay`;
 
