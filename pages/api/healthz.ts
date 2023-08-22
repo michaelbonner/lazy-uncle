@@ -9,7 +9,8 @@ const main = async (
 ) => {
   const message = [];
 
-  if ((await checkDB()) != true) {
+  const checkDbResult = await checkDB();
+  if (!checkDbResult) {
     message.push("DB CHECK FAILED");
   }
 
@@ -26,7 +27,7 @@ const checkDB = async () => {
   try {
     const val = await prisma.$queryRaw<{ okay: number }[]>`SELECT 1 as okay`;
 
-    return val.at(0)?.["okay"] === 1;
+    return `${val?.at(0)?.["okay"]}` === "1";
   } catch (error) {
     return false;
   }
