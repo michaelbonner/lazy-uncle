@@ -19,6 +19,7 @@ import BirthdayFilterField from "./BirthdayFilterField";
 import BirthdayRow from "./BirthdayRow";
 import LoadingSpinner from "./LoadingSpinner";
 import SortColumnHeader from "./SortColumnHeader";
+import { Birthday } from "@prisma/client";
 
 const AddBirthdayDialog = dynamic(() => import("./AddBirthdayDialog"), {
   ssr: false,
@@ -178,11 +179,13 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
     return workingDates.filter((date) => date.name !== "Today").length;
   }, [workingDates]);
 
-  const birthdaysCount = useMemo(() => {
+  const birthdaysCount = useMemo<number>(() => {
     return birthdaysData?.birthdays?.length || 0;
   }, [birthdaysData]);
 
-  const upcomingBirthdays: NexusGenObjects["Birthday"][] = useMemo(() => {
+  const upcomingBirthdays: NexusGenObjects["Birthday"][] = useMemo<
+    Birthday[]
+  >(() => {
     if (birthdaysData?.birthdays?.length < 1) {
       return [];
     }
