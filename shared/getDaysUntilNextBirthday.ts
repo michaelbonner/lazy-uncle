@@ -11,7 +11,7 @@ import { NexusGenObjects } from "../generated/nexus-typegen";
 import getDateFromYmdString from "./getDateFromYmdString";
 
 export const getDaysUntilNextBirthday = (
-  birthday: NexusGenObjects["Birthday"]
+  birthday: NexusGenObjects["Birthday"],
 ): number => {
   const birthDate = getDateFromYmdString(birthday.date || "");
   const birthDateMonthAndDay = format(birthDate, "MM-dd");

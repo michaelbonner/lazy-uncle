@@ -34,7 +34,7 @@ const EditBirthdayForm = ({
   const [notes, setNotes] = useState(birthday.notes || "");
 
   const [editBirthday, { loading, error }] = useMutation(
-    EDIT_BIRTHDAY_MUTATION
+    EDIT_BIRTHDAY_MUTATION,
   );
 
   const [deleteBirthday, { loading: deleteLoading, error: deleteError }] =
@@ -141,13 +141,13 @@ const EditBirthdayForm = ({
               className={classNames(
                 "inline-flex items-center rounded-md border border-transparent bg-transparent px-4 py-2 text-sm font-medium text-red-700",
                 "hover:bg-red-100",
-                "focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
+                "focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2",
               )}
               disabled={deleteLoading}
               onClick={() => {
                 if (
                   window.confirm(
-                    "Are you sure you want to delete this birthday?"
+                    "Are you sure you want to delete this birthday?",
                   )
                 ) {
                   deleteBirthday({
@@ -176,7 +176,7 @@ const EditBirthdayForm = ({
                 className={classNames(
                   "inline-flex items-center rounded-md border border-transparent px-4 py-2 font-medium",
                   "hover:bg-gray-100",
-                  "focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                  "focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2",
                 )}
                 onClick={handleClose}
                 type="button"

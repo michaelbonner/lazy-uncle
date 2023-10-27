@@ -13,7 +13,7 @@ import { authOptions } from "../api/auth/[...nextauth]";
 
 const EditBirthdayForm = dynamic(
   () => import("../../components/EditBirthdayForm"),
-  { loading: () => <div>Loading form...</div> }
+  { loading: () => <div>Loading form...</div> },
 );
 
 const Birthday = ({ id }: { id: string }) => {
@@ -53,7 +53,7 @@ const Birthday = ({ id }: { id: string }) => {
                     <span>
                       {getAgeForHumans(
                         getDateFromYmdString(birthdayData?.birthday?.date),
-                        true
+                        true,
                       )}
                     </span>
                   </h3>

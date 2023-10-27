@@ -5,7 +5,7 @@ import classNames from "../functions/classNames";
 
 const Welcome = () => {
   const [providers, setProviders] = React.useState<ClientSafeProvider | Object>(
-    {}
+    {},
   );
 
   useEffect(() => {
@@ -49,7 +49,7 @@ const Welcome = () => {
                     provider.id === "google" &&
                       "bg-red-600 text-white hover:bg-red-700",
                     provider.id === "github" &&
-                      "bg-gray-200 text-gray-700 hover:bg-gray-100"
+                      "bg-gray-200 text-gray-700 hover:bg-gray-100",
                   )}
                   onClick={() => signIn(provider.id)}
                 >

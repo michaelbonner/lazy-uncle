@@ -6,7 +6,7 @@ import {
 
 export default function getAgeForHumans(
   birthday: Date,
-  alwaysShow: boolean = false
+  alwaysShow: boolean = false,
 ): string {
   // weeks for infants
   if (differenceInMonths(new Date(), birthday) < 6) {

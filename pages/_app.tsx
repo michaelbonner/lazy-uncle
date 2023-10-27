@@ -13,11 +13,11 @@ import "../styles/globals.css";
 const PageLoadingProgress = dynamic(
   () =>
     import("../components/PageLoadingProgress").then(
-      (mod) => mod.PageLoadingProgress
+      (mod) => mod.PageLoadingProgress,
     ),
   {
     ssr: false,
-  }
+  },
 );
 
 function MyApp({ Component, pageProps }: AppProps) {

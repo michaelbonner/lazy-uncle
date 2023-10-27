@@ -28,7 +28,7 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
   const userId = session?.user?.id;
 
   const [createBirthday, { loading, error }] = useMutation(
-    CREATE_BIRTHDAY_MUTATION
+    CREATE_BIRTHDAY_MUTATION,
   );
 
   return (
@@ -134,7 +134,7 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
             className={classNames(
               "inline-flex items-center rounded-md border border-transparent px-4 py-2 font-medium",
               "hover:bg-gray-100",
-              "focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+              "focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2",
             )}
             onClick={onSubmit}
             type="button"

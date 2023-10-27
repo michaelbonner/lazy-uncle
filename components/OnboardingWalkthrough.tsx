@@ -80,7 +80,7 @@ const OnboardingWalkthrough = memo(() => {
           tour.complete();
           localStorage.setItem(
             "lazy-uncle:onboardingWalkthroughCompleted",
-            `${new Date().getTime()}`
+            `${new Date().getTime()}`,
           );
           window.scrollTo({
             top: 0,

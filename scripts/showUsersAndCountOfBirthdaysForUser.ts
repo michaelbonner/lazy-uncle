@@ -24,11 +24,11 @@ async function main() {
     async (
       user: User & {
         birthdays: Birthday[];
-      }
+      },
     ) => {
       console.log(`${user.name} - ${user.email}`);
       console.log(` - Birthdays: ${user.birthdays.length}`);
-    }
+    },
   );
 }
 

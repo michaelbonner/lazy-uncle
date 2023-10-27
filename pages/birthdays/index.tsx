@@ -14,7 +14,7 @@ const BirthdaysContainer = dynamic(
         <p className="animate-pulse">Loading birthdays...</p>
       </div>
     ),
-  }
+  },
 );
 
 type HomeProps = {

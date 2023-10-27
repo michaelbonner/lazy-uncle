@@ -45,7 +45,7 @@ const BirthdayRow: React.FC<Props> = ({
   const age = getAgeForHumans(getDateFromYmdString(birthday.date || ""));
   const actualAge = getAgeForHumans(
     getDateFromYmdString(birthday.date || ""),
-    true
+    true,
   );
 
   const daysFromNow = getDaysUntilNextBirthday(birthday);
@@ -112,7 +112,7 @@ const BirthdayRow: React.FC<Props> = ({
                   setCategoryFilter(
                     categoryFilter === birthday.category
                       ? ""
-                      : birthday.category || ""
+                      : birthday.category || "",
                   )
                 }
                 type="button"
@@ -137,7 +137,7 @@ const BirthdayRow: React.FC<Props> = ({
                   setParentFilter(
                     parentFilter === birthday.parent
                       ? ""
-                      : birthday.parent || ""
+                      : birthday.parent || "",
                   )
                 }
                 type="button"
@@ -159,7 +159,7 @@ const BirthdayRow: React.FC<Props> = ({
               className="flex h-full w-full flex-col items-center justify-center rounded hover:bg-gray-200"
               onClick={() =>
                 setZodiacSignFilter(
-                  zodiacSignFilter === zodiacSign ? "" : zodiacSign || ""
+                  zodiacSignFilter === zodiacSign ? "" : zodiacSign || "",
                 )
               }
               type="button"
@@ -194,7 +194,7 @@ const BirthdayRow: React.FC<Props> = ({
       <li
         className={classNames(
           "block border-t px-4 py-4 text-left md:hidden",
-          !birthday.id && "bg-gray-100 text-gray-800"
+          !birthday.id && "bg-gray-100 text-gray-800",
         )}
         id={birthday.id ? `birthday-${birthday.id}` : "mobile-today"}
       >
@@ -223,7 +223,7 @@ const BirthdayRow: React.FC<Props> = ({
                     <span className="text-sm font-light">Age</span>{" "}
                     <span className="font-medium">
                       {getAgeForHumans(
-                        getDateFromYmdString(birthday.date || "")
+                        getDateFromYmdString(birthday.date || ""),
                       )}
                     </span>
                   </p>
@@ -231,7 +231,7 @@ const BirthdayRow: React.FC<Props> = ({
                   <span className="sr-only">
                     {getAgeForHumans(
                       getDateFromYmdString(birthday.date || ""),
-                      true
+                      true,
                     )}
                   </span>
                 )}

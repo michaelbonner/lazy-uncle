@@ -45,12 +45,12 @@ describe("get age for humans", () => {
   });
   it("a date of a year ago from 3 days from now returns 3", () => {
     expect(
-      getDaysUntilNextBirthday(oneYearAgoThreeDaysFromNowBirthday)
+      getDaysUntilNextBirthday(oneYearAgoThreeDaysFromNowBirthday),
     ).toEqual(3);
   });
   it("a date of a year ago from 3 weeks from now returns 21", () => {
     expect(
-      getDaysUntilNextBirthday(oneYearAgoThreeWeeksFromNowBirthday)
+      getDaysUntilNextBirthday(oneYearAgoThreeWeeksFromNowBirthday),
     ).toEqual(21);
   });
 });

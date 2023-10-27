@@ -16,7 +16,7 @@ const UploadCsvBirthdayForm = () => {
   const userId = session?.user?.id;
 
   const [createBirthday, { loading, error }] = useMutation(
-    CREATE_BIRTHDAY_MUTATION
+    CREATE_BIRTHDAY_MUTATION,
   );
 
   // handle file upload

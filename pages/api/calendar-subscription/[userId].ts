@@ -12,7 +12,7 @@ interface Birthdate {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<string>
+  res: NextApiResponse<string>,
 ) {
   const ics = require("ics");
 
@@ -28,7 +28,7 @@ export default async function handler(
       const userBirthday = parse(birthday.date, "yyyy-MM-dd", new Date());
       const birthDate = setYear(
         userBirthday,
-        +new Date().getFullYear() + index
+        +new Date().getFullYear() + index,
       );
       const age = birthDate.getFullYear() - userBirthday.getFullYear();
       if (age < 0) {
@@ -61,7 +61,7 @@ export default async function handler(
   const secondsToReturnStaleWhileRevalidate = 60 * 60 * 24;
   res.setHeader(
     "Cache-Control",
-    `public, s-maxage=${secondsToCache}, stale-while-revalidate=${secondsToReturnStaleWhileRevalidate}`
+    `public, s-maxage=${secondsToCache}, stale-while-revalidate=${secondsToReturnStaleWhileRevalidate}`,
   );
 
   if (error) {
