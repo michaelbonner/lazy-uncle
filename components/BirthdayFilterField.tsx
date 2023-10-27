@@ -1,5 +1,5 @@
 import { HiBackspace, HiSearch } from "react-icons/hi";
-import classNames from "../functions/classNames";
+import classNames from "../shared/classNames";
 
 const BirthdayFilterField = ({
   disabled,

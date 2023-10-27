@@ -2,7 +2,7 @@ import { format } from "date-fns";
 import React, { useEffect, useState } from "react";
 import { GiBalloons } from "react-icons/gi";
 import { HiBackspace, HiOutlinePaperClip } from "react-icons/hi";
-import classNames from "../functions/classNames";
+import classNames from "../shared/classNames";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import getAgeForHumans from "../shared/getAgeForHumans";
 import getDateFromYmdString from "../shared/getDateFromYmdString";

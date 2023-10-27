@@ -8,7 +8,7 @@ import { BsFillCaretDownFill } from "react-icons/bs";
 import { GrFormFilter, GrRefresh } from "react-icons/gr";
 import { HiOutlineCalendar, HiXCircle } from "react-icons/hi";
 import { IoAddCircleOutline } from "react-icons/io5";
-import classNames from "../functions/classNames";
+import classNames from "../shared/classNames";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import { GET_ALL_BIRTHDAYS_QUERY } from "../graphql/Birthday";
 import { SearchContext } from "../providers/SearchProvider";

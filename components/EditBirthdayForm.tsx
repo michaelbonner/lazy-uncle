@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { IoTrashOutline } from "react-icons/io5";
-import classNames from "../functions/classNames";
+import classNames from "../shared/classNames";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import {
   DELETE_BIRTHDAY_MUTATION,

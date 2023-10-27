@@ -3,7 +3,7 @@ import { useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import classNames from "../functions/classNames";
+import classNames from "../shared/classNames";
 import {
   CREATE_BIRTHDAY_MUTATION,
   GET_ALL_BIRTHDAYS_QUERY,
