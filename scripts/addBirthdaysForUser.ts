@@ -15,7 +15,7 @@ declare global {
 async function loadCsvBirthdays(): Promise<Birthday[]> {
   const data = fs.readFileSync(
     path.resolve(__dirname, "../data/birthdays.csv"),
-    { encoding: "utf-8" }
+    { encoding: "utf-8" },
   );
   if (!data) {
     console.log("No data found in csv file");
@@ -36,7 +36,7 @@ async function loadCsvBirthdays(): Promise<Birthday[]> {
 async function main() {
   // load csv
   if (argv.length < 3) {
-    console.log("Please provide the user id as argument");
+    console.log("Please provide the user's email as argument");
     return;
   }
   const csvBirthdays = await loadCsvBirthdays();
@@ -83,7 +83,7 @@ async function main() {
 
   console.log(`Added ${birthdaysToAdd.length} birthday(s) for user ${email}`);
   birthdaysToAdd.map((birthdayToAdd) =>
-    console.log(` - added ${birthdayToAdd.name}`)
+    console.log(` - added ${birthdayToAdd.name}`),
   );
 }
 
