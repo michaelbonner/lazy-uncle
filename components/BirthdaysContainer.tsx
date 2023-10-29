@@ -210,7 +210,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
   };
 
   useEffect(() => {
-    if (window.location.host) {
+    if (window?.location?.host) {
       setCurrentHost(window.location.host);
     }
   }, []);
