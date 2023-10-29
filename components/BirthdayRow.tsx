@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import React, { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { GiBalloons } from "react-icons/gi";
 import { HiBackspace, HiOutlinePaperClip } from "react-icons/hi";
 import classNames from "../shared/classNames";
@@ -24,7 +24,7 @@ interface Props {
   setZodiacSignFilter: (text: string) => void;
 }
 
-const BirthdayRow: React.FC<Props> = ({
+const BirthdayRow: FC<Props> = ({
   birthday,
   categoryFilter,
   setCategoryFilter,

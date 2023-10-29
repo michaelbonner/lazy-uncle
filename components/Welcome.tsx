@@ -1,12 +1,10 @@
 import { ClientSafeProvider, getProviders, signIn } from "next-auth/react";
-import React, { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { GrGithub, GrGoogle } from "react-icons/gr";
 import classNames from "../shared/classNames";
 
 const Welcome = () => {
-  const [providers, setProviders] = React.useState<ClientSafeProvider | Object>(
-    {},
-  );
+  const [providers, setProviders] = useState<ClientSafeProvider | Object>({});
 
   useEffect(() => {
     const getAuthProviders = async () => {
