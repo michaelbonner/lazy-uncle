@@ -9,11 +9,14 @@ const settings = {
     defaultLocale: "en-US",
   },
   reactStrictMode: true,
+  experimental: {
+    webpackBuildWorker: true,
+  },
 };
 
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYZE === "true",
 });
 module.exports = withBundleAnalyzer(
-  process.env.NODE_ENV === "development" ? settings : withPWA(settings)
+  process.env.NODE_ENV === "development" ? settings : withPWA(settings),
 );
