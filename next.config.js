@@ -9,9 +9,6 @@ const settings = {
     defaultLocale: "en-US",
   },
   reactStrictMode: true,
-  experimental: {
-    webpackBuildWorker: true,
-  },
 };
 
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
