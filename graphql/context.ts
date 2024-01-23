@@ -1,8 +1,9 @@
 import { PrismaClient } from "@prisma/client";
-import { IncomingMessage } from "http";
-import { getSession } from "next-auth/react";
+import { IncomingMessage, ServerResponse } from "http";
+import { getServerSession } from "next-auth";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import prisma from "../lib/prisma";
+import { authOptions } from "../pages/api/auth/[...nextauth]";
 
 export type Context = {
   prisma: PrismaClient;
@@ -11,10 +12,12 @@ export type Context = {
 
 export async function createContext({
   req,
+  res,
 }: {
-  req: IncomingMessage;
+  req: IncomingMessage & { cookies: { [key: string]: string } };
+  res: ServerResponse<IncomingMessage>;
 }): Promise<Context> {
-  const session = await getSession({ req });
+  const session = await getServerSession(req, res, authOptions);
 
   // if the user is not logged in, omit returning the user
   if (!session) return { prisma, user: {} };

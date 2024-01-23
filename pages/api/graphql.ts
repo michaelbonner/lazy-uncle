@@ -14,9 +14,3 @@ export default createYoga<{
   // eslint-disable-next-line react-hooks/rules-of-hooks
   plugins: [useApolloServerErrors()],
 });
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
