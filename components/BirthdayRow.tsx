@@ -63,6 +63,7 @@ const BirthdayRow: FC<Props> = ({
       {birthday.id ? (
         <li
           className={`hidden items-center border-t px-4 text-left hover:bg-gray-100 md:grid md:grid-cols-12 md:px-8 md:text-center`}
+          id={`desktop-birthday-${birthday.id}`}
         >
           <button
             onClick={() => {

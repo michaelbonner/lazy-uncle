@@ -246,10 +246,36 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
             {upcomingBirthdays.map((birthday: NexusGenObjects["Birthday"]) => {
               const daysUntil = getDaysUntilNextBirthday(birthday);
               return (
-                <div key={birthday.id}>
+                <button
+                  key={birthday.id}
+                  onClick={() => {
+                    const birthDayLiElementMobile: HTMLLIElement | null =
+                      document.querySelector(`#birthday-${birthday.id}`);
+                    const birthDayLiElementDesktop: HTMLLIElement | null =
+                      document.querySelector(
+                        `#desktop-birthday-${birthday.id}`,
+                      );
+
+                    if (birthDayLiElementMobile || birthDayLiElementDesktop) {
+                      if (birthDayLiElementDesktop?.offsetTop) {
+                        window.scrollTo({
+                          top: birthDayLiElementDesktop?.offsetTop - 124,
+                          behavior: "smooth",
+                        });
+                        return;
+                      }
+
+                      window.scrollTo({
+                        top: (birthDayLiElementMobile?.offsetTop || 76) - 76,
+                        behavior: "smooth",
+                      });
+                    }
+                  }}
+                  type="button"
+                >
                   <span className="font-light">{birthday.name}</span>{" "}
                   {getDaysLabel(daysUntil)}
-                </div>
+                </button>
               );
             })}
           </div>
