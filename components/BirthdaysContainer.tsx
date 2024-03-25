@@ -258,9 +258,10 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
       <div className="flex items-end justify-between space-x-2 md:justify-end">
         <div className="items-center pl-2 md:flex md:space-x-4 md:pl-0">
           <button
-            className={`${
-              isFiltered ? "text-cyan-50" : "text-cyan-500"
-            } js-clear-filters flex items-center space-x-1`}
+            className={classNames(
+              isFiltered ? "text-cyan-50" : "text-cyan-500",
+              "js-clear-filters flex items-center space-x-1",
+            )}
             disabled={!isFiltered}
             onClick={() => clearFilters()}
           >
@@ -326,7 +327,10 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                       onClick={handleRefresh}
                     >
                       <GrRefresh
-                        className={`${birthdaysLoading && "animate-spin"} w-10`}
+                        className={classNames(
+                          birthdaysLoading && "animate-spin",
+                          "w-10",
+                        )}
                       />
                     </button>
                   </div>
