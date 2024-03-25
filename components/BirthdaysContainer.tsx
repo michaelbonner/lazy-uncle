@@ -294,44 +294,49 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
         <div className="mt-2 rounded-lg border-b-4 border-b-gray-400 bg-gray-50 text-gray-600 md:mt-0">
           <div className="sticky top-0 z-10 bg-cyan-600 pt-2">
             <div className="bg-cyan-600">
-              <div className="flex gap-x-2 gap-y-2 rounded-t-lg border-t-4 border-t-gray-400 bg-gray-300 px-3 py-2 md:px-6 md:py-3">
-                <button
-                  className={classNames(
-                    "js-add-birthday-button flex h-12 w-12 items-center justify-center rounded-lg bg-cyan-800 p-3 text-cyan-50 transition-colors",
-                    "hover:bg-cyan-700",
-                  )}
-                  title="Add Birthday"
-                  onClick={() =>
-                    setIsAddBirthdayDialogVisible(!isAddBirthdayDialogVisible)
-                  }
-                  type="button"
-                >
-                  <IoAddCircleOutline className="h-5 w-5" />
-                </button>
-                <div className="grow-1 relative w-full min-w-[220px]">
-                  <BirthdayFilterField
-                    disabled={
-                      !birthdaysData?.birthdays?.length && !workingDates.length
-                    }
-                    label="Name"
-                    value={nameFilter}
-                    setValue={setNameFilter}
-                  />
-                </div>
-                <div className="flex md:hidden">
+              <div className="grid gap-x-2 gap-y-2 rounded-t-lg border-t-4 border-t-gray-400 bg-gray-300 px-3 py-2 md:px-6 md:py-3 lg:flex">
+                <div className="flex w-full gap-2">
                   <button
-                    className="ml-2 flex w-full items-center justify-center rounded-md bg-gray-200"
-                    onClick={handleRefresh}
+                    className={classNames(
+                      "js-add-birthday-button flex h-12 w-12 items-center justify-center rounded-lg bg-cyan-800 p-3 text-cyan-50 transition-colors",
+                      "hover:bg-cyan-700",
+                    )}
+                    title="Add Birthday"
+                    onClick={() =>
+                      setIsAddBirthdayDialogVisible(!isAddBirthdayDialogVisible)
+                    }
+                    type="button"
                   >
-                    <GrRefresh
-                      className={`${birthdaysLoading && "animate-spin"} w-10`}
-                    />
+                    <IoAddCircleOutline className="h-5 w-5" />
                   </button>
+                  <div className="grow-1 relative w-full min-w-[220px]">
+                    <BirthdayFilterField
+                      disabled={
+                        !birthdaysData?.birthdays?.length &&
+                        !workingDates.length
+                      }
+                      label="Name"
+                      value={nameFilter}
+                      setValue={setNameFilter}
+                    />
+                  </div>
+                  <div className="flex md:hidden">
+                    <button
+                      className="ml-2 flex w-full items-center justify-center rounded-md bg-gray-200"
+                      onClick={handleRefresh}
+                    >
+                      <GrRefresh
+                        className={`${birthdaysLoading && "animate-spin"} w-10`}
+                      />
+                    </button>
+                  </div>
                 </div>
                 <div
-                  className={`${
-                    showFilters ? "" : "hidden"
-                  } relative min-w-[220px] md:block`}
+                  className={classNames(
+                    !showFilters && "hidden",
+                    "relative w-full min-w-[220px]",
+                    "md:block md:w-auto",
+                  )}
                 >
                   <BirthdayFilterField
                     disabled={
@@ -343,9 +348,11 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                   />
                 </div>
                 <div
-                  className={`${
-                    showFilters ? "" : "hidden"
-                  } relative min-w-[220px] md:block`}
+                  className={classNames(
+                    !showFilters && "hidden",
+                    "relative w-full min-w-[220px]",
+                    "md:block md:w-auto",
+                  )}
                 >
                   <BirthdayFilterField
                     disabled={
@@ -357,9 +364,11 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                   />
                 </div>
                 <div
-                  className={`${
-                    showFilters ? "" : "hidden"
-                  } relative min-w-[220px] md:block`}
+                  className={classNames(
+                    !showFilters && "hidden",
+                    "relative w-full min-w-[220px]",
+                    "md:block md:w-auto",
+                  )}
                 >
                   <BirthdayFilterField
                     disabled={
