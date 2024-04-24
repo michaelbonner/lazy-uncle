@@ -1,15 +1,22 @@
 version: "3"
 volumes:
-  data:
+  db_data: {}
 services:
   db:
-    image: mariadb
+    image: postgres:15
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: lazy-uncle
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      POSTGRES_DB: lazy-uncle
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
     volumes:
-      - data:/var/lib/mysql
+      - db_data:/var/lib/postgresql/data
     ports:
-      - "3306:3306"
+      - "5432:5432"
+    restart: "no"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - “pg_isready”
+      interval: 1s
+      timeout: 5s
+      retries: 10
