@@ -44,15 +44,12 @@ const Welcome = () => {
                     "mt-4 inline-flex w-full items-center justify-center space-x-2 rounded-md border border-transparent px-6 py-3 font-medium shadow-sm",
                     "md:w-auto",
                     "focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2",
-                    provider.id === "google" &&
-                      "bg-red-600 text-white hover:bg-red-700",
-                    provider.id === "github" &&
-                      "bg-gray-200 text-gray-700 hover:bg-gray-100",
+                    "bg-slate-200 text-slate-700 hover:bg-slate-100",
                   )}
                   onClick={() => signIn(provider.id)}
                 >
-                  {provider.id === "github" && <GrGithub />}
-                  {provider.id === "google" && <GrGoogle />}
+                  {provider.id === "google" && <GrGoogle className="h-5 w-5" />}
+                  {provider.id === "github" && <GrGithub className="h-6 w-6" />}
                   <span>Sign in with {provider.name}</span>
                 </button>
               );
