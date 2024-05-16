@@ -38,7 +38,7 @@
     "react-gtm-module": "^2.0.11",
     "react-hot-toast": "^2.4.1",
     "react-icons": "^5.0.1",
-    "shepherd.js": "^11.2.0"
+    "shepherd.js": "^12.0.2"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.10",
