@@ -15,7 +15,7 @@
   "dependencies": {
     "@apollo/client": "^3.8.8",
     "@envelop/apollo-server-errors": "^6.0.0",
-    "@headlessui/react": "^1.7.17",
+    "@headlessui/react": "^2.0.3",
     "@next-auth/prisma-adapter": "^1.0.7",
     "@next/bundle-analyzer": "^14.0.4",
     "@prisma/client": "^5.7.1",

@@ -1,6 +1,10 @@
-import { Dialog, Transition } from "@headlessui/react";
+import {
+  Dialog,
+  DialogPanel,
+  Transition,
+  TransitionChild,
+} from "@headlessui/react";
 import dynamic from "next/dynamic";
-import { Fragment } from "react";
 import { HiX } from "react-icons/hi";
 
 const CreateBirthdayForm = dynamic(() => import("./CreateBirthdayForm"), {
@@ -20,10 +24,9 @@ const AddBirthdayDialog = ({
 }) => {
   return (
     <>
-      <Transition appear show={isOpen} as={Fragment}>
+      <Transition appear show={isOpen}>
         <Dialog as="div" className="relative z-10" onClose={handleClose}>
-          <Transition.Child
-            as={Fragment}
+          <TransitionChild
             enter="ease-out duration-300"
             enterFrom="opacity-0"
             enterTo="opacity-100"
@@ -32,12 +35,11 @@ const AddBirthdayDialog = ({
             leaveTo="opacity-0"
           >
             <div className="fixed inset-0 bg-black bg-opacity-25" />
-          </Transition.Child>
+          </TransitionChild>
 
           <div className="fixed inset-0 overflow-y-auto">
             <div className="flex min-h-full items-center justify-center p-4 text-center text-gray-800">
-              <Transition.Child
-                as={Fragment}
+              <TransitionChild
                 enter="ease-out duration-300"
                 enterFrom="opacity-0 scale-95"
                 enterTo="opacity-100 scale-100"
@@ -45,7 +47,7 @@ const AddBirthdayDialog = ({
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-lg transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                <DialogPanel className="w-full max-w-lg transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                   <div className="flex items-center justify-between">
                     <Dialog.Title
                       as="h3"
@@ -58,8 +60,8 @@ const AddBirthdayDialog = ({
                     </button>
                   </div>
                   <CreateBirthdayForm onSubmit={handleClose} />
-                </Dialog.Panel>
-              </Transition.Child>
+                </DialogPanel>
+              </TransitionChild>
             </div>
           </div>
         </Dialog>
