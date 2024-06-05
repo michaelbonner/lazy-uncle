@@ -7,8 +7,23 @@ import TagManager from "react-gtm-module";
 import { Toaster } from "react-hot-toast";
 import client from "../lib/apollo";
 import { SearchProvider } from "../providers/SearchProvider";
+import posthog from "posthog-js";
+import { PostHogProvider } from "posthog-js/react";
 
 import "../styles/globals.css";
+
+if (typeof window !== "undefined") {
+  // checks that we are client-side
+  posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY ?? "", {
+    api_host:
+      process.env.NEXT_PUBLIC_POSTHOG_HOST ||
+      "https://www.lazyuncle.net/ingest",
+    person_profiles: "identified_only",
+    loaded: (posthog) => {
+      if (process.env.NODE_ENV === "development") posthog.debug();
+    },
+  });
+}
 
 const PageLoadingProgress = dynamic(
   () =>
@@ -26,15 +41,17 @@ function MyApp({ Component, pageProps }: AppProps) {
   }, []);
 
   return (
-    <SessionProvider session={pageProps.session}>
-      <ApolloProvider client={client}>
-        <PageLoadingProgress />
-        <SearchProvider>
-          <Component {...pageProps} />
-        </SearchProvider>
-        <Toaster />
-      </ApolloProvider>
-    </SessionProvider>
+    <PostHogProvider client={posthog}>
+      <SessionProvider session={pageProps.session}>
+        <ApolloProvider client={client}>
+          <PageLoadingProgress />
+          <SearchProvider>
+            <Component {...pageProps} />
+          </SearchProvider>
+          <Toaster />
+        </ApolloProvider>
+      </SessionProvider>
+    </PostHogProvider>
   );
 }
 
