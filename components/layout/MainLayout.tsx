@@ -2,7 +2,8 @@ import { signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import { ReactElement } from "react";
+import posthog from "posthog-js";
+import { ReactElement, useEffect } from "react";
 
 import { RiBugFill, RiLightbulbFlashLine } from "react-icons/ri";
 import ClientOnly from "../ClientOnly";
@@ -14,7 +15,17 @@ const MainLayout = ({
   children: ReactElement;
   title: string;
 }) => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (status === "loading") return;
+    if (status === "unauthenticated") return;
+
+    posthog.identify(session?.user?.id, {
+      email: session?.user?.email,
+      name: session?.user?.name,
+    });
+  }, [session, status]);
 
   return (
     <div className="flex min-h-screen flex-col justify-between">
