@@ -4,7 +4,6 @@ import Shepherd from "shepherd.js";
 const tour = new Shepherd.Tour({
   useModalOverlay: true,
   defaultStepOptions: {
-    classes: "shadow-md bg-purple-dark",
     scrollTo: true,
   },
 });
@@ -16,6 +15,14 @@ const OnboardingWalkthrough = memo(() => {
   if (localStorage.getItem("lazy-uncle:onboardingWalkthroughCompleted"))
     return null;
 
+  const exitTour = () => {
+    localStorage.setItem(
+      "lazy-uncle:onboardingWalkthroughCompleted",
+      `${new Date().getTime()}`,
+    );
+    tour.complete();
+  };
+
   tour.addStep({
     id: "add-birthday",
     text: "Add a birthday to get started!",
@@ -25,6 +32,11 @@ const OnboardingWalkthrough = memo(() => {
     },
     classes: "shepherd-add-birthday",
     buttons: [
+      {
+        text: "Exit",
+        action: exitTour,
+        classes: "shepherd-button-secondary",
+      },
       {
         text: "Next",
         action: tour.next,
@@ -42,6 +54,11 @@ const OnboardingWalkthrough = memo(() => {
     classes: "shepherd-filter-by-name",
     buttons: [
       {
+        text: "Exit",
+        action: exitTour,
+        classes: "shepherd-button-secondary",
+      },
+      {
         text: "Next",
         action: tour.next,
       },
@@ -57,6 +74,11 @@ const OnboardingWalkthrough = memo(() => {
     },
     classes: "shepherd-clear-filters",
     buttons: [
+      {
+        text: "Exit",
+        action: exitTour,
+        classes: "shepherd-button-secondary",
+      },
       {
         text: "Next",
         action: tour.next,
@@ -76,11 +98,7 @@ const OnboardingWalkthrough = memo(() => {
       {
         text: "Done",
         action: () => {
-          tour.complete();
-          localStorage.setItem(
-            "lazy-uncle:onboardingWalkthroughCompleted",
-            `${new Date().getTime()}`,
-          );
+          exitTour();
           window.scrollTo({
             top: 0,
             behavior: "smooth",
