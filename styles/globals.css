@@ -54,18 +54,8 @@ div.ptr {
 }
 
 .shepherd-button {
-  background: #3288e6;
-  border: 0;
-  border-radius: 3px;
-  color: hsla(0, 0%, 100%, 0.75);
+  @apply rounded-md bg-sky-700 px-6 py-2 font-medium text-white transition-colors hover:bg-sky-800;
   cursor: pointer;
-  margin-right: 0.5rem;
-  padding: 0.5rem 1.5rem;
-  transition: all 0.5s ease;
-}
-.shepherd-button:not(:disabled):hover {
-  background: #196fcc;
-  color: hsla(0, 0%, 100%, 0.75);
 }
 .shepherd-button.shepherd-button-secondary {
   background: #f1f2f3;
@@ -79,11 +69,7 @@ div.ptr {
   cursor: not-allowed;
 }
 .shepherd-footer {
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
-  display: flex;
-  justify-content: flex-end;
-  padding: 0 0.75rem 0.75rem;
+  @apply flex justify-end gap-4 rounded-b-lg p-4;
 }
 .shepherd-footer .shepherd-button:last-child {
   margin-right: 0;
@@ -131,10 +117,7 @@ div.ptr {
   padding: 1em;
 }
 .shepherd-text {
-  color: rgba(0, 0, 0, 0.75);
-  font-size: 1rem;
-  line-height: 1.3em;
-  padding: 0.75em;
+  @apply px-4 pb-2 pt-6 text-gray-700;
 }
 .shepherd-text p {
   margin-top: 0;
@@ -143,14 +126,12 @@ div.ptr {
   margin-bottom: 0;
 }
 .shepherd-content {
-  border-radius: 5px;
+  @apply rounded-lg;
   outline: none;
   padding: 0;
 }
 .shepherd-element {
-  background: #fff;
-  border-radius: 5px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  @apply rounded-lg bg-white shadow-sm;
   max-width: 400px;
   opacity: 0;
   outline: none;
