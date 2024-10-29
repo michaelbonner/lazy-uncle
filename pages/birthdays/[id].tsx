@@ -29,17 +29,17 @@ const Birthday = ({ id }: { id: string }) => {
     <MainLayout title={`Birthday`}>
       <>
         {birthdayError && <p>Error loading birthday</p>}
-        <div className="mx-auto mt-8 max-w-7xl px-2 md:px-8">
+        <div className="px-2 mx-auto mt-8 max-w-7xl md:px-8">
           <Link
             href="/birthdays"
             className="flex items-center space-x-1 text-cyan-100 underline md:px-0"
           >
-            <HiChevronLeft className="mt-1 h-6 w-6" />
+            <HiChevronLeft className="mt-1 w-6 h-6" />
             <span>Back to all birthdays</span>
           </Link>
-          <div className="mt-4 rounded-xl bg-white px-4 py-8 text-gray-800">
+          <div className="py-8 px-4 mt-4 text-gray-800 bg-white rounded-xl">
             {birthdayLoading ? (
-              <div className="flex min-h-[300px] items-center justify-center">
+              <div className="flex justify-center items-center min-h-[300px]">
                 <LoadingSpinner spinnerTextColor="text-cyan-40" />
               </div>
             ) : (

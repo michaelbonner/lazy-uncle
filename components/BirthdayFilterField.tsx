@@ -36,7 +36,7 @@ const BirthdayFilterField = ({
       />
       {value && (
         <HiBackspace
-          className="absolute right-10 top-4 text-xl text-gray-400"
+          className="absolute top-4 right-10 text-xl text-gray-400"
           onClick={() => setValue("")}
         />
       )}

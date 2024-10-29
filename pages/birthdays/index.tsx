@@ -10,7 +10,7 @@ const BirthdaysContainer = dynamic(
   () => import("../../components/BirthdaysContainer"),
   {
     loading: () => (
-      <div className="flex h-full min-h-[50vh] w-full items-center justify-center rounded-lg border-b-4 border-t-4 bg-white text-center text-gray-800">
+      <div className="flex justify-center items-center w-full h-full text-center text-gray-800 bg-white rounded-lg border-t-4 border-b-4 min-h-[50vh]">
         <p className="animate-pulse">Loading birthdays...</p>
       </div>
     ),
@@ -32,7 +32,7 @@ export const Home: NextPage<HomeProps> = ({ session }) => {
 
   return (
     <MainLayout title="Lazy Uncle">
-      <main className="mx-auto max-w-7xl px-2 pb-8">
+      <main className="px-2 pb-8 mx-auto max-w-7xl">
         <BirthdaysContainer userId={session?.user?.id} />
       </main>
     </MainLayout>

@@ -14,7 +14,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
   const buttonClassName = `py-1 px-2`;
 
   return (
-    <div className="sticky top-0 z-10 flex flex-wrap items-end rounded-t border bg-gray-100 px-2 pb-2">
+    <div className="flex sticky top-0 z-10 flex-wrap items-end px-2 pb-2 bg-gray-100 rounded-t border">
       <div>
         <button
           aria-label="bold"

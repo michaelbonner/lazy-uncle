@@ -4,8 +4,8 @@ import MainLayout from "../components/layout/MainLayout";
 const Policies = () => {
   return (
     <MainLayout title="Policies">
-      <div className="mx-4 my-16 max-w-5xl rounded-lg bg-white px-4 py-12 md:mx-auto md:px-16">
-        <div className="prose max-w-5xl px-4 text-gray-700">
+      <div className="py-12 px-4 my-16 mx-4 max-w-5xl bg-white rounded-lg md:px-16 md:mx-auto">
+        <div className="px-4 max-w-5xl text-gray-700 prose">
           <h1>Privacy Policy and Terms of Service</h1>
           <h2>Privacy Policy</h2>
           <div>

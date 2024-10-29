@@ -17,9 +17,9 @@ const Welcome = () => {
   }, []);
 
   return (
-    <div className="mt-8 flex justify-center px-4 py-12 text-gray-100 md:py-24">
+    <div className="flex justify-center py-12 px-4 mt-8 text-gray-100 md:py-24">
       <div className="flex flex-col gap-y-6">
-        <div className="prose-light prose mb-2 text-lg text-gray-100">
+        <div className="mb-2 text-lg text-gray-100 prose-light prose">
           <h1 className="text-white">
             Lazy Uncle helps you keep track of birthdays
           </h1>
@@ -34,7 +34,7 @@ const Welcome = () => {
             you have any problems. I hope you enjoy it!
           </p>
         </div>
-        <div className="mb-1 mt-4 min-h-[80px] items-end md:flex md:space-x-4">
+        <div className="items-end mt-4 mb-1 md:flex md:space-x-4 min-h-[80px]">
           {providers &&
             Object.values(providers).map((provider) => {
               return (
@@ -48,8 +48,8 @@ const Welcome = () => {
                   )}
                   onClick={() => signIn(provider.id)}
                 >
-                  {provider.id === "google" && <GrGoogle className="h-5 w-5" />}
-                  {provider.id === "github" && <GrGithub className="h-6 w-6" />}
+                  {provider.id === "google" && <GrGoogle className="w-5 h-5" />}
+                  {provider.id === "github" && <GrGithub className="w-6 h-6" />}
                   <span>Sign in with {provider.name}</span>
                 </button>
               );

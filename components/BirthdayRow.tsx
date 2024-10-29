@@ -71,10 +71,10 @@ const BirthdayRow: FC<Props> = ({
             }}
             className={`col-span-3 flex items-center justify-between gap-2 text-left text-xl md:justify-start`}
           >
-            <span className="flex items-center space-x-2 py-3">
+            <span className="flex items-center py-3 space-x-2">
               {daysFromNow === 0 && (
                 <span title={`Today is ${birthday.name}'s birthday!`}>
-                  <GiBalloons className="right-0 top-0 text-lg text-rose-500" />
+                  <GiBalloons className="top-0 right-0 text-lg text-rose-500" />
                 </span>
               )}
               <span>{birthday.name}</span>{" "}
@@ -98,17 +98,17 @@ const BirthdayRow: FC<Props> = ({
               {format(birthDate, "MMM d")}
             </button>
           </p>
-          <p className="col-span-2 block py-3">
+          <p className="block col-span-2 py-3">
             {birthday.id && age ? (
               <span title={actualAge}>{age}</span>
             ) : (
               <span className="sr-only">{actualAge}</span>
             )}
           </p>
-          <p className="relative col-span-2 h-full overflow-hidden text-ellipsis">
+          <p className="overflow-hidden relative col-span-2 h-full text-ellipsis">
             {birthday.category && (
               <button
-                className="block h-full w-full rounded hover:bg-gray-200"
+                className="block w-full h-full rounded hover:bg-gray-200"
                 onClick={() =>
                   setCategoryFilter(
                     categoryFilter === birthday.category
@@ -123,17 +123,17 @@ const BirthdayRow: FC<Props> = ({
             )}
             {categoryFilter && categoryFilter === birthday.category && (
               <button
-                className="absolute right-10 top-4"
+                className="absolute top-4 right-10"
                 onClick={() => setCategoryFilter("")}
               >
                 <HiBackspace className="text-xl text-gray-400" />
               </button>
             )}
           </p>
-          <p className="relative col-span-2 h-full overflow-hidden text-ellipsis">
+          <p className="overflow-hidden relative col-span-2 h-full text-ellipsis">
             {birthday.parent && (
               <button
-                className="block h-full w-full rounded hover:bg-gray-200"
+                className="block w-full h-full rounded hover:bg-gray-200"
                 onClick={() =>
                   setParentFilter(
                     parentFilter === birthday.parent
@@ -148,16 +148,16 @@ const BirthdayRow: FC<Props> = ({
             )}
             {parentFilter && parentFilter === birthday.parent && (
               <button
-                className="absolute right-10 top-4"
+                className="absolute top-4 right-10"
                 onClick={() => setParentFilter("")}
               >
                 <HiBackspace className="text-xl text-gray-400" />
               </button>
             )}
           </p>
-          <p className="relative h-full overflow-hidden text-ellipsis">
+          <p className="overflow-hidden relative h-full text-ellipsis">
             <button
-              className="flex h-full w-full flex-col items-center justify-center rounded hover:bg-gray-200"
+              className="flex flex-col justify-center items-center w-full h-full rounded hover:bg-gray-200"
               onClick={() =>
                 setZodiacSignFilter(
                   zodiacSignFilter === zodiacSign ? "" : zodiacSign || "",
@@ -204,13 +204,13 @@ const BirthdayRow: FC<Props> = ({
             onClick={() => {
               setIsEditBirthdayDialogOpen(true);
             }}
-            className="flex w-full items-center justify-between"
+            className="flex justify-between items-center w-full"
           >
             <div>
               <p className="flex items-center space-x-2 text-2xl">
                 {todaysDateMonthAndDay === birthDateMonthAndDay && (
                   <span title={`Today is ${birthday.name}'s birthday!`}>
-                    <GiBalloons className="right-0 top-0 text-lg text-rose-500" />
+                    <GiBalloons className="top-0 right-0 text-lg text-rose-500" />
                   </span>
                 )}
                 <span>{birthday.name}</span>
@@ -218,7 +218,7 @@ const BirthdayRow: FC<Props> = ({
                   <HiOutlinePaperClip className="text-sm text-gray-400" />
                 )}
               </p>
-              <div className="flex justify-start space-x-4 pt-1">
+              <div className="flex justify-start pt-1 space-x-4">
                 {getAgeForHumans(getDateFromYmdString(birthday.date || "")) ? (
                   <p>
                     <span className="text-sm font-light">Age</span>{" "}
@@ -243,7 +243,7 @@ const BirthdayRow: FC<Props> = ({
                   </p>
                 )}
               </div>
-              <p className="mt-1 flex items-center space-x-2">
+              <p className="flex items-center mt-1 space-x-2">
                 <ZodiacSignCharacter name={zodiacSign} />
                 <span className="text-xs">{zodiacSign}</span>
               </p>
