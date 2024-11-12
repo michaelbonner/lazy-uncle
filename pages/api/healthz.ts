@@ -29,6 +29,7 @@ const checkDB = async () => {
 
     return `${val?.at(0)?.["okay"]}` === "1";
   } catch (error) {
+    console.error(error);
     return false;
   }
 };
