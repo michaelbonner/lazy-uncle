@@ -28,7 +28,7 @@ const MainLayout = ({
   }, [session, status]);
 
   return (
-    <div className="flex flex-col justify-between min-h-screen">
+    <div className="flex min-h-screen flex-col justify-between">
       <Head>
         {/* General */}
         <title>{title}</title>
@@ -89,7 +89,7 @@ const MainLayout = ({
           </Link>
         </h1>
         {session?.user && (
-          <div className="items-center mt-8 text-right md:flex md:mt-0 md:space-x-4">
+          <div className="mt-8 items-center text-right md:mt-0 md:flex md:space-x-4">
             <p className="hidden md:block">
               Logged in as {session?.user?.email}
             </p>
@@ -103,27 +103,27 @@ const MainLayout = ({
         )}
       </header>
       <ClientOnly>{children}</ClientOnly>
-      <footer className="py-6 px-4 text-center text-gray-200 md:flex md:justify-between md:px-8">
+      <footer className="px-4 py-6 text-center text-gray-200 md:flex md:justify-between md:px-8">
         <div>
-          &copy; {new Date().getFullYear()}
+          &copy; 2020-{new Date().getFullYear()}
           {` `}
           <a className="underline" href="https://michaelbonner.dev">
             Michael Bonner
           </a>
         </div>
-        <div className="flex flex-wrap justify-center mt-4 space-x-6 md:mt-0">
+        <div className="mt-4 flex flex-wrap justify-center space-x-6 md:mt-0">
           <a
-            className="flex items-center pt-4 space-x-1 underline md:pt-0"
+            className="flex items-center space-x-1 pt-4 underline md:pt-0"
             href="https://github.com/michaelbonner/lazy-uncle/issues/new?assignees=michaelbonner&labels=&template=bug_report.md&title="
           >
-            <RiBugFill className="w-4 h-4" />
+            <RiBugFill className="h-4 w-4" />
             <span>Report a bug</span>
           </a>
           <a
-            className="flex items-center pt-4 space-x-1 underline md:pt-0"
+            className="flex items-center space-x-1 pt-4 underline md:pt-0"
             href="https://github.com/michaelbonner/lazy-uncle/issues/new?assignees=michaelbonner&labels=&template=feature_request.md&title="
           >
-            <RiLightbulbFlashLine className="w-4 h-4" />
+            <RiLightbulbFlashLine className="h-4 w-4" />
             <span>Request a feature</span>
           </a>
           <a
