@@ -70,7 +70,7 @@ export const PageLoadingProgress = () => {
   return (
     <div className="absolute top-0 right-0 left-0 z-30 h-1">
       <div
-        className="h-1 bg-cyan-50 shadow-sm transition-all duration-500"
+        className="h-1 bg-cyan-50 shadow-xs transition-all duration-500"
         style={{
           width: `${widthPercentage}%`,
           opacity: loaderIsVisible ? 1 : 0,

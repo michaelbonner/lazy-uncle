@@ -68,7 +68,7 @@ const EditBirthdayForm = ({
               Name
             </label>
             <input
-              className="block w-full h-12 rounded border-gray-300"
+              className="block w-full h-12 rounded-sm border-gray-300"
               id="name"
               onChange={(e) => setName(e.target.value)}
               required={true}
@@ -81,7 +81,7 @@ const EditBirthdayForm = ({
               Birthday
             </label>
             <input
-              className="block w-full h-12 rounded border-gray-300"
+              className="block w-full h-12 rounded-sm border-gray-300"
               id="date"
               onChange={(e) => setDate(e.target.value)}
               max={new Date().toISOString().split("T")[0]}
@@ -95,7 +95,7 @@ const EditBirthdayForm = ({
               Category (optional)
             </label>
             <input
-              className="block w-full h-12 rounded border-gray-300"
+              className="block w-full h-12 rounded-sm border-gray-300"
               id="category"
               onChange={(e) => setCategory(e.target.value)}
               type="text"
@@ -107,7 +107,7 @@ const EditBirthdayForm = ({
               Parent (optional)
             </label>
             <input
-              className="block w-full h-12 rounded border-gray-300"
+              className="block w-full h-12 rounded-sm border-gray-300"
               id="parent"
               onChange={(e) => setParent(e.target.value)}
               type="text"
@@ -141,7 +141,7 @@ const EditBirthdayForm = ({
               className={classNames(
                 "inline-flex items-center rounded-md border border-transparent bg-transparent px-4 py-2 text-sm font-medium text-red-700",
                 "hover:bg-red-100",
-                "focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2",
+                "focus:outline-hidden focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2",
               )}
               disabled={deleteLoading}
               onClick={() => {
@@ -176,7 +176,7 @@ const EditBirthdayForm = ({
                 className={classNames(
                   "inline-flex items-center rounded-md border border-transparent px-4 py-2 font-medium",
                   "hover:bg-gray-100",
-                  "focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2",
+                  "focus:outline-hidden focus:ring-2 focus:ring-gray-500 focus:ring-offset-2",
                 )}
                 onClick={handleClose}
                 type="button"

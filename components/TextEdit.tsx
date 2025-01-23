@@ -22,7 +22,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           onClick={() => editor.chain().focus().toggleBold().run()}
           className={`${buttonClassName} ${
             editor.isActive("bold")
-              ? "rounded bg-white font-bold shadow-sm"
+              ? "rounded-sm bg-white font-bold shadow-xs"
               : ""
           } font-bold`}
         >
@@ -34,7 +34,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           onClick={() => editor.chain().focus().toggleItalic().run()}
           className={`${buttonClassName} ${
             editor.isActive("italic")
-              ? "rounded bg-white font-bold shadow-sm"
+              ? "rounded-sm bg-white font-bold shadow-xs"
               : ""
           } italic`}
         >
@@ -46,7 +46,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           onClick={() => editor.chain().focus().toggleStrike().run()}
           className={`${buttonClassName} ${
             editor.isActive("strike")
-              ? "rounded bg-white font-bold shadow-sm"
+              ? "rounded-sm bg-white font-bold shadow-xs"
               : ""
           } line-through`}
         >
@@ -60,7 +60,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           onClick={() => editor.chain().focus().setParagraph().run()}
           className={`${buttonClassName} ${
             editor.isActive("paragraph")
-              ? "rounded bg-white font-bold shadow-sm"
+              ? "rounded-sm bg-white font-bold shadow-xs"
               : ""
           }`}
         >
@@ -74,7 +74,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           }
           className={`${buttonClassName} ${
             editor.isActive("heading", { level: 1 })
-              ? "rounded bg-white font-bold shadow-sm"
+              ? "rounded-sm bg-white font-bold shadow-xs"
               : "font-normal"
           } text-2xl`}
         >
@@ -88,7 +88,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           }
           className={`${buttonClassName} ${
             editor.isActive("heading", { level: 2 })
-              ? "rounded bg-white font-bold shadow-sm"
+              ? "rounded-sm bg-white font-bold shadow-xs"
               : "font-normal"
           } text-xl`}
         >
@@ -102,7 +102,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           }
           className={`${buttonClassName} ${
             editor.isActive("heading", { level: 3 })
-              ? "rounded bg-white font-bold shadow-sm"
+              ? "rounded-sm bg-white font-bold shadow-xs"
               : "font-normal"
           } text-lg`}
         >
@@ -117,7 +117,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           className={`${buttonClassName} ${
             editor.isActive("bulletList")
-              ? "rounded bg-white font-bold shadow-sm"
+              ? "rounded-sm bg-white font-bold shadow-xs"
               : ""
           }`}
         >
@@ -130,7 +130,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
           className={`${buttonClassName} ${
             editor.isActive("orderedList")
-              ? "rounded bg-white font-bold shadow-sm"
+              ? "rounded-sm bg-white font-bold shadow-xs"
               : ""
           }`}
         >
@@ -174,7 +174,7 @@ const TextEdit = ({
     editorProps: {
       attributes: {
         class:
-          "border border-t-0 border-gray-300 rounded-b bg-white min-w-full w-full py-2 px-4 prose focus:outline-none min-h-[200px]",
+          "border border-t-0 border-gray-300 rounded-b bg-white min-w-full w-full py-2 px-4 prose focus:outline-hidden min-h-[200px]",
       },
     },
     onUpdate: ({ editor }) => {

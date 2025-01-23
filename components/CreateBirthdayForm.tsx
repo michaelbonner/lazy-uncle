@@ -66,7 +66,7 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
             Name
           </label>
           <input
-            className="block w-full h-12 rounded border-gray-300"
+            className="block w-full h-12 rounded-sm border-gray-300"
             id="name"
             onChange={(e) => setName(e.target.value)}
             required={true}
@@ -79,7 +79,7 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
             Birthday
           </label>
           <input
-            className="block w-full h-12 rounded border-gray-300"
+            className="block w-full h-12 rounded-sm border-gray-300"
             id="date"
             onChange={(e) => setDate(e.target.value)}
             max={new Date().toISOString().split("T")[0]}
@@ -93,7 +93,7 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
             Category (optional)
           </label>
           <input
-            className="block w-full h-12 rounded border-gray-300"
+            className="block w-full h-12 rounded-sm border-gray-300"
             id="category"
             onChange={(e) => setCategory(e.target.value)}
             type="text"
@@ -105,7 +105,7 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
             Parent (optional)
           </label>
           <input
-            className="block w-full h-12 rounded border-gray-300"
+            className="block w-full h-12 rounded-sm border-gray-300"
             id="parent"
             onChange={(e) => setParent(e.target.value)}
             type="text"
@@ -134,7 +134,7 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
             className={classNames(
               "inline-flex items-center rounded-md border border-transparent px-4 py-2 font-medium",
               "hover:bg-gray-100",
-              "focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2",
+              "focus:outline-hidden focus:ring-2 focus:ring-gray-500 focus:ring-offset-2",
             )}
             onClick={onSubmit}
             type="button"
