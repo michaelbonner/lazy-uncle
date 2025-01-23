@@ -19,7 +19,7 @@ const BirthdayFilterField = ({
         className={classNames(
           "block w-full rounded-lg border-0 bg-gray-200 px-4 py-3 text-gray-700",
           "placeholder:text-gray-400",
-          "focus:border-gray-400 focus:bg-white focus:outline-none",
+          "focus:border-gray-400 focus:bg-white focus:outline-hidden",
           `js-filter-${label.toLowerCase()}`,
         )}
         disabled={disabled}

@@ -108,7 +108,7 @@ const BirthdayRow: FC<Props> = ({
           <p className="overflow-hidden relative col-span-2 h-full text-ellipsis">
             {birthday.category && (
               <button
-                className="block w-full h-full rounded hover:bg-gray-200"
+                className="block w-full h-full rounded-sm hover:bg-gray-200"
                 onClick={() =>
                   setCategoryFilter(
                     categoryFilter === birthday.category
@@ -133,7 +133,7 @@ const BirthdayRow: FC<Props> = ({
           <p className="overflow-hidden relative col-span-2 h-full text-ellipsis">
             {birthday.parent && (
               <button
-                className="block w-full h-full rounded hover:bg-gray-200"
+                className="block w-full h-full rounded-sm hover:bg-gray-200"
                 onClick={() =>
                   setParentFilter(
                     parentFilter === birthday.parent
@@ -157,7 +157,7 @@ const BirthdayRow: FC<Props> = ({
           </p>
           <p className="overflow-hidden relative h-full text-ellipsis">
             <button
-              className="flex flex-col justify-center items-center w-full h-full rounded hover:bg-gray-200"
+              className="flex flex-col justify-center items-center w-full h-full rounded-sm hover:bg-gray-200"
               onClick={() =>
                 setZodiacSignFilter(
                   zodiacSignFilter === zodiacSign ? "" : zodiacSign || "",

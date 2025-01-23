@@ -41,9 +41,9 @@ const Welcome = () => {
                 <button
                   key={provider.name}
                   className={classNames(
-                    "mt-4 inline-flex w-full items-center justify-center space-x-2 rounded-md border border-transparent px-6 py-3 font-medium shadow-sm",
+                    "mt-4 inline-flex w-full items-center justify-center space-x-2 rounded-md border border-transparent px-6 py-3 font-medium shadow-xs",
                     "md:w-auto",
-                    "focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2",
+                    "focus:outline-hidden focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2",
                     "bg-slate-200 text-slate-700 hover:bg-slate-100",
                   )}
                   onClick={() => signIn(provider.id)}
