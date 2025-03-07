@@ -6,8 +6,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install modules
-        run: npm ci
+        run: bun i
       - name: Run tests
-        run: npm test
+        run: bun test
       - name: Test build
-        run: npm run build
+        run: bun run build
