@@ -4,6 +4,9 @@ const withPWA = require("next-pwa")({
 });
 
 const settings = {
+  experimental: {
+    reactCompiler: true,
+  },
   i18n: {
     locales: ["en-US"],
     defaultLocale: "en-US",
