@@ -12,7 +12,8 @@
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",
     "out": "bun outdated",
-    "up": "bun update"
+    "up": "bun update",
+    "preinstall": "npx only-allow bun"
   },
   "dependencies": {
     "@apollo/client": "^3.13.8",
@@ -47,7 +48,6 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.10",
     "@tailwindcss/typography": "^0.5.16",
-    "@types/node": "^22.15.31",
     "@types/react": "^19.1.8",
     "@types/react-gtm-module": "^2.0.4",
     "eslint-config-next": "^15.3.3",
@@ -59,6 +59,5 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
     "vitest": "^3.2.3"
-  },
-  "packageManager": "pnpm@9.15.4+sha512.b2dc20e2fc72b3e18848459b37359a32064663e5627a51e4c74b2c29dd8e8e0491483c3abb40789cfd578bf362fb6ba8261b05f0387d76792ed6e23ea3b1b6a0"
+  }
 }
