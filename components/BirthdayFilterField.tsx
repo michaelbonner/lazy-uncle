@@ -1,3 +1,4 @@
+import { Dispatch, SetStateAction } from "react";
 import { HiBackspace, HiSearch } from "react-icons/hi";
 import classNames from "../shared/classNames";
 
@@ -11,7 +12,7 @@ const BirthdayFilterField = ({
   datalistOptions?: string[];
   disabled: boolean;
   label: string;
-  setValue: (value: string) => void;
+  setValue: Dispatch<SetStateAction<string>>;
   value: string;
 }) => {
   return (
