@@ -240,9 +240,9 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
     <div>
       {!birthdaysLoading && !birthdaysCount && <OnboardingWalkthrough />}
       {upcomingBirthdays?.length > 0 && (
-        <div className="gap-x-8 items-center py-4 px-8 my-4 text-cyan-800 bg-gray-100 rounded-lg border-t-4 border-b-4 border-gray-300 shadow-lg md:flex">
+        <div className="my-4 items-center gap-x-8 rounded-lg border-t-4 border-b-4 border-gray-300 bg-gray-100 px-8 py-4 text-cyan-800 shadow-lg md:flex">
           <h2 className="text-2xl font-medium">Upcoming Birthdays</h2>
-          <div className="flex flex-wrap gap-y-2 gap-x-6 items-center mt-3 md:mt-0">
+          <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 md:mt-0">
             {upcomingBirthdays.map((birthday: NexusGenObjects["Birthday"]) => {
               const daysUntil = getDaysUntilNextBirthday(birthday);
               return (
@@ -281,8 +281,8 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
           </div>
         </div>
       )}
-      <div className="flex justify-between items-end space-x-2 md:justify-end">
-        <div className="items-center pl-2 md:flex md:pl-0 md:space-x-4">
+      <div className="flex items-end justify-between space-x-2 md:justify-end">
+        <div className="items-center pl-2 md:flex md:space-x-4 md:pl-0">
           <button
             className={classNames(
               isFiltered ? "text-cyan-50" : "text-cyan-500",
@@ -298,9 +298,9 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
             {workingDatesCount}/{birthdaysData?.birthdays?.length} visible
           </div>
         </div>
-        <div className="flex justify-end items-center mt-4 space-x-4 md:hidden">
+        <div className="mt-4 flex items-center justify-end space-x-4 md:hidden">
           <button
-            className="flex items-center py-2 px-4 space-x-2 text-sm text-gray-800 bg-cyan-50 rounded-md border"
+            className="flex items-center space-x-2 rounded-md border bg-cyan-50 px-4 py-2 text-sm text-gray-800"
             onClick={() => {
               setShowFilters(!showFilters);
             }}
@@ -318,11 +318,11 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
 
       <div className="text-center">
         {birthdaysError && <p className="pt-3">{birthdaysError.message}</p>}
-        <div className="mt-2 text-gray-600 bg-gray-50 rounded-lg border-b-4 md:mt-0 border-b-gray-400">
-          <div className="sticky top-0 z-10 pt-2 bg-cyan-600">
+        <div className="mt-2 rounded-lg border-b-4 border-b-gray-400 bg-gray-50 text-gray-600 md:mt-0">
+          <div className="sticky top-0 z-10 bg-cyan-600 pt-2">
             <div className="bg-cyan-600">
-              <div className="grid gap-x-2 gap-y-2 py-2 px-3 bg-gray-300 rounded-t-lg border-t-4 md:py-3 md:px-6 lg:flex border-t-gray-400">
-                <div className="flex gap-2 w-full">
+              <div className="grid gap-x-2 gap-y-2 rounded-t-lg border-t-4 border-t-gray-400 bg-gray-300 px-3 py-2 md:px-6 md:py-3 lg:flex">
+                <div className="flex w-full gap-2">
                   <button
                     className={classNames(
                       "js-add-birthday-button flex h-12 w-12 items-center justify-center rounded-lg bg-cyan-800 p-3 text-cyan-50 transition-colors",
@@ -334,9 +334,9 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                     }
                     type="button"
                   >
-                    <IoAddCircleOutline className="w-5 h-5" />
+                    <IoAddCircleOutline className="h-5 w-5" />
                   </button>
-                  <div className="relative w-full grow-1 min-w-[220px]">
+                  <div className="relative w-full min-w-[220px] grow-1">
                     <BirthdayFilterField
                       disabled={
                         !birthdaysData?.birthdays?.length &&
@@ -345,11 +345,16 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                       label="Name"
                       value={nameFilter}
                       setValue={setNameFilter}
+                      datalistOptions={Array.from(
+                        new Set(
+                          workingDates.map((birthday) => birthday.name || ""),
+                        ),
+                      )}
                     />
                   </div>
                   <div className="flex md:hidden">
                     <button
-                      className="flex justify-center items-center ml-2 w-full bg-gray-200 rounded-md"
+                      className="ml-2 flex w-full items-center justify-center rounded-md bg-gray-200"
                       onClick={handleRefresh}
                     >
                       <GrRefresh
@@ -375,6 +380,11 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                     label="Category"
                     value={categoryFilter}
                     setValue={setCategoryFilter}
+                    datalistOptions={Array.from(
+                      new Set(
+                        workingDates.map((birthday) => birthday.category || ""),
+                      ),
+                    )}
                   />
                 </div>
                 <div
@@ -391,6 +401,11 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                     label="Parent"
                     value={parentFilter}
                     setValue={setParentFilter}
+                    datalistOptions={Array.from(
+                      new Set(
+                        workingDates.map((birthday) => birthday.parent || ""),
+                      ),
+                    )}
                   />
                 </div>
                 <div
@@ -407,11 +422,18 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                     label="Zodiac Sign"
                     value={zodiacSignFilter}
                     setValue={setZodiacSignFilter}
+                    datalistOptions={Array.from(
+                      new Set(
+                        workingDates.map((birthday) =>
+                          getZodiacSignForDateYmdString(birthday.date || ""),
+                        ),
+                      ),
+                    )}
                   />
                 </div>
               </div>
             </div>
-            <div className="hidden px-4 text-gray-100 bg-cyan-800 md:grid md:grid-cols-12 md:px-8">
+            <div className="hidden bg-cyan-800 px-4 text-gray-100 md:grid md:grid-cols-12 md:px-8">
               <SortColumnHeader
                 ascendingString="name_asc"
                 className="col-span-3"
@@ -514,13 +536,13 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
               })}
             </ul>
           ) : (
-            <div className="py-10 px-8 text-gray-400">
+            <div className="px-8 py-10 text-gray-400">
               {sessionStatus === "loading" || birthdaysLoading ? (
-                <div className="flex justify-center items-center min-h-[300px]">
+                <div className="flex min-h-[300px] items-center justify-center">
                   <LoadingSpinner spinnerTextColor="text-cyan-40" />
                 </div>
               ) : (
-                <div className="mx-auto prose">
+                <div className="prose mx-auto">
                   <h2>No birthdays found</h2>
                   <p>Use the form below to add a birthday or two... or 38.</p>
                 </div>
@@ -544,17 +566,17 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
           </div>
         </div>
       </div>
-      <div className="flex justify-end mt-8 text-gray-200">
+      <div className="mt-8 flex justify-end text-gray-200">
         <Link
           href={`webcal://${currentHost}/api/calendar-subscription/${userId}`}
-          className="flex items-center space-x-2 text-gray-200 underline transition-all hover:text-gray-100 js-subscribe-to-calendar group"
+          className="js-subscribe-to-calendar group flex items-center space-x-2 text-gray-200 underline transition-all hover:text-gray-100"
         >
           <HiOutlineCalendar className="text-cyan-400 transition-all group-hover:text-gray-200" />
           <span>Subscribe to calendar</span>
         </Link>
       </div>
-      <div className="mt-24 text-gray-800 bg-gray-50 rounded-lg border-t-4 border-b-4 border-b-gray-400 border-t-gray-400">
-        <div className="py-12 px-4 mt-4 md:px-8">
+      <div className="mt-24 rounded-lg border-t-4 border-b-4 border-t-gray-400 border-b-gray-400 bg-gray-50 text-gray-800">
+        <div className="mt-4 px-4 py-12 md:px-8">
           <div className="max-w-2xl">
             <h3 className="mb-4 text-2xl font-medium">
               Import Birthdays From CSV
