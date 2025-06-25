@@ -1,25 +1,27 @@
-import { createContext, FC, ReactNode, useEffect, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  FC,
+  ReactNode,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 
 type ContextProps = {
   isFiltered: boolean;
   nameFilter: string;
-  // eslint-disable-next-line no-unused-vars
-  setNameFilter: (name: string) => void;
+  setNameFilter: Dispatch<SetStateAction<string>>;
   categoryFilter: string;
-  // eslint-disable-next-line no-unused-vars
-  setCategoryFilter: (category: string) => void;
+  setCategoryFilter: Dispatch<SetStateAction<string>>;
   parentFilter: string;
-  // eslint-disable-next-line no-unused-vars
-  setParentFilter: (parent: string) => void;
+  setParentFilter: Dispatch<SetStateAction<string>>;
   zodiacSignFilter: string;
-  // eslint-disable-next-line no-unused-vars
-  setZodiacSignFilter: (zodiacSign: string) => void;
+  setZodiacSignFilter: Dispatch<SetStateAction<string>>;
   sortBy: string;
-  // eslint-disable-next-line no-unused-vars
-  setSortBy: (sort: string) => void;
+  setSortBy: Dispatch<SetStateAction<string>>;
   showFilters: boolean;
-  // eslint-disable-next-line no-unused-vars
-  setShowFilters: (shouldShow: boolean) => void;
+  setShowFilters: Dispatch<SetStateAction<boolean>>;
   clearFilters: () => void;
 };
 
