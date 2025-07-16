@@ -1,4 +1,5 @@
 import { useMutation } from "@apollo/client";
+import { Birthday } from "@prisma/client";
 import { parse as csvParse } from "csv-parse/browser/esm/sync";
 import { format, isValid } from "date-fns";
 import { useSession } from "next-auth/react";
@@ -12,7 +13,9 @@ import PrimaryButton from "./PrimaryButton";
 
 const UploadCsvBirthdayForm = () => {
   const { data: session } = useSession();
-  const [birthdays, setBirthdays] = useState([]);
+  const [birthdays, setBirthdays] = useState<
+    Pick<Birthday, "name" | "date" | "category" | "parent" | "notes">[]
+  >([]);
   const userId = session?.user?.id;
 
   const [createBirthday, { loading, error }] = useMutation(
@@ -91,13 +94,13 @@ const UploadCsvBirthdayForm = () => {
         <div>
           <div>
             <label
-              className="block mb-2 text-sm font-medium text-gray-900"
+              className="mb-2 block text-sm font-medium text-gray-900"
               htmlFor="csv"
             >
               Upload file
             </label>
             <input
-              className="block w-full text-sm text-gray-900 bg-gray-50 rounded-none border-0 border-gray-300 cursor-pointer focus:outline-hidden"
+              className="block w-full cursor-pointer rounded-none border-0 border-gray-300 bg-gray-50 text-sm text-gray-900 focus:outline-hidden"
               id="csv"
               accept=".csv"
               onChange={handleFileUpload}
@@ -108,7 +111,7 @@ const UploadCsvBirthdayForm = () => {
               Rows of name, date (yyyy-mm-dd), category, parent, notes
             </p>
             <p className="mt-1 text-sm text-gray-500">Example:</p>
-            <p className="py-2 px-4 mt-1 text-sm text-gray-500 bg-white border border-dashed">
+            <p className="mt-1 border border-dashed bg-white px-4 py-2 text-sm text-gray-500">
               <code>Mike,2020-01-02,NULL,NULL,Likes the Browns</code>
             </p>
           </div>
@@ -121,7 +124,7 @@ const UploadCsvBirthdayForm = () => {
           )}
         </div>
 
-        <div className="flex justify-end mt-4 md:mt-0">
+        <div className="mt-4 flex justify-end md:mt-0">
           <PrimaryButton disabled={loading} type="submit">
             Upload CSV
           </PrimaryButton>
