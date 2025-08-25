@@ -3,7 +3,10 @@ import MainLayout from "../components/layout/MainLayout";
 
 const Policies = () => {
   return (
-    <MainLayout title="Policies">
+    <MainLayout
+      title="Policies | Lazy Uncle: Simple Free Birthday Reminder App"
+      description="Privacy Policy and Terms of Service for Lazy Uncle: Simple Free Birthday Reminder App"
+    >
       <div className="mx-4 my-16 max-w-5xl rounded-lg bg-white px-4 py-12 md:mx-auto md:px-16">
         <div className="prose max-w-5xl px-4 text-gray-700">
           <h1>Privacy Policy and Terms of Service</h1>

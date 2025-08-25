@@ -39,6 +39,10 @@ const MainLayout = ({
         <link rel="icon" href="https://www.lazyuncle.net/favicon.png" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="color-scheme" content="light only" />
+        <link
+          rel="canonical"
+          href={`https://www.lazyuncle.net${router.asPath}`}
+        />
 
         {/* Open Graph */}
         <meta
