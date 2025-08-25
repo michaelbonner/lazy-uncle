@@ -14,7 +14,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
   const buttonClassName = `py-1 px-2`;
 
   return (
-    <div className="flex sticky top-0 z-10 flex-wrap items-end px-2 pb-2 bg-gray-100 rounded-t border">
+    <div className="sticky top-0 z-10 flex flex-wrap items-end rounded-t border bg-gray-100 px-2 pb-2">
       <div>
         <button
           aria-label="bold"
@@ -177,6 +177,7 @@ const TextEdit = ({
           "border border-t-0 border-gray-300 rounded-b bg-white min-w-full w-full py-2 px-4 prose focus:outline-hidden min-h-[200px]",
       },
     },
+    immediatelyRender: false,
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
       setContent(html);
