@@ -1,6 +1,7 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import posthog from "posthog-js";
 import { ReactElement, useEffect } from "react";
 import { RiBugFill, RiLightbulbFlashLine } from "react-icons/ri";
@@ -15,6 +16,7 @@ const MainLayout = ({
   title: string;
 }) => {
   const { data: session, isPending } = authClient.useSession();
+  const router = useRouter();
 
   useEffect(() => {
     if (isPending) return;
@@ -95,8 +97,14 @@ const MainLayout = ({
             <button
               className="underline"
               onClick={async () => {
-                await authClient.signOut();
-                posthog.reset();
+                await authClient.signOut({
+                  fetchOptions: {
+                    onSuccess: () => {
+                      router.push("/");
+                      posthog.reset();
+                    },
+                  },
+                });
               }}
             >
               Sign out
