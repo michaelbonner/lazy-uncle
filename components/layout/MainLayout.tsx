@@ -1,11 +1,10 @@
-import { signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import posthog from "posthog-js";
 import { ReactElement, useEffect } from "react";
-
 import { RiBugFill, RiLightbulbFlashLine } from "react-icons/ri";
+import { authClient } from "../../lib/auth-client";
 import ClientOnly from "../ClientOnly";
 
 const MainLayout = ({
@@ -15,17 +14,17 @@ const MainLayout = ({
   children: ReactElement;
   title: string;
 }) => {
-  const { data: session, status } = useSession();
+  const { data: session, isPending } = authClient.useSession();
 
   useEffect(() => {
-    if (status === "loading") return;
-    if (status === "unauthenticated") return;
+    if (isPending) return;
+    if (!session) return;
 
     posthog.identify(session?.user?.id, {
       email: session?.user?.email,
       name: session?.user?.name,
     });
-  }, [session, status]);
+  }, [session, isPending]);
 
   return (
     <div className="flex min-h-screen flex-col justify-between">
@@ -95,7 +94,9 @@ const MainLayout = ({
             </p>
             <button
               className="underline"
-              onClick={() => signOut({ callbackUrl: "/" })}
+              onClick={async () => {
+                await authClient.revokeSessions();
+              }}
             >
               Sign out
             </button>

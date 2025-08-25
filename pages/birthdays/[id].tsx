@@ -1,15 +1,14 @@
 import { useQuery } from "@apollo/client";
 import { GetServerSideProps } from "next";
-import { getServerSession } from "next-auth/next";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { HiChevronLeft } from "react-icons/hi";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import MainLayout from "../../components/layout/MainLayout";
 import { GET_BIRTHDAY_BY_ID_QUERY } from "../../graphql/Birthday";
+import { auth } from "../../lib/auth";
 import getAgeForHumans from "../../shared/getAgeForHumans";
 import getDateFromYmdString from "../../shared/getDateFromYmdString";
-import { authOptions } from "../api/auth/[...nextauth]";
 
 const EditBirthdayForm = dynamic(
   () => import("../../components/EditBirthdayForm"),
@@ -29,17 +28,17 @@ const Birthday = ({ id }: { id: string }) => {
     <MainLayout title={`Birthday`}>
       <>
         {birthdayError && <p>Error loading birthday</p>}
-        <div className="px-2 mx-auto mt-8 max-w-7xl md:px-8">
+        <div className="mx-auto mt-8 max-w-7xl px-2 md:px-8">
           <Link
             href="/birthdays"
             className="flex items-center space-x-1 text-cyan-100 underline md:px-0"
           >
-            <HiChevronLeft className="mt-1 w-6 h-6" />
+            <HiChevronLeft className="mt-1 h-6 w-6" />
             <span>Back to all birthdays</span>
           </Link>
-          <div className="py-8 px-4 mt-4 text-gray-800 bg-white rounded-xl">
+          <div className="mt-4 rounded-xl bg-white px-4 py-8 text-gray-800">
             {birthdayLoading ? (
-              <div className="flex justify-center items-center min-h-[300px]">
+              <div className="flex min-h-[300px] items-center justify-center">
                 <LoadingSpinner spinnerTextColor="text-cyan-40" />
               </div>
             ) : (
@@ -72,7 +71,11 @@ const Birthday = ({ id }: { id: string }) => {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { id } = context.query;
-  const session = await getServerSession(context.req, context.res, authOptions);
+  const session = await auth.api.getSession({
+    headers: new Headers({
+      cookie: context.req.headers.cookie || "",
+    }),
+  });
 
   if (!session?.user) {
     context.res.statusCode = 302;
@@ -80,10 +83,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     return { props: {} };
   }
 
-  delete session?.user?.createdAt;
-  delete session?.user?.emailVerified;
-
-  return { props: { id, session } };
+  return { props: { id, session: JSON.parse(JSON.stringify(session)) } };
 };
 
 export default Birthday;

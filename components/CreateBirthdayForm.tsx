@@ -1,5 +1,5 @@
 import { useMutation } from "@apollo/client";
-import { useSession } from "next-auth/react";
+import { authClient } from "../lib/auth-client"; // import the auth client
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -12,14 +12,14 @@ import PrimaryButton from "./PrimaryButton";
 
 const TextEdit = dynamic(() => import("./TextEdit"), {
   loading: () => (
-    <div className="flex justify-center items-center w-full h-full text-center text-gray-800 bg-white rounded-lg border-t-4 border-b-4 min-h-[250px]">
+    <div className="flex h-full min-h-[250px] w-full items-center justify-center rounded-lg border-t-4 border-b-4 bg-white text-center text-gray-800">
       <p className="animate-pulse">Loading editor...</p>
     </div>
   ),
 });
 
 const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
-  const { data: session } = useSession();
+  const { data: session } = authClient.useSession();
   const [name, setName] = useState("");
   const [date, setDate] = useState("");
   const [category, setCategory] = useState("");
@@ -62,11 +62,11 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
     >
       <div className="grid gap-x-4 md:grid-cols-2">
         <div>
-          <label className="block mt-4 text-sm" htmlFor="name">
+          <label className="mt-4 block text-sm" htmlFor="name">
             Name
           </label>
           <input
-            className="block w-full h-12 rounded-sm border-gray-300"
+            className="block h-12 w-full rounded-sm border-gray-300"
             id="name"
             onChange={(e) => setName(e.target.value)}
             required={true}
@@ -75,11 +75,11 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
           />
         </div>
         <div>
-          <label className="block mt-4 text-sm" htmlFor="date">
+          <label className="mt-4 block text-sm" htmlFor="date">
             Birthday
           </label>
           <input
-            className="block w-full h-12 rounded-sm border-gray-300"
+            className="block h-12 w-full rounded-sm border-gray-300"
             id="date"
             onChange={(e) => setDate(e.target.value)}
             max={new Date().toISOString().split("T")[0]}
@@ -89,11 +89,11 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
           />
         </div>
         <div>
-          <label className="block mt-4 text-sm" htmlFor="category">
+          <label className="mt-4 block text-sm" htmlFor="category">
             Category (optional)
           </label>
           <input
-            className="block w-full h-12 rounded-sm border-gray-300"
+            className="block h-12 w-full rounded-sm border-gray-300"
             id="category"
             onChange={(e) => setCategory(e.target.value)}
             type="text"
@@ -101,11 +101,11 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
           />
         </div>
         <div>
-          <label className="block mt-4 text-sm" htmlFor="parent">
+          <label className="mt-4 block text-sm" htmlFor="parent">
             Parent (optional)
           </label>
           <input
-            className="block w-full h-12 rounded-sm border-gray-300"
+            className="block h-12 w-full rounded-sm border-gray-300"
             id="parent"
             onChange={(e) => setParent(e.target.value)}
             type="text"
@@ -128,13 +128,13 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
           <code>{error.message}</code>
         </div>
       )}
-      <div className="flex gap-4 justify-end items-center text-right">
+      <div className="flex items-center justify-end gap-4 text-right">
         {onSubmit && (
           <button
             className={classNames(
               "inline-flex items-center rounded-md border border-transparent px-4 py-2 font-medium",
               "hover:bg-gray-100",
-              "focus:outline-hidden focus:ring-2 focus:ring-gray-500 focus:ring-offset-2",
+              "focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:outline-hidden",
             )}
             onClick={onSubmit}
             type="button"

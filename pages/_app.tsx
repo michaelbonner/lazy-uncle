@@ -1,14 +1,13 @@
 import { ApolloProvider } from "@apollo/client";
-import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
 import dynamic from "next/dynamic";
+import posthog from "posthog-js";
+import { PostHogProvider } from "posthog-js/react";
 import { useEffect } from "react";
 import TagManager from "react-gtm-module";
 import { Toaster } from "react-hot-toast";
 import client from "../lib/apollo";
 import { SearchProvider } from "../providers/SearchProvider";
-import posthog from "posthog-js";
-import { PostHogProvider } from "posthog-js/react";
 
 import "../styles/globals.css";
 
@@ -42,15 +41,13 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <PostHogProvider client={posthog}>
-      <SessionProvider session={pageProps.session}>
-        <ApolloProvider client={client}>
-          <PageLoadingProgress />
-          <SearchProvider>
-            <Component {...pageProps} />
-          </SearchProvider>
-          <Toaster />
-        </ApolloProvider>
-      </SessionProvider>
+      <ApolloProvider client={client}>
+        <PageLoadingProgress />
+        <SearchProvider>
+          <Component {...pageProps} />
+        </SearchProvider>
+        <Toaster />
+      </ApolloProvider>
     </PostHogProvider>
   );
 }

@@ -2,7 +2,7 @@ import { useMutation } from "@apollo/client";
 import { Birthday } from "@prisma/client";
 import { parse as csvParse } from "csv-parse/browser/esm/sync";
 import { format, isValid } from "date-fns";
-import { useSession } from "next-auth/react";
+import { authClient } from "../lib/auth-client"; // import the auth client
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import {
@@ -12,7 +12,7 @@ import {
 import PrimaryButton from "./PrimaryButton";
 
 const UploadCsvBirthdayForm = () => {
-  const { data: session } = useSession();
+  const { data: session } = authClient.useSession();
   const [birthdays, setBirthdays] = useState<
     Pick<Birthday, "name" | "date" | "category" | "parent" | "notes">[]
   >([]);

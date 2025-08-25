@@ -21,8 +21,8 @@ async function loadCsvBirthdays(): Promise<Birthday[]> {
     console.log("No data found in csv file");
     return [];
   }
-  const parsedData = await parse(data);
-  return parsedData.map((row: any) => {
+  const parsedData = parse(data);
+  return parsedData.map((row: string[]) => {
     return {
       name: row[0],
       date: row[1],

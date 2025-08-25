@@ -21,8 +21,8 @@ I just wanted to create a little app to keep track of birthdays. That's pretty m
 1. Copy the .env.example file to .env
 2. Set up your MongoDB Atlas instance. Grab the connection string and put it in the .env
 3. Set up your GitHub app or Google app using these instructions
-   - Github: [https://next-auth.js.org/providers/github]()
-   - Google: [https://next-auth.js.org/providers/google]()
+   - Github: [httpshttps://www.better-auth.com/docs/authentication/github]()
+   - Google: [httpshttps://www.better-auth.com/docs/authentication/google]()
 4. Run the dev server `npm run dev`
 5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 

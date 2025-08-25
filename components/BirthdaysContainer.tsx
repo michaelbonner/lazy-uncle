@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
+import { Birthday } from "@prisma/client";
 import { format } from "date-fns";
-import { useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useContext, useEffect, useMemo, useState } from "react";
@@ -8,10 +8,11 @@ import { BsFillCaretDownFill } from "react-icons/bs";
 import { GrFormFilter, GrRefresh } from "react-icons/gr";
 import { HiOutlineCalendar, HiXCircle } from "react-icons/hi";
 import { IoAddCircleOutline } from "react-icons/io5";
-import classNames from "../shared/classNames";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import { GET_ALL_BIRTHDAYS_QUERY } from "../graphql/Birthday";
+import { authClient } from "../lib/auth-client"; // import the auth client
 import { SearchContext } from "../providers/SearchProvider";
+import classNames from "../shared/classNames";
 import getDateFromYmdString from "../shared/getDateFromYmdString";
 import { getDaysUntilNextBirthday } from "../shared/getDaysUntilNextBirthday";
 import getZodiacSignForDateYmdString from "../shared/getZodiacSignForDateYmdString";
@@ -19,7 +20,6 @@ import BirthdayFilterField from "./BirthdayFilterField";
 import BirthdayRow from "./BirthdayRow";
 import LoadingSpinner from "./LoadingSpinner";
 import SortColumnHeader from "./SortColumnHeader";
-import { Birthday } from "@prisma/client";
 
 const AddBirthdayDialog = dynamic(() => import("./AddBirthdayDialog"), {
   ssr: false,
@@ -57,7 +57,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
     fetchPolicy: "cache-and-network",
   });
   const [currentHost, setCurrentHost] = useState("");
-  const { status: sessionStatus } = useSession();
+  const { isPending } = authClient.useSession();
   const [isAddBirthdayDialogVisible, setIsAddBirthdayDialogVisible] =
     useState(false);
 
@@ -537,7 +537,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
             </ul>
           ) : (
             <div className="px-8 py-10 text-gray-400">
-              {sessionStatus === "loading" || birthdaysLoading ? (
+              {isPending || birthdaysLoading ? (
                 <div className="flex min-h-[300px] items-center justify-center">
                   <LoadingSpinner spinnerTextColor="text-cyan-40" />
                 </div>

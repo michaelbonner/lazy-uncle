@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
@@ -136,7 +136,7 @@ div.ptr {
   padding: 1em;
 }
 .shepherd-text {
-  @apply px-4 pb-2 pt-6 text-gray-700;
+  @apply px-4 pt-6 pb-2 text-gray-700;
 }
 .shepherd-text p {
   margin-top: 0;
@@ -237,4 +237,8 @@ div.ptr {
 }
 .shepherd-modal-overlay-container.shepherd-modal-is-visible path {
   pointer-events: all;
+}
+
+button {
+  @apply cursor-pointer;
 }

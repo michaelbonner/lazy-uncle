@@ -1,13 +1,9 @@
 import { useApolloServerErrors } from "@envelop/apollo-server-errors";
 import { createYoga } from "graphql-yoga";
-import { createContext } from "../../graphql/context";
-import { schema } from "../../graphql/schema";
-import type { NextApiRequest, NextApiResponse } from "next";
+import { createContext } from "../../../graphql/context";
+import { schema } from "../../../graphql/schema";
 
-export default createYoga<{
-  req: NextApiRequest;
-  res: NextApiResponse;
-}>({
+export const POST = createYoga({
   schema,
   context: createContext,
   graphqlEndpoint: "/api/graphql",

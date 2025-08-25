@@ -6,6 +6,7 @@
   "words": [
     "anonymize",
     "birthdate",
+    "cuid",
     "cybercriminals",
     "decompile",
     "dropcursor",
@@ -23,6 +24,7 @@
     "maxage",
     "nextauth",
     "notyf",
+    "pkey",
     "posthog",
     "prosemirror",
     "splashscreens",
