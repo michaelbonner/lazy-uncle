@@ -15,7 +15,7 @@ const Welcome = () => {
   ];
 
   const signIn = async (provider: string) => {
-    await authClient.signIn.social({ provider });
+    await authClient.signIn.social({ provider, callbackURL: "/birthdays" });
   };
 
   return (
