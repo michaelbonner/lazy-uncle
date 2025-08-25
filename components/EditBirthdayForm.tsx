@@ -14,7 +14,7 @@ import PrimaryButton from "./PrimaryButton";
 
 const TextEdit = dynamic(() => import("./TextEdit"), {
   loading: () => (
-    <div className="flex justify-center items-center w-full h-full text-center text-gray-800 bg-white rounded-lg border-t-4 border-b-4 min-h-[250px]">
+    <div className="flex h-full min-h-[250px] w-full items-center justify-center rounded-lg border-t-4 border-b-4 bg-white text-center text-gray-800">
       <p className="animate-pulse">Loading editor...</p>
     </div>
   ),
@@ -64,11 +64,11 @@ const EditBirthdayForm = ({
       >
         <div className="grid gap-x-4 md:grid-cols-2">
           <div>
-            <label className="block mt-4" htmlFor="name">
+            <label className="mt-4 block" htmlFor="name">
               Name
             </label>
             <input
-              className="block w-full h-12 rounded-sm border-gray-300"
+              className="block h-12 w-full rounded-sm border-gray-300"
               id="name"
               onChange={(e) => setName(e.target.value)}
               required={true}
@@ -77,11 +77,11 @@ const EditBirthdayForm = ({
             />
           </div>
           <div>
-            <label className="block mt-4" htmlFor="date">
+            <label className="mt-4 block" htmlFor="date">
               Birthday
             </label>
             <input
-              className="block w-full h-12 rounded-sm border-gray-300"
+              className="block h-12 w-full rounded-sm border-gray-300"
               id="date"
               onChange={(e) => setDate(e.target.value)}
               max={new Date().toISOString().split("T")[0]}
@@ -91,11 +91,11 @@ const EditBirthdayForm = ({
             />
           </div>
           <div>
-            <label className="block mt-4" htmlFor="category">
+            <label className="mt-4 block" htmlFor="category">
               Category (optional)
             </label>
             <input
-              className="block w-full h-12 rounded-sm border-gray-300"
+              className="block h-12 w-full rounded-sm border-gray-300"
               id="category"
               onChange={(e) => setCategory(e.target.value)}
               type="text"
@@ -103,11 +103,11 @@ const EditBirthdayForm = ({
             />
           </div>
           <div>
-            <label className="block mt-4" htmlFor="parent">
+            <label className="mt-4 block" htmlFor="parent">
               Parent (optional)
             </label>
             <input
-              className="block w-full h-12 rounded-sm border-gray-300"
+              className="block h-12 w-full rounded-sm border-gray-300"
               id="parent"
               onChange={(e) => setParent(e.target.value)}
               type="text"
@@ -130,7 +130,7 @@ const EditBirthdayForm = ({
             <code>{error.message}</code>
           </div>
         )}
-        <div className="flex sticky bottom-2 gap-4 justify-between items-center text-right">
+        <div className="sticky bottom-2 flex items-center justify-between gap-4 text-right">
           <div className="text-left">
             {deleteError && (
               <p className="text-sm text-red-700">
@@ -141,7 +141,7 @@ const EditBirthdayForm = ({
               className={classNames(
                 "inline-flex items-center rounded-md border border-transparent bg-transparent px-4 py-2 text-sm font-medium text-red-700",
                 "hover:bg-red-100",
-                "focus:outline-hidden focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2",
+                "focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:outline-hidden",
               )}
               disabled={deleteLoading}
               onClick={() => {
@@ -166,17 +166,17 @@ const EditBirthdayForm = ({
               }}
               type="button"
             >
-              <IoTrashOutline className="w-5 h-5 text-red-800" />
+              <IoTrashOutline className="h-5 w-5 text-red-800" />
             </button>
           </div>
 
-          <div className="flex gap-4 items-center">
+          <div className="flex items-center gap-4">
             {handleClose && (
               <button
                 className={classNames(
                   "inline-flex items-center rounded-md border border-transparent px-4 py-2 font-medium",
                   "hover:bg-gray-100",
-                  "focus:outline-hidden focus:ring-2 focus:ring-gray-500 focus:ring-offset-2",
+                  "focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:outline-hidden",
                 )}
                 onClick={handleClose}
                 type="button"

@@ -71,7 +71,7 @@ const BirthdayRow: FC<Props> = ({
             }}
             className={`col-span-3 flex items-center justify-between gap-2 text-left text-xl md:justify-start`}
           >
-            <span className="flex items-center py-3 space-x-2">
+            <span className="flex items-center space-x-2 py-3">
               {daysFromNow === 0 && (
                 <span title={`Today is ${birthday.name}'s birthday!`}>
                   <GiBalloons className="top-0 right-0 text-lg text-rose-500" />
@@ -98,17 +98,17 @@ const BirthdayRow: FC<Props> = ({
               {format(birthDate, "MMM d")}
             </button>
           </p>
-          <p className="block col-span-2 py-3">
+          <p className="col-span-2 block py-3">
             {birthday.id && age ? (
               <span title={actualAge}>{age}</span>
             ) : (
               <span className="sr-only">{actualAge}</span>
             )}
           </p>
-          <p className="overflow-hidden relative col-span-2 h-full text-ellipsis">
+          <p className="relative col-span-2 h-full overflow-hidden text-ellipsis">
             {birthday.category && (
               <button
-                className="block w-full h-full rounded-sm hover:bg-gray-200"
+                className="block h-full w-full rounded-sm hover:bg-gray-200"
                 onClick={() =>
                   setCategoryFilter(
                     categoryFilter === birthday.category
@@ -130,10 +130,10 @@ const BirthdayRow: FC<Props> = ({
               </button>
             )}
           </p>
-          <p className="overflow-hidden relative col-span-2 h-full text-ellipsis">
+          <p className="relative col-span-2 h-full overflow-hidden text-ellipsis">
             {birthday.parent && (
               <button
-                className="block w-full h-full rounded-sm hover:bg-gray-200"
+                className="block h-full w-full rounded-sm hover:bg-gray-200"
                 onClick={() =>
                   setParentFilter(
                     parentFilter === birthday.parent
@@ -155,9 +155,9 @@ const BirthdayRow: FC<Props> = ({
               </button>
             )}
           </p>
-          <p className="overflow-hidden relative h-full text-ellipsis">
+          <p className="relative h-full overflow-hidden text-ellipsis">
             <button
-              className="flex flex-col justify-center items-center w-full h-full rounded-sm hover:bg-gray-200"
+              className="flex h-full w-full flex-col items-center justify-center rounded-sm hover:bg-gray-200"
               onClick={() =>
                 setZodiacSignFilter(
                   zodiacSignFilter === zodiacSign ? "" : zodiacSign || "",
@@ -170,7 +170,7 @@ const BirthdayRow: FC<Props> = ({
             </button>
             {zodiacSignFilter && zodiacSignFilter === zodiacSign && (
               <button
-                className="absolute right-0 top-4"
+                className="absolute top-4 right-0"
                 onClick={() => setZodiacSignFilter("")}
               >
                 <HiBackspace className="text-xl text-gray-400" />
@@ -204,7 +204,7 @@ const BirthdayRow: FC<Props> = ({
             onClick={() => {
               setIsEditBirthdayDialogOpen(true);
             }}
-            className="flex justify-between items-center w-full"
+            className="flex w-full items-center justify-between"
           >
             <div>
               <p className="flex items-center space-x-2 text-2xl">
@@ -218,7 +218,7 @@ const BirthdayRow: FC<Props> = ({
                   <HiOutlinePaperClip className="text-sm text-gray-400" />
                 )}
               </p>
-              <div className="flex justify-start pt-1 space-x-4">
+              <div className="flex justify-start space-x-4 pt-1">
                 {getAgeForHumans(getDateFromYmdString(birthday.date || "")) ? (
                   <p>
                     <span className="text-sm font-light">Age</span>{" "}
@@ -243,7 +243,7 @@ const BirthdayRow: FC<Props> = ({
                   </p>
                 )}
               </div>
-              <p className="flex items-center mt-1 space-x-2">
+              <p className="mt-1 flex items-center space-x-2">
                 <ZodiacSignCharacter name={zodiacSign} />
                 <span className="text-xs">{zodiacSign}</span>
               </p>

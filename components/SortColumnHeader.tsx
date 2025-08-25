@@ -21,7 +21,7 @@ const SortColumnHeader = ({
 }) => {
   return (
     <button
-      className={`flex items-center space-x-1 py-3 text-left text-xs font-medium uppercase tracking-wider ${className}`}
+      className={`flex items-center space-x-1 py-3 text-left text-xs font-medium tracking-wider uppercase ${className}`}
       type="button"
       onClick={() => {
         if (value === ascendingString) {

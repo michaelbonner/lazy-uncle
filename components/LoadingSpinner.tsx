@@ -4,7 +4,7 @@ const LoadingSpinner = ({
   spinnerTextColor?: string;
 }) => {
   return (
-    <div className="mx-auto w-16 h-16 circle">
+    <div className="circle mx-auto h-16 w-16">
       <svg
         className="circle__svg"
         viewBox="0 0 100 100"
