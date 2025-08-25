@@ -37,6 +37,21 @@ const MainLayout = ({
         <title>{title}</title>
         <meta name="description" content={description} />
         <link rel="icon" href="https://www.lazyuncle.net/favicon.png" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="color-scheme" content="light only" />
+
+        {/* Open Graph */}
+        <meta
+          property="og:url"
+          content={`https://www.lazyuncle.net${router.asPath}`}
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta
+          property="og:image"
+          content="https://www.lazyuncle.net/og-image.png"
+        />
 
         {/* PWA */}
         <link
@@ -49,14 +64,6 @@ const MainLayout = ({
         {/* Icons */}
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="icon" type="image/png" href="/favicon.png" />
-        <meta
-          property="og:image"
-          content="https://www.lazyuncle.net/og-image.png"
-        />
-        <meta
-          property="og:image:url"
-          content="https://www.lazyuncle.net/og-image.png"
-        />
 
         {/* Apple specific */}
         <meta name="mobile-web-app-capable" content="yes" />
