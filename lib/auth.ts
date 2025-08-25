@@ -5,6 +5,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 export const auth = betterAuth({
+  trustedOrigins: [process.env.VERCEL_URL ?? "http://localhost:3000"],
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
