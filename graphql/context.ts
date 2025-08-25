@@ -12,7 +12,7 @@ export type Context = {
 export async function createContext(): Promise<Context> {
   const session = await auth.api.getSession({
     headers: new Headers({
-      cookie: cookies().toString(),
+      cookie: (await cookies()).toString(),
     }),
   });
 
