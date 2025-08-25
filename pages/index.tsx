@@ -1,27 +1,39 @@
-import { NextPage } from "next";
-import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { GetServerSidePropsContext, NextPage } from "next";
 import Welcome from "../components/Welcome";
 import MainLayout from "../components/layout/MainLayout";
-import { authClient } from "../lib/auth-client";
+import { auth } from "../lib/auth";
 
-export const Home: NextPage = () => {
-  const router = useRouter();
-  const { data: session } = authClient.useSession();
-
-  useEffect(() => {
-    if (session?.user) {
-      router.push("/birthdays");
-    }
-  }, [router, session]);
-
+export const HomePage: NextPage = () => {
   return (
     <MainLayout title="Lazy Uncle">
       <main className="mx-auto max-w-7xl px-2 pb-8">
-        {!session?.user?.email && <Welcome />}
+        <Welcome />
       </main>
     </MainLayout>
   );
 };
 
-export default Home;
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext,
+) => {
+  const session = await auth.api.getSession({
+    headers: new Headers({
+      cookie: context.req.headers.cookie || "",
+    }),
+  });
+
+  if (session?.user) {
+    return {
+      redirect: {
+        destination: "/birthdays",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
+};
+
+export default HomePage;
