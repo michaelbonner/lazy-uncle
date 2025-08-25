@@ -95,7 +95,8 @@ const MainLayout = ({
             <button
               className="underline"
               onClick={async () => {
-                await authClient.revokeSessions();
+                await authClient.signOut();
+                posthog.reset();
               }}
             >
               Sign out
