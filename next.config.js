@@ -8,8 +8,8 @@ const settings = {
     reactCompiler: true,
   },
   i18n: {
-    locales: ["en-US"],
-    defaultLocale: "en-US",
+    locales: ["en"],
+    defaultLocale: "en",
   },
   reactStrictMode: true,
   async rewrites() {
