@@ -10,9 +10,11 @@ import ClientOnly from "../ClientOnly";
 
 const MainLayout = ({
   children,
+  description = "An easy way to keep track of birthdays",
   title = "Lazy Uncle",
 }: {
   children: ReactElement;
+  description?: string;
   title: string;
 }) => {
   const { data: session, isPending } = authClient.useSession();
@@ -33,10 +35,7 @@ const MainLayout = ({
       <Head>
         {/* General */}
         <title>{title}</title>
-        <meta
-          name="description"
-          content="An easy way to keep track of birthdays"
-        />
+        <meta name="description" content={description} />
         <link rel="icon" href="https://www.lazyuncle.net/favicon.png" />
 
         {/* PWA */}
