@@ -1,15 +1,14 @@
 import { format } from "date-fns";
-import React, { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { GiBalloons } from "react-icons/gi";
 import {
   HiBackspace,
+  HiDocumentText,
   HiOutlinePaperClip,
   HiShare,
-  HiDocumentText,
-  HiUser,
 } from "react-icons/hi";
-import classNames from "../shared/classNames";
 import { NexusGenObjects } from "../generated/nexus-typegen";
+import classNames from "../shared/classNames";
 import getAgeForHumans from "../shared/getAgeForHumans";
 import getDateFromYmdString from "../shared/getDateFromYmdString";
 import { getDaysUntilNextBirthday } from "../shared/getDaysUntilNextBirthday";
@@ -71,11 +70,6 @@ const BirthdayRow: FC<Props> = ({
             className="h-3 w-3 text-green-500"
             title="Imported from CSV"
           />
-        );
-      case "manual":
-      default:
-        return (
-          <HiUser className="h-3 w-3 text-gray-400" title="Added manually" />
         );
     }
   };
