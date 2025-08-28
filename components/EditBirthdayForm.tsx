@@ -54,6 +54,7 @@ const EditBirthdayForm = ({
               category: category.trim(),
               parent: parent.trim(),
               notes: notes.trim(),
+              importSource: birthday.importSource,
             },
           });
 

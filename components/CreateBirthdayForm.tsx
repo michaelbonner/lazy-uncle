@@ -44,6 +44,7 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
             parent: parent.trim(),
             notes: notes.trim(),
             userId,
+            importSource: "manual",
           },
           refetchQueries: [
             {

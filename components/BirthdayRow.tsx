@@ -1,7 +1,13 @@
 import { format } from "date-fns";
-import { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { GiBalloons } from "react-icons/gi";
-import { HiBackspace, HiOutlinePaperClip } from "react-icons/hi";
+import {
+  HiBackspace,
+  HiOutlinePaperClip,
+  HiShare,
+  HiDocumentText,
+  HiUser,
+} from "react-icons/hi";
 import classNames from "../shared/classNames";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import getAgeForHumans from "../shared/getAgeForHumans";
@@ -50,6 +56,30 @@ const BirthdayRow: FC<Props> = ({
 
   const daysFromNow = getDaysUntilNextBirthday(birthday);
 
+  const getImportSourceIcon = (importSource?: string | null) => {
+    switch (importSource) {
+      case "sharing":
+        return (
+          <HiShare
+            className="h-3 w-3 text-blue-500"
+            title="Imported from sharing link"
+          />
+        );
+      case "csv":
+        return (
+          <HiDocumentText
+            className="h-3 w-3 text-green-500"
+            title="Imported from CSV"
+          />
+        );
+      case "manual":
+      default:
+        return (
+          <HiUser className="h-3 w-3 text-gray-400" title="Added manually" />
+        );
+    }
+  };
+
   useEffect(() => {
     if (isEditBirthdayDialogOpen) {
       setIsEditBirthdayDialogMounted(true);
@@ -81,6 +111,7 @@ const BirthdayRow: FC<Props> = ({
               {notesTextOnly && (
                 <HiOutlinePaperClip className="text-sm text-gray-400" />
               )}
+              {getImportSourceIcon(birthday.importSource)}
             </span>
             {daysFromNow > 0 && daysFromNow < 14 && (
               <span className="text-xs text-gray-600">
@@ -217,6 +248,7 @@ const BirthdayRow: FC<Props> = ({
                 {notesTextOnly && (
                   <HiOutlinePaperClip className="text-sm text-gray-400" />
                 )}
+                {getImportSourceIcon(birthday.importSource)}
               </p>
               <div className="flex justify-start space-x-4 pt-1">
                 {getAgeForHumans(getDateFromYmdString(birthday.date || "")) ? (

@@ -7,9 +7,13 @@ import prisma from "../lib/prisma";
 export type Context = {
   prisma: PrismaClient;
   user: NexusGenObjects["User"];
+  req?: {
+    headers?: Record<string, string | string[]>;
+    connection?: { remoteAddress?: string };
+  };
 };
 
-export async function createContext(): Promise<Context> {
+export async function createContext(req?: any): Promise<Context> {
   const session = await auth.api.getSession({
     headers: new Headers({
       cookie: (await cookies()).toString(),
@@ -17,12 +21,13 @@ export async function createContext(): Promise<Context> {
   });
 
   // if the user is not logged in, omit returning the user
-  if (!session) return { prisma, user: {} };
+  if (!session) return { prisma, user: {}, req };
 
   const user = session?.user as NexusGenObjects["User"];
 
   return {
     user,
     prisma,
+    req,
   };
 }

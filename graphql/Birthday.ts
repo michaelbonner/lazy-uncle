@@ -8,6 +8,7 @@ export const CREATE_BIRTHDAY_MUTATION = gql`
     $parent: String
     $notes: String
     $userId: String!
+    $importSource: String
   ) {
     createBirthday(
       name: $name
@@ -16,12 +17,14 @@ export const CREATE_BIRTHDAY_MUTATION = gql`
       parent: $parent
       notes: $notes
       userId: $userId
+      importSource: $importSource
     ) {
       name
       date
       category
       parent
       notes
+      importSource
       __typename
     }
   }
@@ -35,6 +38,7 @@ export const EDIT_BIRTHDAY_MUTATION = gql`
     $category: String
     $parent: String
     $notes: String
+    $importSource: String
   ) {
     editBirthday(
       id: $id
@@ -43,6 +47,7 @@ export const EDIT_BIRTHDAY_MUTATION = gql`
       category: $category
       parent: $parent
       notes: $notes
+      importSource: $importSource
     ) {
       id
       name
@@ -50,6 +55,7 @@ export const EDIT_BIRTHDAY_MUTATION = gql`
       category
       parent
       notes
+      importSource
       __typename
     }
   }
@@ -64,6 +70,7 @@ export const GET_ALL_BIRTHDAYS_QUERY = gql`
       category
       parent
       notes
+      importSource
       __typename
     }
   }
@@ -78,6 +85,7 @@ export const GET_BIRTHDAY_BY_ID_QUERY = gql`
       category
       parent
       notes
+      importSource
       __typename
     }
   }
