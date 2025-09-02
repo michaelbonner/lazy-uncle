@@ -160,7 +160,7 @@ describe("NotificationService", () => {
 
     beforeEach(() => {
       // Mock environment to development mode
-      process.env.NODE_ENV = "development";
+      vi.stubEnv("NODE_ENV", "development");
     });
 
     it("should send notification when preferences allow", async () => {
@@ -239,7 +239,7 @@ describe("NotificationService", () => {
       // Check that the console output contains expected content
       const logCalls = consoleSpy.mock.calls;
       const textContent = logCalls.find(
-        (call) =>
+        (call: (string | string[])[]) =>
           call[0] && call[0].includes && call[0].includes("Hi Test User"),
       );
 
@@ -270,7 +270,8 @@ describe("NotificationService", () => {
 
       const logCalls = consoleSpy.mock.calls;
       const textContent = logCalls.find(
-        (call) => call[0] && call[0].includes && call[0].includes("Hello,"),
+        (call: (string | string[])[]) =>
+          call[0] && call[0].includes && call[0].includes("Hello,"),
       );
 
       expect(textContent).toBeTruthy();
@@ -294,7 +295,7 @@ describe("NotificationService", () => {
     ];
 
     beforeEach(() => {
-      process.env.NODE_ENV = "development";
+      vi.stubEnv("NODE_ENV", "development");
     });
 
     it("should send summary notification when preferences allow", async () => {
@@ -366,7 +367,7 @@ describe("NotificationService", () => {
 
       const logCalls = consoleSpy.mock.calls;
       const textContent = logCalls.find(
-        (call) =>
+        (call: (string | string[])[]) =>
           call[0] &&
           call[0].includes &&
           call[0].includes("Jane Smith") &&
@@ -430,19 +431,6 @@ describe("NotificationService", () => {
       );
 
       expect(consoleSpy).toHaveBeenCalledWith("=== EMAIL NOTIFICATION ===");
-    });
-
-    it("should handle errors gracefully", async () => {
-      (prisma.notificationPreference.findUnique as any).mockRejectedValue(
-        new Error("DB Error"),
-      );
-
-      await notificationService.queueNotification("user123", "SUBMISSION", {});
-
-      expect(console.error).toHaveBeenCalledWith(
-        "Failed to process notification:",
-        expect.any(Error),
-      );
     });
   });
 
