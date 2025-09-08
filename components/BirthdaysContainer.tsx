@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { Birthday } from "@prisma/client";
 import { format } from "date-fns";
 import dynamic from "next/dynamic";

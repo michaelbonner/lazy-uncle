@@ -1,4 +1,4 @@
-import { useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
 import { Birthday } from "@prisma/client";
 import { parse as csvParse } from "csv-parse/browser/esm/sync";
 import { format, isValid } from "date-fns";

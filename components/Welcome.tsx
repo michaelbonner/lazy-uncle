@@ -1,3 +1,4 @@
+import { toast } from "react-hot-toast";
 import { GrGithub, GrGoogle } from "react-icons/gr";
 import { authClient } from "../lib/auth-client";
 import classNames from "../shared/classNames";
@@ -15,7 +16,15 @@ const Welcome = () => {
   ];
 
   const signIn = async (provider: string) => {
-    await authClient.signIn.social({ provider, callbackURL: "/birthdays" });
+    const { error } = await authClient.signIn.social({
+      provider,
+      callbackURL: "/birthdays",
+    });
+
+    if (error) {
+      console.error(error);
+      toast.error("An error occurred while signing in. Please try again.");
+    }
   };
 
   return (

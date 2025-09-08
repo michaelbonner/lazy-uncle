@@ -1,4 +1,4 @@
-import { useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
 import { authClient } from "../lib/auth-client"; // import the auth client
 import dynamic from "next/dynamic";
 import { useState } from "react";
