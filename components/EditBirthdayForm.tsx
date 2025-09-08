@@ -1,4 +1,4 @@
-import { useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import toast from "react-hot-toast";

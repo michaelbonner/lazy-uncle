@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
 import Link from "next/link";

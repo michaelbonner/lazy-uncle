@@ -1,4 +1,4 @@
-import { ApolloProvider } from "@apollo/client";
+import { ApolloProvider } from "@apollo/client/react";
 import type { AppProps } from "next/app";
 import dynamic from "next/dynamic";
 import posthog from "posthog-js";

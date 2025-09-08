@@ -16,7 +16,7 @@
     "preinstall": "npx only-allow bun"
   },
   "dependencies": {
-    "@apollo/client": "^3.14.0",
+    "@apollo/client": "^4.0.4",
     "@envelop/apollo-server-errors": "^8.0.0",
     "@headlessui/react": "^2.2.7",
     "@prisma/client": "^6.15.0",
@@ -41,6 +41,7 @@
     "react-gtm-module": "^2.0.11",
     "react-hot-toast": "^2.6.0",
     "react-icons": "^5.5.0",
+    "rxjs": "^7.8.2",
     "shepherd.js": "^14.5.1"
   },
   "devDependencies": {
