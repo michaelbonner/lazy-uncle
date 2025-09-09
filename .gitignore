@@ -49,3 +49,5 @@ db-backups/dump-*
 scripts/variables.txt
 
 mongoexport
+
+tsconfig.tsbuildinfo
