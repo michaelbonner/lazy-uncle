@@ -1,6 +1,6 @@
-/** @type {import('next').NextConfig} */
+import type { NextConfig } from "next";
 
-const settings = {
+const nextConfig: NextConfig = {
   experimental: {
     reactCompiler: true,
   },
@@ -21,8 +21,8 @@ const settings = {
       },
     ];
   },
-  // This is required to support PostHog trailing slash API requests
+
   skipTrailingSlashRedirect: true,
 };
 
-export default settings;
+export default nextConfig;
