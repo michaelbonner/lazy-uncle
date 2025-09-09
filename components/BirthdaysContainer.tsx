@@ -12,7 +12,7 @@ import { NexusGenObjects } from "../generated/nexus-typegen";
 import { GET_ALL_BIRTHDAYS_QUERY } from "../graphql/Birthday";
 import { authClient } from "../lib/auth-client"; // import the auth client
 import { SearchContext } from "../providers/SearchProvider";
-import classNames from "../shared/classNames";
+import clsx from "clsx";
 import getDateFromYmdString from "../shared/getDateFromYmdString";
 import { getDaysUntilNextBirthday } from "../shared/getDaysUntilNextBirthday";
 import getZodiacSignForDateYmdString from "../shared/getZodiacSignForDateYmdString";
@@ -284,7 +284,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
       <div className="flex items-end justify-between space-x-2 md:justify-end">
         <div className="items-center pl-2 md:flex md:space-x-4 md:pl-0">
           <button
-            className={classNames(
+            className={clsx(
               isFiltered ? "text-cyan-50" : "text-cyan-500",
               "js-clear-filters flex items-center space-x-1",
             )}
@@ -324,7 +324,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
               <div className="grid gap-x-2 gap-y-2 rounded-t-lg border-t-4 border-t-gray-400 bg-gray-300 px-3 py-2 md:px-6 md:py-3 lg:flex">
                 <div className="flex w-full gap-2">
                   <button
-                    className={classNames(
+                    className={clsx(
                       "js-add-birthday-button flex h-12 w-12 items-center justify-center rounded-lg bg-cyan-800 p-3 text-cyan-50 transition-colors",
                       "hover:bg-cyan-700",
                     )}
@@ -358,7 +358,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                       onClick={handleRefresh}
                     >
                       <GrRefresh
-                        className={classNames(
+                        className={clsx(
                           birthdaysLoading && "animate-spin",
                           "w-10",
                         )}
@@ -367,7 +367,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                   </div>
                 </div>
                 <div
-                  className={classNames(
+                  className={clsx(
                     !showFilters && "hidden",
                     "relative w-full min-w-[220px]",
                     "md:block md:w-auto",
@@ -388,7 +388,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                   />
                 </div>
                 <div
-                  className={classNames(
+                  className={clsx(
                     !showFilters && "hidden",
                     "relative w-full min-w-[220px]",
                     "md:block md:w-auto",
@@ -409,7 +409,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                   />
                 </div>
                 <div
-                  className={classNames(
+                  className={clsx(
                     !showFilters && "hidden",
                     "relative w-full min-w-[220px]",
                     "md:block md:w-auto",
@@ -488,7 +488,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
             <ul>
               <li>
                 <button
-                  className={classNames(
+                  className={clsx(
                     "flex w-full items-center justify-center gap-2 py-2 text-cyan-700",
                     "hover:bg-gray-100",
                   )}
@@ -549,9 +549,9 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
               )}
             </div>
           )}
-          <div className={classNames("px-4 py-2", "lg:px-8")}>
+          <div className={clsx("px-4 py-2", "lg:px-8")}>
             <button
-              className={classNames(
+              className={clsx(
                 "flex w-full items-center justify-center gap-2 rounded-md bg-gray-200 px-4 py-2 transition-colors",
                 "hover:bg-gray-300",
               )}

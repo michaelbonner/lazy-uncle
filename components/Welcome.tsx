@@ -1,7 +1,7 @@
+import clsx from "clsx";
 import { toast } from "react-hot-toast";
 import { GrGithub, GrGoogle } from "react-icons/gr";
 import { authClient } from "../lib/auth-client";
-import classNames from "../shared/classNames";
 
 const Welcome = () => {
   const providers = [
@@ -51,7 +51,7 @@ const Welcome = () => {
               return (
                 <button
                   key={provider.name}
-                  className={classNames(
+                  className={clsx(
                     "mt-4 inline-flex w-full items-center justify-center space-x-2 rounded-md border border-transparent px-6 py-3 font-medium shadow-xs",
                     "md:w-auto",
                     "focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:outline-hidden",

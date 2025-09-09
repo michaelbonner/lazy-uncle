@@ -1,9 +1,9 @@
 import { useMutation } from "@apollo/client/react";
+import clsx from "clsx";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { IoTrashOutline } from "react-icons/io5";
-import classNames from "../shared/classNames";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import {
   DELETE_BIRTHDAY_MUTATION,
@@ -138,7 +138,7 @@ const EditBirthdayForm = ({
               </p>
             )}
             <button
-              className={classNames(
+              className={clsx(
                 "inline-flex items-center rounded-md border border-transparent bg-transparent px-4 py-2 text-sm font-medium text-red-700",
                 "hover:bg-red-100",
                 "focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:outline-hidden",
@@ -173,7 +173,7 @@ const EditBirthdayForm = ({
           <div className="flex items-center gap-4">
             {handleClose && (
               <button
-                className={classNames(
+                className={clsx(
                   "inline-flex items-center rounded-md border border-transparent px-4 py-2 font-medium",
                   "hover:bg-gray-100",
                   "focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:outline-hidden",

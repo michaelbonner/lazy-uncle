@@ -2,7 +2,7 @@ import { format } from "date-fns";
 import { FC, useEffect, useState } from "react";
 import { GiBalloons } from "react-icons/gi";
 import { HiBackspace, HiOutlinePaperClip } from "react-icons/hi";
-import classNames from "../shared/classNames";
+import clsx from "clsx";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import getAgeForHumans from "../shared/getAgeForHumans";
 import getDateFromYmdString from "../shared/getDateFromYmdString";
@@ -190,7 +190,7 @@ const BirthdayRow: FC<Props> = ({
       )}
 
       <li
-        className={classNames(
+        className={clsx(
           "block border-t px-4 py-4 text-left md:hidden",
           !birthday.id && "bg-gray-100 text-gray-800",
         )}
