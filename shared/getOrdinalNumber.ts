@@ -1,5 +1,5 @@
 export function getOrdinalNumber(num: number) {
-  var j = num % 10,
+  const j = num % 10,
     k = num % 100;
   if (j == 1 && k != 11) {
     return num + "st";

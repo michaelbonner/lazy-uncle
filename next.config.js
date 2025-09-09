@@ -1,7 +1,4 @@
 /** @type {import('next').NextConfig} */
-const withPWA = require("next-pwa")({
-  dest: "public",
-});
 
 const settings = {
   experimental: {
@@ -28,5 +25,4 @@ const settings = {
   skipTrailingSlashRedirect: true,
 };
 
-module.exports =
-  process.env.NODE_ENV === "development" ? settings : withPWA(settings);
+export default settings;

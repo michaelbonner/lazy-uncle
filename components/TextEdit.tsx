@@ -165,7 +165,6 @@ const TextEdit = ({
   setContent,
 }: {
   content: string;
-  // eslint-disable-next-line no-unused-vars
   setContent: (html: string) => void;
 }) => {
   const editor = useEditor({

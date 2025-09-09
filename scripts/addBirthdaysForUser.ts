@@ -8,7 +8,6 @@ import { argv } from "process";
 import prisma from "../lib/prisma";
 
 declare global {
-  // eslint-disable-next-line no-unused-vars
   var prisma: PrismaClient;
 }
 

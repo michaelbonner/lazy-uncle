@@ -9,8 +9,8 @@ export const PageLoadingProgress = () => {
   const loaderIsVisible = useMemo(() => {
     return widthPercentage > 0 && widthPercentage < 100;
   }, [widthPercentage]);
-  let timeout = useRef<NodeJS.Timeout | null>(null);
-  let interval = useRef<NodeJS.Timeout | null>(null);
+  const timeout = useRef<NodeJS.Timeout | null>(null);
+  const interval = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const handleStart = () => {
