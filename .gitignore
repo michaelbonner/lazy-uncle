@@ -49,3 +49,4 @@ db-backups/dump-*
 scripts/variables.txt
 
 tsconfig.tsbuildinfo
+.kiro

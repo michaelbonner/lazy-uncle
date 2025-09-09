@@ -31,6 +31,7 @@ export interface NexusGenInputs {
 }
 
 export interface NexusGenEnums {
+  SubmissionStatus: "IMPORTED" | "PENDING" | "REJECTED"
 }
 
 export interface NexusGenScalars {
@@ -48,12 +49,78 @@ export interface NexusGenObjects {
     createdAt?: NexusGenScalars['DateTime'] | null; // DateTime
     date?: string | null; // String
     id?: string | null; // String
+    importSource?: string | null; // String
     name?: string | null; // String
     notes?: string | null; // String
     parent?: string | null; // String
   }
+  BirthdaySubmission: { // root type
+    category?: string | null; // String
+    createdAt?: NexusGenScalars['DateTime'] | null; // DateTime
+    date?: string | null; // String
+    id?: string | null; // String
+    name?: string | null; // String
+    notes?: string | null; // String
+    relationship?: string | null; // String
+    status?: NexusGenEnums['SubmissionStatus'] | null; // SubmissionStatus
+    submitterEmail?: string | null; // String
+    submitterName?: string | null; // String
+  }
+  BulkSubmissionResult: { // root type
+    errors?: Array<string | null> | null; // [String]
+    failedCount?: number | null; // Int
+    failedIds?: Array<string | null> | null; // [String]
+    processedCount?: number | null; // Int
+    success?: boolean | null; // Boolean
+  }
+  DuplicateDetectionResult: { // root type
+    hasDuplicates?: boolean | null; // Boolean
+    matches?: Array<NexusGenRootTypes['DuplicateMatch'] | null> | null; // [DuplicateMatch]
+  }
+  DuplicateMatch: { // root type
+    category?: string | null; // String
+    date?: string | null; // String
+    id?: string | null; // String
+    name?: string | null; // String
+    similarity?: number | null; // Float
+  }
   Mutation: {};
+  NotificationPreference: { // root type
+    emailNotifications?: boolean | null; // Boolean
+    id?: string | null; // String
+    summaryNotifications?: boolean | null; // Boolean
+    userId?: string | null; // String
+  }
+  PaginatedSubmissions: { // root type
+    currentPage?: number | null; // Int
+    hasNextPage?: boolean | null; // Boolean
+    hasPreviousPage?: boolean | null; // Boolean
+    submissions?: Array<NexusGenRootTypes['BirthdaySubmission'] | null> | null; // [BirthdaySubmission]
+    totalCount?: number | null; // Int
+    totalPages?: number | null; // Int
+  }
   Query: {};
+  SharingLink: { // root type
+    createdAt?: NexusGenScalars['DateTime'] | null; // DateTime
+    description?: string | null; // String
+    expiresAt?: NexusGenScalars['DateTime'] | null; // DateTime
+    id?: string | null; // String
+    isActive?: boolean | null; // Boolean
+    token?: string | null; // String
+  }
+  SharingLinkInfo: { // root type
+    description?: string | null; // String
+    expiresAt?: NexusGenScalars['DateTime'] | null; // DateTime
+    id?: string | null; // String
+    ownerName?: string | null; // String
+    token?: string | null; // String
+  }
+  SharingLinkValidation: { // root type
+    error?: string | null; // String
+    isValid?: boolean | null; // Boolean
+    message?: string | null; // String
+    sharingLink?: NexusGenRootTypes['SharingLinkInfo'] | null; // SharingLinkInfo
+  }
   User: { // root type
     email?: string | null; // String
     id?: string | null; // String
@@ -69,7 +136,7 @@ export interface NexusGenUnions {
 
 export type NexusGenRootTypes = NexusGenObjects
 
-export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
+export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnums
 
 export interface NexusGenFieldTypes {
   Birthday: { // field return type
@@ -77,20 +144,103 @@ export interface NexusGenFieldTypes {
     createdAt: NexusGenScalars['DateTime'] | null; // DateTime
     date: string | null; // String
     id: string | null; // String
+    importSource: string | null; // String
     name: string | null; // String
     notes: string | null; // String
     parent: string | null; // String
     user: NexusGenRootTypes['User'] | null; // User
   }
+  BirthdaySubmission: { // field return type
+    category: string | null; // String
+    createdAt: NexusGenScalars['DateTime'] | null; // DateTime
+    date: string | null; // String
+    id: string | null; // String
+    name: string | null; // String
+    notes: string | null; // String
+    relationship: string | null; // String
+    sharingLink: NexusGenRootTypes['SharingLink'] | null; // SharingLink
+    status: NexusGenEnums['SubmissionStatus'] | null; // SubmissionStatus
+    submitterEmail: string | null; // String
+    submitterName: string | null; // String
+  }
+  BulkSubmissionResult: { // field return type
+    errors: Array<string | null> | null; // [String]
+    failedCount: number | null; // Int
+    failedIds: Array<string | null> | null; // [String]
+    processedCount: number | null; // Int
+    success: boolean | null; // Boolean
+  }
+  DuplicateDetectionResult: { // field return type
+    hasDuplicates: boolean | null; // Boolean
+    matches: Array<NexusGenRootTypes['DuplicateMatch'] | null> | null; // [DuplicateMatch]
+  }
+  DuplicateMatch: { // field return type
+    category: string | null; // String
+    date: string | null; // String
+    id: string | null; // String
+    name: string | null; // String
+    similarity: number | null; // Float
+  }
   Mutation: { // field return type
+    bulkImportSubmissions: NexusGenRootTypes['BulkSubmissionResult'] | null; // BulkSubmissionResult
+    bulkRejectSubmissions: NexusGenRootTypes['BulkSubmissionResult'] | null; // BulkSubmissionResult
     createBirthday: NexusGenRootTypes['Birthday'] | null; // Birthday
+    createSharingLink: NexusGenRootTypes['SharingLink'] | null; // SharingLink
     deleteBirthday: NexusGenRootTypes['Birthday'] | null; // Birthday
     editBirthday: NexusGenRootTypes['Birthday'] | null; // Birthday
+    getSubmissionDuplicates: NexusGenRootTypes['DuplicateDetectionResult'] | null; // DuplicateDetectionResult
+    importSubmission: NexusGenRootTypes['Birthday'] | null; // Birthday
+    rejectSubmission: NexusGenRootTypes['BirthdaySubmission'] | null; // BirthdaySubmission
+    revokeSharingLink: NexusGenRootTypes['SharingLink'] | null; // SharingLink
+    submitBirthday: NexusGenRootTypes['BirthdaySubmission'] | null; // BirthdaySubmission
+    updateNotificationPreferences: NexusGenRootTypes['NotificationPreference'] | null; // NotificationPreference
+  }
+  NotificationPreference: { // field return type
+    emailNotifications: boolean | null; // Boolean
+    id: string | null; // String
+    summaryNotifications: boolean | null; // Boolean
+    user: NexusGenRootTypes['User'] | null; // User
+    userId: string | null; // String
+  }
+  PaginatedSubmissions: { // field return type
+    currentPage: number | null; // Int
+    hasNextPage: boolean | null; // Boolean
+    hasPreviousPage: boolean | null; // Boolean
+    submissions: Array<NexusGenRootTypes['BirthdaySubmission'] | null> | null; // [BirthdaySubmission]
+    totalCount: number | null; // Int
+    totalPages: number | null; // Int
   }
   Query: { // field return type
     birthday: NexusGenRootTypes['Birthday'] | null; // Birthday
     birthdays: Array<NexusGenRootTypes['Birthday'] | null> | null; // [Birthday]
+    notificationPreferences: NexusGenRootTypes['NotificationPreference'] | null; // NotificationPreference
+    pendingSubmissions: NexusGenRootTypes['PaginatedSubmissions'] | null; // PaginatedSubmissions
+    sharingLinks: Array<NexusGenRootTypes['SharingLink'] | null> | null; // [SharingLink]
     users: Array<NexusGenRootTypes['User'] | null> | null; // [User]
+    validateSharingLink: NexusGenRootTypes['SharingLinkValidation'] | null; // SharingLinkValidation
+  }
+  SharingLink: { // field return type
+    createdAt: NexusGenScalars['DateTime'] | null; // DateTime
+    description: string | null; // String
+    expiresAt: NexusGenScalars['DateTime'] | null; // DateTime
+    id: string | null; // String
+    isActive: boolean | null; // Boolean
+    submissionCount: number | null; // Int
+    token: string | null; // String
+    user: NexusGenRootTypes['User'] | null; // User
+  }
+  SharingLinkInfo: { // field return type
+    description: string | null; // String
+    expiresAt: NexusGenScalars['DateTime'] | null; // DateTime
+    id: string | null; // String
+    ownerName: string | null; // String
+    token: string | null; // String
+  }
+  SharingLinkValidation: { // field return type
+    error: string | null; // String
+    isValid: boolean | null; // Boolean
+    message: string | null; // String
+    sharingLink: NexusGenRootTypes['SharingLinkInfo'] | null; // SharingLinkInfo
   }
   User: { // field return type
     birthdays: Array<NexusGenRootTypes['Birthday'] | null> | null; // [Birthday]
@@ -106,20 +256,103 @@ export interface NexusGenFieldTypeNames {
     createdAt: 'DateTime'
     date: 'String'
     id: 'String'
+    importSource: 'String'
     name: 'String'
     notes: 'String'
     parent: 'String'
     user: 'User'
   }
+  BirthdaySubmission: { // field return type name
+    category: 'String'
+    createdAt: 'DateTime'
+    date: 'String'
+    id: 'String'
+    name: 'String'
+    notes: 'String'
+    relationship: 'String'
+    sharingLink: 'SharingLink'
+    status: 'SubmissionStatus'
+    submitterEmail: 'String'
+    submitterName: 'String'
+  }
+  BulkSubmissionResult: { // field return type name
+    errors: 'String'
+    failedCount: 'Int'
+    failedIds: 'String'
+    processedCount: 'Int'
+    success: 'Boolean'
+  }
+  DuplicateDetectionResult: { // field return type name
+    hasDuplicates: 'Boolean'
+    matches: 'DuplicateMatch'
+  }
+  DuplicateMatch: { // field return type name
+    category: 'String'
+    date: 'String'
+    id: 'String'
+    name: 'String'
+    similarity: 'Float'
+  }
   Mutation: { // field return type name
+    bulkImportSubmissions: 'BulkSubmissionResult'
+    bulkRejectSubmissions: 'BulkSubmissionResult'
     createBirthday: 'Birthday'
+    createSharingLink: 'SharingLink'
     deleteBirthday: 'Birthday'
     editBirthday: 'Birthday'
+    getSubmissionDuplicates: 'DuplicateDetectionResult'
+    importSubmission: 'Birthday'
+    rejectSubmission: 'BirthdaySubmission'
+    revokeSharingLink: 'SharingLink'
+    submitBirthday: 'BirthdaySubmission'
+    updateNotificationPreferences: 'NotificationPreference'
+  }
+  NotificationPreference: { // field return type name
+    emailNotifications: 'Boolean'
+    id: 'String'
+    summaryNotifications: 'Boolean'
+    user: 'User'
+    userId: 'String'
+  }
+  PaginatedSubmissions: { // field return type name
+    currentPage: 'Int'
+    hasNextPage: 'Boolean'
+    hasPreviousPage: 'Boolean'
+    submissions: 'BirthdaySubmission'
+    totalCount: 'Int'
+    totalPages: 'Int'
   }
   Query: { // field return type name
     birthday: 'Birthday'
     birthdays: 'Birthday'
+    notificationPreferences: 'NotificationPreference'
+    pendingSubmissions: 'PaginatedSubmissions'
+    sharingLinks: 'SharingLink'
     users: 'User'
+    validateSharingLink: 'SharingLinkValidation'
+  }
+  SharingLink: { // field return type name
+    createdAt: 'DateTime'
+    description: 'String'
+    expiresAt: 'DateTime'
+    id: 'String'
+    isActive: 'Boolean'
+    submissionCount: 'Int'
+    token: 'String'
+    user: 'User'
+  }
+  SharingLinkInfo: { // field return type name
+    description: 'String'
+    expiresAt: 'DateTime'
+    id: 'String'
+    ownerName: 'String'
+    token: 'String'
+  }
+  SharingLinkValidation: { // field return type name
+    error: 'String'
+    isValid: 'Boolean'
+    message: 'String'
+    sharingLink: 'SharingLinkInfo'
   }
   User: { // field return type name
     birthdays: 'Birthday'
@@ -131,13 +364,24 @@ export interface NexusGenFieldTypeNames {
 
 export interface NexusGenArgTypes {
   Mutation: {
+    bulkImportSubmissions: { // args
+      submissionIds: string[]; // [String!]!
+    }
+    bulkRejectSubmissions: { // args
+      submissionIds: string[]; // [String!]!
+    }
     createBirthday: { // args
       category?: string | null; // String
       date: string; // String!
+      importSource?: string | null; // String
       name: string; // String!
       notes?: string | null; // String
       parent?: string | null; // String
       userId: string; // String!
+    }
+    createSharingLink: { // args
+      description?: string | null; // String
+      expirationHours?: number | null; // Int
     }
     deleteBirthday: { // args
       birthdayId: string; // String!
@@ -146,14 +390,48 @@ export interface NexusGenArgTypes {
       category?: string | null; // String
       date: string; // String!
       id: string; // String!
+      importSource?: string | null; // String
       name: string; // String!
       notes?: string | null; // String
       parent?: string | null; // String
+    }
+    getSubmissionDuplicates: { // args
+      submissionId: string; // String!
+    }
+    importSubmission: { // args
+      submissionId: string; // String!
+    }
+    rejectSubmission: { // args
+      submissionId: string; // String!
+    }
+    revokeSharingLink: { // args
+      linkId: string; // String!
+    }
+    submitBirthday: { // args
+      category?: string | null; // String
+      date: string; // String!
+      name: string; // String!
+      notes?: string | null; // String
+      relationship?: string | null; // String
+      submitterEmail?: string | null; // String
+      submitterName?: string | null; // String
+      token: string; // String!
+    }
+    updateNotificationPreferences: { // args
+      emailNotifications?: boolean | null; // Boolean
+      summaryNotifications?: boolean | null; // Boolean
     }
   }
   Query: {
     birthday: { // args
       birthdayId: string; // String!
+    }
+    pendingSubmissions: { // args
+      limit: number | null; // Int
+      page: number | null; // Int
+    }
+    validateSharingLink: { // args
+      token: string; // String!
     }
   }
 }
@@ -168,7 +446,7 @@ export type NexusGenObjectNames = keyof NexusGenObjects;
 
 export type NexusGenInputNames = never;
 
-export type NexusGenEnumNames = never;
+export type NexusGenEnumNames = keyof NexusGenEnums;
 
 export type NexusGenInterfaceNames = never;
 

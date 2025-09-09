@@ -78,6 +78,7 @@ const UploadCsvBirthdayForm = () => {
               parent,
               notes,
               userId,
+              importSource: "csv",
             },
             refetchQueries: [
               {

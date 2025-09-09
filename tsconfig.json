@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2022",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -18,7 +18,8 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "types": ["@testing-library/jest-dom"]
   },
   "include": [
     "**/*.ts",
@@ -27,5 +28,5 @@
     "vitest.config.mts",
     ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", ".next"]
 }

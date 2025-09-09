@@ -1,5 +1,5 @@
-import { it, describe, expect } from "vitest";
 import { subMonths, subWeeks, subYears } from "date-fns";
+import { describe, expect, it } from "vitest";
 import getAgeForHumans from "./getAgeForHumans";
 
 describe("get age for humans", () => {

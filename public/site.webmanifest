@@ -2,7 +2,7 @@
   "name": "Lazy Uncle",
   "orientation": "portrait",
   "short_name": "Lazy Uncle",
-  "start_url": "/?source=pwa",
+  "start_url": "/birthdays?source=pwa",
   "theme_color": "#0891b2",
   "background_color": "#0891b2",
   "display": "standalone",
