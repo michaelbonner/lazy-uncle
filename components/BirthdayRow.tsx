@@ -14,13 +14,10 @@ import ZodiacSignCharacter from "./ZodiacSignCharacter";
 interface Props {
   birthday: NexusGenObjects["Birthday"];
   categoryFilter: string;
-  // eslint-disable-next-line no-unused-vars
   setCategoryFilter: (text: string) => void;
   parentFilter: string;
-  // eslint-disable-next-line no-unused-vars
   setParentFilter: (text: string) => void;
   zodiacSignFilter: string;
-  // eslint-disable-next-line no-unused-vars
   setZodiacSignFilter: (text: string) => void;
 }
 

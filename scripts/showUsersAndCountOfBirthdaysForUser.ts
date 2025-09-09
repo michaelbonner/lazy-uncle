@@ -1,10 +1,9 @@
-// npx ts-node --compiler-options {\"module\":\"CommonJS\"} scripts/showUsersAndCountOfBirthdaysForUser
+// npx tsx scripts/showUsersAndCountOfBirthdaysForUser
 
 import { Birthday, PrismaClient, User } from "@prisma/client";
 import prisma from "../lib/prisma";
 
 declare global {
-  // eslint-disable-next-line no-unused-vars
   var prisma: PrismaClient;
 }
 

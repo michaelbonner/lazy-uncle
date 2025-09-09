@@ -23,23 +23,23 @@ const UploadCsvBirthdayForm = () => {
   );
 
   // handle file upload
-  const handleFileUpload = (e: any) => {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
       e.preventDefault();
       const reader = new FileReader();
-      reader.onload = async (data: any) => {
-        const parsedData = csvParse(data?.target?.result);
+      reader.onload = async (data: ProgressEvent<FileReader>) => {
+        const parsedData = csvParse(data?.target?.result as string);
         const parsedBirthdays = parsedData
-          .filter((row: any) => {
+          .filter((row: string[]) => {
             if (!isValid(new Date(row[1]))) {
               return false;
             }
             return true;
           })
-          .filter((row: any) => {
+          .filter((row: string[]) => {
             return row[0] !== "";
           })
-          .map((row: any) => {
+          .map((row: string[]) => {
             return {
               name: row[0],
               date: format(new Date(row[1]), "yyyy-MM-dd"),
@@ -56,9 +56,9 @@ const UploadCsvBirthdayForm = () => {
         }
       };
 
-      reader.readAsText(e.target.files[0]);
-    } catch (error: any) {
-      alert(error.message);
+      reader.readAsText(e.target.files?.[0] || new Blob());
+    } catch (error: unknown) {
+      alert((error as Error).message);
     }
   };
 

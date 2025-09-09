@@ -57,7 +57,7 @@ const EditBirthdayForm = ({
             },
           });
 
-          handleClose && handleClose();
+          handleClose?.();
 
           toast.success("Birthday updated");
         }}
@@ -161,7 +161,7 @@ const EditBirthdayForm = ({
                     ],
                   });
                   toast("Birthday deleted");
-                  handleClose && handleClose();
+                  handleClose?.();
                 }
               }}
               type="button"

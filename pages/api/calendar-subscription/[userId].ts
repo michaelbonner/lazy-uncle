@@ -14,7 +14,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<string>,
 ) {
-  const ics = require("ics");
+  const ics = await import("ics");
 
   const birthdays = await prisma.birthday.findMany({
     where: {
