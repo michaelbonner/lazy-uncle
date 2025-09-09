@@ -1,13 +1,13 @@
 import { useMutation } from "@apollo/client/react";
-import { authClient } from "../lib/auth-client"; // import the auth client
+import clsx from "clsx";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import classNames from "../shared/classNames";
 import {
   CREATE_BIRTHDAY_MUTATION,
   GET_ALL_BIRTHDAYS_QUERY,
 } from "../graphql/Birthday";
+import { authClient } from "../lib/auth-client"; // import the auth client
 import PrimaryButton from "./PrimaryButton";
 
 const TextEdit = dynamic(() => import("./TextEdit"), {
@@ -131,7 +131,7 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
       <div className="flex items-center justify-end gap-4 text-right">
         {onSubmit && (
           <button
-            className={classNames(
+            className={clsx(
               "inline-flex items-center rounded-md border border-transparent px-4 py-2 font-medium",
               "hover:bg-gray-100",
               "focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:outline-hidden",
