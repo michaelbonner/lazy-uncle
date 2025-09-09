@@ -327,7 +327,7 @@ The Lazy Uncle Team`;
       }
 
       const { data, error } = await this.resend.emails.send({
-        from: "Lazy Uncle <noreply@lazyuncle.com>",
+        from: "Lazy Uncle <noreply@updates.lazyuncle.net>",
         to: options.to,
         subject: options.subject,
         html: options.html,
