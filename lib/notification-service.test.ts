@@ -1,4 +1,10 @@
 import "@testing-library/jest-dom";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  NotificationService,
+  SubmissionNotificationData,
+} from "./notification-service";
+import prisma from "./prisma";
 
 // Mock prisma
 vi.mock("./prisma", () => ({
@@ -12,22 +18,6 @@ vi.mock("./prisma", () => ({
     },
   },
 }));
-
-// Mock nodemailer
-vi.mock("nodemailer", () => ({
-  default: {
-    createTransport: vi.fn(() => ({
-      sendMail: vi.fn(),
-    })),
-  },
-}));
-
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  NotificationService,
-  SubmissionNotificationData,
-} from "./notification-service";
-import prisma from "./prisma";
 
 const mockPrisma = vi.mocked(await import("./prisma"), true).default;
 
