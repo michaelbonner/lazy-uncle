@@ -48,6 +48,4 @@ public/workbox-*.js.map
 db-backups/dump-*
 scripts/variables.txt
 
-mongoexport
-
 tsconfig.tsbuildinfo
