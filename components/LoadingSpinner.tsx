@@ -1,10 +1,18 @@
 const LoadingSpinner = ({
   spinnerTextColor = "text-cyan-50",
+  size = "default",
 }: {
   spinnerTextColor?: string;
+  size?: "sm" | "default";
 }) => {
+  const sizeClasses = size === "sm" ? "h-4 w-4" : "h-16 w-16";
+  const containerClasses = size === "sm" ? "circle" : "circle mx-auto";
+
   return (
-    <div className="circle mx-auto h-16 w-16">
+    <div
+      className={`${containerClasses} ${sizeClasses}`}
+      data-testid="loading-spinner"
+    >
       <svg
         className="circle__svg"
         viewBox="0 0 100 100"

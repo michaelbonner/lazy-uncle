@@ -1,5 +1,6 @@
 import { useQuery } from "@apollo/client/react";
 import { Birthday } from "@prisma/client";
+import clsx from "clsx";
 import { format } from "date-fns";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -12,7 +13,6 @@ import { NexusGenObjects } from "../generated/nexus-typegen";
 import { GET_ALL_BIRTHDAYS_QUERY } from "../graphql/Birthday";
 import { authClient } from "../lib/auth-client"; // import the auth client
 import { SearchContext } from "../providers/SearchProvider";
-import clsx from "clsx";
 import getDateFromYmdString from "../shared/getDateFromYmdString";
 import { getDaysUntilNextBirthday } from "../shared/getDaysUntilNextBirthday";
 import getZodiacSignForDateYmdString from "../shared/getZodiacSignForDateYmdString";
@@ -28,6 +28,18 @@ const UploadCsvBirthdayForm = dynamic(() => import("./UploadCsvBirthdayForm"), {
   ssr: false,
 });
 const OnboardingWalkthrough = dynamic(() => import("./OnboardingWalkthrough"), {
+  ssr: false,
+});
+const SharingLinkManager = dynamic(() => import("./SharingLinkManager"), {
+  ssr: false,
+});
+const SubmissionReviewInterface = dynamic(
+  () => import("./SubmissionReviewInterface"),
+  {
+    ssr: false,
+  },
+);
+const SharingSettingsPanel = dynamic(() => import("./SharingSettingsPanel"), {
   ssr: false,
 });
 
@@ -566,16 +578,24 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
           </div>
         </div>
       </div>
-      <div className="mt-8 flex justify-end text-gray-200">
-        <Link
-          href={`webcal://${currentHost}/api/calendar-subscription/${userId}`}
-          className="js-subscribe-to-calendar group flex items-center space-x-2 text-gray-200 underline transition-all hover:text-gray-100"
-        >
-          <HiOutlineCalendar className="text-cyan-400 transition-all group-hover:text-gray-200" />
-          <span>Subscribe to calendar</span>
-        </Link>
+      <div className="mt-8 flex items-center justify-between text-gray-200">
+        <div className="flex items-center space-x-6">
+          <Link
+            href={`webcal://${currentHost}/api/calendar-subscription/${userId}`}
+            className="js-subscribe-to-calendar group flex items-center space-x-2 text-gray-200 underline transition-all hover:text-gray-100"
+          >
+            <HiOutlineCalendar className="text-cyan-400 transition-all group-hover:text-gray-200" />
+            <span>Subscribe to calendar</span>
+          </Link>
+        </div>
+        <div className="text-sm text-gray-300">
+          <span>Share your birthday collection with friends and family</span>
+        </div>
       </div>
-      <div className="mt-24 rounded-lg border-t-4 border-b-4 border-t-gray-400 border-b-gray-400 bg-gray-50 text-gray-800">
+      <SharingLinkManager />
+      <SubmissionReviewInterface />
+      <SharingSettingsPanel />
+      <div className="mt-8 rounded-lg border-t-4 border-b-4 border-t-gray-400 border-b-gray-400 bg-gray-50 text-gray-800">
         <div className="mt-4 px-4 py-12 md:px-8">
           <div className="max-w-2xl">
             <h3 className="mb-4 text-2xl font-medium">

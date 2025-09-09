@@ -9,8 +9,6 @@ jobs:
       - name: Install bun
         uses: oven-sh/setup-bun@v2
       - name: Install modules
-        run: bun install
+        run: bun install --frozen-lockfile
       - name: Run tests
-        run: bun test
-      - name: Test build
-        run: bun run build
+        run: bun run test

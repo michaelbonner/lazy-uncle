@@ -9,7 +9,17 @@ interface NextContext {
 
 const { handleRequest } = createYoga<NextContext>({
   schema,
-  context: createContext,
+  context: async ({ request }) => {
+    // Extract request information for security middleware
+    const req = {
+      headers: Object.fromEntries(request.headers.entries()),
+      connection: {
+        remoteAddress: request.headers.get("x-forwarded-for") || "unknown",
+      },
+    };
+
+    return createContext(req);
+  },
 
   // While using Next.js file convention for routing, we need to configure Yoga to use the correct endpoint
   graphqlEndpoint: "/api/graphql",

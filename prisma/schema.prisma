@@ -53,14 +53,15 @@ model Session {
 }
 
 model Birthday {
-  id        String    @id @default(cuid())
-  name      String
-  date      String
-  category  String?
-  parent    String?
-  notes     String?   @db.Text
-  createdAt DateTime?
-  userId    String
+  id           String    @id @default(cuid())
+  name         String
+  date         String
+  category     String?
+  parent       String?
+  notes        String?   @db.Text
+  createdAt    DateTime?
+  userId       String
+  importSource String? // "manual", "csv", "sharing", etc.
 
   user User @relation(fields: [userId], references: [id])
 
@@ -77,9 +78,11 @@ model User {
   createdAt DateTime?
   updatedAt DateTime
 
-  accounts  Account[]
-  sessions  Session[]
-  birthdays Birthday[]
+  accounts               Account[]
+  sessions               Session[]
+  birthdays              Birthday[]
+  sharingLinks           SharingLink[]
+  notificationPreference NotificationPreference?
 
   @@map("user")
 }
@@ -102,4 +105,54 @@ model Verification {
   updatedAt  DateTime?
 
   @@map("verification")
+}
+
+model SharingLink {
+  id          String   @id @default(cuid())
+  token       String   @unique
+  userId      String
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime
+  isActive    Boolean  @default(true)
+  description String?
+
+  user        User                 @relation(fields: [userId], references: [id])
+  submissions BirthdaySubmission[]
+
+  @@index([userId])
+  @@index([token])
+}
+
+model BirthdaySubmission {
+  id             String           @id @default(cuid())
+  sharingLinkId  String
+  name           String
+  date           String
+  category       String?
+  notes          String?          @db.Text
+  submitterName  String?
+  submitterEmail String?
+  relationship   String?
+  status         SubmissionStatus @default(PENDING)
+  createdAt      DateTime         @default(now())
+
+  sharingLink SharingLink @relation(fields: [sharingLinkId], references: [id])
+
+  @@index([sharingLinkId])
+  @@index([status])
+}
+
+model NotificationPreference {
+  id                   String  @id @default(cuid())
+  userId               String  @unique
+  emailNotifications   Boolean @default(true)
+  summaryNotifications Boolean @default(false)
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+enum SubmissionStatus {
+  PENDING
+  IMPORTED
+  REJECTED
 }
