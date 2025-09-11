@@ -68,5 +68,13 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"
-  }
+  },
+  "trustedDependencies": [
+    "@prisma/client",
+    "@prisma/engines",
+    "@tailwindcss/oxide",
+    "esbuild",
+    "prisma",
+    "sharp"
+  ]
 }
