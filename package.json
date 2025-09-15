@@ -20,6 +20,7 @@
     "@envelop/apollo-server-errors": "^8.0.0",
     "@headlessui/react": "^2.2.8",
     "@prisma/client": "^6.16.1",
+    "@react-email/render": "^1.2.3",
     "@tailwindcss/forms": "^0.5.10",
     "@testing-library/react": "^16.3.0",
     "@tiptap/react": "^3.4.3",
