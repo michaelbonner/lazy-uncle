@@ -8,7 +8,7 @@
         "@envelop/apollo-server-errors": "^8.0.0",
         "@headlessui/react": "^2.2.9",
         "@prisma/client": "^6.16.3",
-        "@react-email/render": "^1.3.1",
+        "@react-email/render": "^1.3.2",
         "@tailwindcss/forms": "^0.5.10",
         "@testing-library/react": "^16.3.0",
         "@tiptap/react": "^3.6.5",
@@ -26,7 +26,7 @@
         "next": "^15.5.4",
         "next-pwa": "^5.6.0",
         "nexus": "^1.3.0",
-        "posthog-js": "^1.270.1",
+        "posthog-js": "^1.272.0",
         "prisma": "^6.16.3",
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
@@ -43,7 +43,7 @@
         "@tailwindcss/postcss": "^4.1.14",
         "@tailwindcss/typography": "^0.5.19",
         "@testing-library/jest-dom": "^6.9.1",
-        "@types/react": "^19.2.0",
+        "@types/react": "^19.2.1",
         "@types/react-gtm-module": "^2.0.4",
         "eslint": "^9.37.0",
         "eslint-config-next": "^15.5.4",
@@ -595,7 +595,7 @@
 
     "@react-aria/utils": ["@react-aria/utils@3.30.1", "", { "dependencies": { "@react-aria/ssr": "^3.9.10", "@react-stately/flags": "^3.1.2", "@react-stately/utils": "^3.10.8", "@react-types/shared": "^3.32.0", "@swc/helpers": "^0.5.0", "clsx": "^2.0.0" }, "peerDependencies": { "react": "^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1", "react-dom": "^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1" } }, "sha512-zETcbDd6Vf9GbLndO6RiWJadIZsBU2MMm23rBACXLmpRztkrIqPEb2RVdlLaq1+GklDx0Ii6PfveVjx+8S5U6A=="],
 
-    "@react-email/render": ["@react-email/render@1.3.1", "", { "dependencies": { "html-to-text": "^9.0.5", "prettier": "^3.5.3", "react-promise-suspense": "^0.3.4" }, "peerDependencies": { "react": "^18.0 || ^19.0 || ^19.0.0-rc", "react-dom": "^18.0 || ^19.0 || ^19.0.0-rc" } }, "sha512-BOc/kanieEVyiuldFFvceriiBGBBVhe4JWWXCXE2ehLIqz+gSWD4rgCoXAGbJRnnVyyp4joPqK62bSfa88yonA=="],
+    "@react-email/render": ["@react-email/render@1.3.2", "", { "dependencies": { "html-to-text": "^9.0.5", "prettier": "^3.5.3", "react-promise-suspense": "^0.3.4" }, "peerDependencies": { "react": "^18.0 || ^19.0 || ^19.0.0-rc", "react-dom": "^18.0 || ^19.0 || ^19.0.0-rc" } }, "sha512-oq8/BD/I/YspeuBjjdLJG6xaf9tsPYk+VWu8/mX9xWbRN0t0ExKSVm9sEBL6RsCpndQA2jbY2VgPEreIrzUgqw=="],
 
     "@react-stately/flags": ["@react-stately/flags@3.1.2", "", { "dependencies": { "@swc/helpers": "^0.5.0" } }, "sha512-2HjFcZx1MyQXoPqcBGALwWWmgFVUk2TuKVIQxCbRq7fPyWXIl6VHcakCLurdtYC2Iks7zizvz0Idv48MQ38DWg=="],
 
@@ -893,7 +893,7 @@
 
     "@types/nodemailer": ["@types/nodemailer@7.0.2", "", { "dependencies": { "@aws-sdk/client-sesv2": "^3.839.0", "@types/node": "*" } }, "sha512-Zo6uOA9157WRgBk/ZhMpTQ/iCWLMk7OIs/Q9jvHarMvrzUUP/MDdPHL2U1zpf57HrrWGv4nYQn5uIxna0xY3xw=="],
 
-    "@types/react": ["@types/react@19.2.0", "", { "dependencies": { "csstype": "^3.0.2" } }, "sha512-1LOH8xovvsKsCBq1wnT4ntDUdCJKmnEakhsuoUSy6ExlHCkGP2hqnatagYTgFk6oeL0VU31u7SNjunPN+GchtA=="],
+    "@types/react": ["@types/react@19.2.1", "", { "dependencies": { "csstype": "^3.0.2" } }, "sha512-1U5NQWh/GylZQ50ZMnnPjkYHEaGhg6t5i/KI0LDDh3t4E3h3T3vzm+GLY2BRzMfIjSBwzm6tginoZl5z0O/qsA=="],
 
     "@types/react-dom": ["@types/react-dom@19.1.9", "", { "peerDependencies": { "@types/react": "^19.0.0" } }, "sha512-qXRuZaOsAdXKFyOhRBg6Lqqc0yay13vN7KrIg4L7N4aaHN68ma9OK3NE1BoDFgFOTfM7zg+3/8+2n8rLUH3OKQ=="],
 
@@ -1805,7 +1805,7 @@
 
     "postcss-selector-parser": ["postcss-selector-parser@6.0.10", "", { "dependencies": { "cssesc": "^3.0.0", "util-deprecate": "^1.0.2" } }, "sha512-IQ7TZdoaqbT+LCpShg46jnZVlhWD2w6iQYAcYXfHARZ7X1t/UGhhceQDs5X0cGqKvYlHNOuv7Oa1xmb0oQuA3w=="],
 
-    "posthog-js": ["posthog-js@1.270.1", "", { "dependencies": { "@posthog/core": "1.2.2", "core-js": "^3.38.1", "fflate": "^0.4.8", "preact": "^10.19.3", "web-vitals": "^4.2.4" }, "peerDependencies": { "@rrweb/types": "2.0.0-alpha.17", "rrweb-snapshot": "2.0.0-alpha.17" }, "optionalPeers": ["@rrweb/types", "rrweb-snapshot"] }, "sha512-HP7+vr19gE8Qx7n88ElJxkI/BwL8S5lH8D1OKp91YnAlcJuc0Vze0M9TMmFAgC2oUVGrvSgH5++sNg8qGlm9tg=="],
+    "posthog-js": ["posthog-js@1.272.0", "", { "dependencies": { "@posthog/core": "1.2.2", "core-js": "^3.38.1", "fflate": "^0.4.8", "preact": "^10.19.3", "web-vitals": "^4.2.4" }, "peerDependencies": { "@rrweb/types": "2.0.0-alpha.17", "rrweb-snapshot": "2.0.0-alpha.17" }, "optionalPeers": ["@rrweb/types", "rrweb-snapshot"] }, "sha512-q8vegjiB7PQSjo2sgRBf1lie0bPnBgqIyWCXHvH6U5BEqTV5fr3Zr+iv7KXL/sVP+g4xp4lEjbKmyLENz2Iybw=="],
 
     "preact": ["preact@10.27.1", "", {}, "sha512-V79raXEWch/rbqoNc7nT9E4ep7lu+mI3+sBmfRD4i1M73R3WLYcCtdI0ibxGVf4eQL8ZIz2nFacqEC+rmnOORQ=="],
 
