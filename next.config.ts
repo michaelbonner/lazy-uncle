@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const nextConfig: NextConfig = {
   i18n: {
@@ -6,6 +7,9 @@ const nextConfig: NextConfig = {
     defaultLocale: "en",
   },
   reactStrictMode: true,
+  turbopack: {
+    root: path.join(__dirname, ".."),
+  },
   async rewrites() {
     return [
       {
