@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@apollo/client": "^4.0.9",
-    "@envelop/apollo-server-errors": "^8.0.0",
+    "@envelop/apollo-server-errors": "^9.0.0",
     "@headlessui/react": "^2.2.9",
     "@prisma/client": "^6.19.0",
     "@react-email/render": "^1.4.0",
