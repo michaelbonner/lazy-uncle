@@ -5,7 +5,7 @@
       "name": "lazy-uncle",
       "dependencies": {
         "@apollo/client": "^4.0.9",
-        "@envelop/apollo-server-errors": "^8.0.0",
+        "@envelop/apollo-server-errors": "^9.0.0",
         "@headlessui/react": "^2.2.9",
         "@prisma/client": "^6.19.0",
         "@react-email/render": "^1.4.0",
@@ -353,7 +353,7 @@
 
     "@emnapi/wasi-threads": ["@emnapi/wasi-threads@1.1.0", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-WI0DdZ8xFSbgMjR1sFsKABJ/C5OnRrjT06JXbZKexJGrDuPTzZdDYfFlsgcCXCyf+suG5QU2e/y1Wo2V/OapLQ=="],
 
-    "@envelop/apollo-server-errors": ["@envelop/apollo-server-errors@8.0.0", "", { "dependencies": { "apollo-server-errors": "^3.3.1", "tslib": "^2.5.0" }, "peerDependencies": { "@envelop/core": "^5.3.0", "graphql": "^14.0.0 || ^15.0.0 || ^16.0.0" } }, "sha512-W2h1nb4M7wqa4C2yopnI8VejJBEeOALwjaX6JWa5Id56r0XHKdO2bP4WeAFnDVqMxMeJt0WMLSb7+tZrmspveQ=="],
+    "@envelop/apollo-server-errors": ["@envelop/apollo-server-errors@9.0.0", "", { "dependencies": { "apollo-server-errors": "^3.3.1", "tslib": "^2.5.0" }, "peerDependencies": { "@envelop/core": "^5.4.0", "graphql": "^14.0.0 || ^15.0.0 || ^16.0.0" } }, "sha512-fWmNomOPPB5c+gpn8TnUADpssic6oOnXotUiVnxpwS5/fbiClbFpyDjPsU8FqWILZ4HC9KsTo/Bfm2Bjtd4gdg=="],
 
     "@envelop/core": ["@envelop/core@5.3.1", "", { "dependencies": { "@envelop/instrumentation": "^1.0.0", "@envelop/types": "^5.2.1", "@whatwg-node/promise-helpers": "^1.2.4", "tslib": "^2.5.0" } }, "sha512-n29V3vRqXvPcG76C8zE482LQykk0P66zv1mjpk7aHeGe9qnh8AzB/RvoX5SVFwApJQPp0ixob8NoYXg4FHKMGA=="],
 
