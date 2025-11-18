@@ -14,6 +14,7 @@ vi.mock("./prisma", () => ({
 describe("RateLimitService Integration", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetAllMocks();
   });
 
   afterEach(() => {
@@ -137,9 +138,12 @@ describe("RateLimitService Integration", () => {
 
   describe("detectSuspiciousActivity", () => {
     it("should detect duplicate submissions", async () => {
-      vi.mocked(prisma.birthdaySubmission.count)
-        .mockResolvedValueOnce(1) // duplicate count
-        .mockResolvedValueOnce(2); // email count
+      let callCount = 0;
+      vi.mocked(prisma.birthdaySubmission.count).mockImplementation(() => {
+        callCount++;
+        if (callCount === 1) return Promise.resolve(1); // duplicate count
+        return Promise.resolve(2); // email count (shouldn't be reached)
+      });
 
       const result = await RateLimitService.detectSuspiciousActivity(
         "test-token",
@@ -155,9 +159,12 @@ describe("RateLimitService Integration", () => {
     });
 
     it("should detect too many submissions from same email", async () => {
-      vi.mocked(prisma.birthdaySubmission.count)
-        .mockResolvedValueOnce(0) // duplicate count
-        .mockResolvedValueOnce(6); // email count exceeds 5
+      let callCount = 0;
+      vi.mocked(prisma.birthdaySubmission.count).mockImplementation(() => {
+        callCount++;
+        if (callCount === 1) return Promise.resolve(0); // duplicate count
+        return Promise.resolve(6); // email count exceeds 5
+      });
 
       const result = await RateLimitService.detectSuspiciousActivity(
         "test-token",
@@ -175,9 +182,12 @@ describe("RateLimitService Integration", () => {
     });
 
     it("should not flag normal submissions", async () => {
-      vi.mocked(prisma.birthdaySubmission.count)
-        .mockResolvedValueOnce(0) // duplicate count
-        .mockResolvedValueOnce(2); // email count
+      let callCount = 0;
+      vi.mocked(prisma.birthdaySubmission.count).mockImplementation(() => {
+        callCount++;
+        if (callCount === 1) return Promise.resolve(0); // duplicate count
+        return Promise.resolve(2); // email count
+      });
 
       const result = await RateLimitService.detectSuspiciousActivity(
         "test-token",
@@ -280,9 +290,9 @@ describe("RateLimitService Integration", () => {
 
   describe("error handling", () => {
     it("should handle database errors in persistent rate limiting", async () => {
-      vi.mocked(prisma.birthdaySubmission.count).mockRejectedValue(
-        new Error("Database connection failed"),
-      );
+      vi.mocked(prisma.birthdaySubmission.count).mockImplementation(() => {
+        return Promise.reject(new Error("Database connection failed"));
+      });
 
       await expect(
         RateLimitService.checkPersistentRateLimit("192.168.1.10"),
