@@ -1,14 +1,13 @@
+import { relations } from "drizzle-orm";
 import {
-  pgTable,
-  pgEnum,
-  text,
-  timestamp,
   boolean,
   index,
+  pgEnum,
+  pgTable,
+  text,
+  timestamp,
   unique,
-  varchar,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
 
 // Enums
 export const submissionStatusEnum = pgEnum("SubmissionStatus", [
