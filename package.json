@@ -20,7 +20,7 @@
     "@envelop/apollo-server-errors": "^9.0.0",
     "@headlessui/react": "^2.2.9",
     "@prisma/client": "^6.19.0",
-    "@react-email/render": "^1.4.0",
+    "@react-email/render": "^2.0.0",
     "@tailwindcss/forms": "^0.5.10",
     "@testing-library/react": "^16.3.0",
     "@tiptap/react": "^3.11.0",
@@ -45,7 +45,7 @@
     "react-gtm-module": "^2.0.11",
     "react-hot-toast": "^2.6.0",
     "react-icons": "^5.5.0",
-    "resend": "~6.4.2",
+    "resend": "~6.5.2",
     "rxjs": "^7.8.2",
     "shepherd.js": "^14.5.1"
   },
