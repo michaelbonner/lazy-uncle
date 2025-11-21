@@ -1,17 +1,24 @@
 // npx ts-node --compiler-options {\"module\":\"CommonJS\"} scripts/addBirthdaysForUser.ts
 
-import { Birthday, PrismaClient } from "@prisma/client";
+import { createId } from "@paralleldrive/cuid2";
 import { parse } from "csv-parse/sync";
+import { eq } from "drizzle-orm";
 import fs from "fs";
 import path from "path";
 import { argv } from "process";
-import prisma from "../lib/prisma";
+import type { NewBirthday } from "../drizzle/schema";
+import { birthdays, users } from "../drizzle/schema";
+import db from "../lib/db";
 
-declare global {
-  var prisma: PrismaClient;
+interface CsvBirthday {
+  name: string;
+  date: string;
+  category: string | null;
+  parent: string | null;
+  notes: string | null;
 }
 
-async function loadCsvBirthdays(): Promise<Birthday[]> {
+async function loadCsvBirthdays(): Promise<CsvBirthday[]> {
   const data = fs.readFileSync(
     path.resolve(__dirname, "../data/birthdays.csv"),
     { encoding: "utf-8" },
@@ -29,7 +36,7 @@ async function loadCsvBirthdays(): Promise<Birthday[]> {
       parent: row[3] !== "NULL" ? row[3] : null,
       notes: row[4] !== "NULL" ? row[4] : null,
     };
-  }) as Birthday[];
+  });
 }
 
 async function main() {
@@ -42,11 +49,9 @@ async function main() {
 
   // load user from email provided
   const email = argv[2];
-  const user = await prisma.user.findFirst({
-    where: {
-      email: email,
-    },
-    include: {
+  const user = await db.query.users.findFirst({
+    where: eq(users.email, email),
+    with: {
       birthdays: true,
     },
   });
@@ -57,28 +62,35 @@ async function main() {
   }
 
   const birthdaysToAdd = csvBirthdays
-    .filter((csvBirthday: Birthday) => {
-      return user.birthdays.find((userBirthday) => {
+    .filter((csvBirthday: CsvBirthday) => {
+      return !user.birthdays.find((userBirthday) => {
         return (
           userBirthday.name === csvBirthday.name &&
           userBirthday.date === csvBirthday.date
         );
-      })
-        ? false
-        : true;
+      });
     })
-    .map((csvBirthday: Birthday) => {
+    .map((csvBirthday: CsvBirthday): NewBirthday => {
       return {
-        ...csvBirthday,
+        id: createId(),
+        name: csvBirthday.name,
+        date: csvBirthday.date,
+        category: csvBirthday.category || null,
+        parent: csvBirthday.parent || null,
+        notes: csvBirthday.notes || null,
         userId: user.id,
-      } as Birthday;
+      };
     });
 
   if (!birthdaysToAdd.length) {
     console.log("No birthdays to add");
     return;
   }
-  await prisma.birthday.createMany({ data: birthdaysToAdd });
+
+  // Insert birthdays one by one (Drizzle doesn't have createMany with relations)
+  for (const birthday of birthdaysToAdd) {
+    await db.insert(birthdays).values(birthday);
+  }
 
   console.log(`Added ${birthdaysToAdd.length} birthday(s) for user ${email}`);
   birthdaysToAdd.map((birthdayToAdd) =>
@@ -92,5 +104,6 @@ main()
     process.exit(1);
   })
   .finally(async () => {
-    await prisma.$disconnect();
+    // Drizzle handles connection pooling, no explicit disconnect needed
+    process.exit(0);
   });

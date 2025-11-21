@@ -1,7 +1,9 @@
+import { and, eq, gte } from "drizzle-orm";
 import { NextRequest } from "next/server";
+import { sharingLinks } from "../drizzle/schema";
+import db from "./db";
 import { RateLimitService } from "./rate-limiter";
 import { SharingService } from "./sharing-service";
-import prisma from "./prisma";
 
 export interface SecurityContext {
   ipAddress: string;
@@ -432,20 +434,22 @@ export class SecurityMiddleware {
     }
 
     // Check for rapid link generation from same user (already handled by SharingService)
-    const recentLinksFromUser = await prisma.sharingLink.count({
-      where: {
-        userId: context.userId,
-        createdAt: {
-          gte: new Date(
+    const recentLinksFromUser = await db.query.sharingLinks.findMany({
+      where: and(
+        eq(sharingLinks.userId, context.userId),
+        gte(
+          sharingLinks.createdAt,
+          new Date(
             Date.now() -
               this.SUSPICIOUS_PATTERNS.RAPID_LINK_GENERATION.windowMs,
           ),
-        },
-      },
+        ),
+      ),
     });
+    const recentLinksCount = recentLinksFromUser.length;
 
     if (
-      recentLinksFromUser >=
+      recentLinksCount >=
       this.SUSPICIOUS_PATTERNS.RAPID_LINK_GENERATION.threshold
     ) {
       suspiciousReasons.push("Rapid link generation from user");
@@ -540,12 +544,16 @@ export class SecurityMiddleware {
     reason: string,
   ): Promise<void> {
     try {
-      await prisma.sharingLink.update({
-        where: { token },
-        data: {
-          isActive: false,
-        },
+      const link = await db.query.sharingLinks.findFirst({
+        where: eq(sharingLinks.token, token),
       });
+
+      if (link) {
+        await db
+          .update(sharingLinks)
+          .set({ isActive: false })
+          .where(eq(sharingLinks.id, link.id));
+      }
 
       // Log the deactivation
       await this.logSecurityEvent({

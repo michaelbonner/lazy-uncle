@@ -1,5 +1,8 @@
 import { Resend } from "resend";
-import prisma from "./prisma";
+import db from "./db";
+import { users, notificationPreferences } from "../drizzle/schema";
+import { eq } from "drizzle-orm";
+import { createId } from "@paralleldrive/cuid2";
 
 export interface NotificationPreferences {
   emailNotifications: boolean;
@@ -56,9 +59,9 @@ export class NotificationService {
       }
 
       // Get user email
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-        select: { email: true, name: true },
+      const user = await db.query.users.findFirst({
+        where: eq(users.id, userId),
+        columns: { email: true, name: true },
       });
 
       if (!user?.email) {
@@ -104,9 +107,9 @@ export class NotificationService {
         return;
       }
 
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-        select: { email: true, name: true },
+      const user = await db.query.users.findFirst({
+        where: eq(users.id, userId),
+        columns: { email: true, name: true },
       });
 
       if (!user?.email) {
@@ -140,8 +143,8 @@ export class NotificationService {
     userId: string,
   ): Promise<NotificationPreferences> {
     try {
-      const preferences = await prisma.notificationPreference.findUnique({
-        where: { userId },
+      const preferences = await db.query.notificationPreferences.findFirst({
+        where: eq(notificationPreferences.userId, userId),
       });
 
       return {
@@ -166,15 +169,26 @@ export class NotificationService {
     preferences: Partial<NotificationPreferences>,
   ): Promise<void> {
     try {
-      await prisma.notificationPreference.upsert({
-        where: { userId },
-        update: preferences,
-        create: {
+      // Check if preferences exist
+      const existing = await db.query.notificationPreferences.findFirst({
+        where: eq(notificationPreferences.userId, userId),
+      });
+
+      if (existing) {
+        // Update existing preferences
+        await db
+          .update(notificationPreferences)
+          .set(preferences)
+          .where(eq(notificationPreferences.userId, userId));
+      } else {
+        // Create new preferences
+        await db.insert(notificationPreferences).values({
+          id: createId(),
           userId,
           emailNotifications: preferences.emailNotifications ?? true,
           summaryNotifications: preferences.summaryNotifications ?? false,
-        },
-      });
+        });
+      }
     } catch (error) {
       console.error("Failed to update notification preferences:", error);
       throw error;

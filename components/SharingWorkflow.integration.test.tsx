@@ -13,7 +13,7 @@ import {
   IMPORT_SUBMISSION_MUTATION,
 } from "../graphql/Sharing";
 import BirthdaysContainer from "./BirthdaysContainer";
-import { SubmissionStatus } from "@prisma/client";
+import type { SubmissionStatus } from "../drizzle/schema";
 
 // Mock the auth client
 vi.mock("../lib/auth-client", () => ({
@@ -115,7 +115,7 @@ const mockPendingSubmissions = [
     submitterName: "Alice Johnson",
     submitterEmail: "alice@example.com",
     relationship: "Friend",
-    status: SubmissionStatus.PENDING,
+    status: "PENDING" as SubmissionStatus,
     createdAt: "2024-01-15T10:00:00Z",
     sharingLink: {
       id: "link-1",

@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client/react";
-import { Birthday } from "@prisma/client";
+import type { Birthday } from "../drizzle/schema";
 import clsx from "clsx";
 import { format } from "date-fns";
 import dynamic from "next/dynamic";
@@ -348,7 +348,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                   >
                     <IoAddCircleOutline className="h-5 w-5" />
                   </button>
-                  <div className="relative w-full min-w-[220px] grow-1">
+                  <div className="relative w-full min-w-[220px] grow">
                     <BirthdayFilterField
                       disabled={
                         !birthdaysData?.birthdays?.length &&

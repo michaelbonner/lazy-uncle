@@ -1,4 +1,5 @@
-import prisma from "../../lib/prisma";
+import { sql } from "drizzle-orm";
+import db from "../../lib/db";
 import { NextApiRequest, NextApiResponse } from "next";
 
 const main = async (
@@ -25,9 +26,9 @@ export default main;
 
 const checkDB = async () => {
   try {
-    const val = await prisma.$queryRaw<{ okay: number }[]>`SELECT 1 as okay`;
-
-    return `${val?.at(0)?.["okay"]}` === "1";
+    const result = await db.execute(sql`SELECT 1 as okay`);
+    const val = result.rows?.[0] as { okay: number } | undefined;
+    return `${val?.okay}` === "1";
   } catch (error) {
     console.error(error);
     return false;

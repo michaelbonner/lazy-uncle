@@ -1,5 +1,6 @@
-import { PrismaClient } from "@prisma/client";
+import { drizzle } from "drizzle-orm/node-postgres";
+import * as schema from "./drizzle/schema";
 
 declare global {
-  var prisma: PrismaClient;
+  var drizzleDb: ReturnType<typeof drizzle<typeof schema>>;
 }

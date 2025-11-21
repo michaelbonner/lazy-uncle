@@ -1,14 +1,14 @@
 import { useMutation } from "@apollo/client/react";
-import { Birthday } from "@prisma/client";
 import { parse as csvParse } from "csv-parse/browser/esm/sync";
 import { format, isValid } from "date-fns";
-import { authClient } from "../lib/auth-client"; // import the auth client
 import { useState } from "react";
 import { toast } from "react-hot-toast";
+import type { Birthday } from "../drizzle/schema";
 import {
   CREATE_BIRTHDAY_MUTATION,
   GET_ALL_BIRTHDAYS_QUERY,
 } from "../graphql/Birthday";
+import { authClient } from "../lib/auth-client"; // import the auth client
 import PrimaryButton from "./PrimaryButton";
 
 const UploadCsvBirthdayForm = () => {

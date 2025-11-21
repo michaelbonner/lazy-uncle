@@ -6,6 +6,13 @@ import {
   booleanArg,
   list,
 } from "nexus";
+import { eq } from "drizzle-orm";
+import { createId } from "@paralleldrive/cuid2";
+import {
+  birthdays,
+  birthdaySubmissions,
+  notificationPreferences,
+} from "../../drizzle/schema";
 
 export const Mutation = extendType({
   type: "Mutation",
@@ -21,23 +28,26 @@ export const Mutation = extendType({
         userId: nonNull(stringArg()),
         importSource: stringArg(),
       },
-      resolve: (
+      resolve: async (
         _,
         { name, date, category, parent, notes, userId, importSource },
         ctx,
       ) => {
-        return ctx.prisma.birthday.create({
-          data: {
+        const [birthday] = await ctx.db
+          .insert(birthdays)
+          .values({
+            id: createId(),
             name,
             date,
-            category,
-            parent,
-            notes,
+            category: category || null,
+            parent: parent || null,
+            notes: notes || null,
             userId,
             importSource: importSource || "manual",
             createdAt: new Date(),
-          },
-        });
+          })
+          .returning();
+        return birthday;
       },
     });
 
@@ -52,24 +62,24 @@ export const Mutation = extendType({
         notes: stringArg(),
         importSource: stringArg(),
       },
-      resolve: (
+      resolve: async (
         _,
         { id, name, date, category, parent, notes, importSource },
         ctx,
       ) => {
-        return ctx.prisma.birthday.update({
-          where: {
-            id: id,
-          },
-          data: {
+        const [birthday] = await ctx.db
+          .update(birthdays)
+          .set({
             name,
             date,
-            category,
-            parent,
-            notes,
-            importSource,
-          },
-        });
+            category: category || null,
+            parent: parent || null,
+            notes: notes || null,
+            importSource: importSource || null,
+          })
+          .where(eq(birthdays.id, id))
+          .returning();
+        return birthday;
       },
     });
 
@@ -78,10 +88,12 @@ export const Mutation = extendType({
       args: {
         birthdayId: nonNull(stringArg()),
       },
-      resolve: (_, { birthdayId }, ctx) => {
-        return ctx.prisma.birthday.delete({
-          where: { id: birthdayId || "" },
-        });
+      resolve: async (_, { birthdayId }, ctx) => {
+        const [birthday] = await ctx.db
+          .delete(birthdays)
+          .where(eq(birthdays.id, birthdayId || ""))
+          .returning();
+        return birthday;
       },
     });
 
@@ -210,8 +222,8 @@ export const Mutation = extendType({
         }
 
         // Return the created submission
-        const submission = await ctx.prisma.birthdaySubmission.findUnique({
-          where: { id: result.submissionId },
+        const submission = await ctx.db.query.birthdaySubmissions.findFirst({
+          where: eq(birthdaySubmissions.id, result.submissionId!),
         });
 
         if (!submission) {
@@ -250,8 +262,8 @@ export const Mutation = extendType({
         );
 
         // Return the updated preferences
-        return ctx.prisma.notificationPreference.findUnique({
-          where: { userId: ctx.user.id },
+        return ctx.db.query.notificationPreferences.findFirst({
+          where: eq(notificationPreferences.userId, ctx.user.id),
         });
       },
     });
@@ -278,8 +290,8 @@ export const Mutation = extendType({
         }
 
         // Return the created birthday
-        return ctx.prisma.birthday.findUnique({
-          where: { id: result.birthdayId },
+        return ctx.db.query.birthdays.findFirst({
+          where: eq(birthdays.id, result.birthdayId!),
         });
       },
     });
@@ -306,8 +318,8 @@ export const Mutation = extendType({
         }
 
         // Return the updated submission
-        return ctx.prisma.birthdaySubmission.findUnique({
-          where: { id: submissionId },
+        return ctx.db.query.birthdaySubmissions.findFirst({
+          where: eq(birthdaySubmissions.id, submissionId),
         });
       },
     });
@@ -373,16 +385,14 @@ export const Mutation = extendType({
         );
 
         // Get the submission first
-        const submission = await ctx.prisma.birthdaySubmission.findFirst({
-          where: {
-            id: submissionId,
-            sharingLink: {
-              userId: ctx.user.id,
-            },
+        const submission = await ctx.db.query.birthdaySubmissions.findFirst({
+          where: eq(birthdaySubmissions.id, submissionId),
+          with: {
+            sharingLink: true,
           },
         });
 
-        if (!submission) {
+        if (!submission || submission.sharingLink.userId !== ctx.user.id) {
           throw new Error("Submission not found");
         }
 

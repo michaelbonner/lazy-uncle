@@ -1,7 +1,14 @@
-import prisma from "./prisma";
+import { createId } from "@paralleldrive/cuid2";
+import db from "./db";
 import { SharingService } from "./sharing-service";
 import { InputValidator, BirthdaySubmissionInput } from "./input-validator";
-import { BirthdaySubmission, SubmissionStatus } from "@prisma/client";
+import {
+  birthdays,
+  birthdaySubmissions,
+  sharingLinks,
+} from "../drizzle/schema";
+import { eq, and, gte, lt, desc, inArray } from "drizzle-orm";
+import type { BirthdaySubmission } from "../drizzle/schema";
 import {
   notificationService,
   SubmissionNotificationData,
@@ -87,19 +94,21 @@ export class SubmissionService {
       );
 
       // Store the submission
-      const submission = await prisma.birthdaySubmission.create({
-        data: {
+      const [submission] = await db
+        .insert(birthdaySubmissions)
+        .values({
+          id: createId(),
           sharingLinkId: sharingLink.id,
           name: processedData.name,
           date: processedData.date,
-          category: processedData.category,
-          notes: processedData.notes,
-          submitterName: processedData.submitterName,
-          submitterEmail: processedData.submitterEmail,
-          relationship: processedData.relationship,
-          status: SubmissionStatus.PENDING,
-        },
-      });
+          category: processedData.category || null,
+          notes: processedData.notes || null,
+          submitterName: processedData.submitterName || null,
+          submitterEmail: processedData.submitterEmail || null,
+          relationship: processedData.relationship || null,
+          status: "PENDING",
+        })
+        .returning();
 
       // Send notification to the sharing link owner
       try {
@@ -148,9 +157,9 @@ export class SubmissionService {
   ): Promise<DuplicateDetectionResult> {
     try {
       // Get user's existing birthdays
-      const existingBirthdays = await prisma.birthday.findMany({
-        where: { userId },
-        select: {
+      const existingBirthdays = await db.query.birthdays.findMany({
+        where: eq(birthdays.userId, userId),
+        columns: {
           id: true,
           name: true,
           date: true,
@@ -196,20 +205,17 @@ export class SubmissionService {
   ): Promise<{ success: boolean; birthdayId?: string; errors?: string[] }> {
     try {
       // Get the submission and verify ownership
-      const submission = await prisma.birthdaySubmission.findFirst({
-        where: {
-          id: submissionId,
-          status: SubmissionStatus.PENDING,
-          sharingLink: {
-            userId,
-          },
-        },
-        include: {
+      const submission = await db.query.birthdaySubmissions.findFirst({
+        where: and(
+          eq(birthdaySubmissions.id, submissionId),
+          eq(birthdaySubmissions.status, "PENDING"),
+        ),
+        with: {
           sharingLink: true,
         },
       });
 
-      if (!submission) {
+      if (!submission || submission.sharingLink.userId !== userId) {
         return {
           success: false,
           errors: ["Submission not found or already processed"],
@@ -217,22 +223,24 @@ export class SubmissionService {
       }
 
       // Create birthday entry
-      const birthday = await prisma.birthday.create({
-        data: {
+      const [birthday] = await db
+        .insert(birthdays)
+        .values({
+          id: createId(),
           userId,
           name: submission.name,
           date: submission.date,
-          category: submission.category,
-          notes: submission.notes,
+          category: submission.category || null,
+          notes: submission.notes || null,
           importSource: "sharing",
-        },
-      });
+        })
+        .returning();
 
       // Update submission status
-      await prisma.birthdaySubmission.update({
-        where: { id: submissionId },
-        data: { status: SubmissionStatus.IMPORTED },
-      });
+      await db
+        .update(birthdaySubmissions)
+        .set({ status: "IMPORTED" })
+        .where(eq(birthdaySubmissions.id, submissionId));
 
       return {
         success: true,
@@ -255,26 +263,29 @@ export class SubmissionService {
     userId: string,
   ): Promise<{ success: boolean; errors?: string[] }> {
     try {
-      // Verify ownership and update status
-      const result = await prisma.birthdaySubmission.updateMany({
-        where: {
-          id: submissionId,
-          status: SubmissionStatus.PENDING,
-          sharingLink: {
-            userId,
-          },
-        },
-        data: {
-          status: SubmissionStatus.REJECTED,
+      // Get submission and verify ownership
+      const submission = await db.query.birthdaySubmissions.findFirst({
+        where: and(
+          eq(birthdaySubmissions.id, submissionId),
+          eq(birthdaySubmissions.status, "PENDING"),
+        ),
+        with: {
+          sharingLink: true,
         },
       });
 
-      if (result.count === 0) {
+      if (!submission || submission.sharingLink.userId !== userId) {
         return {
           success: false,
           errors: ["Submission not found or already processed"],
         };
       }
+
+      // Update submission status
+      await db
+        .update(birthdaySubmissions)
+        .set({ status: "REJECTED" })
+        .where(eq(birthdaySubmissions.id, submissionId));
 
       return { success: true };
     } catch (error) {
@@ -291,26 +302,34 @@ export class SubmissionService {
    */
   static async getPendingSubmissions(
     userId: string,
-  ): Promise<BirthdaySubmission[]> {
+  ): Promise<(BirthdaySubmission & { sharingLink: any })[]> {
     try {
-      return await prisma.birthdaySubmission.findMany({
-        where: {
-          status: SubmissionStatus.PENDING,
+      // Get user's sharing links
+      const userSharingLinks = await db.query.sharingLinks.findMany({
+        where: eq(sharingLinks.userId, userId),
+        columns: { id: true },
+      });
+      const sharingLinkIds = userSharingLinks.map((link) => link.id);
+
+      if (sharingLinkIds.length === 0) {
+        return [];
+      }
+
+      // Get submissions for these sharing links
+      return await db.query.birthdaySubmissions.findMany({
+        where: and(
+          eq(birthdaySubmissions.status, "PENDING"),
+          inArray(birthdaySubmissions.sharingLinkId, sharingLinkIds),
+        ),
+        with: {
           sharingLink: {
-            userId,
-          },
-        },
-        include: {
-          sharingLink: {
-            select: {
+            columns: {
               description: true,
               createdAt: true,
             },
           },
         },
-        orderBy: {
-          createdAt: "desc",
-        },
+        orderBy: [desc(birthdaySubmissions.createdAt)],
       });
     } catch (error) {
       console.error("Error getting pending submissions:", error);
@@ -398,16 +417,14 @@ export class SubmissionService {
       const oneHourAgo = new Date();
       oneHourAgo.setHours(oneHourAgo.getHours() - 1);
 
-      const recentSubmissions = await prisma.birthdaySubmission.count({
-        where: {
-          sharingLinkId,
-          createdAt: {
-            gte: oneHourAgo,
-          },
-        },
+      const recentSubmissions = await db.query.birthdaySubmissions.findMany({
+        where: and(
+          eq(birthdaySubmissions.sharingLinkId, sharingLinkId),
+          gte(birthdaySubmissions.createdAt, oneHourAgo),
+        ),
       });
 
-      if (recentSubmissions >= this.MAX_SUBMISSIONS_PER_HOUR) {
+      if (recentSubmissions.length >= this.MAX_SUBMISSIONS_PER_HOUR) {
         return {
           allowed: false,
           reason:
@@ -523,16 +540,26 @@ export class SubmissionService {
       const cutoffDate = new Date();
       cutoffDate.setDate(cutoffDate.getDate() - daysOld);
 
-      const result = await prisma.birthdaySubmission.deleteMany({
-        where: {
-          status: SubmissionStatus.REJECTED,
-          createdAt: {
-            lt: cutoffDate,
-          },
-        },
+      const oldSubmissions = await db.query.birthdaySubmissions.findMany({
+        where: and(
+          eq(birthdaySubmissions.status, "REJECTED"),
+          lt(birthdaySubmissions.createdAt, cutoffDate),
+        ),
       });
 
-      return result.count;
+      if (oldSubmissions.length === 0) {
+        return 0;
+      }
+
+      let count = 0;
+      for (const submission of oldSubmissions) {
+        await db
+          .delete(birthdaySubmissions)
+          .where(eq(birthdaySubmissions.id, submission.id));
+        count++;
+      }
+
+      return count;
     } catch (error) {
       console.error("Error cleaning up old rejected submissions:", error);
       return 0;

@@ -1,8 +1,7 @@
-import { PrismaClient } from "@prisma/client";
 import { cookies } from "next/headers";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import { auth } from "../lib/auth";
-import prisma from "../lib/prisma";
+import db from "../lib/db";
 
 export type RequestLike = {
   headers?: Record<string, string | string[]>;
@@ -10,7 +9,7 @@ export type RequestLike = {
 };
 
 export type Context = {
-  prisma: PrismaClient;
+  db: typeof db;
   user?: NexusGenObjects["User"];
   req?: RequestLike;
 };
@@ -21,15 +20,15 @@ export async function createContext(req?: RequestLike): Promise<Context> {
       cookie: (await cookies()).toString(),
     }),
   });
-  if (!session) return { prisma, req };
+  if (!session) return { db, req };
   // if the user is not logged in, omit returning the user
-  if (!session) return { prisma, user: {}, req };
+  if (!session) return { db, user: {}, req };
 
   const user = session?.user as NexusGenObjects["User"];
 
   return {
     user,
-    prisma,
+    db,
     req,
   };
 }
