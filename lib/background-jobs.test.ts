@@ -21,28 +21,39 @@ vi.mock("./submission-service", () => ({
   },
 }));
 
-vi.mock("./prisma", () => ({
-  default: {
-    user: {
-      count: vi.fn(),
-      findMany: vi.fn(),
+vi.mock("./db", () => {
+  const mockDelete = vi.fn().mockReturnValue({
+    where: vi.fn(),
+  });
+  const mockExecute = vi.fn();
+  return {
+    default: {
+      delete: mockDelete,
+      execute: mockExecute,
+    query: {
+      users: {
+        findMany: vi.fn(),
+      },
+      birthdays: {
+        findMany: vi.fn(),
+      },
+      sharingLinks: {
+        findMany: vi.fn(),
+      },
+      birthdaySubmissions: {
+        findMany: vi.fn(),
+      },
+      notificationPreferences: {
+        findMany: vi.fn(),
+      },
     },
-    birthday: {
-      count: vi.fn(),
     },
-    sharingLink: {
-      count: vi.fn(),
-    },
-    birthdaySubmission: {
-      count: vi.fn(),
-      deleteMany: vi.fn(),
-    },
-    notificationPreference: {
-      deleteMany: vi.fn(),
-    },
-    $executeRaw: vi.fn(),
-  },
-}));
+  };
+});
+
+const mockDb = vi.mocked(await import("./db"), true).default;
+const mockDelete = mockDb.delete as ReturnType<typeof vi.fn>;
+const mockExecute = mockDb.execute as ReturnType<typeof vi.fn>;
 
 describe("BackgroundJobScheduler", () => {
   let scheduler: BackgroundJobScheduler;
@@ -298,23 +309,66 @@ describe("BackgroundJobScheduler", () => {
     });
 
     it("should clean up orphaned data every 12 hours", async () => {
-      const prisma = await import("./prisma");
       // Reset mocks for this test
       vi.clearAllMocks();
 
-      // Mock all three deleteMany calls that happen in cleanupOrphanedData
-      (
-        prisma.default.birthdaySubmission.deleteMany as unknown as {
-          mockResolvedValue: (value: { count: number }) => void;
-        }
-      ).mockResolvedValue({
-        count: 1,
-      });
-      (
-        prisma.default.notificationPreference.deleteMany as unknown as {
-          mockResolvedValue: (value: { count: number }) => void;
-        }
-      ).mockResolvedValue({ count: 0 });
+      // Mock findMany calls that happen in cleanupOrphanedData
+      mockDb.query.sharingLinks.findMany.mockResolvedValue([
+        {
+          id: "link-1",
+          token: "token-1",
+          userId: "user-1",
+          createdAt: new Date(),
+          expiresAt: new Date(),
+          isActive: true,
+          description: null,
+        },
+      ]);
+      mockDb.query.birthdaySubmissions.findMany
+        .mockResolvedValueOnce([
+          {
+            id: "sub-1",
+            sharingLinkId: "invalid-link",
+            name: "Test",
+            date: "1990-01-01",
+            createdAt: new Date(),
+            category: null,
+            notes: null,
+            submitterName: null,
+            submitterEmail: null,
+            relationship: null,
+            status: "PENDING",
+          }, // orphaned
+        ])
+        .mockResolvedValueOnce([
+          {
+            id: "sub-2",
+            status: "IMPORTED",
+            createdAt: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000),
+            sharingLinkId: "link-1",
+            name: "Test",
+            date: "1990-01-01",
+            category: null,
+            notes: null,
+            submitterName: null,
+            submitterEmail: null,
+            relationship: null,
+          },
+        ]); // old imported
+      mockDb.query.users.findMany.mockResolvedValue([
+        {
+          id: "user-1",
+          email: "user@example.com",
+          name: null,
+          emailVerified: false,
+          image: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ]);
+      mockDb.query.notificationPreferences.findMany.mockResolvedValue([]);
+
+      mockDelete().where.mockResolvedValue([{}]);
 
       scheduler.start();
 
@@ -323,38 +377,43 @@ describe("BackgroundJobScheduler", () => {
 
       // Wait for async operations to complete
       await vi.waitFor(() => {
-        expect(prisma.default.birthdaySubmission.deleteMany).toHaveBeenCalled();
+        expect(mockDb.query.birthdaySubmissions.findMany).toHaveBeenCalled();
       });
 
       // Check that the cleanup jobs were called
-      expect(prisma.default.birthdaySubmission.deleteMany).toHaveBeenCalled();
-      expect(
-        prisma.default.notificationPreference.deleteMany,
-      ).toHaveBeenCalled();
+      expect(mockDb.query.birthdaySubmissions.findMany).toHaveBeenCalled();
+      expect(mockDb.query.notificationPreferences.findMany).toHaveBeenCalled();
     });
 
     it("should perform database maintenance every 24 hours", async () => {
-      const prisma = await import("./prisma");
-      (
-        prisma.default.user.count as unknown as {
-          mockResolvedValue: (value: number) => void;
-        }
-      ).mockResolvedValue(10);
-      (
-        prisma.default.birthday.count as unknown as {
-          mockResolvedValue: (value: number) => void;
-        }
-      ).mockResolvedValue(50);
-      (
-        prisma.default.sharingLink.count as unknown as {
-          mockResolvedValue: (value: number) => void;
-        }
-      ).mockResolvedValue(5);
-      (
-        prisma.default.birthdaySubmission.count as unknown as {
-          mockResolvedValue: (value: number) => void;
-        }
-      ).mockResolvedValue(20);
+      mockDb.query.users.findMany.mockResolvedValue(
+        Array(10).fill({ id: "user" }),
+      );
+      mockDb.query.birthdays.findMany.mockResolvedValue(
+        Array(50).fill({ id: "bday" }),
+      );
+      mockDb.query.sharingLinks.findMany
+        .mockResolvedValueOnce(
+          Array(5).fill({
+            id: "link",
+            isActive: true,
+            expiresAt: new Date(Date.now() + 1000000),
+          }),
+        )
+        .mockResolvedValueOnce(
+          Array(5).fill({
+            id: "link",
+            isActive: true,
+            expiresAt: new Date(Date.now() + 1000000),
+          }),
+        );
+      mockDb.query.birthdaySubmissions.findMany
+        .mockResolvedValueOnce(Array(20).fill({ id: "sub" }))
+        .mockResolvedValueOnce(
+          Array(10).fill({ id: "sub", status: "PENDING" }),
+        );
+
+      mockExecute.mockResolvedValue({});
 
       scheduler.start();
 
@@ -432,50 +491,99 @@ describe("BackgroundJobScheduler", () => {
     });
 
     it("should run orphaned data cleanup job manually", async () => {
-      const prisma = await import("./prisma");
-      // Mock all three deleteMany calls that happen in cleanupOrphanedData
-      (
-        prisma.default.birthdaySubmission.deleteMany as unknown as {
-          mockResolvedValueOnce: (value: { count: number }) => void;
-        }
-      ).mockResolvedValueOnce({ count: 1 });
+      // Mock findMany calls that happen in cleanupOrphanedData
+      mockDb.query.sharingLinks.findMany.mockResolvedValue([
+        {
+          id: "link-1",
+          token: "token-1",
+          userId: "user-1",
+          createdAt: new Date(),
+          expiresAt: new Date(),
+          isActive: true,
+          description: null,
+        },
+      ]);
+      mockDb.query.birthdaySubmissions.findMany
+        .mockResolvedValueOnce([
+          {
+            id: "sub-1",
+            sharingLinkId: "invalid-link",
+            name: "Test",
+            date: "1990-01-01",
+            createdAt: new Date(),
+            category: null,
+            notes: null,
+            submitterName: null,
+            submitterEmail: null,
+            relationship: null,
+            status: "PENDING",
+          }, // orphaned
+        ])
+        .mockResolvedValueOnce([
+          {
+            id: "sub-2",
+            status: "IMPORTED",
+            createdAt: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000),
+            sharingLinkId: "link-1",
+            name: "Test",
+            date: "1990-01-01",
+            category: null,
+            notes: null,
+            submitterName: null,
+            submitterEmail: null,
+            relationship: null,
+          },
+        ]); // old imported
+      mockDb.query.users.findMany.mockResolvedValue([
+        {
+          id: "user-1",
+          email: "user@example.com",
+          name: null,
+          emailVerified: false,
+          image: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ]);
+      mockDb.query.notificationPreferences.findMany.mockResolvedValue([]);
 
-      (
-        prisma.default.notificationPreference.deleteMany as unknown as {
-          mockResolvedValue: (value: { count: number }) => void;
-        }
-      ).mockResolvedValue({ count: 0 });
+      mockDelete().where.mockResolvedValue([{}]);
 
       const metrics = await scheduler.runMaintenanceJob("orphaned-data");
 
-      expect(prisma.default.birthdaySubmission.deleteMany).toHaveBeenCalled();
+      expect(mockDb.query.birthdaySubmissions.findMany).toHaveBeenCalled();
       expect(metrics.jobName).toBe("orphaned-data-cleanup");
       expect(metrics.status).toBe("success");
       expect(metrics.itemsProcessed).toBe(2); // 1 from orphaned submissions + 0 from preferences + 1 from old imported
     });
 
     it("should run database maintenance job manually", async () => {
-      const prisma = await import("./prisma");
-      (
-        prisma.default.user.count as unknown as {
-          mockResolvedValue: (value: number) => void;
-        }
-      ).mockResolvedValue(5);
-      (
-        prisma.default.birthday.count as unknown as {
-          mockResolvedValue: (value: number) => void;
-        }
-      ).mockResolvedValue(25);
-      (
-        prisma.default.sharingLink.count as unknown as {
-          mockResolvedValue: (value: number) => void;
-        }
-      ).mockResolvedValue(3);
-      (
-        prisma.default.birthdaySubmission.count as unknown as {
-          mockResolvedValue: (value: number) => void;
-        }
-      ).mockResolvedValue(10);
+      mockDb.query.users.findMany.mockResolvedValue(
+        Array(5).fill({ id: "user" }),
+      );
+      mockDb.query.birthdays.findMany.mockResolvedValue(
+        Array(25).fill({ id: "bday" }),
+      );
+      mockDb.query.sharingLinks.findMany
+        .mockResolvedValueOnce(
+          Array(3).fill({
+            id: "link",
+            isActive: true,
+            expiresAt: new Date(Date.now() + 1000000),
+          }),
+        )
+        .mockResolvedValueOnce(
+          Array(3).fill({
+            id: "link",
+            isActive: true,
+            expiresAt: new Date(Date.now() + 1000000),
+          }),
+        );
+      mockDb.query.birthdaySubmissions.findMany
+        .mockResolvedValueOnce(Array(10).fill({ id: "sub" }))
+        .mockResolvedValueOnce(Array(5).fill({ id: "sub", status: "PENDING" }));
+
+      mockExecute.mockResolvedValue({});
 
       const metrics = await scheduler.runMaintenanceJob("database-maintenance");
 

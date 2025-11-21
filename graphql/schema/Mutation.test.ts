@@ -1,3 +1,13 @@
+import { SubmissionStatus } from "../../drizzle/schema";
+import db from "../../lib/db";
+import {
+  BirthdaySubmissionInput,
+  InputValidator,
+} from "../../lib/input-validator";
+import { RateLimitService } from "../../lib/rate-limiter";
+import { SharingService } from "../../lib/sharing-service";
+import { SubmissionService } from "../../lib/submission-service";
+import { Context } from "../context";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock all dependencies
@@ -5,31 +15,30 @@ vi.mock("../../lib/sharing-service");
 vi.mock("../../lib/input-validator");
 vi.mock("../../lib/rate-limiter");
 vi.mock("../../lib/submission-service");
-vi.mock("../../lib/prisma", () => ({
-  default: {
-    birthdaySubmission: {
-      create: vi.fn(),
-      findMany: vi.fn(),
-      findFirst: vi.fn(),
-      findUnique: vi.fn(),
-      count: vi.fn(),
+vi.mock("../../lib/db", () => {
+  const mockInsert = vi.fn().mockReturnValue({
+    values: vi.fn().mockReturnValue({
+      returning: vi.fn(),
+    }),
+  });
+  return {
+    default: {
+      insert: mockInsert,
+      query: {
+        birthdaySubmissions: {
+          findMany: vi.fn(),
+          findFirst: vi.fn(),
+        },
+        birthdays: {
+          findFirst: vi.fn(),
+        },
+      },
     },
-    birthday: {
-      findUnique: vi.fn(),
-    },
-  },
-}));
+  };
+});
 
-import {
-  BirthdaySubmissionInput,
-  InputValidator,
-} from "../../lib/input-validator";
-import prisma from "../../lib/prisma";
-import { RateLimitService } from "../../lib/rate-limiter";
-import { SharingService } from "../../lib/sharing-service";
-import { SubmissionService } from "../../lib/submission-service";
-import { SubmissionStatus } from "@prisma/client";
-import { Context } from "../context";
+const mockDb = vi.mocked(await import("../../lib/db"), true).default;
+const mockInsert = mockDb.insert as ReturnType<typeof vi.fn>;
 
 // Mock the mutation resolver logic
 const mockSubmitBirthdayResolver = async (
@@ -97,25 +106,40 @@ const mockSubmitBirthdayResolver = async (
     console.warn(`Suspicious activity detected: ${suspiciousCheck.reason}`);
   }
 
-  // 6. Create the birthday submission with sanitized data
-  return ctx.prisma.birthdaySubmission.create({
-    data: {
-      sharingLinkId: sharingLink.id,
+  // 6. Create the birthday submission with sanitized data using SubmissionService
+  const { SubmissionService } = await import("../../lib/submission-service");
+  const result = await SubmissionService.processSubmission(
+    sanitizedData.token,
+    {
       name: sanitizedData.name,
       date: sanitizedData.date,
-      category: sanitizedData.category,
-      notes: sanitizedData.notes,
-      submitterName: sanitizedData.submitterName,
-      submitterEmail: sanitizedData.submitterEmail,
-      relationship: sanitizedData.relationship,
-      status: SubmissionStatus.PENDING,
+      category: sanitizedData.category || undefined,
+      notes: sanitizedData.notes || undefined,
+      submitterName: sanitizedData.submitterName || undefined,
+      submitterEmail: sanitizedData.submitterEmail || undefined,
+      relationship: sanitizedData.relationship || undefined,
     },
+  );
+
+  if (!result.success) {
+    throw new Error(result.errors?.join(", ") || "Failed to create submission");
+  }
+
+  // Get the created submission
+  const submission = await ctx.db.query.birthdaySubmissions.findFirst({
+    where: (submissions, { eq }) => eq(submissions.id, result.submissionId!),
   });
+
+  if (!submission) {
+    throw new Error("Submission not found");
+  }
+
+  return submission;
 };
 
 describe("submitBirthday GraphQL Mutation", () => {
   const mockContext = {
-    prisma,
+    db,
     user: {},
   };
 
@@ -144,7 +168,7 @@ describe("submitBirthday GraphQL Mutation", () => {
       submitterName: "Jane Doe",
       submitterEmail: "jane@example.com",
       relationship: "Friend",
-      status: SubmissionStatus.PENDING,
+      status: "PENDING" as SubmissionStatus,
       createdAt: new Date(),
     };
 
@@ -180,15 +204,22 @@ describe("submitBirthday GraphQL Mutation", () => {
       allowed: true,
     });
 
-    vi.mocked(SharingService.validateSharingLink).mockResolvedValue(
-      mockSharingLink,
-    );
+    vi.mocked(SharingService.validateSharingLink).mockResolvedValue({
+      ...mockSharingLink,
+      user: { id: "user-1" },
+    });
 
     vi.mocked(RateLimitService.detectSuspiciousActivity).mockResolvedValue({
       suspicious: false,
     });
 
-    vi.mocked(prisma.birthdaySubmission.create).mockResolvedValue(
+    const { SubmissionService } = await import("../../lib/submission-service");
+    vi.mocked(SubmissionService.processSubmission).mockResolvedValue({
+      success: true,
+      submissionId: "submission-1",
+    });
+
+    mockDb.query.birthdaySubmissions.findFirst.mockResolvedValue(
       mockSubmission,
     );
 
@@ -210,19 +241,18 @@ describe("submitBirthday GraphQL Mutation", () => {
     expect(SharingService.validateSharingLink).toHaveBeenCalledWith(
       "valid-token",
     );
-    expect(prisma.birthdaySubmission.create).toHaveBeenCalledWith({
-      data: {
-        sharingLinkId: "link-1",
+    expect(SubmissionService.processSubmission).toHaveBeenCalledWith(
+      "valid-token",
+      {
         name: "John Doe",
         date: "1990-05-15",
-        category: null,
-        notes: null,
+        category: undefined,
+        notes: undefined,
         submitterName: "Jane Doe",
         submitterEmail: "jane@example.com",
         relationship: "Friend",
-        status: SubmissionStatus.PENDING,
       },
-    });
+    );
   });
 
   it("should reject submission with invalid data", async () => {
@@ -365,17 +395,20 @@ describe("submitBirthday GraphQL Mutation", () => {
       allowed: true,
     });
 
-    vi.mocked(SharingService.validateSharingLink).mockResolvedValue(
-      mockSharingLink,
-    );
+    vi.mocked(SharingService.validateSharingLink).mockResolvedValue({
+      ...mockSharingLink,
+      user: { id: "user-1" },
+    });
 
     vi.mocked(RateLimitService.detectSuspiciousActivity).mockResolvedValue({
       suspicious: false,
     });
 
-    vi.mocked(prisma.birthdaySubmission.create).mockRejectedValue(
-      new Error("Database connection failed"),
-    );
+    const { SubmissionService } = await import("../../lib/submission-service");
+    vi.mocked(SubmissionService.processSubmission).mockResolvedValue({
+      success: false,
+      errors: ["Database connection failed"],
+    });
 
     const args = {
       token: "valid-token",
@@ -391,7 +424,7 @@ describe("submitBirthday GraphQL Mutation", () => {
 
 describe("Submission Management GraphQL Operations", () => {
   const mockContext = {
-    prisma,
+    db,
     user: { id: "user-1" },
   };
 
@@ -408,35 +441,15 @@ describe("Submission Management GraphQL Operations", () => {
       const { page = 1, limit = 10 } = args;
       const skip = (page - 1) * limit;
 
-      const [submissions, totalCount] = await Promise.all([
-        ctx.prisma.birthdaySubmission.findMany({
-          where: {
-            sharingLink: {
-              userId: ctx.user?.id as string,
-            },
-            status: SubmissionStatus.PENDING,
-          },
-          orderBy: { createdAt: "desc" },
-          skip,
-          take: limit,
-          include: {
-            sharingLink: {
-              select: {
-                description: true,
-                createdAt: true,
-              },
-            },
-          },
-        }),
-        ctx.prisma.birthdaySubmission.count({
-          where: {
-            sharingLink: {
-              userId: ctx.user?.id as string,
-            },
-            status: SubmissionStatus.PENDING,
-          },
-        }),
-      ]);
+      const { SubmissionService } = await import(
+        "../../lib/submission-service"
+      );
+      const allSubmissions = await SubmissionService.getPendingSubmissions(
+        ctx.user?.id as string,
+      );
+
+      const submissions = allSubmissions.slice(skip, skip + limit);
+      const totalCount = allSubmissions.length;
 
       return {
         submissions,
@@ -449,41 +462,30 @@ describe("Submission Management GraphQL Operations", () => {
     };
 
     it("should return paginated pending submissions", async () => {
-      const mockSubmissions = [
-        {
-          id: "sub-1",
-          name: "John Doe",
-          date: "1990-05-15",
-          status: SubmissionStatus.PENDING,
+      // Mock resolver returns paginated results with totalCount
+      const allSubmissions = Array(15)
+        .fill(null)
+        .map((_, i) => ({
+          id: `sub-${i + 1}`,
+          name: "Test",
+          date: "1990-01-01",
+          status: "PENDING" as SubmissionStatus,
           createdAt: new Date(),
-          sharingLink: { description: "Family", createdAt: new Date() },
+          sharingLink: { description: "Test", createdAt: new Date() },
           sharingLinkId: "link-1",
           category: null,
           notes: null,
           submitterName: null,
           submitterEmail: null,
           relationship: null,
-        },
-        {
-          id: "sub-2",
-          name: "Jane Smith",
-          date: "1985-12-20",
-          status: SubmissionStatus.PENDING,
-          createdAt: new Date(),
-          sharingLink: { description: "Friends", createdAt: new Date() },
-          sharingLinkId: "link-1",
-          category: null,
-          notes: null,
-          submitterName: null,
-          submitterEmail: null,
-          relationship: null,
-        },
-      ];
+        }));
 
-      vi.mocked(prisma.birthdaySubmission.findMany).mockResolvedValue(
-        mockSubmissions,
+      const { SubmissionService } = await import(
+        "../../lib/submission-service"
       );
-      vi.mocked(prisma.birthdaySubmission.count).mockResolvedValue(15);
+      vi.mocked(SubmissionService.getPendingSubmissions).mockResolvedValue(
+        allSubmissions,
+      );
 
       const result = await mockGetPendingSubmissionsResolver(
         null,
@@ -491,37 +493,38 @@ describe("Submission Management GraphQL Operations", () => {
         mockContext,
       );
 
-      expect(result).toEqual({
-        submissions: mockSubmissions,
-        totalCount: 15,
-        hasNextPage: true,
-        hasPreviousPage: false,
-        currentPage: 1,
-        totalPages: 2,
-      });
-
-      expect(prisma.birthdaySubmission.findMany).toHaveBeenCalledWith({
-        where: {
-          sharingLink: { userId: "user-1" },
-          status: SubmissionStatus.PENDING,
-        },
-        orderBy: { createdAt: "desc" },
-        skip: 0,
-        take: 10,
-        include: {
-          sharingLink: {
-            select: {
-              description: true,
-              createdAt: true,
-            },
-          },
-        },
-      });
+      expect(result.submissions).toHaveLength(10);
+      expect(result.totalCount).toBe(15);
+      expect(result.hasNextPage).toBe(true);
+      expect(result.hasPreviousPage).toBe(false);
+      expect(result.currentPage).toBe(1);
+      expect(result.totalPages).toBe(2);
+      expect(SubmissionService.getPendingSubmissions).toHaveBeenCalledWith(
+        "user-1",
+      );
     });
 
     it("should handle pagination correctly for second page", async () => {
-      vi.mocked(prisma.birthdaySubmission.findMany).mockResolvedValue([]);
-      vi.mocked(prisma.birthdaySubmission.count).mockResolvedValue(15);
+      const { SubmissionService } = await import(
+        "../../lib/submission-service"
+      );
+      const allSubmissions = Array(15).fill({
+        id: "sub",
+        name: "Test",
+        date: "1990-01-01",
+        status: "PENDING" as SubmissionStatus,
+        createdAt: new Date(),
+        sharingLink: { description: "Test", createdAt: new Date() },
+        sharingLinkId: "link-1",
+        category: null,
+        notes: null,
+        submitterName: null,
+        submitterEmail: null,
+        relationship: null,
+      });
+      vi.mocked(SubmissionService.getPendingSubmissions).mockResolvedValue(
+        allSubmissions,
+      );
 
       const result = await mockGetPendingSubmissionsResolver(
         null,
@@ -532,11 +535,8 @@ describe("Submission Management GraphQL Operations", () => {
       expect(result.currentPage).toBe(2);
       expect(result.hasNextPage).toBe(false);
       expect(result.hasPreviousPage).toBe(true);
-      expect(prisma.birthdaySubmission.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          skip: 10,
-          take: 10,
-        }),
+      expect(SubmissionService.getPendingSubmissions).toHaveBeenCalledWith(
+        "user-1",
       );
     });
   });
@@ -562,8 +562,8 @@ describe("Submission Management GraphQL Operations", () => {
         );
       }
 
-      return ctx.prisma.birthday.findUnique({
-        where: { id: result.birthdayId },
+      return ctx.db.query.birthdays.findFirst({
+        where: (birthdays, { eq }) => eq(birthdays.id, result.birthdayId!),
       });
     };
 
@@ -588,7 +588,7 @@ describe("Submission Management GraphQL Operations", () => {
         birthdayId: "birthday-1",
       });
 
-      vi.mocked(prisma.birthday.findUnique).mockResolvedValue(mockBirthday);
+      mockDb.query.birthdays.findFirst.mockResolvedValue(mockBirthday);
 
       const result = await mockImportSubmissionResolver(
         null,
@@ -640,8 +640,8 @@ describe("Submission Management GraphQL Operations", () => {
         );
       }
 
-      return ctx.prisma.birthdaySubmission.findUnique({
-        where: { id: args.submissionId },
+      return ctx.db.query.birthdaySubmissions.findFirst({
+        where: (submissions, { eq }) => eq(submissions.id, args.submissionId),
       });
     };
 
@@ -649,7 +649,7 @@ describe("Submission Management GraphQL Operations", () => {
       const mockSubmission = {
         id: "sub-1",
         name: "John Doe",
-        status: SubmissionStatus.REJECTED,
+        status: "REJECTED" as SubmissionStatus,
         sharingLinkId: "link-1",
         category: null,
         date: "1990-05-15",
@@ -666,7 +666,7 @@ describe("Submission Management GraphQL Operations", () => {
         success: true,
       });
 
-      vi.mocked(prisma.birthdaySubmission.findUnique).mockResolvedValue(
+      mockDb.query.birthdaySubmissions.findFirst.mockResolvedValue(
         mockSubmission,
       );
 
@@ -847,18 +847,11 @@ describe("Submission Management GraphQL Operations", () => {
       args: { submissionId: string },
       ctx: Context,
     ) => {
-      const { SubmissionService } = await import(
-        "../../lib/submission-service"
+      // Get the submission by finding it in pending submissions
+      const allPending = await SubmissionService.getPendingSubmissions(
+        ctx.user?.id as string,
       );
-
-      const submission = await ctx.prisma.birthdaySubmission.findFirst({
-        where: {
-          id: args.submissionId,
-          sharingLink: {
-            userId: ctx.user?.id as string,
-          },
-        },
-      });
+      const submission = allPending.find((s) => s.id === args.submissionId);
 
       if (!submission) {
         throw new Error("Submission not found");
@@ -891,7 +884,7 @@ describe("Submission Management GraphQL Operations", () => {
         submitterEmail: null,
         relationship: null,
         sharingLinkId: "link-1",
-        status: SubmissionStatus.PENDING,
+        status: "PENDING" as SubmissionStatus,
         createdAt: new Date(),
       };
 
@@ -908,9 +901,18 @@ describe("Submission Management GraphQL Operations", () => {
         ],
       };
 
-      vi.mocked(prisma.birthdaySubmission.findFirst).mockResolvedValue(
-        mockSubmission,
+      const { SubmissionService } = await import(
+        "../../lib/submission-service"
       );
+      vi.mocked(SubmissionService.getPendingSubmissions).mockResolvedValue([
+        {
+          ...mockSubmission,
+          sharingLink: {
+            id: "link-1",
+            description: null,
+          },
+        },
+      ]);
       vi.mocked(SubmissionService.detectDuplicates).mockResolvedValue(
         mockDuplicateResult,
       );
@@ -937,7 +939,10 @@ describe("Submission Management GraphQL Operations", () => {
     });
 
     it("should throw error when submission not found", async () => {
-      vi.mocked(prisma.birthdaySubmission.findFirst).mockResolvedValue(null);
+      const { SubmissionService } = await import(
+        "../../lib/submission-service"
+      );
+      vi.mocked(SubmissionService.getPendingSubmissions).mockResolvedValue([]);
 
       await expect(
         mockGetDuplicatesResolver(
@@ -959,7 +964,7 @@ describe("Submission Management GraphQL Operations", () => {
         submitterEmail: null,
         relationship: null,
         sharingLinkId: "link-1",
-        status: SubmissionStatus.PENDING,
+        status: "PENDING" as SubmissionStatus,
         createdAt: new Date(),
         importSource: null,
         parent: null,
@@ -970,9 +975,18 @@ describe("Submission Management GraphQL Operations", () => {
         matches: [],
       };
 
-      vi.mocked(prisma.birthdaySubmission.findFirst).mockResolvedValue(
-        mockSubmission,
+      const { SubmissionService } = await import(
+        "../../lib/submission-service"
       );
+      vi.mocked(SubmissionService.getPendingSubmissions).mockResolvedValue([
+        {
+          ...mockSubmission,
+          sharingLink: {
+            id: "link-1",
+            description: null,
+          },
+        },
+      ]);
       vi.mocked(SubmissionService.detectDuplicates).mockResolvedValue(
         mockDuplicateResult,
       );

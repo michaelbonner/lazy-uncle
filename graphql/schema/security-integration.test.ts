@@ -1,14 +1,14 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { RateLimitService } from "../../lib/rate-limiter";
 import { SecurityMiddleware } from "../../lib/security-middleware";
 import { SharingService } from "../../lib/sharing-service";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock all dependencies
 vi.mock("../../lib/security-middleware");
 vi.mock("../../lib/rate-limiter");
 vi.mock("../../lib/sharing-service");
 vi.mock("../../lib/submission-service");
-vi.mock("../../lib/prisma");
+vi.mock("../../lib/db");
 
 describe("GraphQL Security Integration", () => {
   beforeEach(() => {

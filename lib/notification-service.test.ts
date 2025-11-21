@@ -2,24 +2,43 @@ import {
   NotificationService,
   SubmissionNotificationData,
 } from "./notification-service";
-import prisma from "./prisma";
 import "@testing-library/jest-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-// Mock prisma
-vi.mock("./prisma", () => ({
-  default: {
-    notificationPreference: {
-      findUnique: vi.fn(),
-      upsert: vi.fn(),
+// Mock db
+vi.mock("./db", () => {
+  const mockInsert = vi.fn().mockReturnValue({
+    values: vi.fn().mockReturnValue({
+      returning: vi.fn(),
+      onConflictDoUpdate: vi.fn().mockReturnValue({
+        returning: vi.fn(),
+      }),
+    }),
+  });
+  const mockUpdate = vi.fn().mockReturnValue({
+    set: vi.fn().mockReturnValue({
+      where: vi.fn(),
+    }),
+  });
+  return {
+    default: {
+      insert: mockInsert,
+      update: mockUpdate,
+    query: {
+      notificationPreferences: {
+        findFirst: vi.fn(),
+      },
+      users: {
+        findFirst: vi.fn(),
+      },
     },
-    user: {
-      findUnique: vi.fn(),
     },
-  },
-}));
+  };
+});
 
-const mockPrisma = vi.mocked(await import("./prisma"), true).default;
+const mockDb = vi.mocked(await import("./db"), true).default;
+const mockInsert = mockDb.insert as ReturnType<typeof vi.fn>;
+const mockUpdate = mockDb.update as ReturnType<typeof vi.fn>;
 
 describe("NotificationService", () => {
   let notificationService: NotificationService;
@@ -45,7 +64,7 @@ describe("NotificationService", () => {
         userId: "user123",
       };
 
-      mockPrisma.notificationPreference.findUnique.mockResolvedValue(
+      mockDb.query.notificationPreferences.findFirst.mockResolvedValue(
         mockPreferences,
       );
 
@@ -56,15 +75,13 @@ describe("NotificationService", () => {
         emailNotifications: true,
         summaryNotifications: false,
       });
-      expect(mockPrisma.notificationPreference.findUnique).toHaveBeenCalledWith(
-        {
-          where: { userId: "user123" },
-        },
-      );
+      expect(mockDb.query.notificationPreferences.findFirst).toHaveBeenCalled();
     });
 
     it("should return default preferences when none exist", async () => {
-      mockPrisma.notificationPreference.findUnique.mockResolvedValue(null);
+      mockDb.query.notificationPreferences.findFirst.mockResolvedValue(
+        undefined,
+      );
 
       const result =
         await notificationService.getUserNotificationPreferences("user123");
@@ -76,7 +93,7 @@ describe("NotificationService", () => {
     });
 
     it("should return default preferences on database error", async () => {
-      mockPrisma.notificationPreference.findUnique.mockRejectedValue(
+      mockDb.query.notificationPreferences.findFirst.mockRejectedValue(
         new Error("DB Error"),
       );
 
@@ -97,59 +114,76 @@ describe("NotificationService", () => {
         summaryNotifications: true,
       };
 
-      mockPrisma.notificationPreference.upsert.mockResolvedValue({
-        id: "pref-1",
-        userId: "user123",
-        emailNotifications: false,
-        summaryNotifications: true,
-      });
+      mockDb.query.notificationPreferences.findFirst.mockResolvedValue(
+        undefined,
+      );
+      mockInsert()
+        .values()
+        .returning.mockResolvedValue([
+          {
+            id: "pref-1",
+            userId: "user123",
+            emailNotifications: false,
+            summaryNotifications: true,
+          },
+        ]);
 
       await notificationService.updateNotificationPreferences(
         "user123",
         preferences,
       );
 
-      expect(prisma.notificationPreference.upsert).toHaveBeenCalledWith({
-        where: { userId: "user123" },
-        update: preferences,
-        create: {
+      expect(mockDb.query.notificationPreferences.findFirst).toHaveBeenCalled();
+      expect(mockInsert).toHaveBeenCalled();
+      expect(mockInsert().values).toHaveBeenCalledWith(
+        expect.objectContaining({
           userId: "user123",
           emailNotifications: false,
           summaryNotifications: true,
-        },
-      });
+        }),
+      );
     });
 
     it("should create preferences with defaults for missing values", async () => {
       const preferences = { emailNotifications: false };
 
-      mockPrisma.notificationPreference.upsert.mockResolvedValue({
-        id: "pref-1",
-        userId: "user123",
-        emailNotifications: false,
-        summaryNotifications: false,
-      });
+      mockDb.query.notificationPreferences.findFirst.mockResolvedValue(
+        undefined,
+      );
+      mockInsert()
+        .values()
+        .returning.mockResolvedValue([
+          {
+            id: "pref-1",
+            userId: "user123",
+            emailNotifications: false,
+            summaryNotifications: false,
+          },
+        ]);
 
       await notificationService.updateNotificationPreferences(
         "user123",
         preferences,
       );
 
-      expect(prisma.notificationPreference.upsert).toHaveBeenCalledWith({
-        where: { userId: "user123" },
-        update: preferences,
-        create: {
+      expect(mockDb.query.notificationPreferences.findFirst).toHaveBeenCalled();
+      expect(mockInsert).toHaveBeenCalled();
+      expect(mockInsert().values).toHaveBeenCalledWith(
+        expect.objectContaining({
           userId: "user123",
           emailNotifications: false,
           summaryNotifications: false,
-        },
-      });
+        }),
+      );
     });
 
     it("should throw error on database failure", async () => {
-      mockPrisma.notificationPreference.upsert.mockRejectedValue(
-        new Error("DB Error"),
+      mockDb.query.notificationPreferences.findFirst.mockResolvedValue(
+        undefined,
       );
+      // Set up the mock chain to reject - values() should return a promise that rejects
+      const mockValues = vi.fn().mockRejectedValue(new Error("DB Error"));
+      mockInsert.mockReturnValueOnce({ values: mockValues });
 
       await expect(
         notificationService.updateNotificationPreferences("user123", {}),
@@ -174,14 +208,14 @@ describe("NotificationService", () => {
     });
 
     it("should send notification when preferences allow", async () => {
-      mockPrisma.notificationPreference.findUnique.mockResolvedValue({
+      mockDb.query.notificationPreferences.findFirst.mockResolvedValue({
         emailNotifications: true,
         summaryNotifications: false,
         id: "pref-1",
         userId: "user123",
       });
 
-      mockPrisma.user.findUnique.mockResolvedValue({
+      mockDb.query.users.findFirst.mockResolvedValue({
         email: "user@example.com",
         name: "Test User",
         id: "user123",
@@ -204,7 +238,7 @@ describe("NotificationService", () => {
     });
 
     it("should not send notification when email notifications are disabled", async () => {
-      mockPrisma.notificationPreference.findUnique.mockResolvedValue({
+      mockDb.query.notificationPreferences.findFirst.mockResolvedValue({
         emailNotifications: false,
         summaryNotifications: false,
         id: "pref-1",
@@ -222,14 +256,14 @@ describe("NotificationService", () => {
     });
 
     it("should handle missing user email gracefully", async () => {
-      mockPrisma.notificationPreference.findUnique.mockResolvedValue({
+      mockDb.query.notificationPreferences.findFirst.mockResolvedValue({
         emailNotifications: true,
         summaryNotifications: false,
         id: "pref-1",
         userId: "user123",
       });
 
-      mockPrisma.user.findUnique.mockResolvedValue(null);
+      mockDb.query.users.findFirst.mockResolvedValue(undefined);
 
       await notificationService.sendSubmissionNotification(
         "user123",
@@ -242,14 +276,14 @@ describe("NotificationService", () => {
     });
 
     it("should generate correct email content with all fields", async () => {
-      mockPrisma.notificationPreference.findUnique.mockResolvedValue({
+      mockDb.query.notificationPreferences.findFirst.mockResolvedValue({
         emailNotifications: true,
         summaryNotifications: false,
         id: "pref-1",
         userId: "user123",
       });
 
-      mockPrisma.user.findUnique.mockResolvedValue({
+      mockDb.query.users.findFirst.mockResolvedValue({
         email: "user@example.com",
         name: "Test User",
         id: "user123",
@@ -267,7 +301,7 @@ describe("NotificationService", () => {
       // Check that the console output contains expected content
       const logCalls = consoleSpy.mock.calls;
       const textContent = logCalls.find(
-        (call) =>
+        (call: unknown[]) =>
           typeof call[0] === "string" && call[0].includes("Hi Test User"),
       );
 
@@ -281,14 +315,14 @@ describe("NotificationService", () => {
         birthdayDate: "1990-05-15",
       };
 
-      mockPrisma.notificationPreference.findUnique.mockResolvedValue({
+      mockDb.query.notificationPreferences.findFirst.mockResolvedValue({
         emailNotifications: true,
         summaryNotifications: false,
         id: "pref-1",
         userId: "user123",
       });
 
-      mockPrisma.user.findUnique.mockResolvedValue({
+      mockDb.query.users.findFirst.mockResolvedValue({
         email: "user@example.com",
         name: null,
         id: "user123",
@@ -305,7 +339,8 @@ describe("NotificationService", () => {
 
       const logCalls = consoleSpy.mock.calls;
       const textContent = logCalls.find(
-        (call) => typeof call[0] === "string" && call[0].includes("Hello,"),
+        (call: unknown[]) =>
+          typeof call[0] === "string" && call[0].includes("Hello,"),
       );
 
       expect(textContent).toBeTruthy();
@@ -333,14 +368,14 @@ describe("NotificationService", () => {
     });
 
     it("should send summary notification when preferences allow", async () => {
-      mockPrisma.notificationPreference.findUnique.mockResolvedValue({
+      mockDb.query.notificationPreferences.findFirst.mockResolvedValue({
         emailNotifications: true,
         summaryNotifications: true,
         id: "pref-1",
         userId: "user123",
       });
 
-      mockPrisma.user.findUnique.mockResolvedValue({
+      mockDb.query.users.findFirst.mockResolvedValue({
         email: "user@example.com",
         name: "Test User",
         id: "user123",
@@ -363,7 +398,7 @@ describe("NotificationService", () => {
     });
 
     it("should not send when email notifications are disabled", async () => {
-      mockPrisma.notificationPreference.findUnique.mockResolvedValue({
+      mockDb.query.notificationPreferences.findFirst.mockResolvedValue({
         emailNotifications: false,
         summaryNotifications: true,
         id: "pref-1",
@@ -379,7 +414,7 @@ describe("NotificationService", () => {
     });
 
     it("should not send when summary notifications are disabled", async () => {
-      mockPrisma.notificationPreference.findUnique.mockResolvedValue({
+      mockDb.query.notificationPreferences.findFirst.mockResolvedValue({
         emailNotifications: true,
         summaryNotifications: false,
         id: "pref-1",
@@ -395,14 +430,14 @@ describe("NotificationService", () => {
     });
 
     it("should include all submissions in the summary", async () => {
-      mockPrisma.notificationPreference.findUnique.mockResolvedValue({
+      mockDb.query.notificationPreferences.findFirst.mockResolvedValue({
         emailNotifications: true,
         summaryNotifications: true,
         id: "pref-1",
         userId: "user123",
       });
 
-      mockPrisma.user.findUnique.mockResolvedValue({
+      mockDb.query.users.findFirst.mockResolvedValue({
         email: "user@example.com",
         name: "Test User",
         id: "user123",
@@ -419,7 +454,7 @@ describe("NotificationService", () => {
 
       const logCalls = consoleSpy.mock.calls;
       const textContent = logCalls.find(
-        (call) =>
+        (call: unknown[]) =>
           typeof call[0] === "string" &&
           call[0].includes("Jane Smith") &&
           call[0].includes("Bob Wilson"),
@@ -437,14 +472,14 @@ describe("NotificationService", () => {
         birthdayDate: "1990-05-15",
       };
 
-      mockPrisma.notificationPreference.findUnique.mockResolvedValue({
+      mockDb.query.notificationPreferences.findFirst.mockResolvedValue({
         emailNotifications: true,
         summaryNotifications: false,
         id: "pref-1",
         userId: "user123",
       });
 
-      mockPrisma.user.findUnique.mockResolvedValue({
+      mockDb.query.users.findFirst.mockResolvedValue({
         email: "user@example.com",
         name: "Test User",
         id: "user123",
@@ -472,14 +507,14 @@ describe("NotificationService", () => {
         },
       ];
 
-      mockPrisma.notificationPreference.findUnique.mockResolvedValue({
+      mockDb.query.notificationPreferences.findFirst.mockResolvedValue({
         emailNotifications: true,
         summaryNotifications: true,
         id: "pref-1",
         userId: "user123",
       });
 
-      mockPrisma.user.findUnique.mockResolvedValue({
+      mockDb.query.users.findFirst.mockResolvedValue({
         email: "user@example.com",
         name: "Test User",
         id: "user123",

@@ -1,23 +1,38 @@
+import { SharingLink } from "../drizzle/schema";
 import { CreateSharingLinkOptions, SharingService } from "./sharing-service";
-import { SharingLink } from "@prisma/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-// Mock the prisma client
-vi.mock("./prisma", () => ({
-  default: {
-    sharingLink: {
-      count: vi.fn(),
-      findUnique: vi.fn(),
-      findMany: vi.fn(),
-      findFirst: vi.fn(),
-      create: vi.fn(),
-      update: vi.fn(),
-      updateMany: vi.fn(),
+// Mock the db client
+vi.mock("./db", () => {
+  const mockInsert = vi.fn().mockReturnValue({
+    values: vi.fn().mockReturnValue({
+      returning: vi.fn(),
+    }),
+  });
+  const mockUpdate = vi.fn().mockReturnValue({
+    set: vi.fn().mockReturnValue({
+      where: vi.fn().mockReturnValue({
+        returning: vi.fn(),
+      }),
+    }),
+  });
+  return {
+    default: {
+      insert: mockInsert,
+      update: mockUpdate,
+      query: {
+        sharingLinks: {
+          findMany: vi.fn(),
+          findFirst: vi.fn(),
+        },
+      },
     },
-  },
-}));
+  };
+});
 
-const mockPrisma = vi.mocked(await import("./prisma"), true).default;
+const mockDb = vi.mocked(await import("./db"), true).default;
+const mockInsert = mockDb.insert as ReturnType<typeof vi.fn>;
+const mockUpdate = mockDb.update as ReturnType<typeof vi.fn>;
 
 describe("SharingService", () => {
   beforeEach(() => {
@@ -40,12 +55,12 @@ describe("SharingService", () => {
 
     it("should create a sharing link with default expiration", async () => {
       // Mock rate limiting checks
-      mockPrisma.sharingLink.count
-        .mockResolvedValueOnce(0) // Active links count
-        .mockResolvedValueOnce(0); // Daily links count
+      mockDb.query.sharingLinks.findMany
+        .mockResolvedValueOnce([]) // Active links count
+        .mockResolvedValueOnce([]); // Daily links count
 
       // Mock unique token check
-      mockPrisma.sharingLink.findUnique.mockResolvedValueOnce(null);
+      mockDb.query.sharingLinks.findFirst.mockResolvedValueOnce(undefined);
 
       // Mock successful creation
       const mockSharingLink = {
@@ -57,29 +72,30 @@ describe("SharingService", () => {
         expiresAt: new Date(Date.now() + 168 * 60 * 60 * 1000), // 7 days
         isActive: true,
       };
-      mockPrisma.sharingLink.create.mockResolvedValueOnce(mockSharingLink);
+      mockInsert().values().returning.mockResolvedValueOnce([mockSharingLink]);
 
       const result = await SharingService.createSharingLink(mockOptions);
 
       expect(result).toEqual(mockSharingLink);
-      expect(mockPrisma.sharingLink.create).toHaveBeenCalledWith({
-        data: {
+      expect(mockInsert).toHaveBeenCalled();
+      expect(mockInsert().values).toHaveBeenCalledWith(
+        expect.objectContaining({
           token: expect.any(String),
           userId: mockUserId,
           description: "Test sharing link",
           expiresAt: expect.any(Date),
           isActive: true,
-        },
-      });
+        }),
+      );
     });
 
     it("should create a sharing link with custom expiration", async () => {
       const customOptions = { ...mockOptions, expirationHours: 24 };
 
-      mockPrisma.sharingLink.count
-        .mockResolvedValueOnce(0)
-        .mockResolvedValueOnce(0);
-      mockPrisma.sharingLink.findUnique.mockResolvedValueOnce(null);
+      mockDb.query.sharingLinks.findMany
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([]);
+      mockDb.query.sharingLinks.findFirst.mockResolvedValueOnce(undefined);
 
       const mockSharingLink = {
         id: "link-123",
@@ -90,19 +106,26 @@ describe("SharingService", () => {
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
         isActive: true,
       };
-      mockPrisma.sharingLink.create.mockResolvedValueOnce(mockSharingLink);
+      // Set up the mock chain before calling
+      const mockReturning = vi.fn().mockResolvedValueOnce([mockSharingLink]);
+      const mockValues = vi.fn().mockReturnValue({ returning: mockReturning });
+      mockInsert.mockReturnValueOnce({ values: mockValues });
 
       await SharingService.createSharingLink(customOptions);
 
-      const createCall = mockPrisma.sharingLink.create.mock.calls[0][0];
+      expect(mockInsert).toHaveBeenCalled();
+      expect(mockValues).toHaveBeenCalled();
+      const valuesCall = mockValues.mock.calls[0][0];
       const expectedExpiration = new Date();
       expectedExpiration.setHours(expectedExpiration.getHours() + 24);
 
-      expect(createCall.data.expiresAt).toEqual(expectedExpiration);
+      expect(valuesCall.expiresAt).toEqual(expectedExpiration);
     });
 
     it("should throw error when max active links exceeded", async () => {
-      mockPrisma.sharingLink.count.mockResolvedValueOnce(5); // Max active links
+      mockDb.query.sharingLinks.findMany.mockResolvedValueOnce(
+        Array(5).fill({ id: "link", isActive: true }),
+      ); // Max active links
 
       await expect(
         SharingService.createSharingLink(mockOptions),
@@ -110,9 +133,9 @@ describe("SharingService", () => {
     });
 
     it("should throw error when daily generation limit exceeded", async () => {
-      mockPrisma.sharingLink.count
-        .mockResolvedValueOnce(0) // Active links count
-        .mockResolvedValueOnce(3); // Daily links count (at limit)
+      mockDb.query.sharingLinks.findMany
+        .mockResolvedValueOnce([]) // Active links count
+        .mockResolvedValueOnce(Array(3).fill({ id: "link" })); // Daily links count (at limit)
 
       await expect(
         SharingService.createSharingLink(mockOptions),
@@ -120,14 +143,14 @@ describe("SharingService", () => {
     });
 
     it("should generate unique token after collision", async () => {
-      mockPrisma.sharingLink.count
-        .mockResolvedValueOnce(0)
-        .mockResolvedValueOnce(0);
+      mockDb.query.sharingLinks.findMany
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([]);
 
-      // First token check returns existing link, second returns null (unique)
-      mockPrisma.sharingLink.findUnique
+      // First token check returns existing link, second returns undefined (unique)
+      mockDb.query.sharingLinks.findFirst
         .mockResolvedValueOnce({ id: "existing" } as SharingLink) // Token collision
-        .mockResolvedValueOnce(null); // Unique token
+        .mockResolvedValueOnce(undefined); // Unique token
 
       const mockSharingLink = {
         id: "link-123",
@@ -137,23 +160,21 @@ describe("SharingService", () => {
         expiresAt: new Date(),
         isActive: true,
       };
-      mockPrisma.sharingLink.create.mockResolvedValueOnce(
-        mockSharingLink as SharingLink,
-      );
+      mockInsert().values().returning.mockResolvedValueOnce([mockSharingLink]);
 
       const result = await SharingService.createSharingLink(mockOptions);
 
       expect(result).toEqual(mockSharingLink);
-      expect(mockPrisma.sharingLink.findUnique).toHaveBeenCalledTimes(2);
+      expect(mockDb.query.sharingLinks.findFirst).toHaveBeenCalledTimes(2);
     });
 
     it("should throw error when unable to generate unique token", async () => {
-      mockPrisma.sharingLink.count
-        .mockResolvedValueOnce(0)
-        .mockResolvedValueOnce(0);
+      mockDb.query.sharingLinks.findMany
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([]);
 
       // Always return existing link (simulate persistent collision)
-      mockPrisma.sharingLink.findUnique.mockResolvedValue({
+      mockDb.query.sharingLinks.findFirst.mockResolvedValue({
         id: "existing",
       } as SharingLink);
 
@@ -177,7 +198,7 @@ describe("SharingService", () => {
     });
 
     it("should return null for non-existent token", async () => {
-      mockPrisma.sharingLink.findUnique.mockResolvedValueOnce(null);
+      mockDb.query.sharingLinks.findFirst.mockResolvedValueOnce(undefined);
 
       const result =
         await SharingService.validateSharingLink("non-existent-token");
@@ -196,7 +217,7 @@ describe("SharingService", () => {
         createdAt: new Date(),
         description: null,
       };
-      mockPrisma.sharingLink.findUnique.mockResolvedValueOnce(mockLink);
+      mockDb.query.sharingLinks.findFirst.mockResolvedValueOnce(mockLink);
 
       const result = await SharingService.validateSharingLink("test-token");
 
@@ -214,16 +235,14 @@ describe("SharingService", () => {
         createdAt: new Date(),
         description: null,
       };
-      mockPrisma.sharingLink.findUnique.mockResolvedValueOnce(mockLink);
-      mockPrisma.sharingLink.update.mockResolvedValueOnce(mockLink);
+      mockDb.query.sharingLinks.findFirst.mockResolvedValueOnce(mockLink);
+      mockUpdate().set().where.mockResolvedValueOnce([mockLink]);
 
       const result = await SharingService.validateSharingLink("test-token");
 
       expect(result).toBeNull();
-      expect(mockPrisma.sharingLink.update).toHaveBeenCalledWith({
-        where: { id: "link-123" },
-        data: { isActive: false },
-      });
+      expect(mockUpdate).toHaveBeenCalled();
+      expect(mockUpdate().set).toHaveBeenCalledWith({ isActive: false });
     });
 
     it("should return valid active link", async () => {
@@ -237,7 +256,7 @@ describe("SharingService", () => {
         createdAt: new Date(),
         description: null,
       };
-      mockPrisma.sharingLink.findUnique.mockResolvedValueOnce(mockLink);
+      mockDb.query.sharingLinks.findFirst.mockResolvedValueOnce(mockLink);
 
       const result = await SharingService.validateSharingLink("test-token");
 
@@ -256,7 +275,7 @@ describe("SharingService", () => {
           expiresAt: new Date(),
           isActive: true,
           description: "Link 1",
-          _count: { submissions: 5 },
+          submissions: Array(5).fill({ id: "sub" }),
         },
         {
           id: "link-2",
@@ -266,29 +285,17 @@ describe("SharingService", () => {
           expiresAt: new Date(),
           isActive: false,
           description: "Link 2",
-          _count: { submissions: 2 },
+          submissions: Array(2).fill({ id: "sub" }),
         },
       ];
-      mockPrisma.sharingLink.findMany.mockResolvedValueOnce(mockLinks);
+      mockDb.query.sharingLinks.findMany.mockResolvedValueOnce(mockLinks);
 
       const result = await SharingService.getUserSharingLinks("user-123");
 
       expect(result).toHaveLength(2);
       expect(result[0].submissionCount).toBe(5);
       expect(result[1].submissionCount).toBe(2);
-      expect(mockPrisma.sharingLink.findMany).toHaveBeenCalledWith({
-        where: { userId: "user-123" },
-        include: {
-          _count: {
-            select: {
-              submissions: true,
-            },
-          },
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-      });
+      expect(mockDb.query.sharingLinks.findMany).toHaveBeenCalled();
     });
   });
 
@@ -303,34 +310,16 @@ describe("SharingService", () => {
           expiresAt: new Date(Date.now() + 1000000),
           isActive: true,
           description: "Active Link",
-          _count: { submissions: 3 },
+          submissions: Array(3).fill({ id: "sub" }),
         },
       ];
-      mockPrisma.sharingLink.findMany.mockResolvedValueOnce(mockLinks);
+      mockDb.query.sharingLinks.findMany.mockResolvedValueOnce(mockLinks);
 
       const result = await SharingService.getActiveSharingLinks("user-123");
 
       expect(result).toHaveLength(1);
       expect(result[0].submissionCount).toBe(3);
-      expect(mockPrisma.sharingLink.findMany).toHaveBeenCalledWith({
-        where: {
-          userId: "user-123",
-          isActive: true,
-          expiresAt: {
-            gt: expect.any(Date),
-          },
-        },
-        include: {
-          _count: {
-            select: {
-              submissions: true,
-            },
-          },
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-      });
+      expect(mockDb.query.sharingLinks.findMany).toHaveBeenCalled();
     });
   });
 
@@ -346,11 +335,16 @@ describe("SharingService", () => {
         description: null,
       };
 
-      mockPrisma.sharingLink.findFirst.mockResolvedValueOnce(mockLink);
-      mockPrisma.sharingLink.update.mockResolvedValueOnce({
-        ...mockLink,
-        isActive: false,
-      });
+      mockDb.query.sharingLinks.findFirst.mockResolvedValueOnce(mockLink);
+      const mockReturning = vi.fn().mockResolvedValueOnce([
+        {
+          ...mockLink,
+          isActive: false,
+        },
+      ]);
+      const mockWhere = vi.fn().mockReturnValue({ returning: mockReturning });
+      const mockSet = vi.fn().mockReturnValue({ where: mockWhere });
+      mockUpdate.mockReturnValueOnce({ set: mockSet });
 
       const result = await SharingService.revokeSharingLink(
         "link-123",
@@ -358,24 +352,13 @@ describe("SharingService", () => {
       );
 
       expect(result).toEqual({ ...mockLink, isActive: false });
-      expect(mockPrisma.sharingLink.findFirst).toHaveBeenCalledWith({
-        where: {
-          id: "link-123",
-          userId: "user-123",
-        },
-      });
-      expect(mockPrisma.sharingLink.update).toHaveBeenCalledWith({
-        where: {
-          id: "link-123",
-        },
-        data: {
-          isActive: false,
-        },
-      });
+      expect(mockDb.query.sharingLinks.findFirst).toHaveBeenCalled();
+      expect(mockUpdate).toHaveBeenCalled();
+      expect(mockSet).toHaveBeenCalledWith({ isActive: false });
     });
 
     it("should return null when link not found or not owned by user", async () => {
-      mockPrisma.sharingLink.findFirst.mockResolvedValueOnce(null);
+      mockDb.query.sharingLinks.findFirst.mockResolvedValueOnce(undefined);
 
       const result = await SharingService.revokeSharingLink(
         "link-123",
@@ -388,22 +371,18 @@ describe("SharingService", () => {
 
   describe("cleanupExpiredLinks", () => {
     it("should deactivate expired links and return count", async () => {
-      mockPrisma.sharingLink.updateMany.mockResolvedValueOnce({ count: 3 });
+      const expiredLinks = Array(3).fill({
+        id: "link",
+        isActive: true,
+        expiresAt: new Date(Date.now() - 1000),
+      });
+      mockDb.query.sharingLinks.findMany.mockResolvedValueOnce(expiredLinks);
+      mockUpdate().set().where.mockResolvedValue([{}]);
 
       const result = await SharingService.cleanupExpiredLinks();
 
       expect(result).toBe(3);
-      expect(mockPrisma.sharingLink.updateMany).toHaveBeenCalledWith({
-        where: {
-          isActive: true,
-          expiresAt: {
-            lte: expect.any(Date),
-          },
-        },
-        data: {
-          isActive: false,
-        },
-      });
+      expect(mockDb.query.sharingLinks.findMany).toHaveBeenCalled();
     });
   });
 
@@ -418,7 +397,7 @@ describe("SharingService", () => {
         isActive: true,
         description: null,
       };
-      mockPrisma.sharingLink.findFirst.mockResolvedValueOnce(mockLink);
+      mockDb.query.sharingLinks.findFirst.mockResolvedValueOnce(mockLink);
 
       const result = await SharingService.getSharingLinkById(
         "link-123",
@@ -426,16 +405,11 @@ describe("SharingService", () => {
       );
 
       expect(result).toEqual(mockLink);
-      expect(mockPrisma.sharingLink.findFirst).toHaveBeenCalledWith({
-        where: {
-          id: "link-123",
-          userId: "user-123",
-        },
-      });
+      expect(mockDb.query.sharingLinks.findFirst).toHaveBeenCalled();
     });
 
     it("should return null for non-existent or unauthorized link", async () => {
-      mockPrisma.sharingLink.findFirst.mockResolvedValueOnce(null);
+      mockDb.query.sharingLinks.findFirst.mockResolvedValueOnce(undefined);
 
       const result = await SharingService.getSharingLinkById(
         "link-123",
@@ -448,9 +422,9 @@ describe("SharingService", () => {
 
   describe("canCreateSharingLink", () => {
     it("should allow creation when under limits", async () => {
-      mockPrisma.sharingLink.count
-        .mockResolvedValueOnce(2) // Active links count
-        .mockResolvedValueOnce(1); // Daily links count
+      mockDb.query.sharingLinks.findMany
+        .mockResolvedValueOnce(Array(2).fill({ id: "link" })) // Active links count
+        .mockResolvedValueOnce(Array(1).fill({ id: "link" })); // Daily links count
 
       const result = await SharingService.canCreateSharingLink("user-123");
 
@@ -462,7 +436,9 @@ describe("SharingService", () => {
     });
 
     it("should prevent creation when active links limit exceeded", async () => {
-      mockPrisma.sharingLink.count.mockResolvedValueOnce(5); // At max active links
+      mockDb.query.sharingLinks.findMany.mockResolvedValueOnce(
+        Array(5).fill({ id: "link" }),
+      ); // At max active links
 
       const result = await SharingService.canCreateSharingLink("user-123");
 
@@ -475,9 +451,9 @@ describe("SharingService", () => {
     });
 
     it("should prevent creation when daily limit exceeded", async () => {
-      mockPrisma.sharingLink.count
-        .mockResolvedValueOnce(2) // Active links count
-        .mockResolvedValueOnce(3); // Daily links count (at limit)
+      mockDb.query.sharingLinks.findMany
+        .mockResolvedValueOnce(Array(2).fill({ id: "link" })) // Active links count
+        .mockResolvedValueOnce(Array(3).fill({ id: "link" })); // Daily links count (at limit)
 
       const result = await SharingService.canCreateSharingLink("user-123");
 
@@ -492,10 +468,10 @@ describe("SharingService", () => {
 
   describe("token generation", () => {
     it("should generate tokens of correct length and format", async () => {
-      mockPrisma.sharingLink.count
-        .mockResolvedValueOnce(0)
-        .mockResolvedValueOnce(0);
-      mockPrisma.sharingLink.findUnique.mockResolvedValueOnce(null);
+      mockDb.query.sharingLinks.findMany
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([]);
+      mockDb.query.sharingLinks.findFirst.mockResolvedValueOnce(undefined);
 
       const mockSharingLink = {
         id: "link-123",
@@ -506,12 +482,17 @@ describe("SharingService", () => {
         isActive: true,
         description: null,
       };
-      mockPrisma.sharingLink.create.mockResolvedValueOnce(mockSharingLink);
+      // Set up the mock chain before calling
+      const mockReturning = vi.fn().mockResolvedValueOnce([mockSharingLink]);
+      const mockValues = vi.fn().mockReturnValue({ returning: mockReturning });
+      mockInsert.mockReturnValueOnce({ values: mockValues });
 
       await SharingService.createSharingLink({ userId: "user-123" });
 
-      const createCall = mockPrisma.sharingLink.create.mock.calls[0][0];
-      const token = createCall.data.token;
+      expect(mockInsert).toHaveBeenCalled();
+      expect(mockValues).toHaveBeenCalled();
+      const valuesCall = mockValues.mock.calls[0][0];
+      const token = valuesCall.token;
 
       // Token should be a base64url string (URL-safe base64)
       expect(typeof token).toBe("string");

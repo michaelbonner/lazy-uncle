@@ -1,8 +1,7 @@
-import prisma from "./prisma";
+import { SharingLink } from "../drizzle/schema";
 import { RateLimitService } from "./rate-limiter";
 import { SecurityContext, SecurityMiddleware } from "./security-middleware";
 import { SharingService } from "./sharing-service";
-import { SharingLink } from "@prisma/client";
 import { NextRequest } from "next/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -20,17 +19,31 @@ vi.mock("./sharing-service", () => ({
     canCreateSharingLink: vi.fn(),
   },
 }));
-vi.mock("./prisma", () => ({
-  default: {
-    sharingLink: {
-      count: vi.fn(),
-      update: vi.fn(),
+
+vi.mock("./db", () => {
+  const mockUpdate = vi.fn().mockReturnValue({
+    set: vi.fn().mockReturnValue({
+      where: vi.fn(),
+    }),
+  });
+  return {
+    default: {
+      update: mockUpdate,
+      query: {
+        sharingLinks: {
+          findMany: vi.fn(),
+          findFirst: vi.fn(),
+        },
+        birthdaySubmissions: {
+          findMany: vi.fn(),
+        },
+      },
     },
-    birthdaySubmission: {
-      count: vi.fn(),
-    },
-  },
-}));
+  };
+});
+
+const mockDb = vi.mocked(await import("./db"), true).default;
+const mockUpdate = mockDb.update as ReturnType<typeof vi.fn>;
 
 describe("SecurityMiddleware", () => {
   beforeEach(() => {
@@ -112,7 +125,7 @@ describe("SecurityMiddleware", () => {
         dailyLinksCount: 1,
       });
 
-      vi.mocked(prisma.sharingLink.count).mockResolvedValue(1);
+      mockDb.query.sharingLinks.findMany.mockResolvedValue([{ id: "link" }]);
 
       const result =
         await SecurityMiddleware.checkSharingLinkRateLimit(mockContext);
@@ -180,7 +193,9 @@ describe("SecurityMiddleware", () => {
       });
 
       // Mock rapid link generation
-      vi.mocked(prisma.sharingLink.count).mockResolvedValue(5);
+      mockDb.query.sharingLinks.findMany.mockResolvedValue(
+        Array(5).fill({ id: "link" }),
+      );
 
       const result =
         await SecurityMiddleware.checkSharingLinkRateLimit(botContext);
@@ -240,7 +255,9 @@ describe("SecurityMiddleware", () => {
         suspicious: false,
       });
 
-      vi.mocked(prisma.birthdaySubmission.count).mockResolvedValue(2);
+      mockDb.query.birthdaySubmissions.findMany.mockResolvedValue(
+        Array(2).fill({ id: "sub" }),
+      );
 
       const result = await SecurityMiddleware.checkSubmissionSecurity(
         mockContext,
@@ -355,8 +372,16 @@ describe("SecurityMiddleware", () => {
         reason: "Duplicate submission detected",
       });
 
-      vi.mocked(prisma.birthdaySubmission.count).mockResolvedValue(2);
-      vi.mocked(prisma.sharingLink.update).mockResolvedValue({} as SharingLink);
+      mockDb.query.birthdaySubmissions.findMany.mockResolvedValue(
+        Array(2).fill({ id: "sub" }),
+      );
+      mockDb.query.sharingLinks.findFirst.mockResolvedValue({
+        id: "link-123",
+        token: mockContext.token,
+      } as SharingLink);
+      mockUpdate()
+        .set()
+        .where.mockResolvedValue([{} as SharingLink]);
 
       const botContext = {
         ...mockContext,
@@ -374,10 +399,8 @@ describe("SecurityMiddleware", () => {
       expect(result.suspiciousActivity?.severity).toBe("high");
 
       // Verify link was deactivated
-      expect(prisma.sharingLink.update).toHaveBeenCalledWith({
-        where: { token: mockContext.token },
-        data: { isActive: false },
-      });
+      expect(mockUpdate).toHaveBeenCalled();
+      expect(mockUpdate().set).toHaveBeenCalledWith({ isActive: false });
     });
 
     it("should detect suspicious content in submission data", async () => {
@@ -409,7 +432,9 @@ describe("SecurityMiddleware", () => {
         suspicious: false,
       });
 
-      vi.mocked(prisma.birthdaySubmission.count).mockResolvedValue(2);
+      mockDb.query.birthdaySubmissions.findMany.mockResolvedValue(
+        Array(2).fill({ id: "sub" }),
+      );
 
       const result = await SecurityMiddleware.checkSubmissionSecurity(
         mockContext,
@@ -557,7 +582,7 @@ describe("SecurityMiddleware", () => {
         dailyLinksCount: 1,
       });
 
-      vi.mocked(prisma.sharingLink.count).mockResolvedValue(1);
+      mockDb.query.sharingLinks.findMany.mockResolvedValue([{ id: "link" }]);
 
       // Mock console.log to throw an error
       vi.mocked(console.log).mockImplementation(() => {

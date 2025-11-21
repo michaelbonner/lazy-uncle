@@ -1,15 +1,21 @@
-import prisma from "./prisma";
 import { RateLimitService } from "./rate-limiter";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-// Mock prisma
-vi.mock("./prisma", () => ({
+// Mock db
+vi.mock("./db", () => ({
   default: {
-    birthdaySubmission: {
-      count: vi.fn(),
+    query: {
+      birthdaySubmissions: {
+        findMany: vi.fn(),
+      },
+      sharingLinks: {
+        findFirst: vi.fn(),
+      },
     },
   },
 }));
+
+const mockDb = vi.mocked(await import("./db"), true).default;
 
 describe("RateLimitService Integration", () => {
   beforeEach(() => {
@@ -98,9 +104,11 @@ describe("RateLimitService Integration", () => {
 
   describe("checkPersistentRateLimit", () => {
     it("should allow submissions when under persistent limits", async () => {
-      vi.mocked(prisma.birthdaySubmission.count)
-        .mockResolvedValueOnce(5) // hourly count
-        .mockResolvedValueOnce(25); // daily count
+      mockDb.query.birthdaySubmissions.findMany
+        .mockResolvedValueOnce(Array(5).fill({ submitterEmail: "192.168.1.5" })) // hourly count
+        .mockResolvedValueOnce(
+          Array(25).fill({ submitterEmail: "192.168.1.5" }),
+        ); // daily count
 
       const result =
         await RateLimitService.checkPersistentRateLimit("192.168.1.5");
@@ -110,9 +118,13 @@ describe("RateLimitService Integration", () => {
     });
 
     it("should block submissions when hourly limit exceeded", async () => {
-      vi.mocked(prisma.birthdaySubmission.count)
-        .mockResolvedValueOnce(25) // hourly count exceeds 20
-        .mockResolvedValueOnce(50); // daily count
+      mockDb.query.birthdaySubmissions.findMany
+        .mockResolvedValueOnce(
+          Array(25).fill({ submitterEmail: "192.168.1.6" }),
+        ) // hourly count exceeds 20
+        .mockResolvedValueOnce(
+          Array(50).fill({ submitterEmail: "192.168.1.6" }),
+        ); // daily count
 
       const result =
         await RateLimitService.checkPersistentRateLimit("192.168.1.6");
@@ -124,9 +136,13 @@ describe("RateLimitService Integration", () => {
     });
 
     it("should block submissions when daily limit exceeded", async () => {
-      vi.mocked(prisma.birthdaySubmission.count)
-        .mockResolvedValueOnce(15) // hourly count
-        .mockResolvedValueOnce(150); // daily count exceeds 100
+      mockDb.query.birthdaySubmissions.findMany
+        .mockResolvedValueOnce(
+          Array(15).fill({ submitterEmail: "192.168.1.7" }),
+        ) // hourly count
+        .mockResolvedValueOnce(
+          Array(150).fill({ submitterEmail: "192.168.1.7" }),
+        ); // daily count exceeds 100
 
       const result =
         await RateLimitService.checkPersistentRateLimit("192.168.1.7");
@@ -138,12 +154,23 @@ describe("RateLimitService Integration", () => {
 
   describe("detectSuspiciousActivity", () => {
     it("should detect duplicate submissions", async () => {
-      let callCount = 0;
-      vi.mocked(prisma.birthdaySubmission.count).mockImplementation(() => {
-        callCount++;
-        if (callCount === 1) return Promise.resolve(1); // duplicate count
-        return Promise.resolve(2); // email count (shouldn't be reached)
+      mockDb.query.sharingLinks.findFirst.mockResolvedValue({
+        id: "link-123",
+        token: "test-token",
+        userId: "user-123",
+        createdAt: new Date(),
+        expiresAt: new Date(Date.now() + 1000000),
+        isActive: true,
+        description: null,
       });
+      mockDb.query.birthdaySubmissions.findMany.mockResolvedValueOnce([
+        {
+          id: "sub-1",
+          name: "John Doe",
+          date: "1990-01-01",
+          sharingLinkId: "link-123",
+        },
+      ]); // duplicate count
 
       const result = await RateLimitService.detectSuspiciousActivity(
         "test-token",
@@ -159,12 +186,20 @@ describe("RateLimitService Integration", () => {
     });
 
     it("should detect too many submissions from same email", async () => {
-      let callCount = 0;
-      vi.mocked(prisma.birthdaySubmission.count).mockImplementation(() => {
-        callCount++;
-        if (callCount === 1) return Promise.resolve(0); // duplicate count
-        return Promise.resolve(6); // email count exceeds 5
+      mockDb.query.sharingLinks.findFirst.mockResolvedValue({
+        id: "link-123",
+        token: "test-token",
+        userId: "user-123",
+        createdAt: new Date(),
+        expiresAt: new Date(Date.now() + 1000000),
+        isActive: true,
+        description: null,
       });
+      mockDb.query.birthdaySubmissions.findMany
+        .mockResolvedValueOnce([]) // duplicate count (no duplicates)
+        .mockResolvedValueOnce(
+          Array(6).fill({ submitterEmail: "jane@example.com" }),
+        ); // email count exceeds 5
 
       const result = await RateLimitService.detectSuspiciousActivity(
         "test-token",
@@ -182,12 +217,20 @@ describe("RateLimitService Integration", () => {
     });
 
     it("should not flag normal submissions", async () => {
-      let callCount = 0;
-      vi.mocked(prisma.birthdaySubmission.count).mockImplementation(() => {
-        callCount++;
-        if (callCount === 1) return Promise.resolve(0); // duplicate count
-        return Promise.resolve(2); // email count
+      mockDb.query.sharingLinks.findFirst.mockResolvedValue({
+        id: "link-123",
+        token: "test-token",
+        userId: "user-123",
+        createdAt: new Date(),
+        expiresAt: new Date(Date.now() + 1000000),
+        isActive: true,
+        description: null,
       });
+      mockDb.query.birthdaySubmissions.findMany
+        .mockResolvedValueOnce([]) // duplicate count (no duplicates)
+        .mockResolvedValueOnce(
+          Array(2).fill({ submitterEmail: "bob@example.com" }),
+        ); // email count
 
       const result = await RateLimitService.detectSuspiciousActivity(
         "test-token",
@@ -203,7 +246,16 @@ describe("RateLimitService Integration", () => {
     });
 
     it("should handle submissions without email", async () => {
-      vi.mocked(prisma.birthdaySubmission.count).mockResolvedValueOnce(0); // duplicate count only
+      mockDb.query.sharingLinks.findFirst.mockResolvedValue({
+        id: "link-123",
+        token: "test-token",
+        userId: "user-123",
+        createdAt: new Date(),
+        expiresAt: new Date(Date.now() + 1000000),
+        isActive: true,
+        description: null,
+      });
+      mockDb.query.birthdaySubmissions.findMany.mockResolvedValueOnce([]); // duplicate count only
 
       const result = await RateLimitService.detectSuspiciousActivity(
         "test-token",
@@ -214,7 +266,9 @@ describe("RateLimitService Integration", () => {
       );
 
       expect(result.suspicious).toBe(false);
-      expect(prisma.birthdaySubmission.count).toHaveBeenCalledTimes(1); // Only duplicate check
+      expect(mockDb.query.birthdaySubmissions.findMany).toHaveBeenCalledTimes(
+        1,
+      ); // Only duplicate check
     });
   });
 
@@ -290,9 +344,9 @@ describe("RateLimitService Integration", () => {
 
   describe("error handling", () => {
     it("should handle database errors in persistent rate limiting", async () => {
-      vi.mocked(prisma.birthdaySubmission.count).mockImplementation(() => {
-        return Promise.reject(new Error("Database connection failed"));
-      });
+      mockDb.query.birthdaySubmissions.findMany.mockRejectedValue(
+        new Error("Database connection failed"),
+      );
 
       await expect(
         RateLimitService.checkPersistentRateLimit("192.168.1.10"),
@@ -300,7 +354,16 @@ describe("RateLimitService Integration", () => {
     });
 
     it("should handle database errors in suspicious activity detection", async () => {
-      vi.mocked(prisma.birthdaySubmission.count).mockRejectedValue(
+      mockDb.query.sharingLinks.findFirst.mockResolvedValue({
+        id: "link-123",
+        token: "test-token",
+        userId: "user-123",
+        createdAt: new Date(),
+        expiresAt: new Date(Date.now() + 1000000),
+        isActive: true,
+        description: null,
+      });
+      mockDb.query.birthdaySubmissions.findMany.mockRejectedValue(
         new Error("Query timeout"),
       );
 

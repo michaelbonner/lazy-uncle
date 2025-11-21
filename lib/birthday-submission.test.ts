@@ -1,31 +1,41 @@
 // Import after mocking
+import { SubmissionStatus } from "../drizzle/schema";
 import { InputValidator } from "./input-validator";
 import { RateLimitService } from "./rate-limiter";
 import { SharingService } from "./sharing-service";
-import { SubmissionStatus } from "@prisma/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-// Mock Prisma with factory function
-vi.mock("./prisma", () => ({
-  default: {
-    sharingLink: {
-      findUnique: vi.fn(),
-      create: vi.fn(),
-      count: vi.fn(),
-      updateMany: vi.fn(),
-      update: vi.fn(),
-      findMany: vi.fn(),
-      findFirst: vi.fn(),
+// Mock db
+vi.mock("./db", () => {
+  const mockInsert = vi.fn().mockReturnValue({
+    values: vi.fn().mockReturnValue({
+      returning: vi.fn(),
+    }),
+  });
+  const mockUpdate = vi.fn().mockReturnValue({
+    set: vi.fn().mockReturnValue({
+      where: vi.fn(),
+    }),
+  });
+  return {
+    default: {
+      insert: mockInsert,
+      update: mockUpdate,
+      query: {
+        sharingLinks: {
+          findFirst: vi.fn(),
+        },
+        birthdaySubmissions: {
+          findMany: vi.fn(),
+        },
+      },
     },
-    birthdaySubmission: {
-      create: vi.fn(),
-      count: vi.fn(),
-      findMany: vi.fn(),
-    },
-  },
-}));
+  };
+});
 
-const mockPrisma = vi.mocked(await import("./prisma"), true).default;
+const mockDb = vi.mocked(await import("./db"), true).default;
+const mockInsert = mockDb.insert as ReturnType<typeof vi.fn>;
+const mockUpdate = mockDb.update as ReturnType<typeof vi.fn>;
 
 describe("Birthday Submission API", () => {
   beforeEach(() => {
@@ -171,7 +181,30 @@ describe("Birthday Submission API", () => {
       };
 
       // Mock database to return existing submission
-      mockPrisma.birthdaySubmission.count.mockResolvedValue(1);
+      mockDb.query.sharingLinks.findFirst.mockResolvedValue({
+        id: "link-1",
+        token: "test-token",
+        userId: "user-1",
+        createdAt: new Date(),
+        expiresAt: new Date(Date.now() + 1000000),
+        isActive: true,
+        description: null,
+      });
+      mockDb.query.birthdaySubmissions.findMany.mockResolvedValue([
+        {
+          id: "sub-1",
+          name: "John Doe",
+          date: "1990-05-15",
+          sharingLinkId: "link-1",
+          category: null,
+          createdAt: new Date(),
+          notes: null,
+          relationship: null,
+          status: "PENDING" as SubmissionStatus,
+          submitterEmail: "john@example.com",
+          submitterName: null,
+        },
+      ]);
 
       const result = await RateLimitService.detectSuspiciousActivity(
         token,
@@ -191,9 +224,20 @@ describe("Birthday Submission API", () => {
       };
 
       // Mock database to return no duplicates but many from same email
-      mockPrisma.birthdaySubmission.count
-        .mockResolvedValueOnce(0) // No duplicates
-        .mockResolvedValueOnce(6); // 6 submissions from same email
+      mockDb.query.sharingLinks.findFirst.mockResolvedValue({
+        id: "link-1",
+        token: "test-token",
+        userId: "user-1",
+        createdAt: new Date(),
+        expiresAt: new Date(Date.now() + 1000000),
+        isActive: true,
+        description: null,
+      });
+      mockDb.query.birthdaySubmissions.findMany
+        .mockResolvedValueOnce([]) // No duplicates
+        .mockResolvedValueOnce(
+          Array(6).fill({ submitterEmail: "spam@example.com" }),
+        ); // 6 submissions from same email
 
       const result = await RateLimitService.detectSuspiciousActivity(
         token,
@@ -219,11 +263,17 @@ describe("Birthday Submission API", () => {
         description: null,
       };
 
-      mockPrisma.sharingLink.findUnique.mockResolvedValue(mockLink);
+      mockDb.query.sharingLinks.findFirst.mockResolvedValue({
+        ...mockLink,
+        user: { id: "user-1" },
+      });
 
       const result = await SharingService.validateSharingLink("valid-token");
 
-      expect(result).toEqual(mockLink);
+      expect(result).toEqual({
+        ...mockLink,
+        user: { id: "user-1" },
+      });
     });
 
     it("should reject expired sharing link", async () => {
@@ -237,16 +287,16 @@ describe("Birthday Submission API", () => {
         description: null,
       };
 
-      mockPrisma.sharingLink.findUnique.mockResolvedValue(mockLink);
-      mockPrisma.sharingLink.update.mockResolvedValue(mockLink);
+      mockDb.query.sharingLinks.findFirst.mockResolvedValue({
+        ...mockLink,
+      });
+      mockUpdate().set().where.mockResolvedValue([mockLink]);
 
       const result = await SharingService.validateSharingLink("expired-token");
 
       expect(result).toBeNull();
-      expect(mockPrisma.sharingLink.update).toHaveBeenCalledWith({
-        where: { id: "link-1" },
-        data: { isActive: false },
-      });
+      expect(mockUpdate).toHaveBeenCalled();
+      expect(mockUpdate().set).toHaveBeenCalledWith({ isActive: false });
     });
 
     it("should reject inactive sharing link", async () => {
@@ -260,7 +310,9 @@ describe("Birthday Submission API", () => {
         description: null,
       };
 
-      mockPrisma.sharingLink.findUnique.mockResolvedValue(mockLink);
+      mockDb.query.sharingLinks.findFirst.mockResolvedValue({
+        ...mockLink,
+      });
 
       const result = await SharingService.validateSharingLink("inactive-token");
 
@@ -268,7 +320,7 @@ describe("Birthday Submission API", () => {
     });
 
     it("should reject non-existent sharing link", async () => {
-      mockPrisma.sharingLink.findUnique.mockResolvedValue(null);
+      mockDb.query.sharingLinks.findFirst.mockResolvedValue(undefined);
 
       const result = await SharingService.validateSharingLink("non-existent");
 
@@ -298,31 +350,20 @@ describe("Birthday Submission API", () => {
         submitterName: "Jane Doe",
         submitterEmail: "jane@example.com",
         relationship: "Friend",
-        status: SubmissionStatus.PENDING,
+        status: "PENDING" as SubmissionStatus,
         createdAt: new Date(),
         parent: null,
         importSource: null,
       };
 
-      mockPrisma.sharingLink.findUnique.mockResolvedValue(mockLink);
-      mockPrisma.birthdaySubmission.create.mockResolvedValue(mockSubmission);
-      mockPrisma.birthdaySubmission.count.mockResolvedValue(0); // No suspicious activity
-
-      const result = await mockPrisma.birthdaySubmission.create({
-        data: {
-          sharingLinkId: mockLink.id,
-          name: "John Doe",
-          date: "1990-05-15",
-          category: null,
-          notes: null,
-          submitterName: "Jane Doe",
-          submitterEmail: "jane@example.com",
-          relationship: "Friend",
-          status: SubmissionStatus.PENDING,
-        },
+      mockDb.query.sharingLinks.findFirst.mockResolvedValue({
+        ...mockLink,
       });
+      mockInsert().values().returning.mockResolvedValue([mockSubmission]);
 
-      expect(result).toEqual(mockSubmission);
+      const result = await mockInsert().values().returning();
+
+      expect(result).toEqual([mockSubmission]);
     });
 
     it("should handle database errors gracefully", async () => {
@@ -336,21 +377,16 @@ describe("Birthday Submission API", () => {
         description: null,
       };
 
-      mockPrisma.sharingLink.findUnique.mockResolvedValue(mockLink);
-      mockPrisma.birthdaySubmission.create.mockRejectedValue(
-        new Error("Database connection failed"),
-      );
+      mockDb.query.sharingLinks.findFirst.mockResolvedValue({
+        ...mockLink,
+      });
+      mockInsert()
+        .values()
+        .returning.mockRejectedValue(new Error("Database connection failed"));
 
-      await expect(
-        mockPrisma.birthdaySubmission.create({
-          data: {
-            sharingLinkId: mockLink.id,
-            name: "John Doe",
-            date: "1990-05-15",
-            status: SubmissionStatus.PENDING,
-          },
-        }),
-      ).rejects.toThrow("Database connection failed");
+      await expect(mockInsert().values().returning()).rejects.toThrow(
+        "Database connection failed",
+      );
     });
   });
 

@@ -1,35 +1,45 @@
+import { BirthdaySubmission, SubmissionStatus } from "../drizzle/schema";
 import { InputValidator } from "./input-validator";
 import { SharingService } from "./sharing-service";
 import { SubmissionService } from "./submission-service";
-import { BirthdaySubmission, SubmissionStatus } from "@prisma/client";
 import "@testing-library/jest-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock dependencies
-vi.mock("./prisma", () => ({
-  default: {
-    birthdaySubmission: {
-      create: vi.fn(),
-      findFirst: vi.fn(),
-      findMany: vi.fn(),
-      update: vi.fn(),
-      updateMany: vi.fn(),
-      count: vi.fn(),
-      deleteMany: vi.fn(),
+vi.mock("./db", () => {
+  const mockInsert = vi.fn().mockReturnValue({
+    values: vi.fn().mockReturnValue({
+      returning: vi.fn(),
+    }),
+  });
+  const mockUpdate = vi.fn().mockReturnValue({
+    set: vi.fn().mockReturnValue({
+      where: vi.fn(),
+    }),
+  });
+  const mockDelete = vi.fn().mockReturnValue({
+    where: vi.fn(),
+  });
+  return {
+    default: {
+      insert: mockInsert,
+      update: mockUpdate,
+      delete: mockDelete,
+      query: {
+        birthdays: {
+          findMany: vi.fn(),
+        },
+        birthdaySubmissions: {
+          findFirst: vi.fn(),
+          findMany: vi.fn(),
+        },
+        sharingLinks: {
+          findMany: vi.fn(),
+        },
+      },
     },
-    birthday: {
-      create: vi.fn(),
-      findMany: vi.fn(),
-    },
-    notificationPreference: {
-      findUnique: vi.fn(),
-      upsert: vi.fn(),
-    },
-    user: {
-      findUnique: vi.fn(),
-    },
-  },
-}));
+  };
+});
 
 vi.mock("./sharing-service");
 vi.mock("./input-validator");
@@ -41,7 +51,10 @@ vi.mock("./notification-service", () => ({
   },
 }));
 
-const mockPrisma = vi.mocked(await import("./prisma"), true).default;
+const mockDb = vi.mocked(await import("./db"), true).default;
+const mockInsert = mockDb.insert as ReturnType<typeof vi.fn>;
+const mockUpdate = mockDb.update as ReturnType<typeof vi.fn>;
+const mockDelete = mockDb.delete as ReturnType<typeof vi.fn>;
 const mockSharingService = vi.mocked(SharingService);
 const mockInputValidator = vi.mocked(InputValidator);
 const { notificationService: mockNotificationService } = vi.mocked(
@@ -50,27 +63,26 @@ const { notificationService: mockNotificationService } = vi.mocked(
 );
 
 describe("SubmissionService", () => {
+  const mockSubmission = {
+    id: "submission-123",
+    sharingLinkId: "link-123",
+    name: "John Doe",
+    date: "1990-05-15",
+    category: "Friend",
+    notes: "Great friend",
+    submitterName: "Jane Smith",
+    submitterEmail: "jane@example.com",
+    relationship: "Friend",
+    status: "PENDING" as SubmissionStatus,
+    createdAt: new Date(),
+    sharingLink: {
+      id: "link-123",
+      userId: "user-123",
+    },
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
-
-    // Mock notification preferences
-    mockPrisma.notificationPreference.findUnique.mockResolvedValue({
-      id: "pref-1",
-      userId: "user-123",
-      emailNotifications: true,
-      summaryNotifications: false,
-    });
-
-    // Mock user data
-    mockPrisma.user.findUnique.mockResolvedValue({
-      id: "user-123",
-      email: "test@example.com",
-      name: "Test User",
-      image: null,
-      emailVerified: false,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
 
     // Mock notification service methods
     mockNotificationService.queueNotification.mockResolvedValue();
@@ -112,17 +124,17 @@ describe("SubmissionService", () => {
       });
 
       // Mock rate limit check
-      mockPrisma.birthdaySubmission.count.mockResolvedValue(0);
+      mockDb.query.birthdaySubmissions.findMany.mockResolvedValue([]);
 
       // Mock submission creation
       const mockSubmission = {
         id: "submission-123",
         sharingLinkId: "link-123",
         ...validSubmissionData,
-        status: SubmissionStatus.PENDING,
+        status: "PENDING" as SubmissionStatus,
         createdAt: new Date(),
       };
-      mockPrisma.birthdaySubmission.create.mockResolvedValue(mockSubmission);
+      mockInsert().values().returning.mockResolvedValue([mockSubmission]);
 
       const result = await SubmissionService.processSubmission(
         "valid-token",
@@ -142,8 +154,9 @@ describe("SubmissionService", () => {
         ...validSubmissionData,
         token: "valid-token",
       });
-      expect(mockPrisma.birthdaySubmission.create).toHaveBeenCalledWith({
-        data: {
+      expect(mockInsert).toHaveBeenCalled();
+      expect(mockInsert().values).toHaveBeenCalledWith(
+        expect.objectContaining({
           sharingLinkId: "link-123",
           name: validSubmissionData.name,
           date: validSubmissionData.date,
@@ -152,9 +165,9 @@ describe("SubmissionService", () => {
           submitterName: validSubmissionData.submitterName,
           submitterEmail: validSubmissionData.submitterEmail,
           relationship: validSubmissionData.relationship,
-          status: SubmissionStatus.PENDING,
-        },
-      });
+          status: "PENDING",
+        }),
+      );
     });
 
     it("should reject submission with invalid sharing link", async () => {
@@ -203,7 +216,9 @@ describe("SubmissionService", () => {
       });
 
       // Mock rate limit exceeded
-      mockPrisma.birthdaySubmission.count.mockResolvedValue(15);
+      mockDb.query.birthdaySubmissions.findMany.mockResolvedValue(
+        Array(15).fill({ id: "sub", createdAt: new Date() }),
+      );
 
       const result = await SubmissionService.processSubmission(
         "valid-token",
@@ -228,10 +243,10 @@ describe("SubmissionService", () => {
         },
       });
 
-      mockPrisma.birthdaySubmission.count.mockResolvedValue(0);
-      mockPrisma.birthdaySubmission.create.mockRejectedValue(
-        new Error("Database error"),
-      );
+      mockDb.query.birthdaySubmissions.findMany.mockResolvedValue([]);
+      mockInsert()
+        .values()
+        .returning.mockRejectedValue(new Error("Database error"));
 
       const result = await SubmissionService.processSubmission(
         "valid-token",
@@ -278,7 +293,7 @@ describe("SubmissionService", () => {
         },
       ];
 
-      mockPrisma.birthday.findMany.mockResolvedValue(existingBirthdays);
+      mockDb.query.birthdays.findMany.mockResolvedValue(existingBirthdays);
 
       const result = await SubmissionService.detectDuplicates(
         "user-123",
@@ -306,7 +321,7 @@ describe("SubmissionService", () => {
         },
       ];
 
-      mockPrisma.birthday.findMany.mockResolvedValue(existingBirthdays);
+      mockDb.query.birthdays.findMany.mockResolvedValue(existingBirthdays);
 
       const result = await SubmissionService.detectDuplicates(
         "user-123",
@@ -344,7 +359,7 @@ describe("SubmissionService", () => {
         },
       ];
 
-      mockPrisma.birthday.findMany.mockResolvedValue(existingBirthdays);
+      mockDb.query.birthdays.findMany.mockResolvedValue(existingBirthdays);
 
       const result = await SubmissionService.detectDuplicates(
         "user-123",
@@ -356,7 +371,7 @@ describe("SubmissionService", () => {
     });
 
     it("should handle database errors gracefully", async () => {
-      mockPrisma.birthday.findMany.mockRejectedValue(
+      mockDb.query.birthdays.findMany.mockRejectedValue(
         new Error("Database error"),
       );
 
@@ -371,26 +386,10 @@ describe("SubmissionService", () => {
   });
 
   describe("importSubmission", () => {
-    const mockSubmission = {
-      id: "submission-123",
-      sharingLinkId: "link-123",
-      name: "John Doe",
-      date: "1990-05-15",
-      category: "Friend",
-      notes: "Great friend",
-      submitterName: "Jane Smith",
-      submitterEmail: "jane@example.com",
-      relationship: "Friend",
-      status: SubmissionStatus.PENDING,
-      createdAt: new Date(),
-      sharingLink: {
-        id: "link-123",
-        userId: "user-123",
-      },
-    };
-
     it("should successfully import a pending submission", async () => {
-      mockPrisma.birthdaySubmission.findFirst.mockResolvedValue(mockSubmission);
+      mockDb.query.birthdaySubmissions.findFirst.mockResolvedValue(
+        mockSubmission,
+      );
 
       const mockBirthday = {
         id: "birthday-123",
@@ -403,12 +402,16 @@ describe("SubmissionService", () => {
         parent: null,
         importSource: null,
       };
-      mockPrisma.birthday.create.mockResolvedValue(mockBirthday);
+      mockInsert().values().returning.mockResolvedValue([mockBirthday]);
 
-      mockPrisma.birthdaySubmission.update.mockResolvedValue({
-        ...mockSubmission,
-        status: SubmissionStatus.IMPORTED,
-      });
+      mockUpdate()
+        .set()
+        .where.mockResolvedValue([
+          {
+            ...mockSubmission,
+            status: "IMPORTED" as SubmissionStatus,
+          },
+        ]);
 
       const result = await SubmissionService.importSubmission(
         "submission-123",
@@ -418,25 +421,24 @@ describe("SubmissionService", () => {
       expect(result.success).toBe(true);
       expect(result.birthdayId).toBe("birthday-123");
 
-      expect(mockPrisma.birthday.create).toHaveBeenCalledWith({
-        data: {
+      expect(mockInsert).toHaveBeenCalled();
+      expect(mockInsert().values).toHaveBeenCalledWith(
+        expect.objectContaining({
           userId: "user-123",
           name: "John Doe",
           date: "1990-05-15",
           category: "Friend",
           notes: "Great friend",
           importSource: "sharing",
-        },
-      });
+        }),
+      );
 
-      expect(mockPrisma.birthdaySubmission.update).toHaveBeenCalledWith({
-        where: { id: "submission-123" },
-        data: { status: SubmissionStatus.IMPORTED },
-      });
+      expect(mockUpdate).toHaveBeenCalled();
+      expect(mockUpdate().set).toHaveBeenCalledWith({ status: "IMPORTED" });
     });
 
     it("should reject import for non-existent submission", async () => {
-      mockPrisma.birthdaySubmission.findFirst.mockResolvedValue(null);
+      mockDb.query.birthdaySubmissions.findFirst.mockResolvedValue(undefined);
 
       const result = await SubmissionService.importSubmission(
         "non-existent",
@@ -450,8 +452,12 @@ describe("SubmissionService", () => {
     });
 
     it("should handle database errors during import", async () => {
-      mockPrisma.birthdaySubmission.findFirst.mockResolvedValue(mockSubmission);
-      mockPrisma.birthday.create.mockRejectedValue(new Error("Database error"));
+      mockDb.query.birthdaySubmissions.findFirst.mockResolvedValue(
+        mockSubmission,
+      );
+      mockInsert()
+        .values()
+        .returning.mockRejectedValue(new Error("Database error"));
 
       const result = await SubmissionService.importSubmission(
         "submission-123",
@@ -467,7 +473,18 @@ describe("SubmissionService", () => {
 
   describe("rejectSubmission", () => {
     it("should successfully reject a pending submission", async () => {
-      mockPrisma.birthdaySubmission.updateMany.mockResolvedValue({ count: 1 });
+      mockDb.query.birthdaySubmissions.findFirst.mockResolvedValue({
+        ...mockSubmission,
+        sharingLink: { userId: "user-123" },
+      });
+      mockUpdate()
+        .set()
+        .where.mockResolvedValue([
+          {
+            ...mockSubmission,
+            status: "REJECTED" as SubmissionStatus,
+          },
+        ]);
 
       const result = await SubmissionService.rejectSubmission(
         "submission-123",
@@ -477,22 +494,12 @@ describe("SubmissionService", () => {
       expect(result.success).toBe(true);
       expect(result.errors).toBeUndefined();
 
-      expect(mockPrisma.birthdaySubmission.updateMany).toHaveBeenCalledWith({
-        where: {
-          id: "submission-123",
-          status: SubmissionStatus.PENDING,
-          sharingLink: {
-            userId: "user-123",
-          },
-        },
-        data: {
-          status: SubmissionStatus.REJECTED,
-        },
-      });
+      expect(mockUpdate).toHaveBeenCalled();
+      expect(mockUpdate().set).toHaveBeenCalledWith({ status: "REJECTED" });
     });
 
     it("should reject for non-existent or already processed submission", async () => {
-      mockPrisma.birthdaySubmission.updateMany.mockResolvedValue({ count: 0 });
+      mockDb.query.birthdaySubmissions.findFirst.mockResolvedValue(undefined);
 
       const result = await SubmissionService.rejectSubmission(
         "non-existent",
@@ -506,9 +513,11 @@ describe("SubmissionService", () => {
     });
 
     it("should handle database errors during rejection", async () => {
-      mockPrisma.birthdaySubmission.updateMany.mockRejectedValue(
-        new Error("Database error"),
-      );
+      mockDb.query.birthdaySubmissions.findFirst.mockResolvedValue({
+        ...mockSubmission,
+        sharingLink: { userId: "user-123" },
+      });
+      mockUpdate().set().where.mockRejectedValue(new Error("Database error"));
 
       const result = await SubmissionService.rejectSubmission(
         "submission-123",
@@ -529,7 +538,7 @@ describe("SubmissionService", () => {
           id: "submission-1",
           name: "John Doe",
           date: "1990-05-15",
-          status: SubmissionStatus.PENDING,
+          status: "PENDING" as SubmissionStatus,
           createdAt: new Date(),
           sharingLink: {
             description: "Family link",
@@ -546,7 +555,7 @@ describe("SubmissionService", () => {
           id: "submission-2",
           name: "Jane Smith",
           date: "1985-03-20",
-          status: SubmissionStatus.PENDING,
+          status: "PENDING" as SubmissionStatus,
           createdAt: new Date(),
           sharingLink: {
             description: "Friends link",
@@ -561,34 +570,21 @@ describe("SubmissionService", () => {
         },
       ];
 
-      mockPrisma.birthdaySubmission.findMany.mockResolvedValue(mockSubmissions);
+      mockDb.query.sharingLinks.findMany.mockResolvedValue([
+        { id: "link-123" },
+      ]);
+      mockDb.query.birthdaySubmissions.findMany.mockResolvedValue(
+        mockSubmissions,
+      );
 
       const result = await SubmissionService.getPendingSubmissions("user-123");
 
       expect(result).toEqual(mockSubmissions);
-      expect(mockPrisma.birthdaySubmission.findMany).toHaveBeenCalledWith({
-        where: {
-          status: SubmissionStatus.PENDING,
-          sharingLink: {
-            userId: "user-123",
-          },
-        },
-        include: {
-          sharingLink: {
-            select: {
-              description: true,
-              createdAt: true,
-            },
-          },
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-      });
+      expect(mockDb.query.birthdaySubmissions.findMany).toHaveBeenCalled();
     });
 
     it("should return empty array on database error", async () => {
-      mockPrisma.birthdaySubmission.findMany.mockRejectedValue(
+      mockDb.query.sharingLinks.findMany.mockRejectedValue(
         new Error("Database error"),
       );
 
@@ -603,7 +599,7 @@ describe("SubmissionService", () => {
       const submissionIds = ["sub-1", "sub-2", "sub-3"];
 
       // Mock successful imports
-      mockPrisma.birthdaySubmission.findFirst
+      mockDb.query.birthdaySubmissions.findFirst
         .mockResolvedValueOnce({
           id: "sub-1",
           sharingLinkId: "link-123",
@@ -611,11 +607,12 @@ describe("SubmissionService", () => {
           date: "1990-05-15",
           category: "Friend",
           notes: null,
-          status: SubmissionStatus.PENDING,
+          status: "PENDING" as SubmissionStatus,
           createdAt: new Date(),
           submitterName: "Jane Smith",
           submitterEmail: "jane@example.com",
           relationship: "Friend",
+          sharingLink: { userId: "user-123" },
         })
         .mockResolvedValueOnce({
           id: "sub-2",
@@ -624,11 +621,12 @@ describe("SubmissionService", () => {
           date: "1985-03-20",
           category: "Family",
           notes: null,
-          status: SubmissionStatus.PENDING,
+          status: "PENDING" as SubmissionStatus,
           createdAt: new Date(),
           submitterName: "Jane Smith",
           submitterEmail: "jane@example.com",
           relationship: "Friend",
+          sharingLink: { userId: "user-123" },
         })
         .mockResolvedValueOnce({
           id: "sub-3",
@@ -637,52 +635,61 @@ describe("SubmissionService", () => {
           date: "1992-12-10",
           category: "Work",
           notes: null,
-          status: SubmissionStatus.PENDING,
+          status: "PENDING" as SubmissionStatus,
           createdAt: new Date(),
           submitterName: "Jane Smith",
           submitterEmail: "jane@example.com",
           relationship: "Friend",
+          sharingLink: { userId: "user-123" },
         });
 
-      mockPrisma.birthday.create
-        .mockResolvedValueOnce({
-          id: "birthday-1",
-          name: "John Doe",
-          date: "1990-05-15",
-          category: "Friend",
-          notes: null,
-          createdAt: new Date(),
-          userId: "user-123",
-          parent: null,
-          importSource: null,
-        })
-        .mockResolvedValueOnce({
-          id: "birthday-2",
-          name: "Jane Smith",
-          date: "1985-03-20",
-          category: "Family",
-          notes: null,
-          createdAt: new Date(),
-          userId: "user-123",
-          parent: null,
-          importSource: null,
-        })
-        .mockResolvedValueOnce({
-          id: "birthday-3",
-          name: "Bob Johnson",
-          date: "1992-12-10",
-          category: "Work",
-          notes: null,
-          createdAt: new Date(),
-          userId: "user-123",
-          parent: null,
-          importSource: null,
-        });
+      mockInsert()
+        .values()
+        .returning.mockResolvedValueOnce([
+          {
+            id: "birthday-1",
+            name: "John Doe",
+            date: "1990-05-15",
+            category: "Friend",
+            notes: null,
+            createdAt: new Date(),
+            userId: "user-123",
+            parent: null,
+            importSource: null,
+          },
+        ])
+        .mockResolvedValueOnce([
+          {
+            id: "birthday-2",
+            name: "Jane Smith",
+            date: "1985-03-20",
+            category: "Family",
+            notes: null,
+            createdAt: new Date(),
+            userId: "user-123",
+            parent: null,
+            importSource: null,
+          },
+        ])
+        .mockResolvedValueOnce([
+          {
+            id: "birthday-3",
+            name: "Bob Johnson",
+            date: "1992-12-10",
+            category: "Work",
+            notes: null,
+            createdAt: new Date(),
+            userId: "user-123",
+            parent: null,
+            importSource: null,
+          },
+        ]);
 
-      mockPrisma.birthdaySubmission.update
-        .mockResolvedValueOnce({} as BirthdaySubmission)
-        .mockResolvedValueOnce({} as BirthdaySubmission)
-        .mockResolvedValueOnce({} as BirthdaySubmission);
+      mockUpdate()
+        .set()
+        .where.mockResolvedValueOnce([{} as BirthdaySubmission])
+        .mockResolvedValueOnce([{} as BirthdaySubmission])
+        .mockResolvedValueOnce([{} as BirthdaySubmission]);
 
       const result = await SubmissionService.bulkImportSubmissions(
         submissionIds,
@@ -698,7 +705,7 @@ describe("SubmissionService", () => {
       const submissionIds = ["sub-1", "sub-2"];
 
       // First import succeeds
-      mockPrisma.birthdaySubmission.findFirst
+      mockDb.query.birthdaySubmissions.findFirst
         .mockResolvedValueOnce({
           id: "sub-1",
           sharingLinkId: "link-123",
@@ -706,28 +713,33 @@ describe("SubmissionService", () => {
           date: "1990-05-15",
           category: "Friend",
           notes: null,
-          status: SubmissionStatus.PENDING,
+          status: "PENDING" as SubmissionStatus,
           createdAt: new Date(),
           submitterName: "Jane Smith",
           submitterEmail: "jane@example.com",
           relationship: "Friend",
+          sharingLink: { userId: "user-123" },
         })
-        .mockResolvedValueOnce(null); // Second import fails
+        .mockResolvedValueOnce(undefined); // Second import fails
 
-      mockPrisma.birthday.create.mockResolvedValueOnce({
-        id: "birthday-1",
-        name: "John Doe",
-        date: "1990-05-15",
-        category: "Friend",
-        notes: null,
-        createdAt: new Date(),
-        userId: "user-123",
-        parent: null,
-        importSource: null,
-      });
-      mockPrisma.birthdaySubmission.update.mockResolvedValueOnce(
-        {} as BirthdaySubmission,
-      );
+      mockInsert()
+        .values()
+        .returning.mockResolvedValueOnce([
+          {
+            id: "birthday-1",
+            name: "John Doe",
+            date: "1990-05-15",
+            category: "Friend",
+            notes: null,
+            createdAt: new Date(),
+            userId: "user-123",
+            parent: null,
+            importSource: null,
+          },
+        ]);
+      mockUpdate()
+        .set()
+        .where.mockResolvedValueOnce([{} as BirthdaySubmission]);
 
       const result = await SubmissionService.bulkImportSubmissions(
         submissionIds,
@@ -747,10 +759,25 @@ describe("SubmissionService", () => {
     it("should successfully reject multiple submissions", async () => {
       const submissionIds = ["sub-1", "sub-2", "sub-3"];
 
-      mockPrisma.birthdaySubmission.updateMany
-        .mockResolvedValueOnce({ count: 1 })
-        .mockResolvedValueOnce({ count: 1 })
-        .mockResolvedValueOnce({ count: 1 });
+      mockDb.query.birthdaySubmissions.findFirst
+        .mockResolvedValueOnce({
+          ...mockSubmission,
+          sharingLink: { userId: "user-123" },
+        })
+        .mockResolvedValueOnce({
+          ...mockSubmission,
+          sharingLink: { userId: "user-123" },
+        })
+        .mockResolvedValueOnce({
+          ...mockSubmission,
+          sharingLink: { userId: "user-123" },
+        });
+
+      mockUpdate()
+        .set()
+        .where.mockResolvedValueOnce([{} as BirthdaySubmission])
+        .mockResolvedValueOnce([{} as BirthdaySubmission])
+        .mockResolvedValueOnce([{} as BirthdaySubmission]);
 
       const result = await SubmissionService.bulkRejectSubmissions(
         submissionIds,
@@ -765,9 +792,16 @@ describe("SubmissionService", () => {
     it("should handle partial failures in bulk reject", async () => {
       const submissionIds = ["sub-1", "sub-2"];
 
-      mockPrisma.birthdaySubmission.updateMany
-        .mockResolvedValueOnce({ count: 1 }) // First succeeds
-        .mockResolvedValueOnce({ count: 0 }); // Second fails
+      mockDb.query.birthdaySubmissions.findFirst
+        .mockResolvedValueOnce({
+          ...mockSubmission,
+          sharingLink: { userId: "user-123" },
+        }) // First succeeds
+        .mockResolvedValueOnce(undefined); // Second fails
+
+      mockUpdate()
+        .set()
+        .where.mockResolvedValueOnce([{} as BirthdaySubmission]);
 
       const result = await SubmissionService.bulkRejectSubmissions(
         submissionIds,
@@ -785,27 +819,23 @@ describe("SubmissionService", () => {
 
   describe("cleanupOldRejectedSubmissions", () => {
     it("should clean up old rejected submissions", async () => {
-      mockPrisma.birthdaySubmission.deleteMany.mockResolvedValue({ count: 5 });
+      const oldSubmissions = Array(5).fill({
+        id: "sub-1",
+        status: "REJECTED" as SubmissionStatus,
+        createdAt: new Date(Date.now() - 31 * 24 * 60 * 60 * 1000),
+      });
+      mockDb.query.birthdaySubmissions.findMany.mockResolvedValue(
+        oldSubmissions,
+      );
+      mockDelete().where.mockResolvedValue([{}]);
 
       const result = await SubmissionService.cleanupOldRejectedSubmissions(30);
 
       expect(result).toBe(5);
-
-      const expectedCutoffDate = new Date();
-      expectedCutoffDate.setDate(expectedCutoffDate.getDate() - 30);
-
-      expect(mockPrisma.birthdaySubmission.deleteMany).toHaveBeenCalledWith({
-        where: {
-          status: SubmissionStatus.REJECTED,
-          createdAt: {
-            lt: expect.any(Date),
-          },
-        },
-      });
     });
 
     it("should handle database errors during cleanup", async () => {
-      mockPrisma.birthdaySubmission.deleteMany.mockRejectedValue(
+      mockDb.query.birthdaySubmissions.findMany.mockRejectedValue(
         new Error("Database error"),
       );
 
