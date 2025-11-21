@@ -1,4 +1,10 @@
+import { eq } from "drizzle-orm";
 import { enumType, objectType } from "nexus";
+import {
+  birthdaySubmissions,
+  notificationPreferences,
+  sharingLinks,
+} from "../../drizzle/schema";
 
 export const SubmissionStatus = enumType({
   name: "SubmissionStatus",
@@ -20,20 +26,24 @@ export const SharingLink = objectType({
     t.nullable.string("description");
     t.int("submissionCount", {
       resolve: async (parent, args, ctx) => {
-        const count = await ctx.prisma.birthdaySubmission.count({
-          where: { sharingLinkId: parent.id },
+        if (!parent.id) {
+          return 0;
+        }
+        const submissions = await ctx.db.query.birthdaySubmissions.findMany({
+          where: eq(birthdaySubmissions.sharingLinkId, parent.id),
         });
-        return count;
+        return submissions?.length ?? 0;
       },
     });
     t.nullable.field("user", {
       type: "User",
-      resolve: (parent, args, ctx) =>
-        ctx.prisma.sharingLink
-          .findUnique({
-            where: { id: parent.id || "" },
-          })
-          .user(),
+      resolve: async (parent, args, ctx) => {
+        const sharingLink = await ctx.db.query.sharingLinks.findFirst({
+          where: eq(sharingLinks.id, parent.id || ""),
+          with: { user: true },
+        });
+        return sharingLink?.user ?? null;
+      },
     });
   },
 });
@@ -57,12 +67,13 @@ export const BirthdaySubmission = objectType({
     });
     t.nullable.field("sharingLink", {
       type: "SharingLink",
-      resolve: (parent, args, ctx) =>
-        ctx.prisma.birthdaySubmission
-          .findUnique({
-            where: { id: parent.id || "" },
-          })
-          .sharingLink(),
+      resolve: async (parent, args, ctx) => {
+        const submission = await ctx.db.query.birthdaySubmissions.findFirst({
+          where: eq(birthdaySubmissions.id, parent.id || ""),
+          with: { sharingLink: true },
+        });
+        return submission?.sharingLink ?? null;
+      },
     });
   },
 });
@@ -75,12 +86,13 @@ export const NotificationPreference = objectType({
     t.boolean("summaryNotifications");
     t.nullable.field("user", {
       type: "User",
-      resolve: (parent, args, ctx) =>
-        ctx.prisma.notificationPreference
-          .findUnique({
-            where: { id: parent.id || "" },
-          })
-          .user(),
+      resolve: async (parent, args, ctx) => {
+        const pref = await ctx.db.query.notificationPreferences.findFirst({
+          where: eq(notificationPreferences.id, parent.id || ""),
+          with: { user: true },
+        });
+        return pref?.user ?? null;
+      },
     });
   },
 });

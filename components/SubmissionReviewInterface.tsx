@@ -19,7 +19,7 @@ import {
 } from "../graphql/Sharing";
 import getDateFromYmdString from "../shared/getDateFromYmdString";
 import LoadingSpinner from "./LoadingSpinner";
-import { Birthday } from "@prisma/client";
+import type { Birthday } from "../drizzle/schema";
 
 interface BirthdaySubmission {
   id: string;

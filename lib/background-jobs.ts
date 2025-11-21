@@ -1,8 +1,15 @@
 import { notificationService } from "./notification-service";
 import { SubmissionService } from "./submission-service";
 import { SharingService } from "./sharing-service";
-import prisma from "./prisma";
-import { SubmissionStatus } from "@prisma/client";
+import db from "./db";
+import {
+  birthdaySubmissions,
+  notificationPreferences,
+  users,
+  sharingLinks,
+  birthdays,
+} from "../drizzle/schema";
+import { eq, and, lt, sql } from "drizzle-orm";
 
 export interface JobScheduler {
   start(): void;
@@ -206,41 +213,59 @@ export class BackgroundJobScheduler implements JobScheduler {
 
     try {
       // Clean up submissions for deleted sharing links
-      const orphanedSubmissions = await prisma.birthdaySubmission.deleteMany({
-        where: {
-          sharingLink: {
-            is: undefined,
-          },
-        },
+      // Get all sharing link IDs first
+      const allSharingLinks = await db.query.sharingLinks.findMany({
+        columns: { id: true },
       });
-      totalCleaned += orphanedSubmissions.count;
+      const sharingLinkIds = allSharingLinks.map((link) => link.id);
+
+      // Get submissions with invalid sharing link IDs
+      const allSubmissions = await db.query.birthdaySubmissions.findMany();
+      const orphanedSubmissions = allSubmissions.filter(
+        (sub) => !sharingLinkIds.includes(sub.sharingLinkId),
+      );
+
+      for (const sub of orphanedSubmissions) {
+        await db
+          .delete(birthdaySubmissions)
+          .where(eq(birthdaySubmissions.id, sub.id));
+        totalCleaned++;
+      }
 
       // Clean up notification preferences for deleted users
-      const orphanedPreferences =
-        await prisma.notificationPreference.deleteMany({
-          where: {
-            user: {
-              is: undefined,
-            },
-          },
-        });
-      totalCleaned += orphanedPreferences.count;
+      const allUsers = await db.query.users.findMany({ columns: { id: true } });
+      const userIds = allUsers.map((u) => u.id);
+
+      const allPreferences = await db.query.notificationPreferences.findMany();
+      const orphanedPreferences = allPreferences.filter(
+        (pref) => !userIds.includes(pref.userId),
+      );
+
+      for (const pref of orphanedPreferences) {
+        await db
+          .delete(notificationPreferences)
+          .where(eq(notificationPreferences.id, pref.id));
+        totalCleaned++;
+      }
 
       // Clean up very old imported submissions (older than 1 year)
       const oneYearAgo = new Date();
       oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
 
-      const oldImportedSubmissions = await prisma.birthdaySubmission.deleteMany(
-        {
-          where: {
-            status: SubmissionStatus.IMPORTED,
-            createdAt: {
-              lt: oneYearAgo,
-            },
-          },
-        },
-      );
-      totalCleaned += oldImportedSubmissions.count;
+      const oldImportedSubmissions =
+        await db.query.birthdaySubmissions.findMany({
+          where: and(
+            eq(birthdaySubmissions.status, "IMPORTED"),
+            lt(birthdaySubmissions.createdAt, oneYearAgo),
+          ),
+        });
+
+      for (const sub of oldImportedSubmissions) {
+        await db
+          .delete(birthdaySubmissions)
+          .where(eq(birthdaySubmissions.id, sub.id));
+        totalCleaned++;
+      }
 
       return totalCleaned;
     } catch (error) {
@@ -258,7 +283,7 @@ export class BackgroundJobScheduler implements JobScheduler {
       // Note: This is PostgreSQL-specific. In a real implementation,
       // you might want to check the database type first
       if (process.env.NODE_ENV === "production") {
-        await prisma.$executeRaw`ANALYZE;`;
+        await db.execute(sql`ANALYZE VERBOSE`);
         console.log("Database statistics updated");
       }
 
@@ -293,27 +318,31 @@ export class BackgroundJobScheduler implements JobScheduler {
     pendingSubmissions: number;
   }> {
     const [
-      totalUsers,
-      totalBirthdays,
-      totalSharingLinks,
-      activeSharingLinks,
-      totalSubmissions,
-      pendingSubmissions,
+      allUsers,
+      allBirthdays,
+      allSharingLinks,
+      allSharingLinksWithExpiry,
+      allSubmissions,
+      allSubmissionsWithStatus,
     ] = await Promise.all([
-      prisma.user.count(),
-      prisma.birthday.count(),
-      prisma.sharingLink.count(),
-      prisma.sharingLink.count({
-        where: {
-          isActive: true,
-          expiresAt: { gt: new Date() },
-        },
-      }),
-      prisma.birthdaySubmission.count(),
-      prisma.birthdaySubmission.count({
-        where: { status: "PENDING" },
-      }),
+      db.query.users.findMany(),
+      db.query.birthdays.findMany(),
+      db.query.sharingLinks.findMany(),
+      db.query.sharingLinks.findMany(),
+      db.query.birthdaySubmissions.findMany(),
+      db.query.birthdaySubmissions.findMany(),
     ]);
+
+    const totalUsers = allUsers.length;
+    const totalBirthdays = allBirthdays.length;
+    const totalSharingLinks = allSharingLinks.length;
+    const activeSharingLinks = allSharingLinksWithExpiry.filter(
+      (link) => link.isActive && link.expiresAt > new Date(),
+    ).length;
+    const totalSubmissions = allSubmissions.length;
+    const pendingSubmissions = allSubmissionsWithStatus.filter(
+      (sub) => sub.status === "PENDING",
+    ).length;
 
     return {
       totalUsers,
@@ -333,35 +362,44 @@ export class BackgroundJobScheduler implements JobScheduler {
       console.log("Processing daily summary notifications...");
 
       // Find users with pending submissions and summary notifications enabled
-      const usersWithPendingSubmissions = await prisma.user.findMany({
-        where: {
-          notificationPreference: {
-            summaryNotifications: true,
-          },
+      const allUsersWithPreferences = await db.query.users.findMany({
+        with: {
+          notificationPreference: true,
           sharingLinks: {
-            some: {
-              submissions: {
-                some: {
-                  status: SubmissionStatus.PENDING,
-                },
-              },
-            },
-          },
-        },
-        include: {
-          sharingLinks: {
-            include: {
-              submissions: {
-                where: {
-                  status: SubmissionStatus.PENDING,
-                },
-              },
+            with: {
+              submissions: true,
             },
           },
         },
       });
 
-      for (const user of usersWithPendingSubmissions) {
+      const usersWithPendingSubmissions = allUsersWithPreferences.filter(
+        (user) => {
+          // Check if summary notifications are enabled
+          const hasSummaryNotifications =
+            user.notificationPreference?.summaryNotifications === true;
+
+          // Check if user has pending submissions
+          const hasPendingSubmissions = user.sharingLinks.some((link) =>
+            link.submissions.some((sub) => sub.status === "PENDING"),
+          );
+
+          return hasSummaryNotifications && hasPendingSubmissions;
+        },
+      );
+
+      // Transform to include only pending submissions
+      const transformedUsers = usersWithPendingSubmissions.map((user) => ({
+        ...user,
+        sharingLinks: user.sharingLinks.map((link) => ({
+          ...link,
+          submissions: link.submissions.filter(
+            (sub) => sub.status === "PENDING",
+          ),
+        })),
+      }));
+
+      for (const user of transformedUsers) {
         const totalPendingSubmissions = user.sharingLinks.reduce(
           (total, link) => total + link.submissions.length,
           0,

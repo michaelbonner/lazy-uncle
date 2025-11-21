@@ -1,6 +1,8 @@
 import { parse, setYear } from "date-fns";
+import { eq } from "drizzle-orm";
 import type { NextApiRequest, NextApiResponse } from "next";
-import prisma from "../../../lib/prisma";
+import { birthdays } from "../../../drizzle/schema";
+import db from "../../../lib/db";
 import { getOrdinalNumber } from "../../../shared/getOrdinalNumber";
 
 interface Birthdate {
@@ -16,14 +18,12 @@ export default async function handler(
 ) {
   const ics = await import("ics");
 
-  const birthdays = await prisma.birthday.findMany({
-    where: {
-      userId: req.query.userId as string,
-    },
+  const birthdayList = await db.query.birthdays.findMany({
+    where: eq(birthdays.userId, req.query.userId as string),
   });
 
   const events = [] as Birthdate[];
-  birthdays.forEach((birthday) => {
+  birthdayList.forEach((birthday) => {
     for (let index = -2; index < 3; index++) {
       const userBirthday = parse(birthday.date, "yyyy-MM-dd", new Date());
       const birthDate = setYear(

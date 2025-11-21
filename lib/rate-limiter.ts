@@ -1,4 +1,6 @@
-import prisma from "./prisma";
+import { and, eq, gte } from "drizzle-orm";
+import { birthdaySubmissions, sharingLinks } from "../drizzle/schema";
+import db from "./db";
 
 export interface RateLimitResult {
   allowed: boolean;
@@ -140,29 +142,25 @@ export class RateLimitService {
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
     // Count submissions from this IP in the last hour
-    const hourlyCount = await prisma.birthdaySubmission.count({
-      where: {
-        createdAt: {
-          gte: oneHourAgo,
-        },
-        // We'll need to add IP tracking to the schema, for now use submitterEmail as proxy
-        submitterEmail: {
-          contains: ipAddress, // This is a placeholder - in real implementation we'd track IP
-        },
-      },
+    // Note: IP tracking would need to be added to schema in real implementation
+    // For now using submitterEmail as placeholder
+    const hourlySubmissions = await db.query.birthdaySubmissions.findMany({
+      where: and(
+        gte(birthdaySubmissions.createdAt, oneHourAgo),
+        // Note: This is a placeholder - in real implementation we'd track IP
+      ),
     });
+    const hourlyCount = hourlySubmissions.filter((sub) =>
+      sub.submitterEmail?.includes(ipAddress),
+    ).length;
 
     // Count submissions from this IP in the last day
-    const dailyCount = await prisma.birthdaySubmission.count({
-      where: {
-        createdAt: {
-          gte: oneDayAgo,
-        },
-        submitterEmail: {
-          contains: ipAddress, // This is a placeholder
-        },
-      },
+    const dailySubmissions = await db.query.birthdaySubmissions.findMany({
+      where: gte(birthdaySubmissions.createdAt, oneDayAgo),
     });
+    const dailyCount = dailySubmissions.filter((sub) =>
+      sub.submitterEmail?.includes(ipAddress),
+    ).length;
 
     // Block if too many submissions in short time
     if (hourlyCount > 20) {
@@ -197,18 +195,23 @@ export class RateLimitService {
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
 
     // Check for duplicate submissions with same data
-    const duplicateCount = await prisma.birthdaySubmission.count({
-      where: {
-        sharingLink: {
-          token,
-        },
-        name: submissionData.name,
-        date: submissionData.date,
-        createdAt: {
-          gte: oneHourAgo,
-        },
-      },
+    const sharingLink = await db.query.sharingLinks.findFirst({
+      where: eq(sharingLinks.token, token),
     });
+
+    if (!sharingLink) {
+      return { suspicious: false };
+    }
+
+    const duplicates = await db.query.birthdaySubmissions.findMany({
+      where: and(
+        eq(birthdaySubmissions.sharingLinkId, sharingLink.id),
+        eq(birthdaySubmissions.name, submissionData.name),
+        eq(birthdaySubmissions.date, submissionData.date),
+        gte(birthdaySubmissions.createdAt, oneHourAgo),
+      ),
+    });
+    const duplicateCount = duplicates.length;
 
     if (duplicateCount > 0) {
       return {
@@ -219,14 +222,13 @@ export class RateLimitService {
 
     // Check for too many submissions from same email
     if (submissionData.submitterEmail) {
-      const emailCount = await prisma.birthdaySubmission.count({
-        where: {
-          submitterEmail: submissionData.submitterEmail,
-          createdAt: {
-            gte: oneHourAgo,
-          },
-        },
+      const emailSubmissions = await db.query.birthdaySubmissions.findMany({
+        where: and(
+          eq(birthdaySubmissions.submitterEmail, submissionData.submitterEmail),
+          gte(birthdaySubmissions.createdAt, oneHourAgo),
+        ),
       });
+      const emailCount = emailSubmissions.length;
 
       if (emailCount > 5) {
         return {

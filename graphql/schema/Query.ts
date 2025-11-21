@@ -1,5 +1,11 @@
-import { SubmissionStatus } from "@prisma/client";
+import { and, desc, eq, inArray } from "drizzle-orm";
 import { intArg, nonNull, objectType, queryType, stringArg } from "nexus";
+import {
+  birthdays,
+  birthdaySubmissions,
+  notificationPreferences,
+  sharingLinks,
+} from "../../drizzle/schema";
 
 export const User = objectType({
   name: "User",
@@ -9,12 +15,11 @@ export const User = objectType({
     t.string("email");
     t.list.field("birthdays", {
       type: "Birthday",
-      resolve: (parent, args, ctx) =>
-        ctx.prisma.user
-          .findUnique({
-            where: { id: parent.id || "6207fdc99b6c9796ff8e7d01" },
-          })
-          .birthdays(),
+      resolve: async (parent, args, ctx) => {
+        return ctx.db.query.birthdays.findMany({
+          where: eq(birthdays.userId, parent.id || "6207fdc99b6c9796ff8e7d01"),
+        });
+      },
     });
   },
 });
@@ -34,12 +39,13 @@ export const Birthday = objectType({
     });
     t.nullable.field("user", {
       type: "User",
-      resolve: (parent, args, ctx) =>
-        ctx.prisma.birthday
-          .findUnique({
-            where: { id: parent.id || "" },
-          })
-          .user(),
+      resolve: async (parent, args, ctx) => {
+        const birthday = await ctx.db.query.birthdays.findFirst({
+          where: eq(birthdays.id, parent.id || ""),
+          with: { user: true },
+        });
+        return birthday?.user ?? null;
+      },
     });
   },
 });
@@ -52,13 +58,17 @@ export const Query = queryType({
         birthdayId: nonNull(stringArg()),
       },
       resolve: async (_, args, ctx) => {
-        const birthday = await ctx.prisma.birthday.findUnique({
-          where: { id: args.birthdayId },
+        const birthday = await ctx.db.query.birthdays.findFirst({
+          where: eq(birthdays.id, args.birthdayId),
         });
+
+        if (!birthday) {
+          return null;
+        }
 
         // don't show birthdays to other users
         if (birthday.userId !== ctx.user.id) {
-          return {};
+          return null;
         }
 
         return birthday;
@@ -67,29 +77,32 @@ export const Query = queryType({
 
     t.list.field("birthdays", {
       type: "Birthday",
-      resolve: (_, args, ctx) => {
-        return ctx.prisma.birthday.findMany({
-          where: { userId: ctx.user.id || "6207fdc99b6c9796ff8e7d01" },
+      resolve: async (_, args, ctx) => {
+        return ctx.db.query.birthdays.findMany({
+          where: eq(
+            birthdays.userId,
+            ctx.user.id || "6207fdc99b6c9796ff8e7d01",
+          ),
         });
       },
     });
 
     t.list.field("users", {
       type: "User",
-      resolve: (_, args, ctx) => {
-        return ctx.prisma.user.findMany({});
+      resolve: async (_, args, ctx) => {
+        return ctx.db.query.users.findMany();
       },
     });
 
     t.list.field("sharingLinks", {
       type: "SharingLink",
-      resolve: (_, args, ctx) => {
-        return ctx.prisma.sharingLink.findMany({
-          where: {
-            userId: ctx.user.id,
-            isActive: true,
-          },
-          orderBy: { createdAt: "desc" },
+      resolve: async (_, args, ctx) => {
+        return ctx.db.query.sharingLinks.findMany({
+          where: and(
+            eq(sharingLinks.userId, ctx.user.id),
+            eq(sharingLinks.isActive, true),
+          ),
+          orderBy: [desc(sharingLinks.createdAt)],
         });
       },
     });
@@ -104,44 +117,58 @@ export const Query = queryType({
         const defaultLimit = 24;
         const defaultPage = 1;
         const skip = ((page ?? defaultPage) - 1) * (limit ?? defaultLimit);
+        const takeValue = limit ?? defaultLimit;
 
-        const [submissions, totalCount] = await Promise.all([
-          ctx.prisma.birthdaySubmission.findMany({
-            where: {
-              sharingLink: {
-                userId: ctx.user.id,
+        // Get sharing links for this user first
+        const userSharingLinks = await ctx.db.query.sharingLinks.findMany({
+          where: eq(sharingLinks.userId, ctx.user.id),
+          columns: { id: true },
+        });
+        const sharingLinkIds = userSharingLinks.map(
+          (link: { id: string }) => link.id,
+        );
+
+        if (sharingLinkIds.length === 0) {
+          return {
+            submissions: [],
+            totalCount: 0,
+            hasNextPage: false,
+            hasPreviousPage: false,
+            currentPage: page,
+            totalPages: 0,
+          };
+        }
+
+        // Get submissions with sharing link info
+        const allSubmissions = await ctx.db.query.birthdaySubmissions.findMany({
+          where: and(
+            eq(birthdaySubmissions.status, "PENDING"),
+            inArray(birthdaySubmissions.sharingLinkId, sharingLinkIds),
+          ),
+          with: {
+            sharingLink: {
+              columns: {
+                description: true,
+                createdAt: true,
               },
-              status: SubmissionStatus.PENDING,
             },
-            orderBy: { createdAt: "desc" },
-            skip,
-            take: limit,
-            include: {
-              sharingLink: {
-                select: {
-                  description: true,
-                  createdAt: true,
-                },
-              },
-            },
-          }),
-          ctx.prisma.birthdaySubmission.count({
-            where: {
-              sharingLink: {
-                userId: ctx.user.id,
-              },
-              status: SubmissionStatus.PENDING,
-            },
-          }),
-        ]);
+          },
+          orderBy: [desc(birthdaySubmissions.createdAt)],
+        });
+
+        const totalCount = allSubmissions.length;
+        const paginatedSubmissions = allSubmissions.slice(
+          skip,
+          skip + takeValue,
+        );
 
         return {
-          submissions,
+          submissions: paginatedSubmissions,
           totalCount,
-          hasNextPage: skip + (limit ?? defaultLimit) < totalCount,
+          hasNextPage: skip + takeValue < totalCount,
           hasPreviousPage: (page ?? defaultPage) > 1,
           currentPage: page,
-          totalPages: Math.ceil(totalCount / (limit ?? defaultLimit)),
+          totalPages: Math.ceil(totalCount / takeValue),
         };
       },
     });
@@ -149,8 +176,8 @@ export const Query = queryType({
     t.nullable.field("notificationPreferences", {
       type: "NotificationPreference",
       resolve: async (_, args, ctx) => {
-        return ctx.prisma.notificationPreference.findUnique({
-          where: { userId: ctx.user.id },
+        return ctx.db.query.notificationPreferences.findFirst({
+          where: eq(notificationPreferences.userId, ctx.user.id),
         });
       },
     });
@@ -161,11 +188,11 @@ export const Query = queryType({
         token: nonNull(stringArg()),
       },
       resolve: async (_, { token }, ctx) => {
-        const sharingLink = await ctx.prisma.sharingLink.findUnique({
-          where: { token },
-          include: {
+        const sharingLink = await ctx.db.query.sharingLinks.findFirst({
+          where: eq(sharingLinks.token, token),
+          with: {
             user: {
-              select: {
+              columns: {
                 name: true,
               },
             },
@@ -190,10 +217,10 @@ export const Query = queryType({
 
         if (sharingLink.expiresAt <= new Date()) {
           // Automatically deactivate expired links
-          await ctx.prisma.sharingLink.update({
-            where: { id: sharingLink.id },
-            data: { isActive: false },
-          });
+          await ctx.db
+            .update(sharingLinks)
+            .set({ isActive: false })
+            .where(eq(sharingLinks.id, sharingLink.id));
 
           return {
             isValid: false,

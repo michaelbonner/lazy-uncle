@@ -1,34 +1,21 @@
 // npx tsx scripts/showUsersAndCountOfBirthdaysForUser
 
-import { Birthday, PrismaClient, User } from "@prisma/client";
-import prisma from "../lib/prisma";
-
-declare global {
-  var prisma: PrismaClient;
-}
+import { asc } from "drizzle-orm";
+import { users } from "../drizzle/schema";
+import db from "../lib/db";
 
 async function main() {
-  const users = await prisma.user.findMany({
-    orderBy: [
-      {
-        name: "asc",
-      },
-    ],
-    include: {
+  const userList = await db.query.users.findMany({
+    orderBy: [asc(users.name)],
+    with: {
       birthdays: true,
     },
   });
 
-  users.map(
-    async (
-      user: User & {
-        birthdays: Birthday[];
-      },
-    ) => {
-      console.log(`${user.name} - ${user.email}`);
-      console.log(` - Birthdays: ${user.birthdays.length}`);
-    },
-  );
+  userList.forEach((user) => {
+    console.log(`${user.name} - ${user.email}`);
+    console.log(` - Birthdays: ${user.birthdays.length}`);
+  });
 }
 
 main()
@@ -37,5 +24,6 @@ main()
     process.exit(1);
   })
   .finally(async () => {
-    await prisma.$disconnect();
+    // Drizzle handles connection pooling, no explicit disconnect needed
+    process.exit(0);
   });
