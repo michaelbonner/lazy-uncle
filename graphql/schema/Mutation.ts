@@ -1,13 +1,13 @@
+import { createId } from "@paralleldrive/cuid2";
+import { and, eq } from "drizzle-orm";
 import {
+  booleanArg,
   extendType,
+  intArg,
+  list,
   nonNull,
   stringArg,
-  intArg,
-  booleanArg,
-  list,
 } from "nexus";
-import { eq } from "drizzle-orm";
-import { createId } from "@paralleldrive/cuid2";
 import {
   birthdays,
   birthdaySubmissions,
@@ -77,8 +77,11 @@ export const Mutation = extendType({
             notes: notes || null,
             importSource: importSource || null,
           })
-          .where(eq(birthdays.id, id))
+          .where(and(eq(birthdays.id, id), eq(birthdays.userId, ctx.user.id)))
           .returning();
+        if (!birthday) {
+          throw new Error("Birthday not found or unauthorized");
+        }
         return birthday;
       },
     });
@@ -91,8 +94,16 @@ export const Mutation = extendType({
       resolve: async (_, { birthdayId }, ctx) => {
         const [birthday] = await ctx.db
           .delete(birthdays)
-          .where(eq(birthdays.id, birthdayId || ""))
+          .where(
+            and(
+              eq(birthdays.id, birthdayId || ""),
+              eq(birthdays.userId, ctx.user.id),
+            ),
+          )
           .returning();
+        if (!birthday) {
+          throw new Error("Birthday not found or unauthorized");
+        }
         return birthday;
       },
     });
