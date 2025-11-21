@@ -1,3 +1,5 @@
+import { NexusGenObjects } from "../generated/nexus-typegen";
+import EditBirthdayForm from "./EditBirthdayForm";
 import {
   Dialog,
   DialogPanel,
@@ -7,8 +9,6 @@ import {
 } from "@headlessui/react";
 import { Fragment } from "react";
 import { HiX } from "react-icons/hi";
-import { NexusGenObjects } from "../generated/nexus-typegen";
-import EditBirthdayForm from "./EditBirthdayForm";
 
 const EditBirthdayDialog = ({
   birthday,

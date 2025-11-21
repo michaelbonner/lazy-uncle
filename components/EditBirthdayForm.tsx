@@ -1,9 +1,3 @@
-import { useMutation } from "@apollo/client/react";
-import clsx from "clsx";
-import dynamic from "next/dynamic";
-import { useState } from "react";
-import toast from "react-hot-toast";
-import { IoTrashOutline } from "react-icons/io5";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import {
   DELETE_BIRTHDAY_MUTATION,
@@ -11,6 +5,12 @@ import {
   GET_ALL_BIRTHDAYS_QUERY,
 } from "../graphql/Birthday";
 import PrimaryButton from "./PrimaryButton";
+import { useMutation } from "@apollo/client/react";
+import clsx from "clsx";
+import dynamic from "next/dynamic";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { IoTrashOutline } from "react-icons/io5";
 
 const TextEdit = dynamic(() => import("./TextEdit"), {
   loading: () => (

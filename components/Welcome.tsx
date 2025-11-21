@@ -1,7 +1,7 @@
+import { authClient } from "../lib/auth-client";
 import clsx from "clsx";
 import { toast } from "react-hot-toast";
 import { GrGithub, GrGoogle } from "react-icons/gr";
-import { authClient } from "../lib/auth-client";
 
 const Welcome = () => {
   const providers = [

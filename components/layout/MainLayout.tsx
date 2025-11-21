@@ -1,3 +1,5 @@
+import { authClient } from "../../lib/auth-client";
+import ClientOnly from "../ClientOnly";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
@@ -5,8 +7,6 @@ import { useRouter } from "next/router";
 import posthog from "posthog-js";
 import { ReactElement, useEffect } from "react";
 import { RiBugFill, RiLightbulbFlashLine } from "react-icons/ri";
-import { authClient } from "../../lib/auth-client";
-import ClientOnly from "../ClientOnly";
 
 const MainLayout = ({
   children,

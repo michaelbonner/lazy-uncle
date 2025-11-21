@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
 import { NotificationService } from "./notification-service";
+import { describe, expect, it } from "vitest";
 
 describe("NotificationService Integration", () => {
   it("should create NotificationService instance", () => {

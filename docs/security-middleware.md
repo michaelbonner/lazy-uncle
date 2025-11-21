@@ -158,21 +158,6 @@ if (!securityResult.allowed) {
 }
 ```
 
-### Request Context
-
-The GraphQL context includes request information for security checks:
-
-```typescript
-export type Context = {
-  prisma: PrismaClient;
-  user: User;
-  req?: {
-    headers?: Record<string, string | string[]>;
-    connection?: { remoteAddress?: string };
-  };
-};
-```
-
 ## Configuration
 
 ### Rate Limits

@@ -1,14 +1,14 @@
-import { useQuery } from "@apollo/client/react";
-import { GetServerSideProps } from "next";
-import dynamic from "next/dynamic";
-import Link from "next/link";
-import { HiChevronLeft } from "react-icons/hi";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import MainLayout from "../../components/layout/MainLayout";
 import { GET_BIRTHDAY_BY_ID_QUERY } from "../../graphql/Birthday";
 import { auth } from "../../lib/auth";
 import getAgeForHumans from "../../shared/getAgeForHumans";
 import getDateFromYmdString from "../../shared/getDateFromYmdString";
+import { useQuery } from "@apollo/client/react";
+import { GetServerSideProps } from "next";
+import dynamic from "next/dynamic";
+import Link from "next/link";
+import { HiChevronLeft } from "react-icons/hi";
 
 const EditBirthdayForm = dynamic(
   () => import("../../components/EditBirthdayForm"),

@@ -1,9 +1,9 @@
-import { BirthdaySubmission, SubmissionStatus } from "@prisma/client";
-import "@testing-library/jest-dom";
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { InputValidator } from "./input-validator";
 import { SharingService } from "./sharing-service";
 import { SubmissionService } from "./submission-service";
+import { BirthdaySubmission, SubmissionStatus } from "@prisma/client";
+import "@testing-library/jest-dom";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock dependencies
 vi.mock("./prisma", () => ({

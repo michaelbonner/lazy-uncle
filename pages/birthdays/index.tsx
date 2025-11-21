@@ -1,9 +1,9 @@
+import MainLayout from "../../components/layout/MainLayout";
+import { authClient } from "../../lib/auth-client";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import MainLayout from "../../components/layout/MainLayout";
-import { authClient } from "../../lib/auth-client";
 
 const BirthdaysContainer = dynamic(
   () => import("../../components/BirthdaysContainer"),

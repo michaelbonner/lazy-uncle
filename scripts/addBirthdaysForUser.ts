@@ -1,14 +1,13 @@
 // npx ts-node --compiler-options {\"module\":\"CommonJS\"} scripts/addBirthdaysForUser.ts
-
+import type { NewBirthday } from "../drizzle/schema";
+import { birthdays, users } from "../drizzle/schema";
+import db from "../lib/db";
 import { createId } from "@paralleldrive/cuid2";
 import { parse } from "csv-parse/sync";
 import { eq } from "drizzle-orm";
 import fs from "fs";
 import path from "path";
 import { argv } from "process";
-import type { NewBirthday } from "../drizzle/schema";
-import { birthdays, users } from "../drizzle/schema";
-import db from "../lib/db";
 
 interface CsvBirthday {
   name: string;

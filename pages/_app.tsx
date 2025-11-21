@@ -1,3 +1,6 @@
+import client from "../lib/apollo";
+import { SearchProvider } from "../providers/SearchProvider";
+import "../styles/globals.css";
 import { ApolloProvider } from "@apollo/client/react";
 import type { AppProps } from "next/app";
 import dynamic from "next/dynamic";
@@ -6,10 +9,6 @@ import { PostHogProvider } from "posthog-js/react";
 import { useEffect } from "react";
 import TagManager from "react-gtm-module";
 import { Toaster } from "react-hot-toast";
-import client from "../lib/apollo";
-import { SearchProvider } from "../providers/SearchProvider";
-
-import "../styles/globals.css";
 
 if (typeof window !== "undefined") {
   // checks that we are client-side

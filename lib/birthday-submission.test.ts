@@ -1,3 +1,8 @@
+// Import after mocking
+import { InputValidator } from "./input-validator";
+import { RateLimitService } from "./rate-limiter";
+import { SharingService } from "./sharing-service";
+import { SubmissionStatus } from "@prisma/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock Prisma with factory function
@@ -19,12 +24,6 @@ vi.mock("./prisma", () => ({
     },
   },
 }));
-
-// Import after mocking
-import { InputValidator } from "./input-validator";
-import { RateLimitService } from "./rate-limiter";
-import { SharingService } from "./sharing-service";
-import { SubmissionStatus } from "@prisma/client";
 
 const mockPrisma = vi.mocked(await import("./prisma"), true).default;
 

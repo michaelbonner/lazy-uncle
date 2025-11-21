@@ -1,7 +1,7 @@
-import { GetServerSidePropsContext, NextPage } from "next";
 import Welcome from "../components/Welcome";
 import MainLayout from "../components/layout/MainLayout";
 import { auth } from "../lib/auth";
+import { GetServerSidePropsContext, NextPage } from "next";
 
 export const HomePage: NextPage = () => {
   return (

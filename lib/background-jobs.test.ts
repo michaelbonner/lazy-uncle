@@ -1,5 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { BackgroundJobScheduler } from "./background-jobs";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock the services
 vi.mock("./notification-service", () => ({

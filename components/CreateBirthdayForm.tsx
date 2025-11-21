@@ -1,14 +1,15 @@
+import {
+  CREATE_BIRTHDAY_MUTATION,
+  GET_ALL_BIRTHDAYS_QUERY,
+} from "../graphql/Birthday";
+import { authClient } from "../lib/auth-client";
+// import the auth client
+import PrimaryButton from "./PrimaryButton";
 import { useMutation } from "@apollo/client/react";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import {
-  CREATE_BIRTHDAY_MUTATION,
-  GET_ALL_BIRTHDAYS_QUERY,
-} from "../graphql/Birthday";
-import { authClient } from "../lib/auth-client"; // import the auth client
-import PrimaryButton from "./PrimaryButton";
 
 const TextEdit = dynamic(() => import("./TextEdit"), {
   loading: () => (

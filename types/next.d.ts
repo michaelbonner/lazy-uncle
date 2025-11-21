@@ -1,6 +1,6 @@
+import { Session } from "../lib/auth-client";
 import type { NextComponentType, NextPageContext } from "next";
 import type { Router } from "next/router";
-import { Session } from "../lib/auth-client";
 
 declare module "next/app" {
   type AppProps<P = Record<string, unknown>> = {

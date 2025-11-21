@@ -1,14 +1,14 @@
-import { useMutation, useQuery } from "@apollo/client/react";
-import { useState, useEffect } from "react";
-import { HiCog, HiMail, HiMailOpen } from "react-icons/hi";
-import { IoSettingsOutline } from "react-icons/io5";
 import {
   GET_NOTIFICATION_PREFERENCES_QUERY,
   UPDATE_NOTIFICATION_PREFERENCES_MUTATION,
 } from "../graphql/Sharing";
-import clsx from "clsx";
 import LoadingSpinner from "./LoadingSpinner";
 import PrimaryButton from "./PrimaryButton";
+import { useMutation, useQuery } from "@apollo/client/react";
+import clsx from "clsx";
+import { useState, useEffect } from "react";
+import { HiCog, HiMail, HiMailOpen } from "react-icons/hi";
+import { IoSettingsOutline } from "react-icons/io5";
 
 interface NotificationPreference {
   id: string;

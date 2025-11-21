@@ -1,3 +1,10 @@
+import { NexusGenObjects } from "../generated/nexus-typegen";
+import getAgeForHumans from "../shared/getAgeForHumans";
+import getDateFromYmdString from "../shared/getDateFromYmdString";
+import { getDaysUntilNextBirthday } from "../shared/getDaysUntilNextBirthday";
+import getZodiacSignForDateYmdString from "../shared/getZodiacSignForDateYmdString";
+import EditBirthdayDialog from "./EditBirthdayDialog";
+import ZodiacSignCharacter from "./ZodiacSignCharacter";
 import clsx from "clsx";
 import { format } from "date-fns";
 import { FC, useEffect, useState } from "react";
@@ -8,13 +15,6 @@ import {
   HiOutlinePaperClip,
   HiShare,
 } from "react-icons/hi";
-import { NexusGenObjects } from "../generated/nexus-typegen";
-import getAgeForHumans from "../shared/getAgeForHumans";
-import getDateFromYmdString from "../shared/getDateFromYmdString";
-import { getDaysUntilNextBirthday } from "../shared/getDaysUntilNextBirthday";
-import getZodiacSignForDateYmdString from "../shared/getZodiacSignForDateYmdString";
-import EditBirthdayDialog from "./EditBirthdayDialog";
-import ZodiacSignCharacter from "./ZodiacSignCharacter";
 
 interface Props {
   birthday: NexusGenObjects["Birthday"];

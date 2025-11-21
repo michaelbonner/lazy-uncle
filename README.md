@@ -12,7 +12,7 @@ I just wanted to create a little app to keep track of birthdays. That's pretty m
 - Next.js
 - PlanetScale
 - NextAuth
-- Prisma
+- Drizzle
 - Apollo client
 - Tailwind CSS
 
@@ -29,4 +29,3 @@ I just wanted to create a little app to keep track of birthdays. That's pretty m
 ## Important files
 
 - `pages/graphql.ts`: All GraphQL requests hit this endpoint. Visit [http://localhost:3000/api/graphql]() to open the Apollo Studio
-- `prisma/schema.prisma`: All database schemas must be implemented here

@@ -1,6 +1,6 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import prisma from "./prisma";
 import { RateLimitService } from "./rate-limiter";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock prisma
 vi.mock("./prisma", () => ({

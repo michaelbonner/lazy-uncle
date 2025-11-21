@@ -1,7 +1,7 @@
+import BirthdayRow from "./BirthdayRow";
 import { render, screen } from "@testing-library/react";
 import React from "react";
 import { describe, expect, it, vi } from "vitest";
-import BirthdayRow from "./BirthdayRow";
 
 // Mock the auth client
 vi.mock("../lib/auth-client", () => ({

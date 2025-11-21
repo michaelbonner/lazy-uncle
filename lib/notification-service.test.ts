@@ -1,10 +1,10 @@
-import "@testing-library/jest-dom";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   NotificationService,
   SubmissionNotificationData,
 } from "./notification-service";
 import prisma from "./prisma";
+import "@testing-library/jest-dom";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock prisma
 vi.mock("./prisma", () => ({

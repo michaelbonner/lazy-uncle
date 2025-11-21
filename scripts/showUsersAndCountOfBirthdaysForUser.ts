@@ -1,8 +1,7 @@
 // npx tsx scripts/showUsersAndCountOfBirthdaysForUser
-
-import { asc } from "drizzle-orm";
 import { users } from "../drizzle/schema";
 import db from "../lib/db";
+import { asc } from "drizzle-orm";
 
 async function main() {
   const userList = await db.query.users.findMany({

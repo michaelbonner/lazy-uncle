@@ -72,7 +72,7 @@ export const birthdays = pgTable(
     date: text("date").notNull(),
     category: text("category"),
     parent: text("parent"),
-    notes: text("notes"), // Text type in Prisma maps to text in Drizzle
+    notes: text("notes"),
     createdAt: timestamp("createdAt"),
     userId: text("userId").notNull(),
     importSource: text("importSource"),
@@ -126,7 +126,7 @@ export const birthdaySubmissions = pgTable(
     name: text("name").notNull(),
     date: text("date").notNull(),
     category: text("category"),
-    notes: text("notes"), // Text type in Prisma maps to text in Drizzle
+    notes: text("notes"),
     submitterName: text("submitterName"),
     submitterEmail: text("submitterEmail"),
     relationship: text("relationship"),

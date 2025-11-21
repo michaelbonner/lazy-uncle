@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
 import { BackgroundJobScheduler } from "./background-jobs";
+import { describe, expect, it } from "vitest";
 
 describe("BackgroundJobScheduler Integration", () => {
   it("should create BackgroundJobScheduler instance", () => {

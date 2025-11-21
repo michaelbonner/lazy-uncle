@@ -1,6 +1,6 @@
+import * as schema from "../drizzle/schema";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-import * as schema from "../drizzle/schema";
 
 let dbInstance: ReturnType<typeof drizzle<typeof schema>>;
 
@@ -21,4 +21,3 @@ if (process.env.NODE_ENV === "production") {
 
 export default dbInstance;
 export { schema };
-

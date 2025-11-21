@@ -1,4 +1,3 @@
-import { and, eq, lt, sql } from "drizzle-orm";
 import {
   birthdaySubmissions,
   notificationPreferences,
@@ -7,6 +6,7 @@ import db from "./db";
 import { notificationService } from "./notification-service";
 import { SharingService } from "./sharing-service";
 import { SubmissionService } from "./submission-service";
+import { and, eq, lt, sql } from "drizzle-orm";
 
 export interface JobScheduler {
   start(): void;

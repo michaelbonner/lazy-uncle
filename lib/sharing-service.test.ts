@@ -1,6 +1,6 @@
+import { CreateSharingLinkOptions, SharingService } from "./sharing-service";
 import { SharingLink } from "@prisma/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { CreateSharingLinkOptions, SharingService } from "./sharing-service";
 
 // Mock the prisma client
 vi.mock("./prisma", () => ({

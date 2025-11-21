@@ -1,8 +1,8 @@
-import { Resend } from "resend";
-import db from "./db";
 import { users, notificationPreferences } from "../drizzle/schema";
-import { eq } from "drizzle-orm";
+import db from "./db";
 import { createId } from "@paralleldrive/cuid2";
+import { eq } from "drizzle-orm";
+import { Resend } from "resend";
 
 export interface NotificationPreferences {
   emailNotifications: boolean;

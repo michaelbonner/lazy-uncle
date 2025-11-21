@@ -1,12 +1,12 @@
-import { useQuery } from "@apollo/client/react";
-import { GetServerSideProps } from "next";
-import { useRouter } from "next/router";
-import { useEffect } from "react";
 import BirthdaySubmissionForm from "../../components/BirthdaySubmissionForm";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import PublicLayout from "../../components/layout/PublicLayout";
 import { VALIDATE_SHARING_LINK_QUERY } from "../../graphql/Sharing";
+import { useQuery } from "@apollo/client/react";
+import { GetServerSideProps } from "next";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 interface SharingPageProps {
   token: string;

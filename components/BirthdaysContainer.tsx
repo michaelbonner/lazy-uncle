@@ -1,5 +1,17 @@
-import { useQuery } from "@apollo/client/react";
 import type { Birthday } from "../drizzle/schema";
+import { NexusGenObjects } from "../generated/nexus-typegen";
+import { GET_ALL_BIRTHDAYS_QUERY } from "../graphql/Birthday";
+import { authClient } from "../lib/auth-client";
+// import the auth client
+import { SearchContext } from "../providers/SearchProvider";
+import getDateFromYmdString from "../shared/getDateFromYmdString";
+import { getDaysUntilNextBirthday } from "../shared/getDaysUntilNextBirthday";
+import getZodiacSignForDateYmdString from "../shared/getZodiacSignForDateYmdString";
+import BirthdayFilterField from "./BirthdayFilterField";
+import BirthdayRow from "./BirthdayRow";
+import LoadingSpinner from "./LoadingSpinner";
+import SortColumnHeader from "./SortColumnHeader";
+import { useQuery } from "@apollo/client/react";
 import clsx from "clsx";
 import { format } from "date-fns";
 import dynamic from "next/dynamic";
@@ -9,17 +21,6 @@ import { BsFillCaretDownFill } from "react-icons/bs";
 import { GrFormFilter, GrRefresh } from "react-icons/gr";
 import { HiOutlineCalendar, HiXCircle } from "react-icons/hi";
 import { IoAddCircleOutline } from "react-icons/io5";
-import { NexusGenObjects } from "../generated/nexus-typegen";
-import { GET_ALL_BIRTHDAYS_QUERY } from "../graphql/Birthday";
-import { authClient } from "../lib/auth-client"; // import the auth client
-import { SearchContext } from "../providers/SearchProvider";
-import getDateFromYmdString from "../shared/getDateFromYmdString";
-import { getDaysUntilNextBirthday } from "../shared/getDaysUntilNextBirthday";
-import getZodiacSignForDateYmdString from "../shared/getZodiacSignForDateYmdString";
-import BirthdayFilterField from "./BirthdayFilterField";
-import BirthdayRow from "./BirthdayRow";
-import LoadingSpinner from "./LoadingSpinner";
-import SortColumnHeader from "./SortColumnHeader";
 
 const AddBirthdayDialog = dynamic(() => import("./AddBirthdayDialog"), {
   ssr: false,

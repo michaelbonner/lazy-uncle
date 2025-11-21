@@ -1,5 +1,5 @@
-import { sql } from "drizzle-orm";
 import db from "../../lib/db";
+import { sql } from "drizzle-orm";
 import { NextApiRequest, NextApiResponse } from "next";
 
 const main = async (

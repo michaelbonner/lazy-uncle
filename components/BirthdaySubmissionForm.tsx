@@ -1,9 +1,9 @@
-import { useMutation } from "@apollo/client/react";
-import { useState } from "react";
-import toast from "react-hot-toast";
-import clsx from "clsx";
 import PrimaryButton from "./PrimaryButton";
 import { gql } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
+import clsx from "clsx";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 const SUBMIT_BIRTHDAY_MUTATION = gql`
   mutation SubmitBirthday(

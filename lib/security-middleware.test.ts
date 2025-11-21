@@ -1,10 +1,10 @@
-import { SharingLink } from "@prisma/client";
-import { NextRequest } from "next/server";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import prisma from "./prisma";
 import { RateLimitService } from "./rate-limiter";
 import { SecurityContext, SecurityMiddleware } from "./security-middleware";
 import { SharingService } from "./sharing-service";
+import { SharingLink } from "@prisma/client";
+import { NextRequest } from "next/server";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock dependencies
 vi.mock("./rate-limiter", () => ({

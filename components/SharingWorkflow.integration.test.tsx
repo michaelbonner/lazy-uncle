@@ -1,9 +1,4 @@
-import { MockedProvider } from "@apollo/client/testing/react";
-import "@testing-library/jest-dom";
-import { render, screen, waitFor } from "@testing-library/react";
-import { DocumentNode } from "graphql";
-import React from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { SubmissionStatus } from "../drizzle/schema";
 import { GET_ALL_BIRTHDAYS_QUERY } from "../graphql/Birthday";
 import {
   CREATE_SHARING_LINK_MUTATION,
@@ -13,7 +8,12 @@ import {
   IMPORT_SUBMISSION_MUTATION,
 } from "../graphql/Sharing";
 import BirthdaysContainer from "./BirthdaysContainer";
-import type { SubmissionStatus } from "../drizzle/schema";
+import { MockedProvider } from "@apollo/client/testing/react";
+import "@testing-library/jest-dom";
+import { render, screen, waitFor } from "@testing-library/react";
+import { DocumentNode } from "graphql";
+import React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock the auth client
 vi.mock("../lib/auth-client", () => ({
