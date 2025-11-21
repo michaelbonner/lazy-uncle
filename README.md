@@ -10,7 +10,6 @@ I just wanted to create a little app to keep track of birthdays. That's pretty m
 
 - React
 - Next.js
-- PlanetScale
 - NextAuth
 - Drizzle
 - Apollo client
