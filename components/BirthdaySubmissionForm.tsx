@@ -178,7 +178,7 @@ const BirthdaySubmissionForm = ({
           <button
             onClick={onCancel}
             className={clsx(
-              "inline-flex items-center rounded-md border border-transparent px-4 py-2 font-medium",
+              "inline-flex items-center rounded-md border border-transparent px-4 py-2 font-medium text-gray-700",
               "hover:bg-gray-100",
               "focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:outline-hidden",
             )}
@@ -209,7 +209,7 @@ const BirthdaySubmissionForm = ({
               Name *
             </label>
             <input
-              className="block h-12 w-full rounded-sm border-gray-300"
+              className="block h-12 w-full rounded-sm border-gray-300 text-gray-900"
               id="name"
               onChange={(e) => setName(e.target.value)}
               required
@@ -224,7 +224,7 @@ const BirthdaySubmissionForm = ({
               Birthday *
             </label>
             <input
-              className="block h-12 w-full rounded-sm border-gray-300"
+              className="block h-12 w-full rounded-sm border-gray-300 text-gray-900"
               id="date"
               onChange={(e) => setDate(e.target.value)}
               required
@@ -241,7 +241,7 @@ const BirthdaySubmissionForm = ({
               Category (optional)
             </label>
             <input
-              className="block h-12 w-full rounded-sm border-gray-300"
+              className="block h-12 w-full rounded-sm border-gray-300 text-gray-900"
               id="category"
               onChange={(e) => setCategory(e.target.value)}
               type="text"
@@ -258,7 +258,7 @@ const BirthdaySubmissionForm = ({
               Relationship (optional)
             </label>
             <input
-              className="block h-12 w-full rounded-sm border-gray-300"
+              className="block h-12 w-full rounded-sm border-gray-300 text-gray-900"
               id="relationship"
               onChange={(e) => setRelationship(e.target.value)}
               type="text"
@@ -274,7 +274,7 @@ const BirthdaySubmissionForm = ({
             Notes (optional)
           </label>
           <textarea
-            className="mt-1 block w-full rounded-sm border-gray-300"
+            className="mt-1 block w-full rounded-sm border-gray-300 text-gray-900"
             id="notes"
             onChange={(e) => setNotes(e.target.value)}
             value={notes}
@@ -300,7 +300,7 @@ const BirthdaySubmissionForm = ({
                 Your Name
               </label>
               <input
-                className="mt-1 block h-12 w-full rounded-sm border-gray-300"
+                className="mt-1 block h-12 w-full rounded-sm border-gray-300 text-gray-900"
                 id="submitterName"
                 onChange={(e) => setSubmitterName(e.target.value)}
                 type="text"
@@ -317,7 +317,7 @@ const BirthdaySubmissionForm = ({
                 Your Email
               </label>
               <input
-                className="mt-1 block h-12 w-full rounded-sm border-gray-300"
+                className="mt-1 block h-12 w-full rounded-sm border-gray-300 text-gray-900"
                 id="submitterEmail"
                 onChange={(e) => setSubmitterEmail(e.target.value)}
                 type="email"
@@ -379,7 +379,7 @@ const BirthdaySubmissionForm = ({
           {onCancel && (
             <button
               className={clsx(
-                "inline-flex items-center rounded-md border border-transparent px-4 py-2 font-medium",
+                "inline-flex items-center rounded-md border border-transparent px-4 py-2 font-medium text-gray-700",
                 "hover:bg-gray-100",
                 "focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:outline-hidden",
               )}
