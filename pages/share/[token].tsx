@@ -89,7 +89,7 @@ const SharingPage = ({ token }: SharingPageProps) => {
           <h1 className="mb-4 text-2xl font-bold text-gray-900">
             Something went wrong
           </h1>
-          <p className="mb-6 text-gray-600">
+          <p className="mb-6 text-gray-700">
             We encountered an error while loading this sharing link. Please try
             again or contact the person who shared this link with you.
           </p>
@@ -208,7 +208,7 @@ const SharingPage = ({ token }: SharingPageProps) => {
               {sharingLink.description}
             </p>
           )}
-          <p className="text-gray-500">
+          <p className="text-white">
             Help keep track of important birthdays by adding the details below.
             Your submission will be reviewed before being added to the birthday
             list.
@@ -258,12 +258,12 @@ const SharingPage = ({ token }: SharingPageProps) => {
         </div>
 
         {/* Info Section */}
-        <div className="mt-8 text-center text-sm text-gray-500">
+        <div className="mt-8 text-center text-sm text-white">
           <p>
             Powered by{" "}
             <Link
               href="/"
-              className="font-medium text-cyan-600 hover:text-cyan-500"
+              className="font-medium"
             >
               Lazy Uncle
             </Link>{" "}
@@ -273,7 +273,7 @@ const SharingPage = ({ token }: SharingPageProps) => {
             Want to create your own birthday list?{" "}
             <Link
               href="/"
-              className="font-medium text-cyan-600 hover:text-cyan-500"
+              className="font-medium"
             >
               Sign up for free
             </Link>
