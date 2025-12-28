@@ -10,7 +10,7 @@ import { useEffect } from "react";
 import TagManager from "react-gtm-module";
 import { Toaster } from "react-hot-toast";
 
-if (typeof window !== "undefined") {
+if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
   // checks that we are client-side
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY ?? "", {
     api_host:

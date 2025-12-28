@@ -24,10 +24,12 @@ const MainLayout = ({
     if (isPending) return;
     if (!session) return;
 
-    posthog.identify(session?.user?.id, {
-      email: session?.user?.email,
-      name: session?.user?.name,
-    });
+    if (process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+      posthog.identify(session?.user?.id, {
+        email: session?.user?.email,
+        name: session?.user?.name,
+      });
+    }
   }, [session, isPending]);
 
   return (
