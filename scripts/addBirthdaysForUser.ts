@@ -106,8 +106,11 @@ async function main() {
   }
   let csvBirthdays = await loadCsvBirthdays();
 
+  let importSource = "csv-seeder";
+
   // Check if CSV is empty and prompt for seeded data
   if (csvBirthdays.length === 0) {
+    importSource = "random-seeder";
     const answer = await promptUser(
       "No birthdays found in CSV. Would you like to add 100 seeded birthdays? (yes/no): ",
     );
@@ -154,7 +157,7 @@ async function main() {
         parent: csvBirthday.parent || null,
         notes: csvBirthday.notes || null,
         userId: user.id,
-        importSource: "seeded",
+        importSource,
         createdAt: new Date(),
       };
     });
