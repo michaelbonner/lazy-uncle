@@ -2,12 +2,14 @@
 import type { NewBirthday } from "../drizzle/schema";
 import { birthdays, users } from "../drizzle/schema";
 import db from "../lib/db";
+import { faker } from "@faker-js/faker";
 import { createId } from "@paralleldrive/cuid2";
 import { parse } from "csv-parse/sync";
 import { eq } from "drizzle-orm";
 import fs from "fs";
 import path from "path";
 import { argv } from "process";
+import readline from "readline";
 
 interface CsvBirthday {
   name: string;
@@ -18,10 +20,13 @@ interface CsvBirthday {
 }
 
 async function loadCsvBirthdays(): Promise<CsvBirthday[]> {
-  const data = fs.readFileSync(
-    path.resolve(__dirname, "../data/birthdays.csv"),
-    { encoding: "utf-8" },
-  );
+  const filePath = path.resolve(__dirname, "../data/birthdays.csv");
+  if (!fs.existsSync(filePath)) {
+    console.log("CSV file not found, returning empty list");
+    return [];
+  }
+
+  const data = fs.readFileSync(filePath, { encoding: "utf-8" });
   if (!data) {
     console.log("No data found in csv file");
     return [];
@@ -38,13 +43,84 @@ async function loadCsvBirthdays(): Promise<CsvBirthday[]> {
   });
 }
 
+async function promptUser(question: string): Promise<string> {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  return new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      rl.close();
+      resolve(answer.trim().toLowerCase());
+    });
+  });
+}
+
+async function generateSeededBirthdays(count: number): Promise<CsvBirthday[]> {
+  const categories = ["Family", "Friend", "Colleague", "Acquaintance", null];
+  const now = new Date();
+  const seventyYearsAgo = new Date(
+    now.getFullYear() - 70,
+    now.getMonth(),
+    now.getDate(),
+  );
+
+  const seededBirthdays: CsvBirthday[] = [];
+
+  for (let i = 0; i < count; i++) {
+    // Use faker to generate a realistic name
+    const name = faker.person.fullName();
+
+    // Generate random date between 70 years ago and now
+    const randomTime =
+      seventyYearsAgo.getTime() +
+      Math.random() * (now.getTime() - seventyYearsAgo.getTime());
+    const randomDate = new Date(randomTime);
+
+    // Format as MM/DD/YYYY
+    const month = String(randomDate.getMonth() + 1).padStart(2, "0");
+    const day = String(randomDate.getDate()).padStart(2, "0");
+    const year = randomDate.getFullYear();
+    const date = `${year}-${month}-${day}`;
+
+    const category = categories[Math.floor(Math.random() * categories.length)];
+
+    seededBirthdays.push({
+      name,
+      date,
+      category,
+      parent: null,
+      notes: null,
+    });
+  }
+
+  return seededBirthdays;
+}
+
 async function main() {
   // load csv
   if (argv.length < 3) {
     console.log("Please provide the user's email as argument");
     return;
   }
-  const csvBirthdays = await loadCsvBirthdays();
+  let csvBirthdays = await loadCsvBirthdays();
+
+  // Check if CSV is empty and prompt for seeded data
+  if (csvBirthdays.length === 0) {
+    const answer = await promptUser(
+      "No birthdays found in CSV. Would you like to add 100 seeded birthdays? (yes/no): ",
+    );
+
+    if (answer === "yes" || answer === "y") {
+      console.log("Generating 100 seeded birthdays...");
+      csvBirthdays = await generateSeededBirthdays(100);
+      console.log("Seeded birthdays generated!");
+    } else {
+      console.log("No birthdays to add");
+      return;
+    }
+  }
 
   // load user from email provided
   const email = argv[2];
@@ -78,6 +154,8 @@ async function main() {
         parent: csvBirthday.parent || null,
         notes: csvBirthday.notes || null,
         userId: user.id,
+        importSource: "seeded",
+        createdAt: new Date(),
       };
     });
 
