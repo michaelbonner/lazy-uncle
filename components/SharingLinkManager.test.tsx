@@ -62,8 +62,13 @@ describe("SharingLinkManager Component", () => {
     });
 
     it("should format expiration dates correctly", () => {
-      const futureDate = new Date("2025-12-25T15:30:00Z");
-      const pastDate = new Date("2024-01-01T10:00:00Z");
+      // Create a date 7 days in the future
+      const futureDate = new Date();
+      futureDate.setDate(futureDate.getDate() + 7);
+
+      // Create a date 7 days in the past
+      const pastDate = new Date();
+      pastDate.setDate(pastDate.getDate() - 7);
 
       const formatExpirationDate = (expiresAt: string) => {
         const date = new Date(expiresAt);
