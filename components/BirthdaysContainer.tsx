@@ -79,46 +79,59 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
       return [];
     }
 
-    const dates = birthdaysData.birthdays
-      .filter((birthday: NexusGenObjects["Birthday"]) => {
-        return (
-          birthday?.name?.toLowerCase().includes(nameFilter.toLowerCase()) ||
-          !birthday.id
-        );
-      })
-      .filter((birthday: NexusGenObjects["Birthday"]) => {
-        if (!categoryFilter) {
+    // Pre-compute lowercase filter strings once
+    const nameFilterLower = nameFilter.toLowerCase();
+    const categoryFilterLower = categoryFilter.toLowerCase();
+    const parentFilterLower = parentFilter.toLowerCase();
+    const zodiacSignFilterLower = zodiacSignFilter.toLowerCase();
+
+    // Single pass filtering - much faster than chained filters
+    const dates = birthdaysData.birthdays.filter(
+      (birthday: NexusGenObjects["Birthday"]) => {
+        // Skip filtering for items without id
+        if (!birthday.id) {
           return true;
         }
-        return (
-          birthday?.category
-            ?.toLowerCase()
-            .includes(categoryFilter.toLowerCase()) || !birthday.id
-        );
-      })
-      .filter((birthday: NexusGenObjects["Birthday"]) => {
-        if (!parentFilter) {
-          return true;
+
+        // Name filter
+        if (
+          nameFilter &&
+          !birthday?.name?.toLowerCase().includes(nameFilterLower)
+        ) {
+          return false;
         }
-        return (
-          birthday?.parent
-            ?.toLowerCase()
-            .includes(parentFilter.toLowerCase()) || !birthday.id
-        );
-      })
-      .filter((birthday: NexusGenObjects["Birthday"]) => {
-        if (!zodiacSignFilter) {
-          return true;
+
+        // Category filter
+        if (
+          categoryFilter &&
+          !birthday?.category?.toLowerCase().includes(categoryFilterLower)
+        ) {
+          return false;
         }
-        const birthdayZodiacSign = getZodiacSignForDateYmdString(
-          birthday?.date || "",
-        );
-        return (
-          birthdayZodiacSign
-            .toLowerCase()
-            .includes(zodiacSignFilter.toLowerCase()) || !birthday.id
-        );
-      });
+
+        // Parent filter
+        if (
+          parentFilter &&
+          !birthday?.parent?.toLowerCase().includes(parentFilterLower)
+        ) {
+          return false;
+        }
+
+        // Zodiac sign filter - only compute when filter is active
+        if (zodiacSignFilter) {
+          const birthdayZodiacSign = getZodiacSignForDateYmdString(
+            birthday?.date || "",
+          );
+          if (
+            !birthdayZodiacSign.toLowerCase().includes(zodiacSignFilterLower)
+          ) {
+            return false;
+          }
+        }
+
+        return true;
+      },
+    );
 
     if (dates.length < 1) return [];
 
@@ -129,6 +142,8 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
         date: format(new Date(), "yyyy-MM-dd"),
       });
     }
+
+    // Optimize sorting by pre-computing values when needed
     return unsortedDates.sort(
       (a: NexusGenObjects["Birthday"], b: NexusGenObjects["Birthday"]) => {
         if (sortBy === "date_asc") {
