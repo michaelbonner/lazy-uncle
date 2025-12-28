@@ -13,6 +13,7 @@ Lazy Uncle is a birthday reminder application that allows users to track birthda
 ## Essential Commands
 
 ### Development
+
 ```bash
 bun dev                    # Start dev server (http://localhost:3000)
 bun db:studio              # Open Drizzle Studio (database GUI)
@@ -20,12 +21,14 @@ bun db:push                # Push schema changes to database
 ```
 
 ### Database
+
 ```bash
 bun db:generate            # Generate Drizzle migration files
 bun db:migrate             # Run migrations
 ```
 
 ### Testing
+
 ```bash
 bun test                   # Run all tests (193 test files)
 bun test:watch             # Watch mode
@@ -34,6 +37,7 @@ bun test path/to/file.test.ts  # Run single test file
 ```
 
 ### Build & Deploy
+
 ```bash
 bun build                  # Build production bundle
 bun start                  # Start production server
@@ -41,6 +45,7 @@ bun lint                   # Run ESLint
 ```
 
 ### Utilities
+
 ```bash
 bun out                    # Check outdated packages
 bun up                     # Update packages
@@ -49,6 +54,7 @@ bun up                     # Update packages
 ## Architecture Overview
 
 ### Routing Structure
+
 - **Hybrid Next.js**: Pages Router for UI (`pages/`), App Router for API routes (`app/api/`)
 - **API Endpoints**:
   - `/api/graphql` - GraphQL Yoga endpoint (all data operations)
@@ -59,6 +65,7 @@ bun up                     # Update packages
 ### Database Schema (Drizzle ORM)
 
 Key tables and their relationships:
+
 - **user** → **account** (1:many OAuth providers)
 - **user** → **session** (1:many)
 - **user** → **Birthday** (1:many, owns birthdays)
@@ -71,12 +78,14 @@ All user data is isolated by `userId` - enforce this in all queries.
 ### GraphQL Schema
 
 **Location**: `graphql/schema/`
+
 - `index.ts` - Schema builder (Nexus)
 - `Query.ts` - Query resolvers
 - `Mutation.ts` - Mutation resolvers
 - Auto-generated types: `generated/nexus-typegen.ts`
 
 **Context**: Every GraphQL request includes:
+
 ```typescript
 {
   user: { id, email, name },  // From Better Auth session
@@ -128,6 +137,7 @@ Core business logic lives in `lib/*-service.ts`:
 ### Security Architecture
 
 **Defense in Depth**:
+
 1. **Input Validation** (`lib/input-validator.ts`) - Sanitize all user input, remove XSS patterns
 2. **Rate Limiting** (`lib/rate-limiter.ts`) - In-memory limiter (⚠️ should be Redis in production)
    - IP-based: 10 submissions/hour
@@ -153,17 +163,19 @@ Core business logic lives in `lib/*-service.ts`:
 ### Creating a New GraphQL Mutation
 
 1. Define in `graphql/schema/Mutation.ts`:
+
 ```typescript
-t.field('myMutation', {
-  type: 'Birthday',
+t.field("myMutation", {
+  type: "Birthday",
   args: { id: nonNull(stringArg()) },
   resolve: async (_, args, ctx) => {
-    if (!ctx.user?.id) throw new Error('Unauthorized');
+    if (!ctx.user?.id) throw new Error("Unauthorized");
     // Business logic here - consider creating a service method
     return result;
-  }
+  },
 });
 ```
+
 2. Add service method if complex: `lib/my-service.ts`
 3. Write tests: `graphql/schema/MyMutation.test.ts`
 4. Update frontend: Add mutation in `graphql/Birthday.ts`, use in component
@@ -179,6 +191,7 @@ t.field('myMutation', {
 ### Working with Background Jobs
 
 Edit `lib/background-jobs.ts`:
+
 ```typescript
 {
   name: 'my-job',
@@ -214,6 +227,7 @@ Jobs auto-start in production. Monitor via `getStatus()` method.
 ## Environment Setup
 
 Required environment variables:
+
 ```bash
 DATABASE_URL=postgresql://...           # PostgreSQL connection string
 GITHUB_ID=                              # OAuth GitHub app ID
@@ -236,6 +250,7 @@ NEXT_PUBLIC_POSTHOG_KEY=                # Analytics (optional)
 - **Component tests**: React components (`components/*.test.tsx`)
 
 When writing tests:
+
 - Mock external dependencies (Resend API, etc.)
 - Use in-memory database for integration tests (if applicable)
 - Test security boundaries extensively
@@ -244,16 +259,19 @@ When writing tests:
 ## Common Troubleshooting
 
 ### GraphQL Endpoint Issues
+
 - Visit `http://localhost:3000/api/graphql` for GraphQL playground
 - Check `graphql/context.ts` for auth context setup
 - Verify session cookie is being sent with requests
 
 ### Database Connection Issues
+
 - Ensure `DATABASE_URL` is set correctly in `.env`
 - Run `bun db:push` to sync schema
 - Open `bun db:studio` to inspect database directly
 
 ### Authentication Not Working
+
 - Verify OAuth app credentials in `.env`
 - Check Better Auth documentation: https://www.better-auth.com/
 - GitHub: https://www.better-auth.com/docs/authentication/github
@@ -261,11 +279,13 @@ When writing tests:
 - Ensure `BETTER_AUTH_SECRET` is set (32+ character random string)
 
 ### Rate Limiting in Development
+
 - Rate limiter is in-memory, resets on server restart
 - To bypass during testing, temporarily increase limits in `lib/rate-limiter.ts`
 - For production, implement Redis-backed rate limiter
 
 ### Email Notifications Not Sending
+
 - In development, emails log to console (check terminal output)
 - For production emails, set `RESEND_API_KEY` in environment
 - Check `lib/notification-service.ts` for email logic
@@ -273,28 +293,33 @@ When writing tests:
 ## Architecture Decisions & Rationale
 
 ### Why Hybrid Routing (Pages + App Router)?
+
 - Pages Router: Mature, stable, better for SSR-heavy UI pages
 - App Router: Modern API route handling with better streaming support
 - Gradual migration strategy - can move pages to App Router incrementally
 
 ### Why Better Auth over NextAuth?
+
 - More modern, actively maintained
 - Better TypeScript support
 - Simpler session management
 - Easier to customize
 
 ### Why Nexus for GraphQL?
+
 - Code-first schema with full TypeScript inference
 - Auto-generates types and schema
 - Better DX than schema-first approaches
 
 ### Why In-Memory Rate Limiter?
+
 - Simplicity for initial launch
 - Good enough for low-traffic applications
 - ⚠️ Known limitation: Does not persist across deployments
 - TODO: Replace with Redis for production scale
 
 ### Why Text Column for Dates?
+
 - Birthday dates often don't have year (e.g., "celebrate every year")
 - Storing as text provides flexibility
 - Validation ensures consistent format
@@ -337,6 +362,7 @@ types/              # Shared TypeScript types
 ## GraphQL Query Examples
 
 ### Fetch All Birthdays
+
 ```graphql
 query GetAllBirthdays {
   birthdays {
@@ -350,9 +376,13 @@ query GetAllBirthdays {
 ```
 
 ### Create Sharing Link
+
 ```graphql
 mutation CreateSharingLink($description: String, $expirationHours: Int) {
-  createSharingLink(description: $description, expirationHours: $expirationHours) {
+  createSharingLink(
+    description: $description
+    expirationHours: $expirationHours
+  ) {
     id
     token
     expiresAt
@@ -362,6 +392,7 @@ mutation CreateSharingLink($description: String, $expirationHours: Int) {
 ```
 
 ### Submit Birthday (Public, No Auth)
+
 ```graphql
 mutation SubmitBirthday($token: String!, $name: String!, $date: String!) {
   submitBirthday(token: $token, name: $name, date: $date) {
@@ -372,6 +403,7 @@ mutation SubmitBirthday($token: String!, $name: String!, $date: String!) {
 ```
 
 ### Import Submission
+
 ```graphql
 mutation ImportSubmission($submissionId: String!) {
   importSubmission(submissionId: $submissionId) {
@@ -385,15 +417,17 @@ mutation ImportSubmission($submissionId: String!) {
 ## Scripts & Automation
 
 ### Add Birthdays for User
+
 ```bash
 # Manually via CSV
-npx ts-node --compiler-options {\"module\":\"CommonJS\"} scripts/addBirthdaysForUser.ts user@example.com
+bun scripts/addBirthdaysForUser.ts user@example.com
 
 # With seeded data (if CSV is empty)
 # Script will prompt: "Would you like to add 100 seeded birthdays? (yes/no)"
 ```
 
 The script:
+
 1. Reads from `data/birthdays.csv`
 2. If CSV is empty, offers to generate 100 seeded birthdays
 3. Uses @faker-js/faker for realistic names
@@ -421,6 +455,7 @@ The script:
 ## README Notes
 
 The README.md mentions MongoDB Atlas, but the codebase uses PostgreSQL with Drizzle ORM. This appears to be outdated documentation. The actual setup uses:
+
 - PostgreSQL (not MongoDB)
 - Better Auth (not NextAuth, though README mentions NextAuth)
 - Bun package manager (enforced)

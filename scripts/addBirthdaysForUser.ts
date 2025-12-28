@@ -1,4 +1,4 @@
-// npx ts-node --compiler-options {\"module\":\"CommonJS\"} scripts/addBirthdaysForUser.ts
+// bun ./scripts/addBirthdaysForUser.ts <email>
 import type { NewBirthday } from "../drizzle/schema";
 import { birthdays, users } from "../drizzle/schema";
 import db from "../lib/db";
