@@ -78,7 +78,7 @@ async function generateSeededBirthdays(count: number): Promise<CsvBirthday[]> {
       Math.random() * (now.getTime() - seventyYearsAgo.getTime());
     const randomDate = new Date(randomTime);
 
-    // Format as MM/DD/YYYY
+    // Format as YYYY-MM-DD
     const month = String(randomDate.getMonth() + 1).padStart(2, "0");
     const day = String(randomDate.getDate()).padStart(2, "0");
     const year = randomDate.getFullYear();
