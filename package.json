@@ -49,7 +49,7 @@
     "react-gtm-module": "^2.0.11",
     "react-hot-toast": "^2.6.0",
     "react-icons": "^5.5.0",
-    "resend": "~6.6.0",
+    "resend": "^6.7.0",
     "rxjs": "^7.8.2",
     "shepherd.js": "^14.5.1"
   },
