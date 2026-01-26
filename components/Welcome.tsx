@@ -1,6 +1,5 @@
 import { authClient } from "../lib/auth-client";
 import clsx from "clsx";
-import { Fjalla_One } from "next/font/google";
 import { toast } from "react-hot-toast";
 import { GrGithub, GrGoogle } from "react-icons/gr";
 
