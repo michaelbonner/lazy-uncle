@@ -47,24 +47,28 @@ export interface NexusGenObjects {
   Birthday: { // root type
     category?: string | null; // String
     createdAt?: NexusGenScalars['DateTime'] | null; // DateTime
-    date?: string | null; // String
+    day?: number | null; // Int
     id?: string | null; // String
     importSource?: string | null; // String
+    month?: number | null; // Int
     name?: string | null; // String
     notes?: string | null; // String
     parent?: string | null; // String
+    year?: number | null; // Int
   }
   BirthdaySubmission: { // root type
     category?: string | null; // String
     createdAt?: NexusGenScalars['DateTime'] | null; // DateTime
-    date?: string | null; // String
+    day?: number | null; // Int
     id?: string | null; // String
+    month?: number | null; // Int
     name?: string | null; // String
     notes?: string | null; // String
     relationship?: string | null; // String
     status?: NexusGenEnums['SubmissionStatus'] | null; // SubmissionStatus
     submitterEmail?: string | null; // String
     submitterName?: string | null; // String
+    year?: number | null; // Int
   }
   BulkSubmissionResult: { // root type
     errors?: Array<string | null> | null; // [String]
@@ -79,10 +83,12 @@ export interface NexusGenObjects {
   }
   DuplicateMatch: { // root type
     category?: string | null; // String
-    date?: string | null; // String
+    day?: number | null; // Int
     id?: string | null; // String
+    month?: number | null; // Int
     name?: string | null; // String
     similarity?: number | null; // Float
+    year?: number | null; // Int
   }
   Mutation: {};
   NotificationPreference: { // root type
@@ -143,18 +149,23 @@ export interface NexusGenFieldTypes {
     category: string | null; // String
     createdAt: NexusGenScalars['DateTime'] | null; // DateTime
     date: string | null; // String
+    day: number | null; // Int
     id: string | null; // String
     importSource: string | null; // String
+    month: number | null; // Int
     name: string | null; // String
     notes: string | null; // String
     parent: string | null; // String
     user: NexusGenRootTypes['User'] | null; // User
+    year: number | null; // Int
   }
   BirthdaySubmission: { // field return type
     category: string | null; // String
     createdAt: NexusGenScalars['DateTime'] | null; // DateTime
     date: string | null; // String
+    day: number | null; // Int
     id: string | null; // String
+    month: number | null; // Int
     name: string | null; // String
     notes: string | null; // String
     relationship: string | null; // String
@@ -162,6 +173,7 @@ export interface NexusGenFieldTypes {
     status: NexusGenEnums['SubmissionStatus'] | null; // SubmissionStatus
     submitterEmail: string | null; // String
     submitterName: string | null; // String
+    year: number | null; // Int
   }
   BulkSubmissionResult: { // field return type
     errors: Array<string | null> | null; // [String]
@@ -177,9 +189,12 @@ export interface NexusGenFieldTypes {
   DuplicateMatch: { // field return type
     category: string | null; // String
     date: string | null; // String
+    day: number | null; // Int
     id: string | null; // String
+    month: number | null; // Int
     name: string | null; // String
     similarity: number | null; // Float
+    year: number | null; // Int
   }
   Mutation: { // field return type
     bulkImportSubmissions: NexusGenRootTypes['BulkSubmissionResult'] | null; // BulkSubmissionResult
@@ -255,18 +270,23 @@ export interface NexusGenFieldTypeNames {
     category: 'String'
     createdAt: 'DateTime'
     date: 'String'
+    day: 'Int'
     id: 'String'
     importSource: 'String'
+    month: 'Int'
     name: 'String'
     notes: 'String'
     parent: 'String'
     user: 'User'
+    year: 'Int'
   }
   BirthdaySubmission: { // field return type name
     category: 'String'
     createdAt: 'DateTime'
     date: 'String'
+    day: 'Int'
     id: 'String'
+    month: 'Int'
     name: 'String'
     notes: 'String'
     relationship: 'String'
@@ -274,6 +294,7 @@ export interface NexusGenFieldTypeNames {
     status: 'SubmissionStatus'
     submitterEmail: 'String'
     submitterName: 'String'
+    year: 'Int'
   }
   BulkSubmissionResult: { // field return type name
     errors: 'String'
@@ -289,9 +310,12 @@ export interface NexusGenFieldTypeNames {
   DuplicateMatch: { // field return type name
     category: 'String'
     date: 'String'
+    day: 'Int'
     id: 'String'
+    month: 'Int'
     name: 'String'
     similarity: 'Float'
+    year: 'Int'
   }
   Mutation: { // field return type name
     bulkImportSubmissions: 'BulkSubmissionResult'
@@ -372,12 +396,14 @@ export interface NexusGenArgTypes {
     }
     createBirthday: { // args
       category?: string | null; // String
-      date: string; // String!
+      day: number; // Int!
       importSource?: string | null; // String
+      month: number; // Int!
       name: string; // String!
       notes?: string | null; // String
       parent?: string | null; // String
       userId: string; // String!
+      year?: number | null; // Int
     }
     createSharingLink: { // args
       description?: string | null; // String
@@ -388,12 +414,14 @@ export interface NexusGenArgTypes {
     }
     editBirthday: { // args
       category?: string | null; // String
-      date: string; // String!
+      day: number; // Int!
       id: string; // String!
       importSource?: string | null; // String
+      month: number; // Int!
       name: string; // String!
       notes?: string | null; // String
       parent?: string | null; // String
+      year?: number | null; // Int
     }
     getSubmissionDuplicates: { // args
       submissionId: string; // String!
@@ -409,13 +437,15 @@ export interface NexusGenArgTypes {
     }
     submitBirthday: { // args
       category?: string | null; // String
-      date: string; // String!
+      day: number; // Int!
+      month: number; // Int!
       name: string; // String!
       notes?: string | null; // String
       relationship?: string | null; // String
       submitterEmail?: string | null; // String
       submitterName?: string | null; // String
       token: string; // String!
+      year?: number | null; // Int
     }
     updateNotificationPreferences: { // args
       emailNotifications?: boolean | null; // Boolean

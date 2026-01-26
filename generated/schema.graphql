@@ -6,19 +6,24 @@ type Birthday {
   category: String
   createdAt: DateTime
   date: String
+  day: Int
   id: String
   importSource: String
+  month: Int
   name: String
   notes: String
   parent: String
   user: User
+  year: Int
 }
 
 type BirthdaySubmission {
   category: String
   createdAt: DateTime
   date: String
+  day: Int
   id: String
+  month: Int
   name: String
   notes: String
   relationship: String
@@ -26,6 +31,7 @@ type BirthdaySubmission {
   status: SubmissionStatus
   submitterEmail: String
   submitterName: String
+  year: Int
 }
 
 type BulkSubmissionResult {
@@ -49,23 +55,26 @@ type DuplicateDetectionResult {
 type DuplicateMatch {
   category: String
   date: String
+  day: Int
   id: String
+  month: Int
   name: String
   similarity: Float
+  year: Int
 }
 
 type Mutation {
   bulkImportSubmissions(submissionIds: [String!]!): BulkSubmissionResult
   bulkRejectSubmissions(submissionIds: [String!]!): BulkSubmissionResult
-  createBirthday(category: String, date: String!, importSource: String, name: String!, notes: String, parent: String, userId: String!): Birthday
+  createBirthday(category: String, day: Int!, importSource: String, month: Int!, name: String!, notes: String, parent: String, userId: String!, year: Int): Birthday
   createSharingLink(description: String, expirationHours: Int): SharingLink
   deleteBirthday(birthdayId: String!): Birthday
-  editBirthday(category: String, date: String!, id: String!, importSource: String, name: String!, notes: String, parent: String): Birthday
+  editBirthday(category: String, day: Int!, id: String!, importSource: String, month: Int!, name: String!, notes: String, parent: String, year: Int): Birthday
   getSubmissionDuplicates(submissionId: String!): DuplicateDetectionResult
   importSubmission(submissionId: String!): Birthday
   rejectSubmission(submissionId: String!): BirthdaySubmission
   revokeSharingLink(linkId: String!): SharingLink
-  submitBirthday(category: String, date: String!, name: String!, notes: String, relationship: String, submitterEmail: String, submitterName: String, token: String!): BirthdaySubmission
+  submitBirthday(category: String, day: Int!, month: Int!, name: String!, notes: String, relationship: String, submitterEmail: String, submitterName: String, token: String!, year: Int): BirthdaySubmission
   updateNotificationPreferences(emailNotifications: Boolean, summaryNotifications: Boolean): NotificationPreference
 }
 

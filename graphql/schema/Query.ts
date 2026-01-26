@@ -29,7 +29,33 @@ export const Birthday = objectType({
   definition(t) {
     t.string("id");
     t.string("name");
-    t.string("date");
+
+    // NEW: Expose individual date components
+    t.nullable.int("year"); // Nullable for birthdays without year
+    t.int("month"); // 1-12
+    t.int("day"); // 1-31
+
+    // DEPRECATED: Keep for backward compatibility during transition
+    t.nullable.string("date", {
+      resolve: (parent) => {
+        // Reconstruct YYYY-MM-DD format for clients that still expect it
+        if (parent.year && parent.month && parent.day) {
+          const yearStr = parent.year.toString().padStart(4, "0");
+          const monthStr = parent.month.toString().padStart(2, "0");
+          const dayStr = parent.day.toString().padStart(2, "0");
+          return `${yearStr}-${monthStr}-${dayStr}`;
+        }
+        // If no year, return --MM-DD format (ISO 8601 partial date)
+        if (parent.month && parent.day) {
+          const monthStr = parent.month.toString().padStart(2, "0");
+          const dayStr = parent.day.toString().padStart(2, "0");
+          return `--${monthStr}-${dayStr}`;
+        }
+        // If month or day is missing, return null
+        return null;
+      },
+    });
+
     t.string("category");
     t.string("parent");
     t.string("notes");

@@ -53,7 +53,30 @@ export const BirthdaySubmission = objectType({
   definition(t) {
     t.string("id");
     t.string("name");
-    t.string("date");
+
+    // NEW: Expose individual date components
+    t.nullable.int("year"); // Nullable for birthdays without year
+    t.int("month"); // 1-12
+    t.int("day"); // 1-31
+
+    // DEPRECATED: Keep for backward compatibility
+    t.nullable.string("date", {
+      resolve: (parent) => {
+        if (parent.year && parent.month && parent.day) {
+          const yearStr = parent.year.toString().padStart(4, "0");
+          const monthStr = parent.month.toString().padStart(2, "0");
+          const dayStr = parent.day.toString().padStart(2, "0");
+          return `${yearStr}-${monthStr}-${dayStr}`;
+        }
+        if (parent.month && parent.day) {
+          const monthStr = parent.month.toString().padStart(2, "0");
+          const dayStr = parent.day.toString().padStart(2, "0");
+          return `--${monthStr}-${dayStr}`;
+        }
+        return null;
+      },
+    });
+
     t.nullable.string("category");
     t.nullable.string("notes");
     t.nullable.string("submitterName");
@@ -127,7 +150,30 @@ export const DuplicateMatch = objectType({
   definition(t) {
     t.string("id");
     t.string("name");
-    t.string("date");
+
+    // NEW: Expose individual date components
+    t.nullable.int("year");
+    t.int("month");
+    t.int("day");
+
+    // DEPRECATED: Computed field for backward compatibility
+    t.nullable.string("date", {
+      resolve: (parent) => {
+        if (parent.year && parent.month && parent.day) {
+          const yearStr = parent.year.toString().padStart(4, "0");
+          const monthStr = parent.month.toString().padStart(2, "0");
+          const dayStr = parent.day.toString().padStart(2, "0");
+          return `${yearStr}-${monthStr}-${dayStr}`;
+        }
+        if (parent.month && parent.day) {
+          const monthStr = parent.month.toString().padStart(2, "0");
+          const dayStr = parent.day.toString().padStart(2, "0");
+          return `--${monthStr}-${dayStr}`;
+        }
+        return null;
+      },
+    });
+
     t.nullable.string("category");
     t.float("similarity");
   },
