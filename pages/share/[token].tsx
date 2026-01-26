@@ -195,20 +195,18 @@ const SharingPage = ({ token }: SharingPageProps) => {
       <div className="mx-auto max-w-4xl">
         {/* Header Section */}
         <div className="mb-8 text-center">
-          <h1 className="mb-2 text-3xl font-bold text-gray-900">
+          <h1 className="mb-2 text-3xl font-bold text-white">
             Add a Birthday
             {sharingLink.ownerName && (
-              <span className="block text-2xl font-normal text-gray-600">
+              <span className="block text-2xl font-normal text-white">
                 for {sharingLink.ownerName}
               </span>
             )}
           </h1>
           {sharingLink.description && (
-            <p className="mb-4 text-lg text-gray-600">
-              {sharingLink.description}
-            </p>
+            <p className="mb-4 text-lg white">{sharingLink.description}</p>
           )}
-          <p className="text-white">
+          <p className="text-white max-w-2xl mx-auto">
             Help keep track of important birthdays by adding the details below.
             Your submission will be reviewed before being added to the birthday
             list.
@@ -249,7 +247,7 @@ const SharingPage = ({ token }: SharingPageProps) => {
         </div>
 
         {/* Form Section */}
-        <div className="rounded-lg bg-white p-6 shadow-sm ring-1 ring-gray-200">
+        <div className="rounded-lg bg-white p-8 lg:py-12 shadow-sm ring-1 ring-gray-200">
           <BirthdaySubmissionForm
             token={token}
             onSuccess={() => {}}
@@ -261,20 +259,14 @@ const SharingPage = ({ token }: SharingPageProps) => {
         <div className="mt-8 text-center text-sm text-white">
           <p>
             Powered by{" "}
-            <Link
-              href="/"
-              className="font-medium"
-            >
+            <Link href="/" className="font-medium">
               Lazy Uncle
             </Link>{" "}
             - The easy way to keep track of birthdays
           </p>
           <p className="mt-2">
             Want to create your own birthday list?{" "}
-            <Link
-              href="/"
-              className="font-medium"
-            >
+            <Link href="/" className="font-medium">
               Sign up for free
             </Link>
           </p>

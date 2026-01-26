@@ -127,7 +127,7 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
           <input
             type="date"
             id="birthday-date"
-            className="block h-12 w-full rounded-sm border-gray-300"
+            className="block h-12 w-full rounded-sm border-gray-300 text-gray-900"
             value={dateValue}
             onChange={(e) => setDateValue(e.target.value)}
             required={required}
@@ -142,7 +142,7 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
           <div>
             <select
               id="month"
-              className="block h-12 w-full rounded-sm border-gray-300"
+              className="block h-12 w-full rounded-sm border-gray-300 text-gray-900"
               value={localMonth}
               onChange={(e) => setLocalMonth(e.target.value)}
               required={required}
@@ -160,7 +160,7 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
           <div>
             <select
               id="day"
-              className="block h-12 w-full rounded-sm border-gray-300"
+              className="block h-12 w-full rounded-sm border-gray-300 text-gray-900"
               value={localDay}
               onChange={(e) => setLocalDay(e.target.value)}
               required={required}
