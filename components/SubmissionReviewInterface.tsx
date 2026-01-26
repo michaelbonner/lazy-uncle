@@ -5,7 +5,7 @@ import {
   IMPORT_SUBMISSION_MUTATION,
   REJECT_SUBMISSION_MUTATION,
 } from "../graphql/Sharing";
-import getDateFromYmdString from "../shared/getDateFromYmdString";
+import { formatDateForDisplay } from "../shared/getDateFromComponents";
 import LoadingSpinner from "./LoadingSpinner";
 import { useMutation, useQuery } from "@apollo/client/react";
 import clsx from "clsx";
@@ -24,7 +24,10 @@ import { IoCalendarOutline, IoPersonOutline } from "react-icons/io5";
 interface BirthdaySubmission {
   id: string;
   name: string;
-  date: string;
+  year?: number | null;
+  month: number;
+  day: number;
+  date?: string | null; // Computed field for backward compatibility
   category?: string;
   notes?: string;
   submitterName?: string;
@@ -41,7 +44,10 @@ interface BirthdaySubmission {
 interface DuplicateMatch {
   id: string;
   name: string;
-  date: string;
+  year?: number | null;
+  month: number;
+  day: number;
+  date?: string | null; // Computed field for backward compatibility
   category?: string;
   similarity: number;
 }
@@ -248,13 +254,8 @@ const SubmissionReviewInterface = () => {
     });
   };
 
-  const formatSubmissionDate = (dateString: string) => {
-    try {
-      const date = getDateFromYmdString(dateString);
-      return format(date, "MMM d, yyyy");
-    } catch {
-      return dateString;
-    }
+  const formatSubmissionDate = (item: { year?: number | null; month: number; day: number; }) => {
+    return formatDateForDisplay(item.year ?? null, item.month, item.day);
   };
 
   if (submissionsLoading) {
@@ -414,7 +415,7 @@ const SubmissionReviewInterface = () => {
                             <div className="flex items-center space-x-1">
                               <IoCalendarOutline className="h-4 w-4" />
                               <span>
-                                {formatSubmissionDate(submission.date)}
+                                {formatSubmissionDate(submission)}
                               </span>
                             </div>
                             {submission.category && (
@@ -463,7 +464,7 @@ const SubmissionReviewInterface = () => {
                                         className="text-yellow-700"
                                       >
                                         • {duplicate.name} -{" "}
-                                        {formatSubmissionDate(duplicate.date)}
+                                        {formatSubmissionDate(duplicate)}
                                         {duplicate.category &&
                                           ` (${duplicate.category})`}
                                       </li>
@@ -584,6 +585,9 @@ function findPotentialDuplicates(
       matches.push({
         id: birthday.id,
         name: birthday.name,
+        year: birthday.year,
+        month: birthday.month,
+        day: birthday.day,
         date: birthday.date,
         category: birthday.category ?? undefined,
         similarity,
@@ -597,7 +601,7 @@ function findPotentialDuplicates(
 // Helper function to calculate similarity between submission and existing birthday
 function calculateSimilarity(
   submission: BirthdaySubmission,
-  existing: { name: string; date: string; category?: string | null },
+  existing: { name: string; year?: number | null; month: number; day: number; category?: string | null },
 ): number {
   let similarity = 0;
   let factors = 0;
@@ -610,19 +614,18 @@ function calculateSimilarity(
   similarity += nameSimilarity * 0.6;
   factors += 0.6;
 
-  // Date similarity (exact match or close)
-  if (submission.date === existing.date) {
-    similarity += 0.4;
-  } else {
-    // Check if it's the same day/month but different year
-    const submissionParts = submission.date.split("-");
-    const existingParts = existing.date.split("-");
-
-    if (
-      submissionParts[1] === existingParts[1] && // Same month
-      submissionParts[2] === existingParts[2] // Same day
-    ) {
-      similarity += 0.2; // Partial credit for same day/month
+  // Date similarity using components
+  if (
+    existing.month === submission.month &&
+    existing.day === submission.day
+  ) {
+    // Exact month/day match
+    if (existing.year === submission.year) {
+      similarity += 0.4; // Perfect match including year
+    } else if (!existing.year || !submission.year) {
+      similarity += 0.35; // Match month/day, one or both years missing
+    } else {
+      similarity += 0.2; // Match month/day, different years (possible duplicate)
     }
   }
   factors += 0.4;

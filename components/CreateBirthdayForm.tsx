@@ -4,6 +4,7 @@ import {
 } from "../graphql/Birthday";
 import { authClient } from "../lib/auth-client";
 // import the auth client
+import BirthdayDateInput from "./BirthdayDateInput";
 import PrimaryButton from "./PrimaryButton";
 import { useMutation } from "@apollo/client/react";
 import clsx from "clsx";
@@ -22,7 +23,12 @@ const TextEdit = dynamic(() => import("./TextEdit"), {
 const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
   const { data: session } = authClient.useSession();
   const [name, setName] = useState("");
-  const [date, setDate] = useState("");
+
+  // NEW: Date component states
+  const [year, setYear] = useState<number | null>(null);
+  const [month, setMonth] = useState<number>(1);
+  const [day, setDay] = useState<number>(1);
+
   const [category, setCategory] = useState("");
   const [parent, setParent] = useState("");
   const [notes, setNotes] = useState("");
@@ -32,15 +38,30 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
     CREATE_BIRTHDAY_MUTATION,
   );
 
+  const handleDateChange = (y: number | null, m: number, d: number) => {
+    setYear(y);
+    setMonth(m);
+    setDay(d);
+  };
+
   return (
     <form
       className="flex flex-col space-y-6"
       onSubmit={async (e) => {
         e.preventDefault();
+
+        // Validate month and day are set
+        if (!month || !day) {
+          toast.error("Please select a valid birth month and day");
+          return;
+        }
+
         await createBirthday({
           variables: {
             name: name.trim(),
-            date,
+            year: year,
+            month: month,
+            day: day,
             category: category.trim(),
             parent: parent.trim(),
             notes: notes.trim(),
@@ -53,8 +74,12 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
             },
           ],
         });
+
+        // Reset form
         setName("");
-        setDate("");
+        setYear(null);
+        setMonth(1);
+        setDay(1);
         setCategory("");
         setParent("");
         setNotes("");
@@ -77,17 +102,15 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
           />
         </div>
         <div>
-          <label className="mt-4 block text-sm" htmlFor="date">
-            Birthday
-          </label>
-          <input
-            className="block h-12 w-full rounded-sm border-gray-300"
-            id="date"
-            onChange={(e) => setDate(e.target.value)}
-            max={new Date().toISOString().split("T")[0]}
+          <label className="mt-4 block text-sm">Birthday</label>
+          <BirthdayDateInput
+            year={year}
+            month={month}
+            day={day}
+            onChange={handleDateChange}
             required={true}
-            type="date"
-            value={date}
+            maxYear={new Date().getFullYear()}
+            includeYearInput={true}
           />
         </div>
         <div>

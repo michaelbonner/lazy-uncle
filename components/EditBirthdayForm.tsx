@@ -4,6 +4,7 @@ import {
   EDIT_BIRTHDAY_MUTATION,
   GET_ALL_BIRTHDAYS_QUERY,
 } from "../graphql/Birthday";
+import BirthdayDateInput from "./BirthdayDateInput";
 import PrimaryButton from "./PrimaryButton";
 import { useMutation } from "@apollo/client/react";
 import clsx from "clsx";
@@ -28,7 +29,17 @@ const EditBirthdayForm = ({
   handleClose?: () => void;
 }) => {
   const [name, setName] = useState(birthday.name);
-  const [date, setDate] = useState(birthday.date);
+
+  // NEW: Date component states (initialize from birthday object)
+  // Handle both new component fields and legacy date field
+  const initYear = birthday.year ?? null;
+  const initMonth = birthday.month ?? 1;
+  const initDay = birthday.day ?? 1;
+
+  const [year, setYear] = useState<number | null>(initYear);
+  const [month, setMonth] = useState<number>(initMonth);
+  const [day, setDay] = useState<number>(initDay);
+
   const [category, setCategory] = useState(birthday.category || "");
   const [parent, setParent] = useState(birthday.parent || "");
   const [notes, setNotes] = useState(birthday.notes || "");
@@ -40,17 +51,32 @@ const EditBirthdayForm = ({
   const [deleteBirthday, { loading: deleteLoading, error: deleteError }] =
     useMutation(DELETE_BIRTHDAY_MUTATION);
 
+  const handleDateChange = (y: number | null, m: number, d: number) => {
+    setYear(y);
+    setMonth(m);
+    setDay(d);
+  };
+
   return (
     <>
       <form
         className="flex flex-col space-y-6"
         onSubmit={async (e) => {
           e.preventDefault();
+
+          // Validate month and day are set
+          if (!month || !day) {
+            toast.error("Please select a valid birth month and day");
+            return;
+          }
+
           await editBirthday({
             variables: {
               id: birthday.id,
               name: name?.trim(),
-              date,
+              year: year,
+              month: month,
+              day: day,
               category: category.trim(),
               parent: parent.trim(),
               notes: notes.trim(),
@@ -78,17 +104,15 @@ const EditBirthdayForm = ({
             />
           </div>
           <div>
-            <label className="mt-4 block" htmlFor="date">
-              Birthday
-            </label>
-            <input
-              className="block h-12 w-full rounded-sm border-gray-300"
-              id="date"
-              onChange={(e) => setDate(e.target.value)}
-              max={new Date().toISOString().split("T")[0]}
+            <label className="mt-4 block">Birthday</label>
+            <BirthdayDateInput
+              year={year}
+              month={month}
+              day={day}
+              onChange={handleDateChange}
               required={true}
-              type="date"
-              value={date || ""}
+              maxYear={new Date().getFullYear()}
+              includeYearInput={true}
             />
           </div>
           <div>

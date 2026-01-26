@@ -4,9 +4,9 @@ import { GET_ALL_BIRTHDAYS_QUERY } from "../graphql/Birthday";
 import { authClient } from "../lib/auth-client";
 // import the auth client
 import { SearchContext } from "../providers/SearchProvider";
-import getDateFromYmdString from "../shared/getDateFromYmdString";
+import { getDateFromComponents } from "../shared/getDateFromComponents";
 import { getDaysUntilNextBirthday } from "../shared/getDaysUntilNextBirthday";
-import getZodiacSignForDateYmdString from "../shared/getZodiacSignForDateYmdString";
+import { getZodiacSignFromComponents } from "../shared/getZodiacSignForDateYmdString";
 import BirthdayFilterField from "./BirthdayFilterField";
 import BirthdayRow from "./BirthdayRow";
 import LoadingSpinner from "./LoadingSpinner";
@@ -118,9 +118,10 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
         }
 
         // Zodiac sign filter - only compute when filter is active
-        if (zodiacSignFilter) {
-          const birthdayZodiacSign = getZodiacSignForDateYmdString(
-            birthday?.date || "",
+        if (zodiacSignFilter && birthday?.month && birthday?.day) {
+          const birthdayZodiacSign = getZodiacSignFromComponents(
+            birthday.month,
+            birthday.day,
           );
           if (
             !birthdayZodiacSign.toLowerCase().includes(zodiacSignFilterLower)
@@ -137,23 +138,34 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
 
     const unsortedDates = [...dates];
     if (sortBy.substring(0, 4) === "date" && unsortedDates.length > 4) {
+      const today = new Date();
       unsortedDates.push({
         name: "Today",
-        date: format(new Date(), "yyyy-MM-dd"),
-      });
+        month: today.getMonth() + 1, // getMonth() returns 0-11, we need 1-12
+        day: today.getDate(),
+        year: null,
+      } as any);
     }
 
     // Optimize sorting by pre-computing values when needed
     return unsortedDates.sort(
       (a: NexusGenObjects["Birthday"], b: NexusGenObjects["Birthday"]) => {
         if (sortBy === "date_asc") {
-          const aDate = format(getDateFromYmdString(a.date || ""), "MM-dd");
-          const bDate = format(getDateFromYmdString(b.date || ""), "MM-dd");
+          const aDate = a.month && a.day
+            ? format(getDateFromComponents(null, a.month, a.day), "MM-dd")
+            : "";
+          const bDate = b.month && b.day
+            ? format(getDateFromComponents(null, b.month, b.day), "MM-dd")
+            : "";
           return aDate > bDate ? 1 : -1;
         }
         if (sortBy === "date_desc") {
-          const aDate = format(getDateFromYmdString(a.date || ""), "MM-dd");
-          const bDate = format(getDateFromYmdString(b.date || ""), "MM-dd");
+          const aDate = a.month && a.day
+            ? format(getDateFromComponents(null, a.month, a.day), "MM-dd")
+            : "";
+          const bDate = b.month && b.day
+            ? format(getDateFromComponents(null, b.month, b.day), "MM-dd")
+            : "";
           return aDate > bDate ? -1 : 1;
         }
         if (sortBy === "name_asc") {
@@ -163,10 +175,18 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
           return (a.name || "") > (b.name || "") ? -1 : 1;
         }
         if (sortBy === "age_asc") {
-          return (a.date || "") > (b.date || "") ? 1 : -1;
+          // Sort by year (birthdays with years first, then by year ascending)
+          if (!a.year && !b.year) return 0;
+          if (!a.year) return 1;
+          if (!b.year) return -1;
+          return (a.year || 0) > (b.year || 0) ? 1 : -1;
         }
         if (sortBy === "age_desc") {
-          return (a.date || "") > (b.date || "") ? -1 : 1;
+          // Sort by year (birthdays with years first, then by year descending)
+          if (!a.year && !b.year) return 0;
+          if (!a.year) return 1;
+          if (!b.year) return -1;
+          return (a.year || 0) > (b.year || 0) ? -1 : 1;
         }
         if (sortBy === "category_asc") {
           return (a.category || "") > (b.category || "") ? 1 : -1;
@@ -181,13 +201,13 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
           return (a.parent || "") > (b.parent || "") ? -1 : 1;
         }
         if (sortBy === "sign_asc") {
-          const aZodiacSign = getZodiacSignForDateYmdString(a.date || "");
-          const bZodiacSign = getZodiacSignForDateYmdString(b.date || "");
+          const aZodiacSign = a.month && a.day ? getZodiacSignFromComponents(a.month, a.day) : "";
+          const bZodiacSign = b.month && b.day ? getZodiacSignFromComponents(b.month, b.day) : "";
           return (aZodiacSign || "") > (bZodiacSign || "") ? 1 : -1;
         }
         if (sortBy === "sign_desc") {
-          const aZodiacSign = getZodiacSignForDateYmdString(a.date || "");
-          const bZodiacSign = getZodiacSignForDateYmdString(b.date || "");
+          const aZodiacSign = a.month && a.day ? getZodiacSignFromComponents(a.month, a.day) : "";
+          const bZodiacSign = b.month && b.day ? getZodiacSignFromComponents(b.month, b.day) : "";
           return (aZodiacSign || "") > (bZodiacSign || "") ? -1 : 1;
         }
 
@@ -453,7 +473,9 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                     datalistOptions={Array.from(
                       new Set(
                         workingDates.map((birthday) =>
-                          getZodiacSignForDateYmdString(birthday.date || ""),
+                          birthday.month && birthday.day
+                            ? getZodiacSignFromComponents(birthday.month, birthday.day)
+                            : "",
                         ),
                       ),
                     )}
