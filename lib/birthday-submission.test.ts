@@ -59,6 +59,9 @@ describe("Birthday Submission API", () => {
       expect(result.sanitizedData).toEqual({
         token: "valid-token-123",
         name: "John Doe",
+        year: 1990,
+        month: 5,
+        day: 15,
         date: "1990-05-15",
         category: null,
         notes: null,

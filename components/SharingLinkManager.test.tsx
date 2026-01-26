@@ -51,7 +51,7 @@ describe("SharingLinkManager Component", () => {
   describe("Date Handling", () => {
     it("should correctly identify expired links", () => {
       const expiredDate = "2024-01-01T10:00:00Z";
-      const futureDate = "2026-01-01T10:00:00Z";
+      const futureDate = "2027-01-01T10:00:00Z";
 
       const isExpired = (expiresAt: string) => {
         return new Date(expiresAt) < new Date();
