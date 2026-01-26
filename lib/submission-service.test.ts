@@ -67,6 +67,9 @@ describe("SubmissionService", () => {
     id: "submission-123",
     sharingLinkId: "link-123",
     name: "John Doe",
+    year: 1990,
+    month: 5,
+    day: 15,
     date: "1990-05-15",
     category: "Friend",
     notes: "Great friend",
@@ -120,6 +123,9 @@ describe("SubmissionService", () => {
         sanitizedData: {
           ...validSubmissionData,
           token: "valid-token",
+          year: 1990,
+          month: 5,
+          day: 15,
         },
       });
 
@@ -159,7 +165,9 @@ describe("SubmissionService", () => {
         expect.objectContaining({
           sharingLinkId: "link-123",
           name: validSubmissionData.name,
-          date: validSubmissionData.date,
+          year: 1990,
+          month: 5,
+          day: 15,
           category: validSubmissionData.category,
           notes: validSubmissionData.notes,
           submitterName: validSubmissionData.submitterName,
@@ -395,6 +403,9 @@ describe("SubmissionService", () => {
         id: "birthday-123",
         userId: "user-123",
         name: "John Doe",
+        year: 1990,
+        month: 5,
+        day: 15,
         date: "1990-05-15",
         category: "Friend",
         notes: "Great friend",
@@ -426,7 +437,9 @@ describe("SubmissionService", () => {
         expect.objectContaining({
           userId: "user-123",
           name: "John Doe",
-          date: "1990-05-15",
+          year: 1990,
+          month: 5,
+          day: 15,
           category: "Friend",
           notes: "Great friend",
           importSource: "sharing",

@@ -188,7 +188,9 @@ export class RateLimitService {
     token: string,
     submissionData: {
       name: string;
-      date: string;
+      year?: number | null;
+      month: number;
+      day: number;
       submitterEmail?: string | null;
     },
   ): Promise<{ suspicious: boolean; reason?: string }> {
@@ -207,7 +209,8 @@ export class RateLimitService {
       where: and(
         eq(birthdaySubmissions.sharingLinkId, sharingLink.id),
         eq(birthdaySubmissions.name, submissionData.name),
-        eq(birthdaySubmissions.date, submissionData.date),
+        eq(birthdaySubmissions.month, submissionData.month),
+        eq(birthdaySubmissions.day, submissionData.day),
         gte(birthdaySubmissions.createdAt, oneHourAgo),
       ),
     });

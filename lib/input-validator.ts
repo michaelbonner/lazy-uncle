@@ -10,7 +10,12 @@ export interface ValidationResult {
 
 export interface BirthdaySubmissionInput {
   name: string;
-  date: string;
+  // NEW: Date components
+  year?: number | null;
+  month: number;
+  day: number;
+  // DEPRECATED: Keep for backward compatibility during migration
+  date?: string;
   category?: string | null;
   notes?: string | null;
   submitterName?: string | null;
@@ -54,7 +59,109 @@ export class InputValidator {
   }
 
   /**
+   * Validate year (optional)
+   */
+  static validateYear(year: number | null | undefined): {
+    isValid: boolean;
+    sanitized: number | null;
+  } {
+    if (year === null || year === undefined) {
+      return { isValid: true, sanitized: null }; // Year is optional
+    }
+
+    // Year must be a valid integer
+    if (!Number.isInteger(year)) {
+      return { isValid: false, sanitized: null };
+    }
+
+    // Reasonable year range: 1900 to current year + 1
+    const currentYear = new Date().getFullYear();
+    if (year < 1900 || year > currentYear + 1) {
+      return { isValid: false, sanitized: null };
+    }
+
+    return { isValid: true, sanitized: year };
+  }
+
+  /**
+   * Validate month (required, 1-12)
+   */
+  static validateMonth(month: number): {
+    isValid: boolean;
+    sanitized: number;
+  } {
+    if (!Number.isInteger(month)) {
+      return { isValid: false, sanitized: 0 };
+    }
+
+    if (month < 1 || month > 12) {
+      return { isValid: false, sanitized: 0 };
+    }
+
+    return { isValid: true, sanitized: month };
+  }
+
+  /**
+   * Get number of days in a given month
+   */
+  private static getDaysInMonth(
+    month: number,
+    year?: number | null,
+  ): number {
+    const thirtyDayMonths = [4, 6, 9, 11]; // April, June, September, November
+
+    if (thirtyDayMonths.includes(month)) {
+      return 30;
+    }
+
+    if (month === 2) {
+      // February: handle leap years
+      if (year) {
+        // If year is provided, check if it's a leap year
+        const isLeapYear =
+          (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+        return isLeapYear ? 29 : 28;
+      } else {
+        // No year provided: allow up to 29 days (be permissive)
+        // User might have Feb 29 birthday without specifying year
+        return 29;
+      }
+    }
+
+    return 31; // January, March, May, July, August, October, December
+  }
+
+  /**
+   * Validate day (required, context-aware based on month/year)
+   */
+  static validateDay(
+    day: number,
+    month: number,
+    year?: number | null,
+  ): {
+    isValid: boolean;
+    sanitized: number;
+  } {
+    if (!Number.isInteger(day)) {
+      return { isValid: false, sanitized: 0 };
+    }
+
+    if (day < 1 || day > 31) {
+      return { isValid: false, sanitized: 0 };
+    }
+
+    // Month-specific validation
+    const daysInMonth = this.getDaysInMonth(month, year);
+    if (day > daysInMonth) {
+      return { isValid: false, sanitized: 0 };
+    }
+
+    return { isValid: true, sanitized: day };
+  }
+
+  /**
    * Validate date string in YYYY-MM-DD format
+   * DEPRECATED: Use validateYear/Month/Day for new code
    */
   static validateDate(dateString: string): {
     isValid: boolean;
@@ -90,6 +197,53 @@ export class InputValidator {
     }
 
     return { isValid: true, sanitized, parsedDate };
+  }
+
+  /**
+   * Parse YYYY-MM-DD date string into components
+   */
+  static parseDateString(dateString: string): {
+    isValid: boolean;
+    year: number | null;
+    month: number;
+    day: number;
+  } {
+    if (!dateString || typeof dateString !== "string") {
+      return { isValid: false, year: null, month: 0, day: 0 };
+    }
+
+    const sanitized = dateString.trim();
+
+    // Check format YYYY-MM-DD
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(sanitized)) {
+      return { isValid: false, year: null, month: 0, day: 0 };
+    }
+
+    const [yearStr, monthStr, dayStr] = sanitized.split("-");
+    const year = parseInt(yearStr, 10);
+    const month = parseInt(monthStr, 10);
+    const day = parseInt(dayStr, 10);
+
+    // Validate components
+    const yearValidation = this.validateYear(year);
+    const monthValidation = this.validateMonth(month);
+    const dayValidation = this.validateDay(day, month, year);
+
+    if (
+      !yearValidation.isValid ||
+      !monthValidation.isValid ||
+      !dayValidation.isValid
+    ) {
+      return { isValid: false, year: null, month: 0, day: 0 };
+    }
+
+    return {
+      isValid: true,
+      year: yearValidation.sanitized,
+      month: monthValidation.sanitized,
+      day: dayValidation.sanitized,
+    };
   }
 
   /**
@@ -210,7 +364,8 @@ export class InputValidator {
     const errors: string[] = [];
     const sanitizedData: BirthdaySubmissionInput & { token: string } = {
       name: "",
-      date: "",
+      month: 0,
+      day: 0,
       token: "",
     };
 
@@ -232,14 +387,59 @@ export class InputValidator {
       sanitizedData.name = nameValidation.sanitized;
     }
 
-    // Validate date (required)
-    const dateValidation = this.validateDate(input.date);
-    if (!dateValidation.isValid) {
-      errors.push(
-        "Date must be in YYYY-MM-DD format and be a valid date between 1900 and next year",
+    // Validate date components (NEW) or old date string (DEPRECATED)
+    if (input.month !== undefined && input.day !== undefined) {
+      // NEW: Validate components
+      const monthValidation = this.validateMonth(input.month);
+      if (!monthValidation.isValid) {
+        errors.push("Month is required and must be between 1 and 12");
+      } else {
+        sanitizedData.month = monthValidation.sanitized;
+      }
+
+      const dayValidation = this.validateDay(
+        input.day,
+        input.month,
+        input.year,
       );
+      if (!dayValidation.isValid) {
+        errors.push(
+          "Day is invalid for the given month (must be between 1 and the last day of the month)",
+        );
+      } else {
+        sanitizedData.day = dayValidation.sanitized;
+      }
+
+      // Validate year (optional)
+      if (input.year !== null && input.year !== undefined) {
+        const yearValidation = this.validateYear(input.year);
+        if (!yearValidation.isValid) {
+          errors.push("Year must be between 1900 and next year");
+        } else {
+          sanitizedData.year = yearValidation.sanitized;
+        }
+      } else {
+        sanitizedData.year = null;
+      }
+    } else if (input.date) {
+      // DEPRECATED: Parse old date string format for backward compatibility
+      const dateValidation = this.validateDate(input.date);
+      if (!dateValidation.isValid) {
+        errors.push(
+          "Date must be in YYYY-MM-DD format and be a valid date between 1900 and next year",
+        );
+      } else {
+        // Parse into components
+        const parsed = this.parseDateString(dateValidation.sanitized);
+        if (parsed.isValid) {
+          sanitizedData.year = parsed.year;
+          sanitizedData.month = parsed.month;
+          sanitizedData.day = parsed.day;
+          sanitizedData.date = dateValidation.sanitized;
+        }
+      }
     } else {
-      sanitizedData.date = dateValidation.sanitized;
+      errors.push("Birthday month and day are required");
     }
 
     // Validate optional fields

@@ -33,7 +33,9 @@ export const SUBMIT_BIRTHDAY_MUTATION = gql`
   mutation SubmitBirthday(
     $token: String!
     $name: String!
-    $date: String!
+    $year: Int
+    $month: Int!
+    $day: Int!
     $category: String
     $notes: String
     $submitterName: String
@@ -43,7 +45,9 @@ export const SUBMIT_BIRTHDAY_MUTATION = gql`
     submitBirthday(
       token: $token
       name: $name
-      date: $date
+      year: $year
+      month: $month
+      day: $day
       category: $category
       notes: $notes
       submitterName: $submitterName
@@ -52,6 +56,9 @@ export const SUBMIT_BIRTHDAY_MUTATION = gql`
     ) {
       id
       name
+      year
+      month
+      day
       date
       category
       notes
@@ -86,6 +93,9 @@ export const GET_PENDING_SUBMISSIONS_QUERY = gql`
       submissions {
         id
         name
+        year
+        month
+        day
         date
         category
         notes
@@ -110,6 +120,9 @@ export const IMPORT_SUBMISSION_MUTATION = gql`
     importSubmission(submissionId: $submissionId) {
       id
       name
+      year
+      month
+      day
       date
       category
       notes

@@ -21,7 +21,10 @@ export const Mutation = extendType({
       type: "Birthday",
       args: {
         name: nonNull(stringArg()),
-        date: nonNull(stringArg()),
+        // NEW: Date components (year is optional)
+        year: intArg(),
+        month: nonNull(intArg()),
+        day: nonNull(intArg()),
         category: stringArg(),
         parent: stringArg(),
         notes: stringArg(),
@@ -30,15 +33,37 @@ export const Mutation = extendType({
       },
       resolve: async (
         _,
-        { name, date, category, parent, notes, userId, importSource },
+        { name, year, month, day, category, parent, notes, userId, importSource },
         ctx,
       ) => {
+        // Validate date components
+        const { InputValidator } = await import("../../lib/input-validator");
+
+        const monthValidation = InputValidator.validateMonth(month);
+        if (!monthValidation.isValid) {
+          throw new Error("Invalid month: must be between 1 and 12");
+        }
+
+        const dayValidation = InputValidator.validateDay(day, month, year ?? null);
+        if (!dayValidation.isValid) {
+          throw new Error("Invalid day for the given month");
+        }
+
+        if (year !== null && year !== undefined) {
+          const yearValidation = InputValidator.validateYear(year);
+          if (!yearValidation.isValid) {
+            throw new Error("Invalid year: must be between 1900 and next year");
+          }
+        }
+
         const [birthday] = await ctx.db
           .insert(birthdays)
           .values({
             id: createId(),
             name,
-            date,
+            year: year ?? null,
+            month,
+            day,
             category: category || null,
             parent: parent || null,
             notes: notes || null,
@@ -56,7 +81,10 @@ export const Mutation = extendType({
       args: {
         id: nonNull(stringArg()),
         name: nonNull(stringArg()),
-        date: nonNull(stringArg()),
+        // NEW: Date components (year is optional)
+        year: intArg(),
+        month: nonNull(intArg()),
+        day: nonNull(intArg()),
         category: stringArg(),
         parent: stringArg(),
         notes: stringArg(),
@@ -64,14 +92,36 @@ export const Mutation = extendType({
       },
       resolve: async (
         _,
-        { id, name, date, category, parent, notes, importSource },
+        { id, name, year, month, day, category, parent, notes, importSource },
         ctx,
       ) => {
+        // Validate date components
+        const { InputValidator } = await import("../../lib/input-validator");
+
+        const monthValidation = InputValidator.validateMonth(month);
+        if (!monthValidation.isValid) {
+          throw new Error("Invalid month: must be between 1 and 12");
+        }
+
+        const dayValidation = InputValidator.validateDay(day, month, year ?? null);
+        if (!dayValidation.isValid) {
+          throw new Error("Invalid day for the given month");
+        }
+
+        if (year !== null && year !== undefined) {
+          const yearValidation = InputValidator.validateYear(year);
+          if (!yearValidation.isValid) {
+            throw new Error("Invalid year: must be between 1900 and next year");
+          }
+        }
+
         const [birthday] = await ctx.db
           .update(birthdays)
           .set({
             name,
-            date,
+            year: year ?? null,
+            month,
+            day,
             category: category || null,
             parent: parent || null,
             notes: notes || null,
@@ -174,7 +224,10 @@ export const Mutation = extendType({
       args: {
         token: nonNull(stringArg()),
         name: nonNull(stringArg()),
-        date: nonNull(stringArg()),
+        // NEW: Date components (year is optional)
+        year: intArg(),
+        month: nonNull(intArg()),
+        day: nonNull(intArg()),
         category: stringArg(),
         notes: stringArg(),
         submitterName: stringArg(),
@@ -205,7 +258,9 @@ export const Mutation = extendType({
           securityContext,
           {
             name: args.name,
-            date: args.date,
+            year: args.year ?? null,
+            month: args.month,
+            day: args.day,
             submitterEmail: args.submitterEmail || undefined,
           },
         );
@@ -218,7 +273,9 @@ export const Mutation = extendType({
 
         const result = await SubmissionService.processSubmission(args.token, {
           name: args.name,
-          date: args.date,
+          year: args.year ?? null,
+          month: args.month,
+          day: args.day,
           category: args.category || undefined,
           notes: args.notes || undefined,
           submitterName: args.submitterName || undefined,
@@ -409,7 +466,9 @@ export const Mutation = extendType({
 
         const result = await SubmissionService.detectDuplicates(ctx.user.id, {
           name: submission.name,
-          date: submission.date,
+          year: submission.year ?? null,
+          month: submission.month,
+          day: submission.day,
           category: submission.category || undefined,
           notes: submission.notes || undefined,
           submitterName: submission.submitterName || undefined,

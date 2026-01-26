@@ -1,8 +1,8 @@
 import { NexusGenObjects } from "../generated/nexus-typegen";
-import getAgeForHumans from "../shared/getAgeForHumans";
-import getDateFromYmdString from "../shared/getDateFromYmdString";
+import { getAgeForHumansFromComponents } from "../shared/getAgeForHumans";
+import { getDateFromComponents } from "../shared/getDateFromComponents";
 import { getDaysUntilNextBirthday } from "../shared/getDaysUntilNextBirthday";
-import getZodiacSignForDateYmdString from "../shared/getZodiacSignForDateYmdString";
+import { getZodiacSignFromComponents } from "../shared/getZodiacSignForDateYmdString";
 import EditBirthdayDialog from "./EditBirthdayDialog";
 import ZodiacSignCharacter from "./ZodiacSignCharacter";
 import clsx from "clsx";
@@ -39,16 +39,21 @@ const BirthdayRow: FC<Props> = ({
     useState(false);
   const [isEditBirthdayDialogMounted, setIsEditBirthdayDialogMounted] =
     useState(false);
-  const birthDate = getDateFromYmdString(birthday.date || "");
-  const zodiacSign = getZodiacSignForDateYmdString(birthday.date || "");
+  const birthDate = birthday.month && birthday.day
+    ? getDateFromComponents(birthday.year ?? null, birthday.month, birthday.day)
+    : new Date();
+  const zodiacSign = birthday.month && birthday.day
+    ? getZodiacSignFromComponents(birthday.month, birthday.day)
+    : null;
   const notesTextOnly = birthday?.notes?.replace(/<\/?[^>]+(>|$)/g, "");
   const todaysDateMonthAndDay = format(new Date(), "MM-dd");
   const birthDateMonthAndDay = format(birthDate, "MM-dd");
-  const age = getAgeForHumans(getDateFromYmdString(birthday.date || ""));
-  const actualAge = getAgeForHumans(
-    getDateFromYmdString(birthday.date || ""),
-    true,
-  );
+  const age = birthday.month && birthday.day
+    ? getAgeForHumansFromComponents(birthday.year ?? null, birthday.month, birthday.day)
+    : null;
+  const actualAge = birthday.month && birthday.day
+    ? getAgeForHumansFromComponents(birthday.year ?? null, birthday.month, birthday.day, true)
+    : null;
 
   const daysFromNow = getDaysUntilNextBirthday(birthday);
 
@@ -122,9 +127,9 @@ const BirthdayRow: FC<Props> = ({
           </p>
           <p className="col-span-2 block py-3">
             {birthday.id && age ? (
-              <span title={actualAge}>{age}</span>
+              <span title={actualAge ?? undefined}>{age}</span>
             ) : (
-              <span className="sr-only">{actualAge}</span>
+              <span className="sr-only">{actualAge ?? undefined}</span>
             )}
           </p>
           <p className="relative col-span-2 h-full overflow-hidden text-ellipsis">
@@ -187,8 +192,8 @@ const BirthdayRow: FC<Props> = ({
               }
               type="button"
             >
-              <ZodiacSignCharacter name={zodiacSign} />
-              <span className="text-xs">{zodiacSign}</span>
+              <ZodiacSignCharacter name={zodiacSign ?? ""} />
+              <span className="text-xs">{zodiacSign ?? ""}</span>
             </button>
             {zodiacSignFilter && zodiacSignFilter === zodiacSign && (
               <button
@@ -209,7 +214,7 @@ const BirthdayRow: FC<Props> = ({
             {birthday.name}
           </p>
           <p className="col-span-2 py-2 text-xl text-cyan-600">
-            {format(getDateFromYmdString(birthday.date || ""), "MMM d")}
+            {format(birthDate, "MMM d")}
           </p>
         </li>
       )}
@@ -242,22 +247,21 @@ const BirthdayRow: FC<Props> = ({
                 {getImportSourceIcon(birthday.importSource)}
               </p>
               <div className="flex justify-start space-x-4 pt-1">
-                {getAgeForHumans(getDateFromYmdString(birthday.date || "")) ? (
+                {age ? (
                   <p>
                     <span className="text-sm font-light">Age</span>{" "}
                     <span className="font-medium">
-                      {getAgeForHumans(
-                        getDateFromYmdString(birthday.date || ""),
-                      )}
+                      {age}
                     </span>
                   </p>
-                ) : (
+                ) : actualAge ? (
                   <span className="sr-only">
-                    {getAgeForHumans(
-                      getDateFromYmdString(birthday.date || ""),
-                      true,
-                    )}
+                    {actualAge}
                   </span>
+                ) : (
+                  <p>
+                    <span className="text-sm font-light text-gray-500">Age Unknown</span>
+                  </p>
                 )}
                 {birthday.parent && (
                   <p className="overflow-hidden text-ellipsis">
@@ -267,8 +271,8 @@ const BirthdayRow: FC<Props> = ({
                 )}
               </div>
               <p className="mt-1 flex items-center space-x-2">
-                <ZodiacSignCharacter name={zodiacSign} />
-                <span className="text-xs">{zodiacSign}</span>
+                <ZodiacSignCharacter name={zodiacSign ?? ""} />
+                <span className="text-xs">{zodiacSign ?? ""}</span>
               </p>
             </div>
             <p className="text-xl text-cyan-600">

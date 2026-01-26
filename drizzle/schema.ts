@@ -2,6 +2,7 @@ import { relations } from "drizzle-orm";
 import {
   boolean,
   index,
+  integer,
   pgEnum,
   pgTable,
   text,
@@ -69,7 +70,12 @@ export const birthdays = pgTable(
   {
     id: text("id").primaryKey().notNull(),
     name: text("name").notNull(),
-    date: text("date").notNull(),
+    // NEW: Separate date components (year is nullable for optional years)
+    year: integer("year"),
+    month: integer("month").notNull(),
+    day: integer("day").notNull(),
+    // DEPRECATED: Keep for migration, will be removed in future
+    date: text("date"),
     category: text("category"),
     parent: text("parent"),
     notes: text("notes"),
@@ -77,7 +83,10 @@ export const birthdays = pgTable(
     userId: text("userId").notNull(),
     importSource: text("importSource"),
   },
-  (table) => [index("Birthday_userId_idx").on(table.userId)],
+  (table) => [
+    index("Birthday_userId_idx").on(table.userId),
+    index("Birthday_month_day_idx").on(table.month, table.day),
+  ],
 );
 
 export const verificationTokens = pgTable(
@@ -124,7 +133,12 @@ export const birthdaySubmissions = pgTable(
     id: text("id").primaryKey().notNull(),
     sharingLinkId: text("sharingLinkId").notNull(),
     name: text("name").notNull(),
-    date: text("date").notNull(),
+    // NEW: Separate date components (year is nullable for optional years)
+    year: integer("year"),
+    month: integer("month").notNull(),
+    day: integer("day").notNull(),
+    // DEPRECATED: Keep for migration, will be removed in future
+    date: text("date"),
     category: text("category"),
     notes: text("notes"),
     submitterName: text("submitterName"),

@@ -1,4 +1,4 @@
-import { addDays, addWeeks, format, subYears } from "date-fns";
+import { addDays, addWeeks, subYears } from "date-fns";
 import { describe, expect, it } from "vitest";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import { getDaysUntilNextBirthday } from "./getDaysUntilNextBirthday";
@@ -6,30 +6,41 @@ import { getDaysUntilNextBirthday } from "./getDaysUntilNextBirthday";
 const baseBirthDay = {
   id: "1",
   name: "John Doe",
+  year: null,
 };
 
+const today = new Date();
 const todayBirthday: NexusGenObjects["Birthday"] = {
-  date: format(new Date(), "yyyy-MM-dd"),
+  month: today.getMonth() + 1,
+  day: today.getDate(),
   ...baseBirthDay,
 };
 
+const oneYearAgo = subYears(new Date(), 1);
 const oneYearAgoBirthday: NexusGenObjects["Birthday"] = {
-  date: format(subYears(new Date(), 1), "yyyy-MM-dd"),
+  month: oneYearAgo.getMonth() + 1,
+  day: oneYearAgo.getDate(),
   ...baseBirthDay,
 };
 
+const oneYearAgoTomorrow = subYears(addDays(new Date(), 1), 1);
 const oneYearAgoTomorrowBirthday: NexusGenObjects["Birthday"] = {
-  date: format(subYears(addDays(new Date(), 1), 1), "yyyy-MM-dd"),
+  month: oneYearAgoTomorrow.getMonth() + 1,
+  day: oneYearAgoTomorrow.getDate(),
   ...baseBirthDay,
 };
 
+const oneYearAgoThreeDays = subYears(addDays(new Date(), 3), 1);
 const oneYearAgoThreeDaysFromNowBirthday: NexusGenObjects["Birthday"] = {
-  date: format(subYears(addDays(new Date(), 3), 1), "yyyy-MM-dd"),
+  month: oneYearAgoThreeDays.getMonth() + 1,
+  day: oneYearAgoThreeDays.getDate(),
   ...baseBirthDay,
 };
 
+const oneYearAgoThreeWeeks = subYears(addWeeks(new Date(), 3), 1);
 const oneYearAgoThreeWeeksFromNowBirthday: NexusGenObjects["Birthday"] = {
-  date: format(subYears(addWeeks(new Date(), 3), 1), "yyyy-MM-dd"),
+  month: oneYearAgoThreeWeeks.getMonth() + 1,
+  day: oneYearAgoThreeWeeks.getDate(),
   ...baseBirthDay,
 };
 
