@@ -8,6 +8,13 @@
       "when": 1763756522927,
       "tag": "0000_sturdy_joshua_kane",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1769373803579,
+      "tag": "0001_free_wiccan",
+      "breakpoints": true
     }
   ]
 }
