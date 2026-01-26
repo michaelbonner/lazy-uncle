@@ -3,7 +3,9 @@ import { gql } from "@apollo/client";
 export const CREATE_BIRTHDAY_MUTATION = gql`
   mutation CreateBirthday(
     $name: String!
-    $date: String!
+    $year: Int
+    $month: Int!
+    $day: Int!
     $category: String
     $parent: String
     $notes: String
@@ -12,7 +14,9 @@ export const CREATE_BIRTHDAY_MUTATION = gql`
   ) {
     createBirthday(
       name: $name
-      date: $date
+      year: $year
+      month: $month
+      day: $day
       category: $category
       parent: $parent
       notes: $notes
@@ -21,6 +25,9 @@ export const CREATE_BIRTHDAY_MUTATION = gql`
     ) {
       id
       name
+      year
+      month
+      day
       date
       category
       parent
@@ -35,7 +42,9 @@ export const EDIT_BIRTHDAY_MUTATION = gql`
   mutation EditBirthday(
     $id: String!
     $name: String!
-    $date: String!
+    $year: Int
+    $month: Int!
+    $day: Int!
     $category: String
     $parent: String
     $notes: String
@@ -44,7 +53,9 @@ export const EDIT_BIRTHDAY_MUTATION = gql`
     editBirthday(
       id: $id
       name: $name
-      date: $date
+      year: $year
+      month: $month
+      day: $day
       category: $category
       parent: $parent
       notes: $notes
@@ -52,6 +63,9 @@ export const EDIT_BIRTHDAY_MUTATION = gql`
     ) {
       id
       name
+      year
+      month
+      day
       date
       category
       parent
@@ -67,6 +81,9 @@ export const GET_ALL_BIRTHDAYS_QUERY = gql`
     birthdays {
       id
       name
+      year
+      month
+      day
       date
       category
       parent
@@ -82,6 +99,9 @@ export const GET_BIRTHDAY_BY_ID_QUERY = gql`
     birthday(birthdayId: $birthdayId) {
       id
       name
+      year
+      month
+      day
       date
       category
       parent
