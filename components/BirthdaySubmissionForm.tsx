@@ -1,3 +1,4 @@
+import BirthdayDateInput from "./BirthdayDateInput";
 import PrimaryButton from "./PrimaryButton";
 import { gql } from "@apollo/client";
 import { useMutation } from "@apollo/client/react";
@@ -9,7 +10,9 @@ const SUBMIT_BIRTHDAY_MUTATION = gql`
   mutation SubmitBirthday(
     $token: String!
     $name: String!
-    $date: String!
+    $year: Int
+    $month: Int!
+    $day: Int!
     $category: String
     $notes: String
     $submitterName: String
@@ -19,7 +22,9 @@ const SUBMIT_BIRTHDAY_MUTATION = gql`
     submitBirthday(
       token: $token
       name: $name
-      date: $date
+      year: $year
+      month: $month
+      day: $day
       category: $category
       notes: $notes
       submitterName: $submitterName
@@ -28,6 +33,9 @@ const SUBMIT_BIRTHDAY_MUTATION = gql`
     ) {
       id
       name
+      year
+      month
+      day
       date
       status
       __typename
@@ -47,7 +55,10 @@ const BirthdaySubmissionForm = ({
   onCancel,
 }: BirthdaySubmissionFormProps) => {
   const [name, setName] = useState("");
-  const [date, setDate] = useState("");
+  const currentYear = new Date().getFullYear();
+  const [year, setYear] = useState<number | null>(currentYear);
+  const [month, setMonth] = useState<number>(1);
+  const [day, setDay] = useState<number>(1);
   const [category, setCategory] = useState("");
   const [notes, setNotes] = useState("");
   const [submitterName, setSubmitterName] = useState("");
@@ -59,6 +70,16 @@ const BirthdaySubmissionForm = ({
     SUBMIT_BIRTHDAY_MUTATION,
   );
 
+  const handleDateChange = (
+    newYear: number | null,
+    newMonth: number,
+    newDay: number,
+  ) => {
+    setYear(newYear);
+    setMonth(newMonth);
+    setDay(newDay);
+  };
+
   const validateForm = () => {
     const errors: string[] = [];
 
@@ -66,20 +87,22 @@ const BirthdaySubmissionForm = ({
       errors.push("Name is required");
     }
 
-    if (!date) {
+    if (!month || !day) {
       errors.push("Birthday is required");
     } else {
-      // Validate date format and range
-      const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-      if (!dateRegex.test(date)) {
-        errors.push("Please enter a valid date");
-      } else {
-        const parsedDate = new Date(date);
-        const currentYear = new Date().getFullYear();
-        const dateYear = parsedDate.getFullYear();
+      // Validate month and day ranges
+      if (month < 1 || month > 12) {
+        errors.push("Please enter a valid month");
+      }
+      if (day < 1 || day > 31) {
+        errors.push("Please enter a valid day");
+      }
 
-        if (dateYear < 1900 || dateYear > currentYear + 1) {
-          errors.push("Please enter a date between 1900 and next year");
+      // Validate year if provided
+      if (year !== null) {
+        const currentYear = new Date().getFullYear();
+        if (year < 1900 || year > currentYear + 1) {
+          errors.push("Please enter a year between 1900 and next year");
         }
       }
     }
@@ -128,7 +151,9 @@ const BirthdaySubmissionForm = ({
         variables: {
           token,
           name: name.trim(),
-          date,
+          year: year,
+          month: month,
+          day: day,
           category: category.trim() || null,
           notes: notes.trim() || null,
           submitterName: submitterName.trim() || null,
@@ -220,17 +245,16 @@ const BirthdaySubmissionForm = ({
             />
           </div>
           <div>
-            <label className="mt-4 block text-sm font-medium" htmlFor="date">
+            <label className="mt-4 block text-sm font-medium">
               Birthday *
             </label>
-            <input
-              className="block h-12 w-full rounded-sm border-gray-300 text-gray-900"
-              id="date"
-              onChange={(e) => setDate(e.target.value)}
-              required
-              type="date"
-              value={date}
-              max={new Date().toISOString().split("T")[0]}
+            <BirthdayDateInput
+              year={year}
+              month={month}
+              day={day}
+              onChange={handleDateChange}
+              required={true}
+              maxYear={new Date().getFullYear()}
             />
           </div>
           <div>
