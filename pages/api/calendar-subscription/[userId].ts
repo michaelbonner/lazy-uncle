@@ -24,19 +24,25 @@ export default async function handler(
 
   const events = [] as Birthdate[];
   birthdayList.forEach((birthday) => {
+    // Skip birthdays without month/day (shouldn't happen after migration)
+    if (!birthday.month || !birthday.day) {
+      return;
+    }
+
     for (let index = -2; index < 3; index++) {
-      const userBirthday = parse(birthday.date, "yyyy-MM-dd", new Date());
+      const birthYear = birthday.year ?? 2000; // Use placeholder year if not provided
+      const userBirthday = new Date(birthYear, birthday.month - 1, birthday.day);
       const birthDate = setYear(
         userBirthday,
         +new Date().getFullYear() + index,
       );
-      const age = birthDate.getFullYear() - userBirthday.getFullYear();
-      if (age < 0) {
+      const age = birthday.year ? (birthDate.getFullYear() - birthday.year) : null;
+      if (age !== null && age < 0) {
         continue;
       }
       events.push({
         title: `${birthday.name}'s${
-          age > 30 || age < 1 ? "" : ` ${getOrdinalNumber(age)}`
+          age !== null && age > 30 || age === null || age < 1 ? "" : ` ${getOrdinalNumber(age)}`
         } Birthday`,
         start: [
           birthDate.getFullYear(),

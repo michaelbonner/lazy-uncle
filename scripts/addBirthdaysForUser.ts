@@ -142,17 +142,33 @@ async function main() {
   const birthdaysToAdd = csvBirthdays
     .filter((csvBirthday: CsvBirthday) => {
       return !user.birthdays.find((userBirthday) => {
+        // Parse CSV date to components for comparison
+        const dateParts = csvBirthday.date.split("-");
+        const csvYear = dateParts[0] ? parseInt(dateParts[0], 10) : null;
+        const csvMonth = parseInt(dateParts[1], 10);
+        const csvDay = parseInt(dateParts[2], 10);
+
         return (
           userBirthday.name === csvBirthday.name &&
-          userBirthday.date === csvBirthday.date
+          userBirthday.year === csvYear &&
+          userBirthday.month === csvMonth &&
+          userBirthday.day === csvDay
         );
       });
     })
     .map((csvBirthday: CsvBirthday): NewBirthday => {
+      // Parse date string into components (expected format: YYYY-MM-DD)
+      const dateParts = csvBirthday.date.split("-");
+      const year = dateParts[0] ? parseInt(dateParts[0], 10) : null;
+      const month = parseInt(dateParts[1], 10);
+      const day = parseInt(dateParts[2], 10);
+
       return {
         id: createId(),
         name: csvBirthday.name,
-        date: csvBirthday.date,
+        year,
+        month,
+        day,
         category: csvBirthday.category || null,
         parent: csvBirthday.parent || null,
         notes: csvBirthday.notes || null,

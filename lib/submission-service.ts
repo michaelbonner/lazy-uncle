@@ -23,7 +23,10 @@ export interface SubmissionResult {
 export interface DuplicateMatch {
   id: string;
   name: string;
-  date: string;
+  year?: number | null;
+  month: number;
+  day: number;
+  date?: string; // Deprecated: for backward compatibility
   category?: string;
   similarity: number;
 }
@@ -35,7 +38,10 @@ export interface DuplicateDetectionResult {
 
 export interface ProcessedSubmissionData {
   name: string;
-  date: string;
+  year?: number | null;
+  month: number;
+  day: number;
+  date?: string; // Deprecated: for backward compatibility
   category?: string;
   notes?: string;
   submitterName?: string;
@@ -100,7 +106,9 @@ export class SubmissionService {
           id: createId(),
           sharingLinkId: sharingLink.id,
           name: processedData.name,
-          date: processedData.date,
+          year: processedData.year,
+          month: processedData.month,
+          day: processedData.day,
           category: processedData.category || null,
           notes: processedData.notes || null,
           submitterName: processedData.submitterName || null,
@@ -112,11 +120,16 @@ export class SubmissionService {
 
       // Send notification to the sharing link owner
       try {
+        // Compute date string from components for notification
+        const dateString = processedData.year
+          ? `${processedData.year}-${String(processedData.month).padStart(2, '0')}-${String(processedData.day).padStart(2, '0')}`
+          : `--${String(processedData.month).padStart(2, '0')}-${String(processedData.day).padStart(2, '0')}`;
+
         const notificationData: SubmissionNotificationData = {
           submissionId: submission.id,
           submitterName: processedData.submitterName,
           birthdayName: processedData.name,
-          birthdayDate: processedData.date,
+          birthdayDate: dateString,
           relationship: processedData.relationship,
           notes: processedData.notes,
           sharingLinkDescription: sharingLink.description || undefined,
@@ -162,7 +175,9 @@ export class SubmissionService {
         columns: {
           id: true,
           name: true,
-          date: true,
+          year: true,
+          month: true,
+          day: true,
           category: true,
         },
       });
@@ -176,7 +191,9 @@ export class SubmissionService {
           matches.push({
             id: birthday.id,
             name: birthday.name,
-            date: birthday.date,
+            year: birthday.year,
+            month: birthday.month,
+            day: birthday.day,
             category: birthday.category || undefined,
             similarity,
           });
@@ -229,7 +246,9 @@ export class SubmissionService {
           id: createId(),
           userId,
           name: submission.name,
-          date: submission.date,
+          year: submission.year,
+          month: submission.month,
+          day: submission.day,
           category: submission.category || null,
           notes: submission.notes || null,
           importSource: "sharing",
@@ -448,7 +467,10 @@ export class SubmissionService {
   ): ProcessedSubmissionData {
     return {
       name: sanitizedData.name,
-      date: sanitizedData.date,
+      year: sanitizedData.year ?? null,
+      month: sanitizedData.month,
+      day: sanitizedData.day,
+      date: sanitizedData.date, // Keep for backward compatibility
       category: sanitizedData.category || undefined,
       notes: sanitizedData.notes || undefined,
       submitterName: sanitizedData.submitterName || undefined,
@@ -462,7 +484,7 @@ export class SubmissionService {
    */
   private static calculateSimilarity(
     submission: ProcessedSubmissionData,
-    existing: { name: string; date: string; category?: string | null },
+    existing: { name: string; year?: number | null; month: number; day: number; category?: string | null },
   ): number {
     let similarity = 0;
     let factors = 0;
@@ -475,19 +497,18 @@ export class SubmissionService {
     similarity += nameSimilarity * 0.6;
     factors += 0.6;
 
-    // Date similarity (exact match or close)
-    if (submission.date === existing.date) {
-      similarity += 0.4;
-    } else {
-      // Check if it's the same day/month but different year
-      const submissionParts = submission.date.split("-");
-      const existingParts = existing.date.split("-");
-
-      if (
-        submissionParts[1] === existingParts[1] && // Same month
-        submissionParts[2] === existingParts[2] // Same day
-      ) {
-        similarity += 0.2; // Partial credit for same day/month
+    // Date similarity using components
+    if (
+      existing.month === submission.month &&
+      existing.day === submission.day
+    ) {
+      // Exact month/day match
+      if (existing.year === submission.year) {
+        similarity += 0.4; // Perfect match including year
+      } else if (!existing.year || !submission.year) {
+        similarity += 0.35; // Match month/day, one or both years missing
+      } else {
+        similarity += 0.2; // Match month/day, different years (possible duplicate)
       }
     }
     factors += 0.4;

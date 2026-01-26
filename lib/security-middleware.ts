@@ -230,7 +230,9 @@ export class SecurityMiddleware {
     context: SecurityContext & { token: string },
     submissionData: {
       name: string;
-      date: string;
+      year?: number | null;
+      month: number;
+      day: number;
       submitterEmail?: string;
     },
   ): Promise<SecurityResult> {
@@ -338,7 +340,9 @@ export class SecurityMiddleware {
             suspiciousActivity,
             submissionData: {
               name: submissionData.name,
-              date: submissionData.date,
+              year: submissionData.year,
+              month: submissionData.month,
+              day: submissionData.day,
             },
           },
         });
@@ -468,7 +472,7 @@ export class SecurityMiddleware {
    */
   private static async detectSuspiciousSubmission(
     context: SecurityContext & { token: string },
-    submissionData: { name: string; date: string; submitterEmail?: string },
+    submissionData: { name: string; year?: number | null; month: number; day: number; submitterEmail?: string },
   ): Promise<{
     detected: boolean;
     reason?: string;
