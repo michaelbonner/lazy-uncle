@@ -1,5 +1,7 @@
 import { authClient } from "../../lib/auth-client";
 import ClientOnly from "../ClientOnly";
+import { clsx } from "clsx";
+import { Inter } from "next/font/google";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
@@ -7,6 +9,11 @@ import { useRouter } from "next/router";
 import posthog from "posthog-js";
 import { ReactElement, useEffect } from "react";
 import { RiBugFill, RiLightbulbFlashLine } from "react-icons/ri";
+
+const bodyFont = Inter({
+  subsets: ["latin"],
+  weight: ["200", "400", "500", "600", "700", "800", "900"],
+});
 
 const MainLayout = ({
   children,
@@ -33,7 +40,12 @@ const MainLayout = ({
   }, [session, isPending]);
 
   return (
-    <div className="flex min-h-screen flex-col justify-between">
+    <div
+      className={clsx(
+        "flex min-h-screen flex-col justify-between",
+        bodyFont.className,
+      )}
+    >
       <Head>
         {/* General */}
         <title>{title}</title>
