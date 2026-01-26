@@ -151,21 +151,25 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
     return unsortedDates.sort(
       (a: NexusGenObjects["Birthday"], b: NexusGenObjects["Birthday"]) => {
         if (sortBy === "date_asc") {
-          const aDate = a.month && a.day
-            ? format(getDateFromComponents(null, a.month, a.day), "MM-dd")
-            : "";
-          const bDate = b.month && b.day
-            ? format(getDateFromComponents(null, b.month, b.day), "MM-dd")
-            : "";
+          const aDate =
+            a.month && a.day
+              ? format(getDateFromComponents(null, a.month, a.day), "MM-dd")
+              : "";
+          const bDate =
+            b.month && b.day
+              ? format(getDateFromComponents(null, b.month, b.day), "MM-dd")
+              : "";
           return aDate > bDate ? 1 : -1;
         }
         if (sortBy === "date_desc") {
-          const aDate = a.month && a.day
-            ? format(getDateFromComponents(null, a.month, a.day), "MM-dd")
-            : "";
-          const bDate = b.month && b.day
-            ? format(getDateFromComponents(null, b.month, b.day), "MM-dd")
-            : "";
+          const aDate =
+            a.month && a.day
+              ? format(getDateFromComponents(null, a.month, a.day), "MM-dd")
+              : "";
+          const bDate =
+            b.month && b.day
+              ? format(getDateFromComponents(null, b.month, b.day), "MM-dd")
+              : "";
           return aDate > bDate ? -1 : 1;
         }
         if (sortBy === "name_asc") {
@@ -201,13 +205,17 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
           return (a.parent || "") > (b.parent || "") ? -1 : 1;
         }
         if (sortBy === "sign_asc") {
-          const aZodiacSign = a.month && a.day ? getZodiacSignFromComponents(a.month, a.day) : "";
-          const bZodiacSign = b.month && b.day ? getZodiacSignFromComponents(b.month, b.day) : "";
+          const aZodiacSign =
+            a.month && a.day ? getZodiacSignFromComponents(a.month, a.day) : "";
+          const bZodiacSign =
+            b.month && b.day ? getZodiacSignFromComponents(b.month, b.day) : "";
           return (aZodiacSign || "") > (bZodiacSign || "") ? 1 : -1;
         }
         if (sortBy === "sign_desc") {
-          const aZodiacSign = a.month && a.day ? getZodiacSignFromComponents(a.month, a.day) : "";
-          const bZodiacSign = b.month && b.day ? getZodiacSignFromComponents(b.month, b.day) : "";
+          const aZodiacSign =
+            a.month && a.day ? getZodiacSignFromComponents(a.month, a.day) : "";
+          const bZodiacSign =
+            b.month && b.day ? getZodiacSignFromComponents(b.month, b.day) : "";
           return (aZodiacSign || "") > (bZodiacSign || "") ? -1 : 1;
         }
 
@@ -289,7 +297,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
       {!birthdaysLoading && !birthdaysCount && <OnboardingWalkthrough />}
       {upcomingBirthdays?.length > 0 && (
         <div className="my-4 items-center gap-x-8 rounded-lg border-t-4 border-b-4 border-gray-300 bg-gray-100 px-8 py-4 text-cyan-800 shadow-lg md:flex">
-          <h2 className="text-2xl font-medium">Upcoming Birthdays</h2>
+          <h2 className="text-xl font-medium">Upcoming Birthdays</h2>
           <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 md:mt-0">
             {upcomingBirthdays.map((birthday: NexusGenObjects["Birthday"]) => {
               const daysUntil = getDaysUntilNextBirthday(birthday);
@@ -474,7 +482,10 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                       new Set(
                         workingDates.map((birthday) =>
                           birthday.month && birthday.day
-                            ? getZodiacSignFromComponents(birthday.month, birthday.day)
+                            ? getZodiacSignFromComponents(
+                                birthday.month,
+                                birthday.day,
+                              )
                             : "",
                         ),
                       ),

@@ -7,6 +7,7 @@ import EditBirthdayDialog from "./EditBirthdayDialog";
 import ZodiacSignCharacter from "./ZodiacSignCharacter";
 import clsx from "clsx";
 import { format } from "date-fns";
+import pluralize from "pluralize";
 import { FC, useEffect, useState } from "react";
 import { GiBalloons } from "react-icons/gi";
 import {
@@ -39,21 +40,38 @@ const BirthdayRow: FC<Props> = ({
     useState(false);
   const [isEditBirthdayDialogMounted, setIsEditBirthdayDialogMounted] =
     useState(false);
-  const birthDate = birthday.month && birthday.day
-    ? getDateFromComponents(birthday.year ?? null, birthday.month, birthday.day)
-    : new Date();
-  const zodiacSign = birthday.month && birthday.day
-    ? getZodiacSignFromComponents(birthday.month, birthday.day)
-    : null;
+  const birthDate =
+    birthday.month && birthday.day
+      ? getDateFromComponents(
+          birthday.year ?? null,
+          birthday.month,
+          birthday.day,
+        )
+      : new Date();
+  const zodiacSign =
+    birthday.month && birthday.day
+      ? getZodiacSignFromComponents(birthday.month, birthday.day)
+      : null;
   const notesTextOnly = birthday?.notes?.replace(/<\/?[^>]+(>|$)/g, "");
   const todaysDateMonthAndDay = format(new Date(), "MM-dd");
   const birthDateMonthAndDay = format(birthDate, "MM-dd");
-  const age = birthday.month && birthday.day
-    ? getAgeForHumansFromComponents(birthday.year ?? null, birthday.month, birthday.day)
-    : null;
-  const actualAge = birthday.month && birthday.day
-    ? getAgeForHumansFromComponents(birthday.year ?? null, birthday.month, birthday.day, true)
-    : null;
+  const age =
+    birthday.month && birthday.day
+      ? getAgeForHumansFromComponents(
+          birthday.year ?? null,
+          birthday.month,
+          birthday.day,
+        )
+      : null;
+  const actualAge =
+    birthday.month && birthday.day
+      ? getAgeForHumansFromComponents(
+          birthday.year ?? null,
+          birthday.month,
+          birthday.day,
+          true,
+        )
+      : null;
 
   const daysFromNow = getDaysUntilNextBirthday(birthday);
 
@@ -95,7 +113,7 @@ const BirthdayRow: FC<Props> = ({
             onClick={() => {
               setIsEditBirthdayDialogOpen(true);
             }}
-            className={`col-span-3 flex items-center justify-between gap-2 text-left text-xl md:justify-start`}
+            className={`col-span-3 flex items-center justify-between gap-2 text-left text-lg text-gray-600 font-medium md:justify-start`}
           >
             <span className="flex items-center space-x-2 py-3">
               {daysFromNow === 0 && (
@@ -111,11 +129,12 @@ const BirthdayRow: FC<Props> = ({
             </span>
             {daysFromNow > 0 && daysFromNow < 14 && (
               <span className="text-xs text-gray-600">
-                <span className="text-orange-500">{daysFromNow}</span> days away
+                <span className="text-orange-500">{daysFromNow}</span>{" "}
+                {pluralize("day", daysFromNow)} away
               </span>
             )}
           </button>
-          <p className="col-span-2 text-xl text-cyan-600">
+          <p className="col-span-2 text-lg text-cyan-600">
             <button
               onClick={() => {
                 setIsEditBirthdayDialogOpen(true);
@@ -234,7 +253,7 @@ const BirthdayRow: FC<Props> = ({
             className="flex w-full items-center justify-between"
           >
             <div>
-              <p className="flex items-center space-x-2 text-2xl">
+              <p className="flex items-center space-x-2 text-xl">
                 {todaysDateMonthAndDay === birthDateMonthAndDay && (
                   <span title={`Today is ${birthday.name}'s birthday!`}>
                     <GiBalloons className="top-0 right-0 text-lg text-rose-500" />
@@ -250,17 +269,15 @@ const BirthdayRow: FC<Props> = ({
                 {age ? (
                   <p>
                     <span className="text-sm font-light">Age</span>{" "}
-                    <span className="font-medium">
-                      {age}
-                    </span>
+                    <span className="font-medium">{age}</span>
                   </p>
                 ) : actualAge ? (
-                  <span className="sr-only">
-                    {actualAge}
-                  </span>
+                  <span className="sr-only">{actualAge}</span>
                 ) : (
                   <p>
-                    <span className="text-sm font-light text-gray-500">Age Unknown</span>
+                    <span className="text-sm font-light text-gray-500">
+                      Age Unknown
+                    </span>
                   </p>
                 )}
                 {birthday.parent && (
@@ -281,7 +298,7 @@ const BirthdayRow: FC<Props> = ({
           </button>
         ) : (
           <div>
-            <p className="flex items-center space-x-2 text-2xl">
+            <p className="flex items-center space-x-2 text-xl">
               <span>{birthday.name}</span>
             </p>
           </div>
