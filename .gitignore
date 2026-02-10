@@ -52,3 +52,4 @@ tsconfig.tsbuildinfo
 .kiro
 
 .dokploy
+.mcp.json
