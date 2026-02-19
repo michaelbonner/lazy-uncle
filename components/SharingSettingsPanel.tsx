@@ -6,7 +6,7 @@ import LoadingSpinner from "./LoadingSpinner";
 import PrimaryButton from "./PrimaryButton";
 import { useMutation, useQuery } from "@apollo/client/react";
 import clsx from "clsx";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { HiCog, HiMail, HiMailOpen } from "react-icons/hi";
 import { IoSettingsOutline } from "react-icons/io5";
 
@@ -28,6 +28,12 @@ const SharingSettingsPanel = () => {
     refetch: refetchPreferences,
   } = useQuery(GET_NOTIFICATION_PREFERENCES_QUERY, {
     fetchPolicy: "cache-and-network",
+    onCompleted: (data) => {
+      if (data?.notificationPreferences) {
+        setEmailNotifications(data.notificationPreferences.emailNotifications);
+        setSummaryNotifications(data.notificationPreferences.summaryNotifications);
+      }
+    },
   });
 
   const [updatePreferences, { loading: updateLoading }] = useMutation(
@@ -41,15 +47,6 @@ const SharingSettingsPanel = () => {
       },
     },
   );
-
-  // Initialize form state when data loads
-  useEffect(() => {
-    if (preferencesData?.notificationPreferences) {
-      const preferences = preferencesData.notificationPreferences;
-      setEmailNotifications(preferences.emailNotifications);
-      setSummaryNotifications(preferences.summaryNotifications);
-    }
-  }, [preferencesData]);
 
   const hasChanges = preferencesData?.notificationPreferences
     ? emailNotifications !== preferencesData.notificationPreferences.emailNotifications ||

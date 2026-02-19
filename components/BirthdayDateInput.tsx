@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 
 interface BirthdayDateInputProps {
   year: number | null;
@@ -28,16 +28,20 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
   // For month/day mode (when year is disabled)
   const [localMonth, setLocalMonth] = useState<string>(month?.toString() || "");
   const [localDay, setLocalDay] = useState<string>(day?.toString() || "");
+  const [prevYear, setPrevYear] = useState(year);
+  const [prevMonth, setPrevMonth] = useState(month);
+  const [prevDay, setPrevDay] = useState(day);
 
   const currentYear = new Date().getFullYear();
   const maxYearValue = maxYear || currentYear;
 
-  // Sync local state with props when they change (important for edit form)
-  useEffect(() => {
+  if (year !== prevYear || month !== prevMonth || day !== prevDay) {
+    setPrevYear(year);
+    setPrevMonth(month);
+    setPrevDay(day);
     setYearDisabled(year === null);
 
     if (year !== null && month && day) {
-      // Format as YYYY-MM-DD for date input
       const formattedDate = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
       setDateValue(formattedDate);
     } else {
@@ -46,7 +50,7 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
 
     setLocalMonth(month?.toString() || "");
     setLocalDay(day?.toString() || "");
-  }, [year, month, day]);
+  }
 
   const handleYearToggle = (disabled: boolean) => {
     setYearDisabled(disabled);
@@ -59,7 +63,12 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
           const parsedDay = parseInt(dateParts[2], 10);
           setLocalMonth(String(parsedMonth));
           setLocalDay(String(parsedDay));
-          if (parsedMonth >= 1 && parsedMonth <= 12 && parsedDay >= 1 && parsedDay <= 31) {
+          if (
+            parsedMonth >= 1 &&
+            parsedMonth <= 12 &&
+            parsedDay >= 1 &&
+            parsedDay <= 31
+          ) {
             onChange(null, parsedMonth, parsedDay);
           }
         }
@@ -71,7 +80,12 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
         setDateValue(formattedDate);
         const parsedMonth = parseInt(localMonth, 10);
         const parsedDay = parseInt(localDay, 10);
-        if (parsedMonth >= 1 && parsedMonth <= 12 && parsedDay >= 1 && parsedDay <= 31) {
+        if (
+          parsedMonth >= 1 &&
+          parsedMonth <= 12 &&
+          parsedDay >= 1 &&
+          parsedDay <= 31
+        ) {
           onChange(defaultYear, parsedMonth, parsedDay);
         }
       } else {
@@ -115,7 +129,12 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
                   const parsedYear = parseInt(dateParts[0], 10);
                   const parsedMonth = parseInt(dateParts[1], 10);
                   const parsedDay = parseInt(dateParts[2], 10);
-                  if (parsedMonth >= 1 && parsedMonth <= 12 && parsedDay >= 1 && parsedDay <= 31) {
+                  if (
+                    parsedMonth >= 1 &&
+                    parsedMonth <= 12 &&
+                    parsedDay >= 1 &&
+                    parsedDay <= 31
+                  ) {
                     onChange(parsedYear, parsedMonth, parsedDay);
                   }
                 }
@@ -141,7 +160,12 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
                 if (yearDisabled) {
                   const parsedMonth = parseInt(newMonth, 10);
                   const parsedDay = parseInt(localDay, 10);
-                  if (parsedMonth >= 1 && parsedMonth <= 12 && parsedDay >= 1 && parsedDay <= 31) {
+                  if (
+                    parsedMonth >= 1 &&
+                    parsedMonth <= 12 &&
+                    parsedDay >= 1 &&
+                    parsedDay <= 31
+                  ) {
                     onChange(null, parsedMonth, parsedDay);
                   }
                 }
@@ -169,7 +193,12 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
                 if (yearDisabled) {
                   const parsedMonth = parseInt(localMonth, 10);
                   const parsedDay = parseInt(newDay, 10);
-                  if (parsedMonth >= 1 && parsedMonth <= 12 && parsedDay >= 1 && parsedDay <= 31) {
+                  if (
+                    parsedMonth >= 1 &&
+                    parsedMonth <= 12 &&
+                    parsedDay >= 1 &&
+                    parsedDay <= 31
+                  ) {
                     onChange(null, parsedMonth, parsedDay);
                   }
                 }
@@ -198,8 +227,11 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
             onChange={(e) => handleYearToggle(e.target.checked)}
             className="h-4 w-4 rounded border-gray-300"
           />
-          <label htmlFor="disable-year" className="text-sm text-gray-600 cursor-pointer">
-            Don't know the year
+          <label
+            htmlFor="disable-year"
+            className="text-sm text-gray-600 cursor-pointer"
+          >
+            Don&apos;t know the year
           </label>
         </div>
       )}
