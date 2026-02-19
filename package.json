@@ -16,7 +16,10 @@
     "out": "bun outdated",
     "up": "bun update",
     "preinstall": "npx only-allow bun",
-    "reminders:run": "bun scripts/send-birthday-reminders.ts"
+    "reminders:run": "bun scripts/send-birthday-reminders.ts",
+    "summaries:run": "bun scripts/send-daily-summaries.ts",
+    "cleanup:links": "bun scripts/cleanup-expired-links.ts",
+    "cleanup:submissions": "bun scripts/cleanup-old-submissions.ts"
   },
   "dependencies": {
     "@apollo/client": "^4.1.4",

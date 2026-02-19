@@ -1,4 +1,10 @@
-import { users, notificationPreferences, birthdays } from "../drizzle/schema";
+import {
+  users,
+  notificationPreferences,
+  birthdays,
+  sharingLinks,
+  birthdaySubmissions,
+} from "../drizzle/schema";
 import db from "./db";
 import { buildUnsubscribeUrl } from "./unsubscribe-token";
 import { createId } from "@paralleldrive/cuid2";
@@ -506,6 +512,59 @@ To stop receiving these emails, unsubscribe here: ${unsubscribeUrl}`;
         );
       }
     }
+  }
+
+  /**
+   * Send daily summary emails for users who have pending submissions
+   */
+  async processDailySummaryNotifications(): Promise<void> {
+    console.log("Processing daily summary notifications...");
+
+    // Find users with summary notifications enabled
+    const prefs = await db.query.notificationPreferences.findMany({
+      where: and(
+        eq(notificationPreferences.emailNotifications, true),
+        eq(notificationPreferences.summaryNotifications, true),
+      ),
+    });
+
+    for (const pref of prefs) {
+      const userLinks = await db.query.sharingLinks.findMany({
+        where: eq(sharingLinks.userId, pref.userId),
+        with: {
+          submissions: {
+            where: eq(birthdaySubmissions.status, "PENDING"),
+          },
+        },
+      });
+
+      const pendingSubmissions = userLinks.flatMap((link) =>
+        link.submissions.map((sub) => ({
+          submissionId: sub.id,
+          birthdayName: sub.name,
+          birthdayDate:
+            sub.date ??
+            `${sub.month}/${sub.day}${sub.year ? `/${sub.year}` : ""}`,
+          submitterName: sub.submitterName ?? undefined,
+          relationship: sub.relationship ?? undefined,
+          notes: sub.notes ?? undefined,
+          sharingLinkDescription: link.description ?? undefined,
+        })),
+      );
+
+      if (pendingSubmissions.length === 0) continue;
+
+      try {
+        await this.sendSummaryNotification(pref.userId, pendingSubmissions);
+      } catch (error) {
+        console.error(
+          `Failed to send summary notification for user ${pref.userId}:`,
+          error,
+        );
+      }
+    }
+
+    console.log(`Processed daily summary notifications for ${prefs.length} eligible users`);
   }
 
   /**
