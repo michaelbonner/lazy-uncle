@@ -317,11 +317,12 @@ const BirthdaySubmissionForm = ({
         </div>
 
         <div className="border-t pt-6">
-          <h3 className="mb-4 text-lg font-medium text-gray-900">
+          <h3 className="mb-2 text-lg font-medium text-gray-900">
             Your Information (optional)
           </h3>
-          <p className="mb-4 text-xs text-gray-500">
-            This helps the recipient know who submitted the birthday.
+          <p className="mb-2 text-xs text-gray-500">
+            This information helps the recipient know who submitted the
+            birthday.
           </p>
           <div className="grid gap-x-4 md:grid-cols-2">
             <div>
@@ -358,10 +359,6 @@ const BirthdaySubmissionForm = ({
               />
             </div>
           </div>
-          <p className="mt-2 text-xs text-gray-500">
-            This information helps the recipient know who submitted the
-            birthday.
-          </p>
         </div>
 
         {error && (
