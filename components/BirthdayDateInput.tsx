@@ -23,7 +23,12 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
   const [yearDisabled, setYearDisabled] = useState<boolean>(year === null);
 
   // For date picker mode (when year is enabled)
-  const [dateValue, setDateValue] = useState<string>("");
+  const [dateValue, setDateValue] = useState<string>(() => {
+    if (year !== null && month && day) {
+      return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    }
+    return "";
+  });
 
   // For month/day mode (when year is disabled)
   const [localMonth, setLocalMonth] = useState<string>(month?.toString() || "");
