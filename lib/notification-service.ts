@@ -1,5 +1,6 @@
 import { users, notificationPreferences, birthdays } from "../drizzle/schema";
 import db from "./db";
+import { buildUnsubscribeUrl } from "./unsubscribe-token";
 import { createId } from "@paralleldrive/cuid2";
 import { and, eq } from "drizzle-orm";
 import nodemailer from "nodemailer";
@@ -75,6 +76,7 @@ export class NotificationService {
       const emailContent = this.generateSubmissionEmailContent(
         submissionData,
         user.name,
+        userId,
       );
 
       // Send email
@@ -122,6 +124,7 @@ export class NotificationService {
       const emailContent = this.generateSummaryEmailContent(
         submissions,
         user.name,
+        userId,
       );
 
       await this.sendEmail({
@@ -205,7 +208,8 @@ export class NotificationService {
    */
   private generateSubmissionEmailContent(
     submission: SubmissionNotificationData,
-    userName?: string | null,
+    userName: string | null | undefined,
+    userId: string,
   ): { html: string; text: string } {
     const greeting = userName ? `Hi ${userName}` : "Hello";
     const submitterInfo = submission.submitterName
@@ -224,6 +228,8 @@ export class NotificationService {
       ? `\n\nNotes: ${submission.notes}`
       : "";
 
+    const unsubscribeUrl = buildUnsubscribeUrl(userId, "submission");
+
     const text = `${greeting},
 
 You've received a new birthday submission ${submitterInfo}${linkInfo}!
@@ -235,28 +241,35 @@ Birthday Details:
 You can review and import this birthday by visiting your Lazy Uncle dashboard.
 
 Best regards,
-The Lazy Uncle Team`;
+The Lazy Uncle Team
+
+---
+To stop receiving these emails, unsubscribe here: ${unsubscribeUrl}`;
 
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #333;">New Birthday Submission</h2>
-        
+
         <p>${greeting},</p>
-        
+
         <p>You've received a new birthday submission ${submitterInfo}${linkInfo}!</p>
-        
+
         <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
           <h3 style="margin-top: 0; color: #555;">Birthday Details</h3>
           <p><strong>Name:</strong> ${submission.birthdayName}${relationshipInfo}</p>
           <p><strong>Date:</strong> ${submission.birthdayDate}</p>
           ${submission.notes ? `<p><strong>Notes:</strong> ${submission.notes}</p>` : ""}
         </div>
-        
+
         <p>You can review and import this birthday by visiting your Lazy Uncle dashboard.</p>
-        
+
         <p style="color: #666; font-size: 14px;">
           Best regards,<br>
           The Lazy Uncle Team
+        </p>
+        <p style="color: #999; font-size: 12px; border-top: 1px solid #eee; margin-top: 24px; padding-top: 12px;">
+          You're receiving this because you have new submission notifications enabled.
+          <a href="${unsubscribeUrl}" style="color: #999;">Unsubscribe</a>
         </p>
       </div>
     `;
@@ -269,10 +282,12 @@ The Lazy Uncle Team`;
    */
   private generateSummaryEmailContent(
     submissions: SubmissionNotificationData[],
-    userName?: string | null,
+    userName: string | null | undefined,
+    userId: string,
   ): { html: string; text: string } {
     const greeting = userName ? `Hi ${userName}` : "Hello";
     const count = submissions.length;
+    const unsubscribeUrl = buildUnsubscribeUrl(userId, "summary");
 
     const text = `${greeting},
 
@@ -288,7 +303,10 @@ ${submissions
 You can review and import these birthdays by visiting your Lazy Uncle dashboard.
 
 Best regards,
-The Lazy Uncle Team`;
+The Lazy Uncle Team
+
+---
+To stop receiving these emails, unsubscribe here: ${unsubscribeUrl}`;
 
     const submissionsList = submissions
       .map(
@@ -300,23 +318,27 @@ The Lazy Uncle Team`;
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #333;">${count} New Birthday Submissions</h2>
-        
+
         <p>${greeting},</p>
-        
+
         <p>You have ${count} new birthday submissions waiting for review!</p>
-        
+
         <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
           <h3 style="margin-top: 0; color: #555;">Submissions</h3>
           <ol style="margin: 0; padding-left: 20px;">
             ${submissionsList}
           </ol>
         </div>
-        
+
         <p>You can review and import these birthdays by visiting your Lazy Uncle dashboard.</p>
-        
+
         <p style="color: #666; font-size: 14px;">
           Best regards,<br>
           The Lazy Uncle Team
+        </p>
+        <p style="color: #999; font-size: 12px; border-top: 1px solid #eee; margin-top: 24px; padding-top: 12px;">
+          You're receiving this because you have daily summary notifications enabled.
+          <a href="${unsubscribeUrl}" style="color: #999;">Unsubscribe</a>
         </p>
       </div>
     `;
@@ -476,7 +498,7 @@ The Lazy Uncle Team`;
       if (!user?.email) continue;
 
       try {
-        await this.sendBirthdayReminderEmail(user, todaysBirthdays);
+        await this.sendBirthdayReminderEmail(pref.userId, user, todaysBirthdays);
       } catch (error) {
         console.error(
           `Failed to send birthday reminder for user ${pref.userId}:`,
@@ -490,6 +512,7 @@ The Lazy Uncle Team`;
    * Send a birthday reminder email to a user
    */
   private async sendBirthdayReminderEmail(
+    userId: string,
     user: { email: string; name: string | null },
     todaysBirthdays: Array<{
       name: string;
@@ -501,6 +524,7 @@ The Lazy Uncle Team`;
     const greeting = user.name ? `Hi ${user.name}` : "Hello";
     const count = todaysBirthdays.length;
     const isSingle = count === 1;
+    const unsubscribeUrl = buildUnsubscribeUrl(userId, "reminder");
 
     const birthdayLines = todaysBirthdays.map((b) => {
       const age =
@@ -516,7 +540,10 @@ ${isSingle ? "" : birthdayLines.map((l, i) => `${i + 1}. ${l}`).join("\n") + "\n
 Don't forget to wish them a happy birthday!
 
 Best regards,
-The Lazy Uncle Team`;
+The Lazy Uncle Team
+
+---
+To stop receiving these emails, unsubscribe here: ${unsubscribeUrl}`;
 
     const listHtml = isSingle
       ? `<p><strong>${birthdayLines[0]}</strong></p>`
@@ -542,6 +569,10 @@ The Lazy Uncle Team`;
         <p style="color: #666; font-size: 14px;">
           Best regards,<br>
           The Lazy Uncle Team
+        </p>
+        <p style="color: #999; font-size: 12px; border-top: 1px solid #eee; margin-top: 24px; padding-top: 12px;">
+          You're receiving this because you have birthday reminder emails enabled.
+          <a href="${unsubscribeUrl}" style="color: #999;">Unsubscribe</a>
         </p>
       </div>
     `;
