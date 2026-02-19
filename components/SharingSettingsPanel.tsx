@@ -20,7 +20,6 @@ interface NotificationPreference {
 }
 
 const SharingSettingsPanel = () => {
-  const [showSettings, setShowSettings] = useState(false);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [summaryNotifications, setSummaryNotifications] = useState(false);
   const [birthdayReminders, setBirthdayReminders] = useState(false);
@@ -108,18 +107,6 @@ const SharingSettingsPanel = () => {
             <IoSettingsOutline className="h-6 w-6 text-cyan-600" />
             <h2 className="text-2xl font-medium">Settings</h2>
           </div>
-          <button
-            className={clsx(
-              "flex items-center space-x-2 rounded-md border border-transparent bg-cyan-600 px-4 py-2 font-medium text-white shadow-xs transition-opacity",
-              "hover:bg-cyan-700",
-              "focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:outline-hidden",
-            )}
-            onClick={() => setShowSettings(!showSettings)}
-            type="button"
-          >
-            <HiCog className="h-4 w-4" />
-            <span>{showSettings ? "Hide Settings" : "Show Settings"}</span>
-          </button>
         </div>
 
         {preferencesError && (
@@ -130,126 +117,120 @@ const SharingSettingsPanel = () => {
           </div>
         )}
 
-        {showSettings && (
-          <div className="rounded-lg border border-gray-200 bg-white p-6">
-            <h3 className="mb-6 text-lg font-medium">
-              Notification Preferences
-            </h3>
+        <div className="rounded-lg border border-gray-200 bg-white p-6">
+          <h3 className="mb-6 text-lg font-medium">Notification Preferences</h3>
 
-            {preferencesLoading ? (
-              <div className="flex justify-center py-8">
-                <LoadingSpinner spinnerTextColor="text-cyan-600" />
-              </div>
-            ) : (
-              <form onSubmit={handleSaveSettings} className="space-y-6">
-                <div className="space-y-4">
-                  <div className="flex items-start space-x-3">
-                    <div className="flex h-5 items-center">
-                      <input
-                        id="emailNotifications"
-                        type="checkbox"
-                        checked={emailNotifications}
-                        onChange={(e) =>
-                          setEmailNotifications(e.target.checked)
-                        }
-                        className="h-4 w-4 rounded border-gray-300 text-cyan-600 focus:ring-cyan-500"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <label
-                        htmlFor="emailNotifications"
-                        className="flex items-center space-x-2 text-sm font-medium text-gray-700"
-                      >
-                        <HiMail className="h-4 w-4 text-cyan-600" />
-                        <span>Email notifications for new submissions</span>
-                      </label>
-                      <p className="mt-1 text-sm text-gray-500">
-                        Receive an email notification whenever someone submits a
-                        birthday through your sharing links.
-                      </p>
-                    </div>
+          {preferencesLoading ? (
+            <div className="flex justify-center py-8">
+              <LoadingSpinner spinnerTextColor="text-cyan-600" />
+            </div>
+          ) : (
+            <form onSubmit={handleSaveSettings} className="space-y-6">
+              <div className="space-y-4">
+                <div className="flex items-start space-x-3">
+                  <div className="flex h-5 items-center">
+                    <input
+                      id="emailNotifications"
+                      type="checkbox"
+                      checked={emailNotifications}
+                      onChange={(e) => setEmailNotifications(e.target.checked)}
+                      className="h-4 w-4 rounded border-gray-300 text-cyan-600 focus:ring-cyan-500"
+                    />
                   </div>
-
-                  <div className="flex items-start space-x-3">
-                    <div className="flex h-5 items-center">
-                      <input
-                        id="summaryNotifications"
-                        type="checkbox"
-                        checked={summaryNotifications}
-                        onChange={(e) =>
-                          setSummaryNotifications(e.target.checked)
-                        }
-                        className="h-4 w-4 rounded border-gray-300 text-cyan-600 focus:ring-cyan-500"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <label
-                        htmlFor="summaryNotifications"
-                        className="flex items-center space-x-2 text-sm font-medium text-gray-700"
-                      >
-                        <HiMailOpen className="h-4 w-4 text-cyan-600" />
-                        <span>Daily summary notifications</span>
-                      </label>
-                      <p className="mt-1 text-sm text-gray-500">
-                        Receive a daily summary email of all pending submissions
-                        instead of individual notifications.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start space-x-3">
-                    <div className="flex h-5 items-center">
-                      <input
-                        id="birthdayReminders"
-                        type="checkbox"
-                        checked={birthdayReminders}
-                        onChange={(e) => setBirthdayReminders(e.target.checked)}
-                        className="h-4 w-4 rounded border-gray-300 text-cyan-600 focus:ring-cyan-500"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <label
-                        htmlFor="birthdayReminders"
-                        className="flex items-center space-x-2 text-sm font-medium text-gray-700"
-                      >
-                        <MdCake className="h-4 w-4 text-cyan-600" />
-                        <span>Birthday reminder emails</span>
-                      </label>
-                      <p className="mt-1 text-sm text-gray-500">
-                        Get an email on the day of each birthday. Individual
-                        birthdays can be opted out in the birthday settings.
-                      </p>
-                    </div>
+                  <div className="flex-1">
+                    <label
+                      htmlFor="emailNotifications"
+                      className="flex items-center space-x-2 text-sm font-medium text-gray-700"
+                    >
+                      <HiMail className="h-4 w-4 text-cyan-600" />
+                      <span>Email notifications for new submissions</span>
+                    </label>
+                    <p className="mt-1 text-sm text-gray-500">
+                      Receive an email notification whenever someone submits a
+                      birthday through your sharing links.
+                    </p>
                   </div>
                 </div>
 
-                {hasChanges && (
-                  <div className="flex space-x-3 border-t border-gray-200 pt-6">
-                    <PrimaryButton type="submit" disabled={updateLoading}>
-                      {updateLoading ? "Saving..." : "Save Changes"}
-                    </PrimaryButton>
-                    <button
-                      type="button"
-                      onClick={handleResetSettings}
-                      className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                <div className="flex items-start space-x-3">
+                  <div className="flex h-5 items-center">
+                    <input
+                      id="summaryNotifications"
+                      type="checkbox"
+                      checked={summaryNotifications}
+                      onChange={(e) =>
+                        setSummaryNotifications(e.target.checked)
+                      }
+                      className="h-4 w-4 rounded border-gray-300 text-cyan-600 focus:ring-cyan-500"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label
+                      htmlFor="summaryNotifications"
+                      className="flex items-center space-x-2 text-sm font-medium text-gray-700"
                     >
-                      Reset
-                    </button>
+                      <HiMailOpen className="h-4 w-4 text-cyan-600" />
+                      <span>Daily summary notifications</span>
+                    </label>
+                    <p className="mt-1 text-sm text-gray-500">
+                      Receive a daily summary email of all pending submissions
+                      instead of individual notifications.
+                    </p>
                   </div>
-                )}
+                </div>
 
-                {!hasChanges && preferences && (
-                  <div className="border-t border-gray-200 pt-6">
-                    <div className="flex items-center space-x-2 text-sm text-green-600">
-                      <HiCog className="h-4 w-4" />
-                      <span>Settings saved</span>
-                    </div>
+                <div className="flex items-start space-x-3">
+                  <div className="flex h-5 items-center">
+                    <input
+                      id="birthdayReminders"
+                      type="checkbox"
+                      checked={birthdayReminders}
+                      onChange={(e) => setBirthdayReminders(e.target.checked)}
+                      className="h-4 w-4 rounded border-gray-300 text-cyan-600 focus:ring-cyan-500"
+                    />
                   </div>
-                )}
-              </form>
-            )}
-          </div>
-        )}
+                  <div className="flex-1">
+                    <label
+                      htmlFor="birthdayReminders"
+                      className="flex items-center space-x-2 text-sm font-medium text-gray-700"
+                    >
+                      <MdCake className="h-4 w-4 text-cyan-600" />
+                      <span>Birthday reminder emails</span>
+                    </label>
+                    <p className="mt-1 text-sm text-gray-500">
+                      Get an email on the day of each birthday. Individual
+                      birthdays can be opted out in the birthday settings.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {hasChanges && (
+                <div className="flex space-x-3 border-t border-gray-200 pt-6">
+                  <PrimaryButton type="submit" disabled={updateLoading}>
+                    {updateLoading ? "Saving..." : "Save Changes"}
+                  </PrimaryButton>
+                  <button
+                    type="button"
+                    onClick={handleResetSettings}
+                    className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                  >
+                    Reset
+                  </button>
+                </div>
+              )}
+
+              {!hasChanges && preferences && (
+                <div className="border-t border-gray-200 pt-6">
+                  <div className="flex items-center space-x-2 text-sm text-green-600">
+                    <HiCog className="h-4 w-4" />
+                    <span>Settings saved</span>
+                  </div>
+                </div>
+              )}
+            </form>
+          )}
+        </div>
 
         <div className="mt-6 text-sm text-gray-500">
           <p>
