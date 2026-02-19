@@ -252,9 +252,7 @@ const BirthdaySubmissionForm = ({
             />
           </div>
           <div>
-            <label className="mt-4 block text-sm font-medium">
-              Birthday *
-            </label>
+            <label className="mt-4 block text-sm font-medium">Birthday *</label>
             <BirthdayDateInput
               year={year}
               month={month}
@@ -322,6 +320,9 @@ const BirthdaySubmissionForm = ({
           <h3 className="mb-4 text-lg font-medium text-gray-900">
             Your Information (optional)
           </h3>
+          <p className="mb-4 text-xs text-gray-500">
+            This helps the recipient know who submitted the birthday.
+          </p>
           <div className="grid gap-x-4 md:grid-cols-2">
             <div>
               <label
