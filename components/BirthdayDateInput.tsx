@@ -8,6 +8,7 @@ interface BirthdayDateInputProps {
   required?: boolean;
   maxYear?: number;
   includeYearInput?: boolean; // Whether to show year input (default true)
+  idPrefix?: string; // Unique prefix for IDs when rendering multiple instances
 }
 
 const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
@@ -18,6 +19,7 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
   required = true,
   maxYear,
   includeYearInput = true,
+  idPrefix = "birthday",
 }) => {
   // Track whether user wants to include year or not
   const [yearDisabled, setYearDisabled] = useState<boolean>(year === null);
@@ -122,7 +124,7 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
         <div>
           <input
             type="date"
-            id="birthday-date"
+            id={`${idPrefix}-date`}
             className="block h-12 w-full rounded-sm border-gray-300 text-gray-900"
             value={dateValue}
             onChange={(e) => {
@@ -156,7 +158,7 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
           {/* Month Dropdown */}
           <div>
             <select
-              id="month"
+              id={`${idPrefix}-month`}
               className="block h-12 w-full rounded-sm border-gray-300 text-gray-900"
               value={localMonth}
               onChange={(e) => {
@@ -189,7 +191,7 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
           {/* Day Dropdown */}
           <div>
             <select
-              id="day"
+              id={`${idPrefix}-day`}
               className="block h-12 w-full rounded-sm border-gray-300 text-gray-900"
               value={localDay}
               onChange={(e) => {
@@ -227,13 +229,13 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
         <div className="flex items-center space-x-2">
           <input
             type="checkbox"
-            id="disable-year"
+            id={`${idPrefix}-disable-year`}
             checked={yearDisabled}
             onChange={(e) => handleYearToggle(e.target.checked)}
             className="h-4 w-4 rounded border-gray-300"
           />
           <label
-            htmlFor="disable-year"
+            htmlFor={`${idPrefix}-disable-year`}
             className="text-sm text-gray-600 cursor-pointer"
           >
             Don&apos;t know the year
