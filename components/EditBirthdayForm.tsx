@@ -4,9 +4,10 @@ import {
   EDIT_BIRTHDAY_MUTATION,
   GET_ALL_BIRTHDAYS_QUERY,
 } from "../graphql/Birthday";
+import { GET_NOTIFICATION_PREFERENCES_QUERY } from "../graphql/Sharing";
 import BirthdayDateInput from "./BirthdayDateInput";
 import PrimaryButton from "./PrimaryButton";
-import { useMutation } from "@apollo/client/react";
+import { useMutation, useQuery } from "@apollo/client/react";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
 import { useState } from "react";
@@ -46,6 +47,10 @@ const EditBirthdayForm = ({
   const [remindersEnabled, setRemindersEnabled] = useState(
     birthday.remindersEnabled ?? true,
   );
+
+  const { data: preferencesData } = useQuery(GET_NOTIFICATION_PREFERENCES_QUERY);
+  const birthdayRemindersEnabled =
+    preferencesData?.notificationPreferences?.birthdayReminders ?? false;
 
   const [editBirthday, { loading, error }] = useMutation(
     EDIT_BIRTHDAY_MUTATION,
@@ -153,29 +158,30 @@ const EditBirthdayForm = ({
             setContent={(value: string) => setNotes(value)}
           />
         </div>
-        <div className="flex items-start space-x-3">
-          <div className="flex h-5 items-center">
-            <input
-              id="remindersEnabled"
-              type="checkbox"
-              checked={remindersEnabled}
-              onChange={(e) => setRemindersEnabled(e.target.checked)}
-              className="h-4 w-4 rounded border-gray-300 text-cyan-600 focus:ring-cyan-500"
-            />
+        {birthdayRemindersEnabled && (
+          <div className="flex items-start space-x-3">
+            <div className="flex h-5 items-center">
+              <input
+                id="remindersEnabled"
+                type="checkbox"
+                checked={remindersEnabled}
+                onChange={(e) => setRemindersEnabled(e.target.checked)}
+                className="h-4 w-4 rounded border-gray-300 text-cyan-600 focus:ring-cyan-500"
+              />
+            </div>
+            <div className="flex-1">
+              <label
+                htmlFor="remindersEnabled"
+                className="text-sm font-medium text-gray-700"
+              >
+                Remind me on their birthday
+              </label>
+              <p className="mt-1 text-sm text-gray-500">
+                Send me an email on the day of this birthday.
+              </p>
+            </div>
           </div>
-          <div className="flex-1">
-            <label
-              htmlFor="remindersEnabled"
-              className="text-sm font-medium text-gray-700"
-            >
-              Remind me on their birthday
-            </label>
-            <p className="mt-1 text-sm text-gray-500">
-              Send me an email on the day of this birthday (requires birthday
-              reminders to be enabled in settings).
-            </p>
-          </div>
-        </div>
+        )}
         {error && (
           <div className="text-sm text-red-500">
             An error occurred while saving the birthday. Please try again.
