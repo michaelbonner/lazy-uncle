@@ -5,8 +5,7 @@ import {
 import LoadingSpinner from "./LoadingSpinner";
 import PrimaryButton from "./PrimaryButton";
 import { useMutation, useQuery } from "@apollo/client/react";
-import clsx from "clsx";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { HiCog, HiMail, HiMailOpen } from "react-icons/hi";
 import { IoSettingsOutline } from "react-icons/io5";
 import { MdCake } from "react-icons/md";
