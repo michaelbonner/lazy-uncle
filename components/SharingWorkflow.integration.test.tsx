@@ -304,13 +304,6 @@ describe("Sharing Workflow Integration Tests", () => {
       expect(screen.getAllByText("Jane Smith")[0]).toBeInTheDocument();
     });
 
-    // Check that the sharing information is shown in navigation area
-    expect(
-      screen.getByText(
-        "Share your birthday collection with friends and family",
-      ),
-    ).toBeInTheDocument();
-
     // Check that calendar subscription is available
     expect(screen.getByText("Subscribe to calendar")).toBeInTheDocument();
   });
@@ -329,13 +322,6 @@ describe("Sharing Workflow Integration Tests", () => {
       expect(screen.getAllByText("John Doe")[0]).toBeInTheDocument();
       expect(screen.getAllByText("Jane Smith")[0]).toBeInTheDocument();
     });
-
-    // Verify that the sharing link text is present in navigation
-    expect(
-      screen.getByText(
-        "Share your birthday collection with friends and family",
-      ),
-    ).toBeInTheDocument();
   });
 
   it("provides mock data for notification preferences", async () => {
@@ -381,15 +367,6 @@ describe("Sharing Workflow Integration Tests", () => {
         <BirthdaysContainer userId="test-user-id" />
       </MockedProvider>,
     );
-
-    // Check that sharing information is displayed in the navigation area
-    await waitFor(() => {
-      expect(
-        screen.getByText(
-          "Share your birthday collection with friends and family",
-        ),
-      ).toBeInTheDocument();
-    });
 
     // Check that calendar subscription link is still present
     expect(screen.getByText("Subscribe to calendar")).toBeInTheDocument();
@@ -517,13 +494,6 @@ describe("Sharing Workflow Integration Tests", () => {
       expect(screen.getAllByText("John Doe").length).toBeGreaterThanOrEqual(2);
       expect(screen.getAllByText("Jane Smith")[0]).toBeInTheDocument();
     });
-
-    // Verify that sharing navigation elements are present
-    expect(
-      screen.getByText(
-        "Share your birthday collection with friends and family",
-      ),
-    ).toBeInTheDocument();
 
     // Verify that all required mock data is configured correctly
     expect(

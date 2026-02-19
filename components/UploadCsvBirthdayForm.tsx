@@ -115,7 +115,7 @@ const UploadCsvBirthdayForm = () => {
             </p>
             <p className="mt-1 text-sm text-gray-500">Example:</p>
             <p className="mt-1 border border-dashed bg-white px-4 py-2 text-sm text-gray-500">
-              <code>Mike,2020-01-02,NULL,NULL,Likes the Browns</code>
+              <code>Mike,2020-01-02,NULL,NULL,Likes the Utah Mammoth</code>
             </p>
           </div>
 

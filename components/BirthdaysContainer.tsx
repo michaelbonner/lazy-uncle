@@ -646,9 +646,6 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
             <span>Subscribe to calendar</span>
           </Link>
         </div>
-        <div className="text-sm text-gray-300">
-          <span>Share your birthday collection with friends and family</span>
-        </div>
       </div>
       <SharingLinkManager />
       <SubmissionReviewInterface />
