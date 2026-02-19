@@ -38,7 +38,6 @@ vi.mock("../../lib/db", () => {
 });
 
 const mockDb = vi.mocked(await import("../../lib/db"), true).default;
-const mockInsert = mockDb.insert as ReturnType<typeof vi.fn>;
 
 // Mock the mutation resolver logic
 const mockSubmitBirthdayResolver = async (
@@ -441,9 +440,8 @@ describe("Submission Management GraphQL Operations", () => {
       const { page = 1, limit = 10 } = args;
       const skip = (page - 1) * limit;
 
-      const { SubmissionService } = await import(
-        "../../lib/submission-service"
-      );
+      const { SubmissionService } =
+        await import("../../lib/submission-service");
       const allSubmissions = await SubmissionService.getPendingSubmissions(
         ctx.user?.id as string,
       );
@@ -480,9 +478,8 @@ describe("Submission Management GraphQL Operations", () => {
           relationship: null,
         }));
 
-      const { SubmissionService } = await import(
-        "../../lib/submission-service"
-      );
+      const { SubmissionService } =
+        await import("../../lib/submission-service");
       vi.mocked(SubmissionService.getPendingSubmissions).mockResolvedValue(
         allSubmissions,
       );
@@ -505,9 +502,8 @@ describe("Submission Management GraphQL Operations", () => {
     });
 
     it("should handle pagination correctly for second page", async () => {
-      const { SubmissionService } = await import(
-        "../../lib/submission-service"
-      );
+      const { SubmissionService } =
+        await import("../../lib/submission-service");
       const allSubmissions = Array(15).fill({
         id: "sub",
         name: "Test",
@@ -547,9 +543,8 @@ describe("Submission Management GraphQL Operations", () => {
       args: { submissionId: string },
       ctx: Context,
     ) => {
-      const { SubmissionService } = await import(
-        "../../lib/submission-service"
-      );
+      const { SubmissionService } =
+        await import("../../lib/submission-service");
 
       const result = await SubmissionService.importSubmission(
         args.submissionId,
@@ -625,9 +620,8 @@ describe("Submission Management GraphQL Operations", () => {
       args: { submissionId: string },
       ctx: Context,
     ) => {
-      const { SubmissionService } = await import(
-        "../../lib/submission-service"
-      );
+      const { SubmissionService } =
+        await import("../../lib/submission-service");
 
       const result = await SubmissionService.rejectSubmission(
         args.submissionId,
@@ -705,9 +699,8 @@ describe("Submission Management GraphQL Operations", () => {
       args: { submissionIds: string[] },
       ctx: Context,
     ) => {
-      const { SubmissionService } = await import(
-        "../../lib/submission-service"
-      );
+      const { SubmissionService } =
+        await import("../../lib/submission-service");
 
       const result = await SubmissionService.bulkImportSubmissions(
         args.submissionIds,
@@ -776,9 +769,8 @@ describe("Submission Management GraphQL Operations", () => {
       args: { submissionIds: string[] },
       ctx: Context,
     ) => {
-      const { SubmissionService } = await import(
-        "../../lib/submission-service"
-      );
+      const { SubmissionService } =
+        await import("../../lib/submission-service");
 
       const result = await SubmissionService.bulkRejectSubmissions(
         args.submissionIds,
@@ -901,9 +893,8 @@ describe("Submission Management GraphQL Operations", () => {
         ],
       };
 
-      const { SubmissionService } = await import(
-        "../../lib/submission-service"
-      );
+      const { SubmissionService } =
+        await import("../../lib/submission-service");
       vi.mocked(SubmissionService.getPendingSubmissions).mockResolvedValue([
         {
           ...mockSubmission,
@@ -939,9 +930,8 @@ describe("Submission Management GraphQL Operations", () => {
     });
 
     it("should throw error when submission not found", async () => {
-      const { SubmissionService } = await import(
-        "../../lib/submission-service"
-      );
+      const { SubmissionService } =
+        await import("../../lib/submission-service");
       vi.mocked(SubmissionService.getPendingSubmissions).mockResolvedValue([]);
 
       await expect(
@@ -975,9 +965,8 @@ describe("Submission Management GraphQL Operations", () => {
         matches: [],
       };
 
-      const { SubmissionService } = await import(
-        "../../lib/submission-service"
-      );
+      const { SubmissionService } =
+        await import("../../lib/submission-service");
       vi.mocked(SubmissionService.getPendingSubmissions).mockResolvedValue([
         {
           ...mockSubmission,

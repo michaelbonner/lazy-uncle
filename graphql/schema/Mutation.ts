@@ -1,3 +1,9 @@
+import {
+  birthdays,
+  birthdaySubmissions,
+  NotificationPreference,
+  notificationPreferences,
+} from "../../drizzle/schema";
 import { createId } from "@paralleldrive/cuid2";
 import { and, eq } from "drizzle-orm";
 import {
@@ -8,11 +14,6 @@ import {
   nonNull,
   stringArg,
 } from "nexus";
-import {
-  birthdays,
-  birthdaySubmissions,
-  notificationPreferences,
-} from "../../drizzle/schema";
 
 export const Mutation = extendType({
   type: "Mutation",
@@ -33,7 +34,17 @@ export const Mutation = extendType({
       },
       resolve: async (
         _,
-        { name, year, month, day, category, parent, notes, userId, importSource },
+        {
+          name,
+          year,
+          month,
+          day,
+          category,
+          parent,
+          notes,
+          userId,
+          importSource,
+        },
         ctx,
       ) => {
         // Validate date components
@@ -44,7 +55,11 @@ export const Mutation = extendType({
           throw new Error("Invalid month: must be between 1 and 12");
         }
 
-        const dayValidation = InputValidator.validateDay(day, month, year ?? null);
+        const dayValidation = InputValidator.validateDay(
+          day,
+          month,
+          year ?? null,
+        );
         if (!dayValidation.isValid) {
           throw new Error("Invalid day for the given month");
         }
@@ -103,7 +118,11 @@ export const Mutation = extendType({
           throw new Error("Invalid month: must be between 1 and 12");
         }
 
-        const dayValidation = InputValidator.validateDay(day, month, year ?? null);
+        const dayValidation = InputValidator.validateDay(
+          day,
+          month,
+          year ?? null,
+        );
         if (!dayValidation.isValid) {
           throw new Error("Invalid day for the given month");
         }
@@ -166,9 +185,8 @@ export const Mutation = extendType({
       },
       resolve: async (_, { description, expirationHours }, ctx) => {
         const { SharingService } = await import("../../lib/sharing-service");
-        const { SecurityMiddleware } = await import(
-          "../../lib/security-middleware"
-        );
+        const { SecurityMiddleware } =
+          await import("../../lib/security-middleware");
 
         // Extract security context from the request
         // Note: In a real implementation, we'd need to pass the request object through context
@@ -235,12 +253,10 @@ export const Mutation = extendType({
         relationship: stringArg(),
       },
       resolve: async (_, args, ctx) => {
-        const { SubmissionService } = await import(
-          "../../lib/submission-service"
-        );
-        const { SecurityMiddleware } = await import(
-          "../../lib/security-middleware"
-        );
+        const { SubmissionService } =
+          await import("../../lib/submission-service");
+        const { SecurityMiddleware } =
+          await import("../../lib/security-middleware");
 
         // Extract security context from the request
         const securityContext = {
@@ -309,11 +325,10 @@ export const Mutation = extendType({
         summaryNotifications: booleanArg(),
       },
       resolve: async (_, { emailNotifications, summaryNotifications }, ctx) => {
-        const { notificationService } = await import(
-          "../../lib/notification-service"
-        );
+        const { notificationService } =
+          await import("../../lib/notification-service");
 
-        const preferences: any = {};
+        const preferences: Partial<NotificationPreference> = {};
         if (emailNotifications !== null && emailNotifications !== undefined) {
           preferences.emailNotifications = emailNotifications;
         }
@@ -342,9 +357,8 @@ export const Mutation = extendType({
         submissionId: nonNull(stringArg()),
       },
       resolve: async (_, { submissionId }, ctx) => {
-        const { SubmissionService } = await import(
-          "../../lib/submission-service"
-        );
+        const { SubmissionService } =
+          await import("../../lib/submission-service");
 
         const result = await SubmissionService.importSubmission(
           submissionId,
@@ -370,9 +384,8 @@ export const Mutation = extendType({
         submissionId: nonNull(stringArg()),
       },
       resolve: async (_, { submissionId }, ctx) => {
-        const { SubmissionService } = await import(
-          "../../lib/submission-service"
-        );
+        const { SubmissionService } =
+          await import("../../lib/submission-service");
 
         const result = await SubmissionService.rejectSubmission(
           submissionId,
@@ -398,9 +411,8 @@ export const Mutation = extendType({
         submissionIds: nonNull(list(nonNull(stringArg()))),
       },
       resolve: async (_, { submissionIds }, ctx) => {
-        const { SubmissionService } = await import(
-          "../../lib/submission-service"
-        );
+        const { SubmissionService } =
+          await import("../../lib/submission-service");
 
         const result = await SubmissionService.bulkImportSubmissions(
           submissionIds,
@@ -423,9 +435,8 @@ export const Mutation = extendType({
         submissionIds: nonNull(list(nonNull(stringArg()))),
       },
       resolve: async (_, { submissionIds }, ctx) => {
-        const { SubmissionService } = await import(
-          "../../lib/submission-service"
-        );
+        const { SubmissionService } =
+          await import("../../lib/submission-service");
 
         const result = await SubmissionService.bulkRejectSubmissions(
           submissionIds,
@@ -448,9 +459,8 @@ export const Mutation = extendType({
         submissionId: nonNull(stringArg()),
       },
       resolve: async (_, { submissionId }, ctx) => {
-        const { SubmissionService } = await import(
-          "../../lib/submission-service"
-        );
+        const { SubmissionService } =
+          await import("../../lib/submission-service");
 
         // Get the submission first
         const submission = await ctx.db.query.birthdaySubmissions.findFirst({

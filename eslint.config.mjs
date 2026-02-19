@@ -1,26 +1,33 @@
-import { FlatCompat } from "@eslint/eslintrc";
+import { defineConfig, globalIgnores } from 'eslint/config'
+import nextVitals from 'eslint-config-next/core-web-vitals'
+import nextTs from 'eslint-config-next/typescript'
+import prettier from 'eslint-config-prettier/flat'
 
-const compat = new FlatCompat({
-  // import.meta.dirname is available after Node.js v20.11.0
-  baseDirectory: import.meta.dirname,
-});
 
-const eslintConfig = [
-  ...compat.config({
-    extends: ["next/core-web-vitals", "next/typescript", "prettier"],
-    ignorePatterns: [
-      "node_modules/**",
-      "dist/**",
-      "build/**",
-      "utils/**",
-      "public/workbox-*.js",
-      "public/workbox-*.js.map",
-      "types/next.d.ts",
-      "public/sw.js",
-      "next-env.d.ts",
-      "generated/nexus-typegen.ts",
-    ],
-  }),
-];
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
+  prettier,
+  {
+    // eslint-plugin-react uses context.getFilename() which was removed in
+    // ESLint 10. Setting an explicit version bypasses the auto-detect code
+    // path that triggers the error.
+    settings: {
+      react: { version: '19' },
+    },
+  },
+  // Override default ignores of eslint-config-next.
+  globalIgnores([
+    // Default ignores of eslint-config-next:
+    '.next/**',
+    'out/**',
+    'build/**',
+    'next-env.d.ts',
+    'public/workbox-*.js',
+    'public/sw.js',
+    'types/next.d.ts',
+    'generated/nexus-typegen.ts'
+  ]),
+])
 
-export default eslintConfig;
+export default eslintConfig

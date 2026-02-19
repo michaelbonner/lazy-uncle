@@ -24,21 +24,20 @@ vi.mock("./db", () => {
     default: {
       insert: mockInsert,
       update: mockUpdate,
-    query: {
-      notificationPreferences: {
-        findFirst: vi.fn(),
+      query: {
+        notificationPreferences: {
+          findFirst: vi.fn(),
+        },
+        users: {
+          findFirst: vi.fn(),
+        },
       },
-      users: {
-        findFirst: vi.fn(),
-      },
-    },
     },
   };
 });
 
 const mockDb = vi.mocked(await import("./db"), true).default;
 const mockInsert = mockDb.insert as ReturnType<typeof vi.fn>;
-const mockUpdate = mockDb.update as ReturnType<typeof vi.fn>;
 
 describe("NotificationService", () => {
   let notificationService: NotificationService;

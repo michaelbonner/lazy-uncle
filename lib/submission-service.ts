@@ -1,18 +1,18 @@
+import type { BirthdaySubmission, SharingLink } from "../drizzle/schema";
 import {
   birthdays,
   birthdaySubmissions,
   sharingLinks,
 } from "../drizzle/schema";
-import type { BirthdaySubmission } from "../drizzle/schema";
 import db from "./db";
-import { InputValidator, BirthdaySubmissionInput } from "./input-validator";
+import { BirthdaySubmissionInput, InputValidator } from "./input-validator";
 import {
   notificationService,
   SubmissionNotificationData,
 } from "./notification-service";
 import { SharingService } from "./sharing-service";
 import { createId } from "@paralleldrive/cuid2";
-import { eq, and, gte, lt, desc, inArray } from "drizzle-orm";
+import { and, desc, eq, gte, inArray, lt } from "drizzle-orm";
 
 export interface SubmissionResult {
   success: boolean;
@@ -122,8 +122,8 @@ export class SubmissionService {
       try {
         // Compute date string from components for notification
         const dateString = processedData.year
-          ? `${processedData.year}-${String(processedData.month).padStart(2, '0')}-${String(processedData.day).padStart(2, '0')}`
-          : `--${String(processedData.month).padStart(2, '0')}-${String(processedData.day).padStart(2, '0')}`;
+          ? `${processedData.year}-${String(processedData.month).padStart(2, "0")}-${String(processedData.day).padStart(2, "0")}`
+          : `--${String(processedData.month).padStart(2, "0")}-${String(processedData.day).padStart(2, "0")}`;
 
         const notificationData: SubmissionNotificationData = {
           submissionId: submission.id,
@@ -321,7 +321,11 @@ export class SubmissionService {
    */
   static async getPendingSubmissions(
     userId: string,
-  ): Promise<(BirthdaySubmission & { sharingLink: any })[]> {
+  ): Promise<
+    (BirthdaySubmission & {
+      sharingLink: Pick<SharingLink, "description" | "createdAt">;
+    })[]
+  > {
     try {
       // Get user's sharing links
       const userSharingLinks = await db.query.sharingLinks.findMany({
@@ -484,7 +488,13 @@ export class SubmissionService {
    */
   private static calculateSimilarity(
     submission: ProcessedSubmissionData,
-    existing: { name: string; year?: number | null; month: number; day: number; category?: string | null },
+    existing: {
+      name: string;
+      year?: number | null;
+      month: number;
+      day: number;
+      category?: string | null;
+    },
   ): number {
     let similarity = 0;
     let factors = 0;

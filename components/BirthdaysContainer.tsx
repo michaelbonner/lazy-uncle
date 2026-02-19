@@ -22,8 +22,7 @@ import { GrFormFilter, GrRefresh } from "react-icons/gr";
 import { HiOutlineCalendar, HiXCircle } from "react-icons/hi";
 import { IoAddCircleOutline } from "react-icons/io5";
 
-const currentHost =
-  typeof window !== "undefined" ? window.location.host : "";
+const currentHost = typeof window !== "undefined" ? window.location.host : "";
 
 const AddBirthdayDialog = dynamic(() => import("./AddBirthdayDialog"), {
   ssr: false,
@@ -146,7 +145,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
         month: today.getMonth() + 1, // getMonth() returns 0-11, we need 1-12
         day: today.getDate(),
         year: null,
-      } as any);
+      } as NexusGenObjects["Birthday"]);
     }
 
     // Optimize sorting by pre-computing values when needed

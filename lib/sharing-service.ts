@@ -1,4 +1,4 @@
-import type { SharingLink } from "../drizzle/schema";
+import type { SharingLink, User } from "../drizzle/schema";
 import { sharingLinks } from "../drizzle/schema";
 import db from "./db";
 import { createId } from "@paralleldrive/cuid2";
@@ -123,7 +123,7 @@ export class SharingService {
    */
   static async validateSharingLink(
     token: string,
-  ): Promise<(SharingLink & { user: any }) | null> {
+  ): Promise<(SharingLink & { user: Pick<User, "name"> }) | null> {
     if (!token || typeof token !== "string") {
       return null;
     }
