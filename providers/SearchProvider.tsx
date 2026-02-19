@@ -4,7 +4,6 @@ import {
   FC,
   ReactNode,
   SetStateAction,
-  useEffect,
   useState,
 } from "react";
 
@@ -49,7 +48,6 @@ type SearchProviderProps = {
 };
 
 export const SearchProvider: FC<SearchProviderProps> = ({ children }) => {
-  const [isFiltered, setIsFiltered] = useState(false);
   const [nameFilter, setNameFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [parentFilter, setParentFilter] = useState("");
@@ -57,13 +55,7 @@ export const SearchProvider: FC<SearchProviderProps> = ({ children }) => {
   const [sortBy, setSortBy] = useState("date_asc");
   const [showFilters, setShowFilters] = useState(false);
 
-  useEffect(() => {
-    if (nameFilter || categoryFilter || parentFilter || zodiacSignFilter) {
-      setIsFiltered(true);
-    } else {
-      setIsFiltered(false);
-    }
-  }, [nameFilter, categoryFilter, parentFilter, zodiacSignFilter]);
+  const isFiltered = !!(nameFilter || categoryFilter || parentFilter || zodiacSignFilter);
 
   const clearFilters = () => {
     setNameFilter("");

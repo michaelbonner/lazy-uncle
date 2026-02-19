@@ -48,55 +48,32 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
     setLocalDay(day?.toString() || "");
   }, [year, month, day]);
 
-  // Handle date picker changes (when year is enabled)
-  useEffect(() => {
-    if (!yearDisabled && dateValue) {
-      const dateParts = dateValue.split("-");
-      if (dateParts.length === 3) {
-        const parsedYear = parseInt(dateParts[0], 10);
-        const parsedMonth = parseInt(dateParts[1], 10);
-        const parsedDay = parseInt(dateParts[2], 10);
-
-        if (parsedMonth >= 1 && parsedMonth <= 12 && parsedDay >= 1 && parsedDay <= 31) {
-          onChange(parsedYear, parsedMonth, parsedDay);
-        }
-      }
-    }
-  }, [dateValue, yearDisabled, onChange]);
-
-  // Handle month/day picker changes (when year is disabled)
-  useEffect(() => {
-    if (yearDisabled) {
-      const parsedMonth = parseInt(localMonth, 10);
-      const parsedDay = parseInt(localDay, 10);
-
-      // Only trigger onChange if month and day are valid
-      if (parsedMonth >= 1 && parsedMonth <= 12 && parsedDay >= 1 && parsedDay <= 31) {
-        onChange(null, parsedMonth, parsedDay);
-      }
-    }
-  }, [localMonth, localDay, yearDisabled, onChange]);
-
   const handleYearToggle = (disabled: boolean) => {
     setYearDisabled(disabled);
 
     if (disabled) {
-      // Switching to month/day mode
-      // If we have a date value, extract month/day from it
       if (dateValue) {
         const dateParts = dateValue.split("-");
         if (dateParts.length === 3) {
-          setLocalMonth(String(parseInt(dateParts[1], 10)));
-          setLocalDay(String(parseInt(dateParts[2], 10)));
+          const parsedMonth = parseInt(dateParts[1], 10);
+          const parsedDay = parseInt(dateParts[2], 10);
+          setLocalMonth(String(parsedMonth));
+          setLocalDay(String(parsedDay));
+          if (parsedMonth >= 1 && parsedMonth <= 12 && parsedDay >= 1 && parsedDay <= 31) {
+            onChange(null, parsedMonth, parsedDay);
+          }
         }
       }
     } else {
-      // Switching to date picker mode
-      // If we have month/day, set a default year to create a valid date
       if (localMonth && localDay) {
         const defaultYear = currentYear;
         const formattedDate = `${defaultYear}-${String(localMonth).padStart(2, "0")}-${String(localDay).padStart(2, "0")}`;
         setDateValue(formattedDate);
+        const parsedMonth = parseInt(localMonth, 10);
+        const parsedDay = parseInt(localDay, 10);
+        if (parsedMonth >= 1 && parsedMonth <= 12 && parsedDay >= 1 && parsedDay <= 31) {
+          onChange(defaultYear, parsedMonth, parsedDay);
+        }
       } else {
         setDateValue("");
       }
@@ -129,7 +106,21 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
             id="birthday-date"
             className="block h-12 w-full rounded-sm border-gray-300 text-gray-900"
             value={dateValue}
-            onChange={(e) => setDateValue(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              setDateValue(value);
+              if (!yearDisabled && value) {
+                const dateParts = value.split("-");
+                if (dateParts.length === 3) {
+                  const parsedYear = parseInt(dateParts[0], 10);
+                  const parsedMonth = parseInt(dateParts[1], 10);
+                  const parsedDay = parseInt(dateParts[2], 10);
+                  if (parsedMonth >= 1 && parsedMonth <= 12 && parsedDay >= 1 && parsedDay <= 31) {
+                    onChange(parsedYear, parsedMonth, parsedDay);
+                  }
+                }
+              }
+            }}
             required={required}
             max={`${maxYearValue}-12-31`}
             min="1900-01-01"
@@ -144,7 +135,17 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
               id="month"
               className="block h-12 w-full rounded-sm border-gray-300 text-gray-900"
               value={localMonth}
-              onChange={(e) => setLocalMonth(e.target.value)}
+              onChange={(e) => {
+                const newMonth = e.target.value;
+                setLocalMonth(newMonth);
+                if (yearDisabled) {
+                  const parsedMonth = parseInt(newMonth, 10);
+                  const parsedDay = parseInt(localDay, 10);
+                  if (parsedMonth >= 1 && parsedMonth <= 12 && parsedDay >= 1 && parsedDay <= 31) {
+                    onChange(null, parsedMonth, parsedDay);
+                  }
+                }
+              }}
               required={required}
             >
               <option value="">Month{required && " *"}</option>
@@ -162,7 +163,17 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
               id="day"
               className="block h-12 w-full rounded-sm border-gray-300 text-gray-900"
               value={localDay}
-              onChange={(e) => setLocalDay(e.target.value)}
+              onChange={(e) => {
+                const newDay = e.target.value;
+                setLocalDay(newDay);
+                if (yearDisabled) {
+                  const parsedMonth = parseInt(localMonth, 10);
+                  const parsedDay = parseInt(newDay, 10);
+                  if (parsedMonth >= 1 && parsedMonth <= 12 && parsedDay >= 1 && parsedDay <= 31) {
+                    onChange(null, parsedMonth, parsedDay);
+                  }
+                }
+              }}
               required={required}
               disabled={!localMonth}
             >

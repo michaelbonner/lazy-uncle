@@ -8,7 +8,7 @@ import ZodiacSignCharacter from "./ZodiacSignCharacter";
 import clsx from "clsx";
 import { format } from "date-fns";
 import pluralize from "pluralize";
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { GiBalloons } from "react-icons/gi";
 import {
   HiBackspace,
@@ -37,8 +37,6 @@ const BirthdayRow: FC<Props> = ({
   setZodiacSignFilter,
 }) => {
   const [isEditBirthdayDialogOpen, setIsEditBirthdayDialogOpen] =
-    useState(false);
-  const [isEditBirthdayDialogMounted, setIsEditBirthdayDialogMounted] =
     useState(false);
   const birthDate =
     birthday.month && birthday.day
@@ -93,14 +91,6 @@ const BirthdayRow: FC<Props> = ({
         );
     }
   };
-
-  useEffect(() => {
-    if (isEditBirthdayDialogOpen) {
-      setIsEditBirthdayDialogMounted(true);
-    } else {
-      setTimeout(() => setIsEditBirthdayDialogMounted(false), 200);
-    }
-  }, [isEditBirthdayDialogOpen]);
 
   return (
     <>
@@ -304,7 +294,7 @@ const BirthdayRow: FC<Props> = ({
           </div>
         )}
 
-        {isEditBirthdayDialogMounted && (
+        {isEditBirthdayDialogOpen && (
           <EditBirthdayDialog
             birthday={birthday}
             isOpen={isEditBirthdayDialogOpen}

@@ -63,10 +63,11 @@ const SharingLinkManager = () => {
 
   const handleCreateLink = async (e: React.FormEvent) => {
     e.preventDefault();
+    const trimmedDescription = description.trim() || undefined;
     try {
       await createSharingLink({
         variables: {
-          description: description.trim() || undefined,
+          description: trimmedDescription,
           expirationHours,
         },
       });

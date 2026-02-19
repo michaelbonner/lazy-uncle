@@ -22,6 +22,9 @@ import { GrFormFilter, GrRefresh } from "react-icons/gr";
 import { HiOutlineCalendar, HiXCircle } from "react-icons/hi";
 import { IoAddCircleOutline } from "react-icons/io5";
 
+const currentHost =
+  typeof window !== "undefined" ? window.location.host : "";
+
 const AddBirthdayDialog = dynamic(() => import("./AddBirthdayDialog"), {
   ssr: false,
 });
@@ -69,7 +72,6 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
   } = useQuery(GET_ALL_BIRTHDAYS_QUERY, {
     fetchPolicy: "cache-and-network",
   });
-  const [currentHost, setCurrentHost] = useState("");
   const { isPending } = authClient.useSession();
   const [isAddBirthdayDialogVisible, setIsAddBirthdayDialogVisible] =
     useState(false);
@@ -173,50 +175,64 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
           return aDate > bDate ? -1 : 1;
         }
         if (sortBy === "name_asc") {
-          return (a.name || "") > (b.name || "") ? 1 : -1;
+          const aName = a.name || "";
+          const bName = b.name || "";
+          return aName > bName ? 1 : -1;
         }
         if (sortBy === "name_desc") {
-          return (a.name || "") > (b.name || "") ? -1 : 1;
+          const aName = a.name || "";
+          const bName = b.name || "";
+          return aName > bName ? -1 : 1;
         }
         if (sortBy === "age_asc") {
-          // Sort by year (birthdays with years first, then by year ascending)
           if (!a.year && !b.year) return 0;
           if (!a.year) return 1;
           if (!b.year) return -1;
-          return (a.year || 0) > (b.year || 0) ? 1 : -1;
+          const aYear = a.year || 0;
+          const bYear = b.year || 0;
+          return aYear > bYear ? 1 : -1;
         }
         if (sortBy === "age_desc") {
-          // Sort by year (birthdays with years first, then by year descending)
           if (!a.year && !b.year) return 0;
           if (!a.year) return 1;
           if (!b.year) return -1;
-          return (a.year || 0) > (b.year || 0) ? -1 : 1;
+          const aYear = a.year || 0;
+          const bYear = b.year || 0;
+          return aYear > bYear ? -1 : 1;
         }
         if (sortBy === "category_asc") {
-          return (a.category || "") > (b.category || "") ? 1 : -1;
+          const aCategory = a.category || "";
+          const bCategory = b.category || "";
+          return aCategory > bCategory ? 1 : -1;
         }
         if (sortBy === "category_desc") {
-          return (a.category || "") > (b.category || "") ? -1 : 1;
+          const aCategory = a.category || "";
+          const bCategory = b.category || "";
+          return aCategory > bCategory ? -1 : 1;
         }
         if (sortBy === "parent_asc") {
-          return (a.parent || "") > (b.parent || "") ? 1 : -1;
+          const aParent = a.parent || "";
+          const bParent = b.parent || "";
+          return aParent > bParent ? 1 : -1;
         }
         if (sortBy === "parent_desc") {
-          return (a.parent || "") > (b.parent || "") ? -1 : 1;
+          const aParent = a.parent || "";
+          const bParent = b.parent || "";
+          return aParent > bParent ? -1 : 1;
         }
         if (sortBy === "sign_asc") {
           const aZodiacSign =
             a.month && a.day ? getZodiacSignFromComponents(a.month, a.day) : "";
           const bZodiacSign =
             b.month && b.day ? getZodiacSignFromComponents(b.month, b.day) : "";
-          return (aZodiacSign || "") > (bZodiacSign || "") ? 1 : -1;
+          return aZodiacSign > bZodiacSign ? 1 : -1;
         }
         if (sortBy === "sign_desc") {
           const aZodiacSign =
             a.month && a.day ? getZodiacSignFromComponents(a.month, a.day) : "";
           const bZodiacSign =
             b.month && b.day ? getZodiacSignFromComponents(b.month, b.day) : "";
-          return (aZodiacSign || "") > (bZodiacSign || "") ? -1 : 1;
+          return aZodiacSign > bZodiacSign ? -1 : 1;
         }
 
         return 1;
@@ -264,12 +280,6 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
   const handleRefresh = async () => {
     await birthdaysRefetch();
   };
-
-  useEffect(() => {
-    if (window?.location?.host) {
-      setCurrentHost(window.location.host);
-    }
-  }, []);
 
   useEffect(() => {
     const refetchQuery = () => birthdaysRefetch();

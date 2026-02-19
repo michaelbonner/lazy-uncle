@@ -27,6 +27,10 @@ interface SharingLinkValidation {
   sharingLink: SharingLinkInfo | null;
 }
 
+function isLinkExpiringSoon(expiresAt: string): boolean {
+  return new Date(expiresAt).getTime() - Date.now() < 24 * 60 * 60 * 1000;
+}
+
 const SharingPage = ({ token }: SharingPageProps) => {
   const router = useRouter();
 
@@ -181,7 +185,7 @@ const SharingPage = ({ token }: SharingPageProps) => {
 
   const sharingLink = validation.sharingLink!;
   const expiresAt = new Date(sharingLink.expiresAt);
-  const isExpiringSoon = expiresAt.getTime() - Date.now() < 24 * 60 * 60 * 1000; // 24 hours
+  const isExpiringSoon = isLinkExpiringSoon(sharingLink.expiresAt);
 
   return (
     <PublicLayout

@@ -130,13 +130,12 @@ const SubmissionReviewInterface = () => {
       setTimeout(() => setShowSuccessMessage(null), 3000);
     } catch (error) {
       console.error("Error importing submission:", error);
-    } finally {
-      setProcessingSubmissions((prev) => {
-        const newSet = new Set(prev);
-        newSet.delete(submissionId);
-        return newSet;
-      });
     }
+    setProcessingSubmissions((prev) => {
+      const newSet = new Set(prev);
+      newSet.delete(submissionId);
+      return newSet;
+    });
   };
 
   const handleRejectSubmission = async (submissionId: string) => {
@@ -149,13 +148,12 @@ const SubmissionReviewInterface = () => {
       setTimeout(() => setShowSuccessMessage(null), 3000);
     } catch (error) {
       console.error("Error rejecting submission:", error);
-    } finally {
-      setProcessingSubmissions((prev) => {
-        const newSet = new Set(prev);
-        newSet.delete(submissionId);
-        return newSet;
-      });
     }
+    setProcessingSubmissions((prev) => {
+      const newSet = new Set(prev);
+      newSet.delete(submissionId);
+      return newSet;
+    });
   };
 
   const handleBulkImport = async () => {

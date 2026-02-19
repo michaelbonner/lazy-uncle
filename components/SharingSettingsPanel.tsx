@@ -21,8 +21,6 @@ const SharingSettingsPanel = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [summaryNotifications, setSummaryNotifications] = useState(false);
-  const [hasChanges, setHasChanges] = useState(false);
-
   const {
     data: preferencesData,
     loading: preferencesLoading,
@@ -36,7 +34,6 @@ const SharingSettingsPanel = () => {
     UPDATE_NOTIFICATION_PREFERENCES_MUTATION,
     {
       onCompleted: () => {
-        setHasChanges(false);
         refetchPreferences();
       },
       onError: (error) => {
@@ -54,16 +51,10 @@ const SharingSettingsPanel = () => {
     }
   }, [preferencesData]);
 
-  // Track changes
-  useEffect(() => {
-    if (preferencesData?.notificationPreferences) {
-      const preferences = preferencesData.notificationPreferences;
-      const hasChanged =
-        emailNotifications !== preferences.emailNotifications ||
-        summaryNotifications !== preferences.summaryNotifications;
-      setHasChanges(hasChanged);
-    }
-  }, [emailNotifications, summaryNotifications, preferencesData]);
+  const hasChanges = preferencesData?.notificationPreferences
+    ? emailNotifications !== preferencesData.notificationPreferences.emailNotifications ||
+      summaryNotifications !== preferencesData.notificationPreferences.summaryNotifications
+    : false;
 
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,7 +75,6 @@ const SharingSettingsPanel = () => {
       const preferences = preferencesData.notificationPreferences;
       setEmailNotifications(preferences.emailNotifications);
       setSummaryNotifications(preferences.summaryNotifications);
-      setHasChanges(false);
     }
   };
 

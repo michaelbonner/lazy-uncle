@@ -146,19 +146,26 @@ const BirthdaySubmissionForm = ({
       return;
     }
 
+    const trimmedName = name.trim();
+    const trimmedCategory = category.trim() || null;
+    const trimmedNotes = notes.trim() || null;
+    const trimmedSubmitterName = submitterName.trim() || null;
+    const trimmedSubmitterEmail = submitterEmail.trim() || null;
+    const trimmedRelationship = relationship.trim() || null;
+
     try {
       await submitBirthday({
         variables: {
           token,
-          name: name.trim(),
+          name: trimmedName,
           year: year,
           month: month,
           day: day,
-          category: category.trim() || null,
-          notes: notes.trim() || null,
-          submitterName: submitterName.trim() || null,
-          submitterEmail: submitterEmail.trim() || null,
-          relationship: relationship.trim() || null,
+          category: trimmedCategory,
+          notes: trimmedNotes,
+          submitterName: trimmedSubmitterName,
+          submitterEmail: trimmedSubmitterEmail,
+          relationship: trimmedRelationship,
         },
       });
 

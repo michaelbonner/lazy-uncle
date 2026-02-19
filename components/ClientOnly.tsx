@@ -1,14 +1,16 @@
-import { FC, ReactElement, useEffect, useState } from "react";
+import { FC, ReactElement, useSyncExternalStore } from "react";
+
+const emptySubscribe = () => () => {};
 
 const ClientOnly: FC<{ children: ReactElement }> = ({
   children,
   ...delegated
 }) => {
-  const [hasMounted, setHasMounted] = useState(false);
-
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
+  const hasMounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
 
   if (!hasMounted) {
     return null;

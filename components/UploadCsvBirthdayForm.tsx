@@ -25,6 +25,7 @@ const UploadCsvBirthdayForm = () => {
 
   // handle file upload
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || new Blob();
     try {
       e.preventDefault();
       const reader = new FileReader();
@@ -57,7 +58,7 @@ const UploadCsvBirthdayForm = () => {
         }
       };
 
-      reader.readAsText(e.target.files?.[0] || new Blob());
+      reader.readAsText(file);
     } catch (error: unknown) {
       alert((error as Error).message);
     }
@@ -69,7 +70,7 @@ const UploadCsvBirthdayForm = () => {
       onSubmit={async (e) => {
         e.preventDefault();
 
-        for await (const birthday of birthdays) {
+        for (const birthday of birthdays) {
           const { name, date, category, parent, notes } = birthday;
           await createBirthday({
             variables: {
