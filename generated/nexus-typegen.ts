@@ -54,6 +54,7 @@ export interface NexusGenObjects {
     name?: string | null; // String
     notes?: string | null; // String
     parent?: string | null; // String
+    remindersEnabled?: boolean | null; // Boolean
     year?: number | null; // Int
   }
   BirthdaySubmission: { // root type
@@ -92,6 +93,7 @@ export interface NexusGenObjects {
   }
   Mutation: {};
   NotificationPreference: { // root type
+    birthdayReminders?: boolean | null; // Boolean
     emailNotifications?: boolean | null; // Boolean
     id?: string | null; // String
     summaryNotifications?: boolean | null; // Boolean
@@ -156,6 +158,7 @@ export interface NexusGenFieldTypes {
     name: string | null; // String
     notes: string | null; // String
     parent: string | null; // String
+    remindersEnabled: boolean | null; // Boolean
     user: NexusGenRootTypes['User'] | null; // User
     year: number | null; // Int
   }
@@ -211,6 +214,7 @@ export interface NexusGenFieldTypes {
     updateNotificationPreferences: NexusGenRootTypes['NotificationPreference'] | null; // NotificationPreference
   }
   NotificationPreference: { // field return type
+    birthdayReminders: boolean | null; // Boolean
     emailNotifications: boolean | null; // Boolean
     id: string | null; // String
     summaryNotifications: boolean | null; // Boolean
@@ -277,6 +281,7 @@ export interface NexusGenFieldTypeNames {
     name: 'String'
     notes: 'String'
     parent: 'String'
+    remindersEnabled: 'Boolean'
     user: 'User'
     year: 'Int'
   }
@@ -332,6 +337,7 @@ export interface NexusGenFieldTypeNames {
     updateNotificationPreferences: 'NotificationPreference'
   }
   NotificationPreference: { // field return type name
+    birthdayReminders: 'Boolean'
     emailNotifications: 'Boolean'
     id: 'String'
     summaryNotifications: 'Boolean'
@@ -402,6 +408,7 @@ export interface NexusGenArgTypes {
       name: string; // String!
       notes?: string | null; // String
       parent?: string | null; // String
+      remindersEnabled?: boolean | null; // Boolean
       userId: string; // String!
       year?: number | null; // Int
     }
@@ -421,6 +428,7 @@ export interface NexusGenArgTypes {
       name: string; // String!
       notes?: string | null; // String
       parent?: string | null; // String
+      remindersEnabled?: boolean | null; // Boolean
       year?: number | null; // Int
     }
     getSubmissionDuplicates: { // args
@@ -448,6 +456,7 @@ export interface NexusGenArgTypes {
       year?: number | null; // Int
     }
     updateNotificationPreferences: { // args
+      birthdayReminders?: boolean | null; // Boolean
       emailNotifications?: boolean | null; // Boolean
       summaryNotifications?: boolean | null; // Boolean
     }

@@ -9,18 +9,21 @@ import clsx from "clsx";
 import { useState, useEffect } from "react";
 import { HiCog, HiMail, HiMailOpen } from "react-icons/hi";
 import { IoSettingsOutline } from "react-icons/io5";
+import { MdCake } from "react-icons/md";
 
 interface NotificationPreference {
   id: string;
   userId: string;
   emailNotifications: boolean;
   summaryNotifications: boolean;
+  birthdayReminders: boolean;
 }
 
 const SharingSettingsPanel = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [summaryNotifications, setSummaryNotifications] = useState(false);
+  const [birthdayReminders, setBirthdayReminders] = useState(false);
   const {
     data: preferencesData,
     loading: preferencesLoading,
@@ -40,6 +43,9 @@ const SharingSettingsPanel = () => {
       if (summaryNotifications !== preferences.summaryNotifications) {
         setSummaryNotifications(preferences.summaryNotifications);
       }
+      if (birthdayReminders !== preferences.birthdayReminders) {
+        setBirthdayReminders(preferences.birthdayReminders);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preferencesData]);
@@ -56,12 +62,16 @@ const SharingSettingsPanel = () => {
     },
   );
 
-  const hasChanges = preferencesData?.notificationPreferences
-    ? emailNotifications !==
-        preferencesData.notificationPreferences.emailNotifications ||
-      summaryNotifications !==
-        preferencesData.notificationPreferences.summaryNotifications
-    : false;
+  const hasChanges = preferencesData
+    ? preferencesData.notificationPreferences
+      ? emailNotifications !==
+          preferencesData.notificationPreferences.emailNotifications ||
+        summaryNotifications !==
+          preferencesData.notificationPreferences.summaryNotifications ||
+        birthdayReminders !==
+          preferencesData.notificationPreferences.birthdayReminders
+      : true // No preferences row yet — always show Save
+    : false; // Still loading — hide Save
 
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,6 +80,7 @@ const SharingSettingsPanel = () => {
         variables: {
           emailNotifications,
           summaryNotifications,
+          birthdayReminders,
         },
       });
     } catch (error) {
@@ -82,6 +93,7 @@ const SharingSettingsPanel = () => {
       const preferences = preferencesData.notificationPreferences;
       setEmailNotifications(preferences.emailNotifications);
       setSummaryNotifications(preferences.summaryNotifications);
+      setBirthdayReminders(preferences.birthdayReminders);
     }
   };
 
@@ -94,7 +106,7 @@ const SharingSettingsPanel = () => {
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <IoSettingsOutline className="h-6 w-6 text-cyan-600" />
-            <h2 className="text-2xl font-medium">Sharing Settings</h2>
+            <h2 className="text-2xl font-medium">Settings</h2>
           </div>
           <button
             className={clsx(
@@ -184,30 +196,28 @@ const SharingSettingsPanel = () => {
                       </p>
                     </div>
                   </div>
-                </div>
 
-                <div className="border-t border-gray-200 pt-6">
-                  <h4 className="mb-4 text-base font-medium text-gray-900">
-                    Link Settings
-                  </h4>
-                  <div className="space-y-4">
-                    <div className="rounded-md bg-gray-50 p-4">
-                      <h5 className="text-sm font-medium text-gray-700">
-                        Default Link Expiration
-                      </h5>
-                      <p className="mt-1 text-sm text-gray-500">
-                        New sharing links will expire after 7 days by default.
-                        You can customize this when creating each link.
-                      </p>
+                  <div className="flex items-start space-x-3">
+                    <div className="flex h-5 items-center">
+                      <input
+                        id="birthdayReminders"
+                        type="checkbox"
+                        checked={birthdayReminders}
+                        onChange={(e) => setBirthdayReminders(e.target.checked)}
+                        className="h-4 w-4 rounded border-gray-300 text-cyan-600 focus:ring-cyan-500"
+                      />
                     </div>
-                    <div className="rounded-md bg-gray-50 p-4">
-                      <h5 className="text-sm font-medium text-gray-700">
-                        Security
-                      </h5>
+                    <div className="flex-1">
+                      <label
+                        htmlFor="birthdayReminders"
+                        className="flex items-center space-x-2 text-sm font-medium text-gray-700"
+                      >
+                        <MdCake className="h-4 w-4 text-cyan-600" />
+                        <span>Birthday reminder emails</span>
+                      </label>
                       <p className="mt-1 text-sm text-gray-500">
-                        All sharing links use secure tokens and are
-                        automatically cleaned up when expired. Links can be
-                        revoked at any time.
+                        Get an email on the day of each birthday. Individual
+                        birthdays can be opted out in the birthday settings.
                       </p>
                     </div>
                   </div>

@@ -1,12 +1,14 @@
-import { users, notificationPreferences } from "../drizzle/schema";
+import { users, notificationPreferences, birthdays } from "../drizzle/schema";
 import db from "./db";
 import { createId } from "@paralleldrive/cuid2";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
+import nodemailer from "nodemailer";
 import { Resend } from "resend";
 
 export interface NotificationPreferences {
   emailNotifications: boolean;
   summaryNotifications: boolean;
+  birthdayReminders: boolean;
 }
 
 export interface SubmissionNotificationData {
@@ -150,6 +152,7 @@ export class NotificationService {
       return {
         emailNotifications: preferences?.emailNotifications ?? true,
         summaryNotifications: preferences?.summaryNotifications ?? false,
+        birthdayReminders: preferences?.birthdayReminders ?? false,
       };
     } catch (error) {
       console.error("Failed to get notification preferences:", error);
@@ -157,6 +160,7 @@ export class NotificationService {
       return {
         emailNotifications: true,
         summaryNotifications: false,
+        birthdayReminders: false,
       };
     }
   }
@@ -187,6 +191,7 @@ export class NotificationService {
           userId,
           emailNotifications: preferences.emailNotifications ?? true,
           summaryNotifications: preferences.summaryNotifications ?? false,
+          birthdayReminders: preferences.birthdayReminders ?? false,
         });
       }
     } catch (error) {
@@ -320,7 +325,40 @@ The Lazy Uncle Team`;
   }
 
   /**
-   * Send email using Resend
+   * Send email via SMTP (e.g. Mailpit in development)
+   */
+  private async sendEmailViaSMTP(options: {
+    to: string;
+    subject: string;
+    html: string;
+    text: string;
+  }): Promise<void> {
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: parseInt(process.env.SMTP_PORT ?? "1025", 10),
+      secure: false,
+      auth:
+        process.env.SMTP_USER
+          ? {
+              user: process.env.SMTP_USER,
+              pass: process.env.SMTP_PASS ?? "",
+            }
+          : undefined,
+    });
+
+    await transporter.sendMail({
+      from: process.env.SMTP_FROM ?? "Lazy Uncle <noreply@lazyuncle.net>",
+      to: options.to,
+      subject: options.subject,
+      html: options.html,
+      text: options.text,
+    });
+
+    console.log(`Email sent via SMTP to ${options.to}`);
+  }
+
+  /**
+   * Send email using Resend or SMTP depending on environment
    */
   private async sendEmail(options: {
     to: string;
@@ -329,8 +367,13 @@ The Lazy Uncle Team`;
     text: string;
   }): Promise<void> {
     try {
-      // In development, log to console instead of sending real emails
-      if (process.env.NODE_ENV === "development" && !process.env.SMTP_HOST) {
+      if (process.env.SMTP_HOST) {
+        await this.sendEmailViaSMTP(options);
+        return;
+      }
+
+      // In development without SMTP, log to console
+      if (process.env.NODE_ENV === "development") {
         console.log("=== EMAIL NOTIFICATION ===");
         console.log(`To: ${options.to}`);
         console.log(`Subject: ${options.subject}`);
@@ -394,6 +437,128 @@ The Lazy Uncle Team`;
     // This would be implemented with a proper queue system in production
     // For now, notifications are processed immediately when queued
     console.log("Processing pending notifications...");
+  }
+
+  /**
+   * Send birthday reminder emails for birthdays occurring today
+   */
+  async processUpcomingBirthdayReminders(): Promise<void> {
+    const today = new Date();
+    const todayMonth = today.getMonth() + 1;
+    const todayDay = today.getDate();
+
+    console.log(
+      `Processing birthday reminders for ${todayMonth}/${todayDay}...`,
+    );
+
+    // Find users with birthdayReminders enabled
+    const prefs = await db.query.notificationPreferences.findMany({
+      where: eq(notificationPreferences.birthdayReminders, true),
+    });
+
+    for (const pref of prefs) {
+      const todaysBirthdays = await db.query.birthdays.findMany({
+        where: and(
+          eq(birthdays.userId, pref.userId),
+          eq(birthdays.month, todayMonth),
+          eq(birthdays.day, todayDay),
+          eq(birthdays.remindersEnabled, true),
+        ),
+      });
+
+      if (todaysBirthdays.length === 0) continue;
+
+      const user = await db.query.users.findFirst({
+        where: eq(users.id, pref.userId),
+        columns: { email: true, name: true },
+      });
+
+      if (!user?.email) continue;
+
+      try {
+        await this.sendBirthdayReminderEmail(user, todaysBirthdays);
+      } catch (error) {
+        console.error(
+          `Failed to send birthday reminder for user ${pref.userId}:`,
+          error,
+        );
+      }
+    }
+  }
+
+  /**
+   * Send a birthday reminder email to a user
+   */
+  private async sendBirthdayReminderEmail(
+    user: { email: string; name: string | null },
+    todaysBirthdays: Array<{
+      name: string;
+      year: number | null;
+      month: number;
+      day: number;
+    }>,
+  ): Promise<void> {
+    const greeting = user.name ? `Hi ${user.name}` : "Hello";
+    const count = todaysBirthdays.length;
+    const isSingle = count === 1;
+
+    const birthdayLines = todaysBirthdays.map((b) => {
+      const age =
+        b.year != null ? ` (turns ${new Date().getFullYear() - b.year})` : "";
+      return `${b.name}${age}`;
+    });
+
+    const text = `${greeting},
+
+${isSingle ? `It's ${birthdayLines[0]}'s birthday today!` : `It's a big day — ${count} birthdays today!`}
+
+${isSingle ? "" : birthdayLines.map((l, i) => `${i + 1}. ${l}`).join("\n") + "\n"}
+Don't forget to wish them a happy birthday!
+
+Best regards,
+The Lazy Uncle Team`;
+
+    const listHtml = isSingle
+      ? `<p><strong>${birthdayLines[0]}</strong></p>`
+      : `<ol style="margin: 0; padding-left: 20px;">${todaysBirthdays
+          .map((b) => {
+            const age =
+              b.year != null
+                ? ` (turns ${new Date().getFullYear() - b.year})`
+                : "";
+            return `<li><strong>${b.name}</strong>${age}</li>`;
+          })
+          .join("")}</ol>`;
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #333;">🎂 Birthday Reminder</h2>
+        <p>${greeting},</p>
+        <p>${isSingle ? `It's <strong>${birthdayLines[0]}</strong>'s birthday today!` : `It's a big day — <strong>${count} birthdays</strong> today!`}</p>
+        <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          ${listHtml}
+        </div>
+        <p>Don't forget to wish them a happy birthday!</p>
+        <p style="color: #666; font-size: 14px;">
+          Best regards,<br>
+          The Lazy Uncle Team
+        </p>
+      </div>
+    `;
+
+    await this.sendEmail({
+      to: user.email,
+      subject:
+        isSingle
+          ? `🎂 It's ${todaysBirthdays[0].name}'s birthday today!`
+          : `🎂 ${count} birthdays today!`,
+      html,
+      text,
+    });
+
+    console.log(
+      `Birthday reminder sent to ${user.email} for ${count} birthday(s)`,
+    );
   }
 }
 

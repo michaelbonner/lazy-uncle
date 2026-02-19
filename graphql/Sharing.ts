@@ -148,6 +148,7 @@ export const GET_NOTIFICATION_PREFERENCES_QUERY = gql`
       userId
       emailNotifications
       summaryNotifications
+      birthdayReminders
       __typename
     }
   }
@@ -157,15 +158,18 @@ export const UPDATE_NOTIFICATION_PREFERENCES_MUTATION = gql`
   mutation UpdateNotificationPreferences(
     $emailNotifications: Boolean
     $summaryNotifications: Boolean
+    $birthdayReminders: Boolean
   ) {
     updateNotificationPreferences(
       emailNotifications: $emailNotifications
       summaryNotifications: $summaryNotifications
+      birthdayReminders: $birthdayReminders
     ) {
       id
       userId
       emailNotifications
       summaryNotifications
+      birthdayReminders
       __typename
     }
   }

@@ -9,6 +9,7 @@ export const CREATE_BIRTHDAY_MUTATION = gql`
     $category: String
     $parent: String
     $notes: String
+    $remindersEnabled: Boolean
     $userId: String!
     $importSource: String
   ) {
@@ -20,6 +21,7 @@ export const CREATE_BIRTHDAY_MUTATION = gql`
       category: $category
       parent: $parent
       notes: $notes
+      remindersEnabled: $remindersEnabled
       userId: $userId
       importSource: $importSource
     ) {
@@ -32,6 +34,7 @@ export const CREATE_BIRTHDAY_MUTATION = gql`
       category
       parent
       notes
+      remindersEnabled
       importSource
       __typename
     }
@@ -48,6 +51,7 @@ export const EDIT_BIRTHDAY_MUTATION = gql`
     $category: String
     $parent: String
     $notes: String
+    $remindersEnabled: Boolean
     $importSource: String
   ) {
     editBirthday(
@@ -59,6 +63,7 @@ export const EDIT_BIRTHDAY_MUTATION = gql`
       category: $category
       parent: $parent
       notes: $notes
+      remindersEnabled: $remindersEnabled
       importSource: $importSource
     ) {
       id
@@ -70,6 +75,7 @@ export const EDIT_BIRTHDAY_MUTATION = gql`
       category
       parent
       notes
+      remindersEnabled
       importSource
       __typename
     }
@@ -88,6 +94,7 @@ export const GET_ALL_BIRTHDAYS_QUERY = gql`
       category
       parent
       notes
+      remindersEnabled
       importSource
       __typename
     }
@@ -106,6 +113,7 @@ export const GET_BIRTHDAY_BY_ID_QUERY = gql`
       category
       parent
       notes
+      remindersEnabled
       importSource
       __typename
     }

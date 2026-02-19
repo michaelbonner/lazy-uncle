@@ -32,6 +32,7 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
   const [category, setCategory] = useState("");
   const [parent, setParent] = useState("");
   const [notes, setNotes] = useState("");
+  const [remindersEnabled, setRemindersEnabled] = useState(true);
   const userId = session?.user?.id;
 
   const [createBirthday, { loading, error }] = useMutation(
@@ -65,6 +66,7 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
             category: category.trim(),
             parent: parent.trim(),
             notes: notes.trim(),
+            remindersEnabled,
             userId,
             importSource: "manual",
           },
@@ -83,6 +85,7 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
         setCategory("");
         setParent("");
         setNotes("");
+        setRemindersEnabled(true);
         toast.success("Birthday created");
         onSubmit();
       }}
@@ -146,6 +149,29 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
           content={notes}
           setContent={(value: string) => setNotes(value)}
         />
+      </div>
+      <div className="flex items-start space-x-3">
+        <div className="flex h-5 items-center">
+          <input
+            id="remindersEnabled"
+            type="checkbox"
+            checked={remindersEnabled}
+            onChange={(e) => setRemindersEnabled(e.target.checked)}
+            className="h-4 w-4 rounded border-gray-300 text-cyan-600 focus:ring-cyan-500"
+          />
+        </div>
+        <div className="flex-1">
+          <label
+            htmlFor="remindersEnabled"
+            className="text-sm font-medium text-gray-700"
+          >
+            Remind me on their birthday
+          </label>
+          <p className="mt-1 text-sm text-gray-500">
+            Send me an email on the day of this birthday (requires birthday
+            reminders to be enabled in settings).
+          </p>
+        </div>
       </div>
       {error && (
         <div className="text-sm text-red-500">

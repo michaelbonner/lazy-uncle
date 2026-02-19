@@ -59,6 +59,7 @@ export const Birthday = objectType({
     t.string("category");
     t.string("parent");
     t.string("notes");
+    t.boolean("remindersEnabled");
     t.string("importSource");
     t.field("createdAt", {
       type: "DateTime",

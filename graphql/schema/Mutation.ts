@@ -29,6 +29,7 @@ export const Mutation = extendType({
         category: stringArg(),
         parent: stringArg(),
         notes: stringArg(),
+        remindersEnabled: booleanArg(),
         userId: nonNull(stringArg()),
         importSource: stringArg(),
       },
@@ -42,6 +43,7 @@ export const Mutation = extendType({
           category,
           parent,
           notes,
+          remindersEnabled,
           userId,
           importSource,
         },
@@ -82,6 +84,7 @@ export const Mutation = extendType({
             category: category || null,
             parent: parent || null,
             notes: notes || null,
+            remindersEnabled: remindersEnabled ?? true,
             userId,
             importSource: importSource || "manual",
             createdAt: new Date(),
@@ -103,11 +106,23 @@ export const Mutation = extendType({
         category: stringArg(),
         parent: stringArg(),
         notes: stringArg(),
+        remindersEnabled: booleanArg(),
         importSource: stringArg(),
       },
       resolve: async (
         _,
-        { id, name, year, month, day, category, parent, notes, importSource },
+        {
+          id,
+          name,
+          year,
+          month,
+          day,
+          category,
+          parent,
+          notes,
+          remindersEnabled,
+          importSource,
+        },
         ctx,
       ) => {
         // Validate date components
@@ -144,6 +159,9 @@ export const Mutation = extendType({
             category: category || null,
             parent: parent || null,
             notes: notes || null,
+            ...(remindersEnabled !== null && remindersEnabled !== undefined
+              ? { remindersEnabled }
+              : {}),
             importSource: importSource || null,
           })
           .where(and(eq(birthdays.id, id), eq(birthdays.userId, ctx.user.id)))
@@ -323,8 +341,13 @@ export const Mutation = extendType({
       args: {
         emailNotifications: booleanArg(),
         summaryNotifications: booleanArg(),
+        birthdayReminders: booleanArg(),
       },
-      resolve: async (_, { emailNotifications, summaryNotifications }, ctx) => {
+      resolve: async (
+        _,
+        { emailNotifications, summaryNotifications, birthdayReminders },
+        ctx,
+      ) => {
         const { notificationService } =
           await import("../../lib/notification-service");
 
@@ -337,6 +360,9 @@ export const Mutation = extendType({
           summaryNotifications !== undefined
         ) {
           preferences.summaryNotifications = summaryNotifications;
+        }
+        if (birthdayReminders !== null && birthdayReminders !== undefined) {
+          preferences.birthdayReminders = birthdayReminders;
         }
 
         await notificationService.updateNotificationPreferences(

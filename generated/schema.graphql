@@ -13,6 +13,7 @@ type Birthday {
   name: String
   notes: String
   parent: String
+  remindersEnabled: Boolean
   user: User
   year: Int
 }
@@ -66,19 +67,20 @@ type DuplicateMatch {
 type Mutation {
   bulkImportSubmissions(submissionIds: [String!]!): BulkSubmissionResult
   bulkRejectSubmissions(submissionIds: [String!]!): BulkSubmissionResult
-  createBirthday(category: String, day: Int!, importSource: String, month: Int!, name: String!, notes: String, parent: String, userId: String!, year: Int): Birthday
+  createBirthday(category: String, day: Int!, importSource: String, month: Int!, name: String!, notes: String, parent: String, remindersEnabled: Boolean, userId: String!, year: Int): Birthday
   createSharingLink(description: String, expirationHours: Int): SharingLink
   deleteBirthday(birthdayId: String!): Birthday
-  editBirthday(category: String, day: Int!, id: String!, importSource: String, month: Int!, name: String!, notes: String, parent: String, year: Int): Birthday
+  editBirthday(category: String, day: Int!, id: String!, importSource: String, month: Int!, name: String!, notes: String, parent: String, remindersEnabled: Boolean, year: Int): Birthday
   getSubmissionDuplicates(submissionId: String!): DuplicateDetectionResult
   importSubmission(submissionId: String!): Birthday
   rejectSubmission(submissionId: String!): BirthdaySubmission
   revokeSharingLink(linkId: String!): SharingLink
   submitBirthday(category: String, day: Int!, month: Int!, name: String!, notes: String, relationship: String, submitterEmail: String, submitterName: String, token: String!, year: Int): BirthdaySubmission
-  updateNotificationPreferences(emailNotifications: Boolean, summaryNotifications: Boolean): NotificationPreference
+  updateNotificationPreferences(birthdayReminders: Boolean, emailNotifications: Boolean, summaryNotifications: Boolean): NotificationPreference
 }
 
 type NotificationPreference {
+  birthdayReminders: Boolean
   emailNotifications: Boolean
   id: String
   summaryNotifications: Boolean

@@ -1,0 +1,2 @@
+ALTER TABLE "Birthday" ADD COLUMN "remindersEnabled" boolean DEFAULT true NOT NULL;--> statement-breakpoint
+ALTER TABLE "NotificationPreference" ADD COLUMN "birthdayReminders" boolean DEFAULT false NOT NULL;

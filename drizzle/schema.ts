@@ -79,6 +79,7 @@ export const birthdays = pgTable(
     category: text("category"),
     parent: text("parent"),
     notes: text("notes"),
+    remindersEnabled: boolean("remindersEnabled").default(true).notNull(),
     createdAt: timestamp("createdAt"),
     userId: text("userId").notNull(),
     importSource: text("importSource"),
@@ -160,6 +161,7 @@ export const notificationPreferences = pgTable("NotificationPreference", {
   summaryNotifications: boolean("summaryNotifications")
     .default(false)
     .notNull(),
+  birthdayReminders: boolean("birthdayReminders").default(false).notNull(),
 });
 
 // Relations

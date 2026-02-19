@@ -29,6 +29,7 @@
         "next": "^16.1.6",
         "next-pwa": "^5.6.0",
         "nexus": "^1.3.0",
+        "nodemailer": "^8.0.1",
         "pg": "^8.18.0",
         "pluralize": "^8.0.0",
         "posthog-js": "^1.350.0",
@@ -1574,6 +1575,8 @@
     "nexus": ["nexus@1.3.0", "", { "dependencies": { "iterall": "^1.3.0", "tslib": "^2.0.3" }, "peerDependencies": { "graphql": "15.x || 16.x" } }, "sha512-w/s19OiNOs0LrtP7pBmD9/FqJHvZLmCipVRt6v1PM8cRUYIbhEswyNKGHVoC4eHZGPSnD+bOf5A3+gnbt0A5/A=="],
 
     "node-releases": ["node-releases@2.0.27", "", {}, "sha512-nmh3lCkYZ3grZvqcCH+fjmQ7X+H0OeZgP40OierEaAptX4XofMh5kwNbWh7lBduUzCcV/8kZ+NDLCwm2iorIlA=="],
+
+    "nodemailer": ["nodemailer@8.0.1", "", {}, "sha512-5kcldIXmaEjZcHR6F28IKGSgpmZHaF1IXLWFTG+Xh3S+Cce4MiakLtWY+PlBU69fLbRa8HlaGIrC/QolUpHkhg=="],
 
     "object-assign": ["object-assign@4.1.1", "", {}, "sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg=="],
 

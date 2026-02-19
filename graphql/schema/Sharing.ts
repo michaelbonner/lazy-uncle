@@ -107,6 +107,7 @@ export const NotificationPreference = objectType({
     t.string("userId");
     t.boolean("emailNotifications");
     t.boolean("summaryNotifications");
+    t.boolean("birthdayReminders");
     t.nullable.field("user", {
       type: "User",
       resolve: async (parent, args, ctx) => {

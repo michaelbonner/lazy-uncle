@@ -97,6 +97,17 @@ export class BackgroundJobScheduler implements JobScheduler {
       12 * 60 * 60 * 1000,
     );
 
+    // Send birthday reminder emails daily
+    const birthdayRemindersInterval = setInterval(
+      async () => {
+        await this.runJobWithMetrics("birthday-reminders", async () => {
+          await notificationService.processUpcomingBirthdayReminders();
+          return 0;
+        });
+      },
+      24 * 60 * 60 * 1000,
+    );
+
     // Database maintenance every 24 hours
     const databaseMaintenanceInterval = setInterval(
       async () => {
@@ -136,6 +147,7 @@ export class BackgroundJobScheduler implements JobScheduler {
       linkCleanupInterval,
       submissionCleanupInterval,
       orphanedDataCleanupInterval,
+      birthdayRemindersInterval,
       databaseMaintenanceInterval,
       summaryInterval,
       metricsLoggingInterval,
