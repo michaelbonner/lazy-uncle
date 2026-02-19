@@ -47,6 +47,8 @@ describe("NotificationService", () => {
     notificationService = new NotificationService();
     consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
     vi.spyOn(console, "error").mockImplementation(() => {});
+    vi.stubEnv("BETTER_AUTH_SECRET", "test-secret-for-tests");
+    vi.stubEnv("NODE_ENV", "development");
   });
 
   afterEach(() => {
@@ -73,6 +75,7 @@ describe("NotificationService", () => {
       expect(result).toEqual({
         emailNotifications: true,
         summaryNotifications: false,
+        birthdayReminders: false,
       });
       expect(mockDb.query.notificationPreferences.findFirst).toHaveBeenCalled();
     });
@@ -88,6 +91,7 @@ describe("NotificationService", () => {
       expect(result).toEqual({
         emailNotifications: true,
         summaryNotifications: false,
+        birthdayReminders: false,
       });
     });
 
@@ -102,6 +106,7 @@ describe("NotificationService", () => {
       expect(result).toEqual({
         emailNotifications: true,
         summaryNotifications: false,
+        birthdayReminders: false,
       });
     });
   });
