@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@apollo/client": "^4.1.6",
+    "@better-auth/drizzle-adapter": "^1.5.3",
     "@envelop/apollo-server-errors": "^9.1.1",
     "@headlessui/react": "^2.2.9",
     "@paralleldrive/cuid2": "^3.3.0",
