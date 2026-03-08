@@ -9,6 +9,7 @@ import { useRouter } from "next/router";
 import posthog from "posthog-js";
 import { ReactElement, useEffect } from "react";
 import { RiBugFill, RiLightbulbFlashLine } from "react-icons/ri";
+import Script from "next/script";
 
 const bodyFont = Inter({
   subsets: ["latin"],
@@ -136,6 +137,18 @@ const MainLayout = ({
           </div>
         )}
       </header>
+      <Script
+        async
+        src="https://easycustomerfeedback.com/widget/d1f086e2aab04637a566c3babcee1493/embed"
+        data-label="Send feedback"
+        data-position="right"
+        data-color="#111827"
+        {...(session?.user && {
+          "data-name": session.user.name ?? undefined,
+          "data-email": session.user.email ?? undefined,
+          "data-user-id": session.user.id,
+        })}
+      />
       <ClientOnly>{children}</ClientOnly>
       <footer className="px-4 py-6 text-center text-gray-200 md:flex md:justify-between md:px-8">
         <div>
