@@ -25,10 +25,14 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
   const { data: session } = authClient.useSession();
   const [name, setName] = useState("");
 
+  const today = new Date();
+  const defaultMonth = today.getMonth() + 1;
+  const defaultDay = today.getDate();
+
   // NEW: Date component states
   const [year, setYear] = useState<number | null>(null);
-  const [month, setMonth] = useState<number>(1);
-  const [day, setDay] = useState<number>(1);
+  const [month, setMonth] = useState<number>(defaultMonth);
+  const [day, setDay] = useState<number>(defaultDay);
 
   const [category, setCategory] = useState("");
   const [parent, setParent] = useState("");
@@ -85,8 +89,8 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
         // Reset form
         setName("");
         setYear(null);
-        setMonth(1);
-        setDay(1);
+        setMonth(defaultMonth);
+        setDay(defaultDay);
         setCategory("");
         setParent("");
         setNotes("");
