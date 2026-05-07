@@ -9,7 +9,7 @@ const BirthdaysContainer = dynamic(
   () => import("../../components/BirthdaysContainer"),
   {
     loading: () => (
-      <div className="flex h-full min-h-[50vh] w-full items-center justify-center rounded-lg border-t-4 border-b-4 bg-white text-center text-gray-800">
+      <div className="flex h-full min-h-[50vh] w-full items-center justify-center rounded-lg border border-rule bg-paper-deep text-center text-ink-soft">
         <p className="animate-pulse">Loading birthdays...</p>
       </div>
     ),
