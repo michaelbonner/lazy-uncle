@@ -48,7 +48,7 @@ const AddBirthdayDialog = ({
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <DialogPanel className="w-full max-w-5xl transform overflow-hidden rounded-2xl border border-rule bg-paper p-6 align-middle shadow-[0_24px_60px_-24px_oklch(0.22_0.018_60_/_0.35)] transition-all xl:px-12 xl:py-8">
+                <DialogPanel className="w-full max-w-5xl transform overflow-hidden rounded-2xl bg-white p-6 align-middle shadow-[0_24px_60px_-24px_oklch(0.22_0.018_60_/_0.35)] transition-all xl:px-12 xl:py-8">
                   <div className="flex items-center justify-between">
                     <DialogTitle
                       as="h3"
