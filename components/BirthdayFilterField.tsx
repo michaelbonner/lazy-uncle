@@ -19,9 +19,9 @@ const BirthdayFilterField = ({
     <div>
       <input
         className={clsx(
-          "block w-full rounded-lg border-0 bg-gray-200 px-4 py-3 text-gray-700",
-          "placeholder:text-gray-400",
-          "focus:border-gray-400 focus:bg-white focus:outline-hidden",
+          "block w-full rounded-md border border-rule bg-paper-deep px-4 py-3 text-ink",
+          "placeholder:text-ink-muted",
+          "focus:border-accent focus:bg-paper focus:outline-hidden focus:ring-2 focus:ring-accent/30",
           `js-filter-${label.toLowerCase()}`,
           datalistOptions.length > 0 && !value && "pr-8",
           datalistOptions.length > 0 && value && "pr-16",
@@ -34,7 +34,7 @@ const BirthdayFilterField = ({
             setValue("");
           }
         }}
-        placeholder={`Filter by ${label}`}
+        placeholder={`Filter by ${label.toLowerCase()}`}
         type="text"
         value={value}
         {...(datalistOptions.length > 0 && {
@@ -52,11 +52,11 @@ const BirthdayFilterField = ({
       )}
       {value && (
         <HiBackspace
-          className="absolute top-4 right-10 text-xl text-gray-400"
+          className="absolute top-4 right-10 text-xl text-ink-muted transition hover:text-ink"
           onClick={() => setValue("")}
         />
       )}
-      <HiSearch className="absolute top-4 right-3 text-xl text-gray-400" />
+      <HiSearch className="absolute top-4 right-3 text-xl text-ink-muted" />
     </div>
   );
 };
