@@ -119,14 +119,14 @@ const SharingLinkManager = () => {
 
     if (isExpiredLink) {
       return (
-        <span className="font-medium text-red-600">
+        <span className="font-medium text-rose-700">
           Expired {format(date, "MMMM d 'at' p")}
         </span>
       );
     }
 
     return (
-      <span className="text-gray-600">
+      <span className="text-ink-soft">
         Expires {format(date, "MMMM d 'at' p")}
       </span>
     );
@@ -135,35 +135,39 @@ const SharingLinkManager = () => {
   const sharingLinks: SharingLink[] = sharingLinksData?.sharingLinks || [];
 
   return (
-    <div className="mt-8 rounded-lg border-t-4 border-b-4 border-t-gray-400 border-b-gray-400 bg-gray-50 text-gray-800">
-      <div className="px-4 py-6 md:px-8">
+    <div className="mt-8 rounded-lg border border-rule bg-paper-deep text-ink">
+      <div className="px-4 py-8 md:px-8 md:py-10">
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <IoShareOutline className="h-6 w-6 text-cyan-600" />
-            <h2 className="text-2xl font-medium">Birthday Sharing Links</h2>
+            <IoShareOutline className="h-6 w-6 text-accent" />
+            <h2 className="font-display text-2xl font-semibold">
+              Birthday sharing links
+            </h2>
           </div>
           <button
             className={clsx(
-              "flex items-center space-x-2 rounded-md border border-transparent bg-cyan-600 px-4 py-2 font-medium text-white shadow-xs transition-opacity",
-              "hover:bg-cyan-700",
-              "focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:outline-hidden",
+              "flex items-center space-x-2 rounded-md border border-transparent bg-accent px-4 py-2 font-medium text-white transition",
+              "hover:bg-accent-deep",
+              "focus:outline-hidden focus:ring-2 focus:ring-accent/40 focus:ring-offset-2 focus:ring-offset-paper-deep",
             )}
             onClick={() => setShowCreateForm(!showCreateForm)}
             type="button"
           >
             <IoAddCircleOutline className="h-4 w-4" />
-            <span>Create New Link</span>
+            <span>Create new link</span>
           </button>
         </div>
 
         {showCreateForm && (
-          <div className="mb-6 rounded-lg border border-gray-200 bg-white p-4">
-            <h3 className="mb-4 text-lg font-medium">Create Sharing Link</h3>
+          <div className="mb-6 rounded-lg border border-rule bg-paper p-4">
+            <h3 className="mb-4 font-display text-lg font-semibold">
+              Create sharing link
+            </h3>
             <form onSubmit={handleCreateLink} className="space-y-4">
               <div>
                 <label
                   htmlFor="description"
-                  className="mb-1 block text-sm font-medium text-gray-700"
+                  className="mb-1 block text-sm font-medium text-ink"
                 >
                   Description (optional)
                 </label>
@@ -172,15 +176,15 @@ const SharingLinkManager = () => {
                   id="description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="e.g., Family gathering, Work colleagues"
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 focus:outline-none"
+                  placeholder="e.g. Family gathering, work colleagues"
+                  className="w-full rounded-md border border-rule bg-paper px-3 py-2 text-sm text-ink placeholder:text-ink-muted focus:border-accent focus:outline-hidden focus:ring-1 focus:ring-accent"
                   maxLength={100}
                 />
               </div>
               <div>
                 <label
                   htmlFor="expirationHours"
-                  className="mb-1 block text-sm font-medium text-gray-700"
+                  className="mb-1 block text-sm font-medium text-ink"
                 >
                   Expires in
                 </label>
@@ -188,7 +192,7 @@ const SharingLinkManager = () => {
                   id="expirationHours"
                   value={expirationHours}
                   onChange={(e) => setExpirationHours(Number(e.target.value))}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 focus:outline-none"
+                  className="w-full rounded-md border border-rule bg-paper px-3 py-2 text-sm text-ink focus:border-accent focus:outline-hidden focus:ring-1 focus:ring-accent"
                 >
                   <option value={24}>1 day</option>
                   <option value={72}>3 days</option>
@@ -199,7 +203,7 @@ const SharingLinkManager = () => {
               </div>
               <div className="flex space-x-3">
                 <PrimaryButton type="submit" disabled={createLoading}>
-                  {createLoading ? "Creating..." : "Create Link"}
+                  {createLoading ? "Creating…" : "Create link"}
                 </PrimaryButton>
                 <button
                   type="button"
@@ -208,7 +212,7 @@ const SharingLinkManager = () => {
                     setDescription("");
                     setExpirationHours(168);
                   }}
-                  className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                  className="rounded-md border border-rule bg-paper px-4 py-2 text-sm font-medium text-ink transition hover:bg-paper-deep"
                 >
                   Cancel
                 </button>
@@ -218,8 +222,8 @@ const SharingLinkManager = () => {
         )}
 
         {sharingLinksError && (
-          <div className="mb-4 rounded-md border border-red-200 bg-red-50 p-4">
-            <p className="text-red-800">
+          <div className="mb-4 rounded-md border border-rose-300 bg-rose-50 p-4">
+            <p className="text-rose-900">
               Error loading sharing links: {sharingLinksError.message}
             </p>
           </div>
@@ -227,15 +231,15 @@ const SharingLinkManager = () => {
 
         {sharingLinksLoading ? (
           <div className="flex justify-center py-8">
-            <LoadingSpinner spinnerTextColor="text-cyan-600" />
+            <LoadingSpinner spinnerTextColor="text-accent" />
           </div>
         ) : sharingLinks.length === 0 ? (
           <div className="py-8 text-center">
-            <IoShareOutline className="mx-auto mb-4 h-12 w-12 text-gray-400" />
-            <h3 className="mb-2 text-lg font-medium text-gray-900">
+            <IoShareOutline className="mx-auto mb-4 h-12 w-12 text-ink-muted" />
+            <h3 className="mb-2 font-display text-lg font-semibold text-ink">
               No sharing links yet
             </h3>
-            <p className="mb-4 text-gray-500">
+            <p className="mb-4 text-ink-soft">
               Create a sharing link to let friends and family contribute
               birthdays to your collection.
             </p>
@@ -248,32 +252,32 @@ const SharingLinkManager = () => {
                 className={clsx(
                   "rounded-lg border p-4 transition-colors",
                   isExpired(link.expiresAt)
-                    ? "border-red-200 bg-red-50"
-                    : "border-gray-200 bg-white hover:bg-gray-50",
+                    ? "border-rose-300 bg-rose-50"
+                    : "border-rule bg-paper hover:bg-paper-deep",
                 )}
               >
                 <div className="flex items-start justify-between">
                   <div className="min-w-0 flex-1">
                     <div className="mb-2 flex items-center space-x-2">
                       {link.description && (
-                        <h4 className="text-sm font-medium text-gray-900">
+                        <h4 className="text-sm font-medium text-ink">
                           {link.description}
                         </h4>
                       )}
-                      <span className="inline-flex items-center rounded-full bg-cyan-100 px-2 py-1 text-xs font-medium text-cyan-800">
+                      <span className="inline-flex items-center rounded-full bg-paper-deep px-2 py-1 text-xs font-medium text-accent-deep">
                         {link.submissionCount} submission
                         {link.submissionCount !== 1 ? "s" : ""}
                       </span>
                     </div>
-                    <div className="mb-2 text-sm text-gray-600">
+                    <div className="mb-2 text-sm text-ink-soft">
                       Created {format(new Date(link.createdAt), "MMM d, yyyy")}
                     </div>
                     <div className="mb-3 text-sm">
                       {formatExpirationDate(link.expiresAt)}
                     </div>
                     {!isExpired(link.expiresAt) && (
-                      <div className="flex items-center space-x-2 rounded-md bg-gray-100 p-2">
-                        <code className="flex-1 text-sm break-all text-gray-800">
+                      <div className="flex items-center space-x-2 rounded-md bg-paper-deep p-2">
+                        <code className="flex-1 text-sm break-all text-ink">
                           {window.location.origin}/share/{link.token}
                         </code>
                       </div>
@@ -286,15 +290,15 @@ const SharingLinkManager = () => {
                         className={clsx(
                           "flex items-center space-x-1 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                           copiedLinkId === link.id
-                            ? "bg-green-100 text-green-800"
-                            : "bg-gray-100 text-gray-700 hover:bg-gray-200",
+                            ? "bg-emerald-100 text-emerald-800"
+                            : "bg-paper-deep text-ink hover:bg-paper",
                         )}
                         title="Copy link to clipboard"
                       >
                         {copiedLinkId === link.id ? (
                           <>
                             <HiClipboardCheck className="h-4 w-4" />
-                            <span>Copied!</span>
+                            <span>Copied</span>
                           </>
                         ) : (
                           <>
@@ -306,7 +310,7 @@ const SharingLinkManager = () => {
                     )}
                     <button
                       onClick={() => handleRevokeLink(link.id)}
-                      className="flex items-center space-x-1 rounded-md bg-red-100 px-3 py-2 text-sm font-medium text-red-700 transition-colors hover:bg-red-200"
+                      className="flex items-center space-x-1 rounded-md bg-rose-100 px-3 py-2 text-sm font-medium text-rose-800 transition-colors hover:bg-rose-200"
                       title="Revoke this link"
                     >
                       <HiTrash className="h-4 w-4" />
@@ -319,7 +323,7 @@ const SharingLinkManager = () => {
           </div>
         )}
 
-        <div className="mt-6 text-sm text-gray-500">
+        <div className="mt-6 text-sm text-ink-soft">
           <p>
             Share these links with friends and family to let them contribute
             birthdays to your collection. You can review and import their

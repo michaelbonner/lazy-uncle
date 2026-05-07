@@ -99,29 +99,31 @@ const SharingSettingsPanel = () => {
     preferencesData?.notificationPreferences || null;
 
   return (
-    <div className="mt-8 rounded-lg border-t-4 border-b-4 border-t-gray-400 border-b-gray-400 bg-gray-50 text-gray-800">
-      <div className="px-4 py-6 md:px-8">
+    <div className="mt-8 rounded-lg border border-rule bg-paper-deep text-ink">
+      <div className="px-4 py-8 md:px-8 md:py-10">
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <IoSettingsOutline className="h-6 w-6 text-cyan-600" />
-            <h2 className="text-2xl font-medium">Settings</h2>
+            <IoSettingsOutline className="h-6 w-6 text-accent" />
+            <h2 className="font-display text-2xl font-semibold">Settings</h2>
           </div>
         </div>
 
         {preferencesError && (
-          <div className="mb-4 rounded-md border border-red-200 bg-red-50 p-4">
-            <p className="text-red-800">
+          <div className="mb-4 rounded-md border border-rose-300 bg-rose-50 p-4">
+            <p className="text-rose-900">
               Error loading preferences: {preferencesError.message}
             </p>
           </div>
         )}
 
-        <div className="rounded-lg border border-gray-200 bg-white p-6">
-          <h3 className="mb-6 text-lg font-medium">Notification Preferences</h3>
+        <div className="rounded-lg border border-rule bg-paper p-6">
+          <h3 className="mb-6 font-display text-lg font-semibold">
+            Notification preferences
+          </h3>
 
           {preferencesLoading ? (
             <div className="flex justify-center py-8">
-              <LoadingSpinner spinnerTextColor="text-cyan-600" />
+              <LoadingSpinner spinnerTextColor="text-accent" />
             </div>
           ) : (
             <form onSubmit={handleSaveSettings} className="space-y-6">
@@ -133,18 +135,18 @@ const SharingSettingsPanel = () => {
                       type="checkbox"
                       checked={emailNotifications}
                       onChange={(e) => setEmailNotifications(e.target.checked)}
-                      className="h-4 w-4 rounded border-gray-300 text-cyan-600 focus:ring-cyan-500"
+                      className="h-4 w-4 rounded border-rule text-accent focus:ring-accent/40"
                     />
                   </div>
                   <div className="flex-1">
                     <label
                       htmlFor="emailNotifications"
-                      className="flex items-center space-x-2 text-sm font-medium text-gray-700"
+                      className="flex items-center space-x-2 text-sm font-medium text-ink"
                     >
-                      <HiMail className="h-4 w-4 text-cyan-600" />
+                      <HiMail className="h-4 w-4 text-accent" />
                       <span>Email notifications for new submissions</span>
                     </label>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-sm text-ink-soft">
                       Receive an email notification whenever someone submits a
                       birthday through your sharing links.
                     </p>
@@ -160,18 +162,18 @@ const SharingSettingsPanel = () => {
                       onChange={(e) =>
                         setSummaryNotifications(e.target.checked)
                       }
-                      className="h-4 w-4 rounded border-gray-300 text-cyan-600 focus:ring-cyan-500"
+                      className="h-4 w-4 rounded border-rule text-accent focus:ring-accent/40"
                     />
                   </div>
                   <div className="flex-1">
                     <label
                       htmlFor="summaryNotifications"
-                      className="flex items-center space-x-2 text-sm font-medium text-gray-700"
+                      className="flex items-center space-x-2 text-sm font-medium text-ink"
                     >
-                      <HiMailOpen className="h-4 w-4 text-cyan-600" />
+                      <HiMailOpen className="h-4 w-4 text-accent" />
                       <span>Daily summary notifications</span>
                     </label>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-sm text-ink-soft">
                       Receive a daily summary email of all pending submissions
                       instead of individual notifications.
                     </p>
@@ -185,18 +187,18 @@ const SharingSettingsPanel = () => {
                       type="checkbox"
                       checked={birthdayReminders}
                       onChange={(e) => setBirthdayReminders(e.target.checked)}
-                      className="h-4 w-4 rounded border-gray-300 text-cyan-600 focus:ring-cyan-500"
+                      className="h-4 w-4 rounded border-rule text-accent focus:ring-accent/40"
                     />
                   </div>
                   <div className="flex-1">
                     <label
                       htmlFor="birthdayReminders"
-                      className="flex items-center space-x-2 text-sm font-medium text-gray-700"
+                      className="flex items-center space-x-2 text-sm font-medium text-ink"
                     >
-                      <MdCake className="h-4 w-4 text-cyan-600" />
+                      <MdCake className="h-4 w-4 text-accent" />
                       <span>Birthday reminder emails</span>
                     </label>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-sm text-ink-soft">
                       Get an email on the day of each birthday. Individual
                       birthdays can be opted out in the birthday settings.
                     </p>
@@ -205,14 +207,14 @@ const SharingSettingsPanel = () => {
               </div>
 
               {hasChanges && (
-                <div className="flex space-x-3 border-t border-gray-200 pt-6">
+                <div className="flex space-x-3 border-t border-rule pt-6">
                   <PrimaryButton type="submit" disabled={updateLoading}>
-                    {updateLoading ? "Saving..." : "Save Changes"}
+                    {updateLoading ? "Saving…" : "Save changes"}
                   </PrimaryButton>
                   <button
                     type="button"
                     onClick={handleResetSettings}
-                    className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                    className="rounded-md border border-rule bg-paper px-4 py-2 text-sm font-medium text-ink transition hover:bg-paper-deep"
                   >
                     Reset
                   </button>
@@ -220,8 +222,8 @@ const SharingSettingsPanel = () => {
               )}
 
               {!hasChanges && preferences && (
-                <div className="border-t border-gray-200 pt-6">
-                  <div className="flex items-center space-x-2 text-sm text-green-600">
+                <div className="border-t border-rule pt-6">
+                  <div className="flex items-center space-x-2 text-sm text-emerald-700">
                     <HiCog className="h-4 w-4" />
                     <span>Settings saved</span>
                   </div>
@@ -231,7 +233,7 @@ const SharingSettingsPanel = () => {
           )}
         </div>
 
-        <div className="mt-6 text-sm text-gray-500">
+        <div className="mt-6 text-sm text-ink-soft">
           <p>
             Configure your sharing preferences and notification settings. These
             settings control how you receive updates about birthday submissions
