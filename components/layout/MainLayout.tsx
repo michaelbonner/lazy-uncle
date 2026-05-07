@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import posthog from "posthog-js";
 import { ReactElement, useEffect } from "react";
-import { RiBugFill, RiLightbulbFlashLine } from "react-icons/ri";
 import Script from "next/script";
 
 const MainLayout = ({
@@ -153,20 +152,6 @@ const MainLayout = ({
           </a>
         </div>
         <div className="mt-4 flex flex-wrap justify-center space-x-6 md:mt-0">
-          <a
-            className="flex items-center space-x-1 pt-4 underline underline-offset-4 transition hover:text-ink md:pt-0"
-            href="https://github.com/michaelbonner/lazy-uncle/issues/new?assignees=michaelbonner&labels=&template=bug_report.md&title="
-          >
-            <RiBugFill className="h-4 w-4" />
-            <span>Report a bug</span>
-          </a>
-          <a
-            className="flex items-center space-x-1 pt-4 underline underline-offset-4 transition hover:text-ink md:pt-0"
-            href="https://github.com/michaelbonner/lazy-uncle/issues/new?assignees=michaelbonner&labels=&template=feature_request.md&title="
-          >
-            <RiLightbulbFlashLine className="h-4 w-4" />
-            <span>Request a feature</span>
-          </a>
           <a
             className="pt-4 underline underline-offset-4 transition hover:text-ink md:pt-0"
             href="https://github.com/sponsors/michaelbonner?o=esb"
