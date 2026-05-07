@@ -305,14 +305,17 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
     <div>
       {!birthdaysLoading && !birthdaysCount && <OnboardingWalkthrough />}
       {upcomingBirthdays?.length > 0 && (
-        <div className="my-4 items-center gap-x-8 rounded-lg border-t-4 border-b-4 border-gray-300 bg-gray-100 px-8 py-4 text-cyan-800 shadow-lg md:flex">
-          <h2 className="text-xl font-medium">Upcoming Birthdays</h2>
-          <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 md:mt-0">
+        <div className="my-4 items-center gap-x-8 rounded-lg border border-rule bg-paper-deep px-6 py-4 text-ink md:flex">
+          <h2 className="font-display text-xl font-semibold">
+            Upcoming birthdays
+          </h2>
+          <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-ink-soft md:mt-0">
             {upcomingBirthdays.map((birthday: NexusGenObjects["Birthday"]) => {
               const daysUntil = getDaysUntilNextBirthday(birthday);
               return (
                 <button
                   key={birthday.id}
+                  className="rounded-sm transition hover:text-ink focus:outline-hidden focus:ring-2 focus:ring-accent/30"
                   onClick={() => {
                     const birthDayLiElementMobile: HTMLLIElement | null =
                       document.querySelector(`#birthday-${birthday.id}`);
@@ -350,28 +353,30 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
         <div className="items-center pl-2 md:flex md:space-x-4 md:pl-0">
           <button
             className={clsx(
-              isFiltered ? "text-cyan-50" : "text-cyan-500",
-              "js-clear-filters flex items-center space-x-1",
+              isFiltered
+                ? "text-accent-deep hover:text-ink"
+                : "text-ink-muted",
+              "js-clear-filters flex items-center space-x-1 transition",
             )}
             disabled={!isFiltered}
             onClick={() => clearFilters()}
           >
             <HiXCircle />
-            <span>Clear Filters</span>
+            <span>Clear filters</span>
           </button>
-          <div className="text-sm text-cyan-300 md:text-right">
+          <div className="text-sm text-ink-muted md:text-right">
             {workingDatesCount}/{birthdaysData?.birthdays?.length} visible
           </div>
         </div>
         <div className="mt-4 flex items-center justify-end space-x-4 md:hidden">
           <button
-            className="flex items-center space-x-2 rounded-md border bg-cyan-50 px-4 py-2 text-sm text-gray-800"
+            className="flex items-center space-x-2 rounded-md border border-rule bg-paper-deep px-4 py-2 text-sm text-ink transition hover:bg-paper"
             onClick={() => {
               setShowFilters(!showFilters);
             }}
           >
             <GrFormFilter />
-            <span>Toggle Additional Filters</span>
+            <span>Toggle additional filters</span>
           </button>
         </div>
       </div>
@@ -382,18 +387,21 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
       />
 
       <div className="text-center">
-        {birthdaysError && <p className="pt-3">{birthdaysError.message}</p>}
-        <div className="mt-2 rounded-lg border-b-4 border-b-gray-400 bg-gray-50 text-gray-600 md:mt-0">
-          <div className="sticky top-0 z-10 bg-cyan-600 pt-2">
-            <div className="bg-cyan-600">
-              <div className="grid gap-x-2 gap-y-2 rounded-t-lg border-t-4 border-t-gray-400 bg-gray-300 px-3 py-2 md:px-6 md:py-3 lg:flex">
+        {birthdaysError && (
+          <p className="pt-3 text-ink-soft">{birthdaysError.message}</p>
+        )}
+        <div className="mt-4 overflow-hidden rounded-lg border border-rule bg-paper text-ink md:mt-2">
+          <div className="sticky top-0 z-10 bg-paper">
+            <div className="border-b border-rule bg-paper-deep">
+              <div className="grid gap-x-2 gap-y-2 px-3 py-3 md:px-6 md:py-4 lg:flex">
                 <div className="flex w-full gap-2">
                   <button
                     className={clsx(
-                      "js-add-birthday-button flex h-12 w-12 items-center justify-center rounded-lg bg-cyan-800 p-3 text-cyan-50 transition-colors",
-                      "hover:bg-cyan-700",
+                      "js-add-birthday-button flex h-12 w-12 items-center justify-center rounded-md bg-accent p-3 text-white transition",
+                      "hover:bg-accent-deep",
+                      "focus:outline-hidden focus:ring-2 focus:ring-accent/40 focus:ring-offset-2 focus:ring-offset-paper-deep",
                     )}
-                    title="Add Birthday"
+                    title="Add birthday"
                     onClick={() =>
                       setIsAddBirthdayDialogVisible(!isAddBirthdayDialogVisible)
                     }
@@ -419,8 +427,9 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                   </div>
                   <div className="flex md:hidden">
                     <button
-                      className="ml-2 flex w-full items-center justify-center rounded-md bg-gray-200"
+                      className="ml-2 flex w-full items-center justify-center rounded-md border border-rule bg-paper text-ink transition hover:bg-paper-deep"
                       onClick={handleRefresh}
+                      title="Refresh"
                     >
                       <GrRefresh
                         className={clsx(
@@ -503,7 +512,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                 </div>
               </div>
             </div>
-            <div className="hidden bg-cyan-800 px-4 text-gray-100 md:grid md:grid-cols-12 md:px-8">
+            <div className="hidden border-b border-rule bg-paper px-4 text-ink md:grid md:grid-cols-12 md:px-8">
               <SortColumnHeader
                 ascendingString="name_asc"
                 className="col-span-3"
@@ -559,8 +568,8 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
               <li>
                 <button
                   className={clsx(
-                    "flex w-full items-center justify-center gap-2 py-2 text-cyan-700",
-                    "hover:bg-gray-100",
+                    "flex w-full items-center justify-center gap-2 py-2 text-sm text-accent-deep transition",
+                    "hover:bg-paper-deep hover:text-ink",
                   )}
                   onClick={() => {
                     const desktopTodayElement: HTMLElement | null =
@@ -606,24 +615,27 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
               })}
             </ul>
           ) : (
-            <div className="px-8 py-10 text-gray-400">
+            <div className="px-8 py-10 text-ink-muted">
               {isPending || birthdaysLoading ? (
                 <div className="flex min-h-[300px] items-center justify-center">
-                  <LoadingSpinner spinnerTextColor="text-cyan-40" />
+                  <LoadingSpinner spinnerTextColor="text-accent" />
                 </div>
               ) : (
-                <div className="prose mx-auto">
-                  <h2>No birthdays found</h2>
-                  <p>Use the form below to add a birthday or two... or 38.</p>
+                <div className="prose prose-stone mx-auto">
+                  <h2 className="font-display text-ink">No birthdays found</h2>
+                  <p className="text-ink-soft">
+                    Use the form below to add a birthday or two, or thirty-eight.
+                  </p>
                 </div>
               )}
             </div>
           )}
-          <div className={clsx("px-4 py-2", "lg:px-8")}>
+          <div className={clsx("border-t border-rule px-4 py-3", "lg:px-8")}>
             <button
               className={clsx(
-                "flex w-full items-center justify-center gap-2 rounded-md bg-gray-200 px-4 py-2 transition-colors",
-                "hover:bg-gray-300",
+                "flex w-full items-center justify-center gap-2 rounded-md border border-rule bg-paper-deep px-4 py-2 text-ink transition",
+                "hover:bg-paper",
+                "focus:outline-hidden focus:ring-2 focus:ring-accent/30",
               )}
               onClick={() =>
                 setIsAddBirthdayDialogVisible(!isAddBirthdayDialogVisible)
@@ -636,13 +648,13 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
           </div>
         </div>
       </div>
-      <div className="mt-8 flex items-center justify-between text-gray-200">
+      <div className="mt-8 flex items-center justify-between text-ink-soft">
         <div className="flex items-center space-x-6">
           <Link
             href={`webcal://${currentHost}/api/calendar-subscription/${userId}`}
-            className="js-subscribe-to-calendar group flex items-center space-x-2 text-gray-200 underline transition-all hover:text-gray-100"
+            className="js-subscribe-to-calendar group flex items-center space-x-2 text-ink-soft underline underline-offset-4 transition hover:text-ink"
           >
-            <HiOutlineCalendar className="text-cyan-400 transition-all group-hover:text-gray-200" />
+            <HiOutlineCalendar className="text-accent transition group-hover:text-ink" />
             <span>Subscribe to calendar</span>
           </Link>
         </div>
@@ -650,11 +662,11 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
       <SharingLinkManager />
       <SubmissionReviewInterface />
       <SharingSettingsPanel />
-      <div className="mt-8 rounded-lg border-t-4 border-b-4 border-t-gray-400 border-b-gray-400 bg-gray-50 text-gray-800">
-        <div className="mt-4 px-4 py-12 md:px-8">
+      <div className="mt-8 rounded-lg border border-rule bg-paper-deep text-ink">
+        <div className="px-4 py-10 md:px-8 md:py-12">
           <div className="max-w-2xl">
-            <h3 className="mb-4 text-2xl font-medium">
-              Import Birthdays From CSV
+            <h3 className="mb-4 font-display text-2xl font-semibold">
+              Import birthdays from CSV
             </h3>
             <UploadCsvBirthdayForm />
           </div>
