@@ -1,6 +1,5 @@
 import { authClient } from "../../lib/auth-client";
 import ClientOnly from "../ClientOnly";
-import { clsx } from "clsx";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,22 +9,17 @@ import { ReactElement, useEffect } from "react";
 import { RiBugFill, RiLightbulbFlashLine } from "react-icons/ri";
 import Script from "next/script";
 
-type Theme = "app" | "marketing";
-
 const MainLayout = ({
   children,
   description = "An easy way to keep track of birthdays",
   title = "Lazy Uncle",
-  theme = "app",
 }: {
   children: ReactElement;
   description?: string;
   title: string;
-  theme?: Theme;
 }) => {
   const { data: session, isPending } = authClient.useSession();
   const router = useRouter();
-  const isMarketing = theme === "marketing";
 
   useEffect(() => {
     if (isPending) return;
@@ -40,12 +34,7 @@ const MainLayout = ({
   }, [session, isPending]);
 
   return (
-    <div
-      className={clsx(
-        "flex min-h-screen flex-col justify-between",
-        isMarketing ? "bg-paper text-ink" : "app-shell-bg",
-      )}
-    >
+    <div className="flex min-h-screen flex-col justify-between bg-paper text-ink">
       <Head>
         {/* General */}
         <title>{title}</title>
@@ -101,14 +90,7 @@ const MainLayout = ({
         />
       </Head>
 
-      <header
-        className={clsx(
-          "flex items-center justify-between",
-          isMarketing
-            ? "px-6 pt-8 md:px-12 md:pt-10"
-            : "px-4 md:px-8",
-        )}
-      >
+      <header className="flex items-center justify-between px-6 pt-8 md:px-12 md:pt-10">
         <Link
           href="/"
           aria-label="Lazy Uncle home"
@@ -116,25 +98,20 @@ const MainLayout = ({
         >
           <Image
             alt="Lazy Uncle"
-            height={isMarketing ? 39 : 47}
+            height={39}
             priority
-            src={isMarketing ? "/lazy-uncle.svg" : "/lazy-uncle-white.svg"}
+            src="/lazy-uncle.svg"
             style={{ height: "auto" }}
-            width={isMarketing ? 130 : 160}
+            width={130}
           />
         </Link>
         {session?.user && (
-          <div
-            className={clsx(
-              "items-center text-right md:flex md:space-x-4",
-              isMarketing ? "text-sm text-ink-soft" : "mt-8 md:mt-0",
-            )}
-          >
+          <div className="items-center text-right text-sm text-ink-soft md:flex md:space-x-4">
             <p className="hidden md:block">
               Logged in as {session?.user?.email}
             </p>
             <button
-              className="underline underline-offset-4"
+              className="underline underline-offset-4 transition hover:text-ink"
               onClick={async () => {
                 await authClient.signOut({
                   fetchOptions: {
@@ -164,19 +141,12 @@ const MainLayout = ({
         })}
       />
       <ClientOnly>{children}</ClientOnly>
-      <footer
-        className={clsx(
-          "py-6 text-center md:flex md:justify-between",
-          isMarketing
-            ? "border-t border-rule px-6 text-sm text-ink-soft md:px-12"
-            : "px-4 text-gray-200 md:px-8",
-        )}
-      >
+      <footer className="border-t border-rule px-6 py-6 text-center text-sm text-ink-soft md:flex md:justify-between md:px-12">
         <div>
           &copy; 2020-{new Date().getFullYear()}
           {` `}
           <a
-            className="underline underline-offset-4"
+            className="underline underline-offset-4 transition hover:text-ink"
             href="https://michaelbonner.dev"
           >
             Michael Bonner
@@ -184,21 +154,21 @@ const MainLayout = ({
         </div>
         <div className="mt-4 flex flex-wrap justify-center space-x-6 md:mt-0">
           <a
-            className="flex items-center space-x-1 pt-4 underline underline-offset-4 md:pt-0"
+            className="flex items-center space-x-1 pt-4 underline underline-offset-4 transition hover:text-ink md:pt-0"
             href="https://github.com/michaelbonner/lazy-uncle/issues/new?assignees=michaelbonner&labels=&template=bug_report.md&title="
           >
             <RiBugFill className="h-4 w-4" />
             <span>Report a bug</span>
           </a>
           <a
-            className="flex items-center space-x-1 pt-4 underline underline-offset-4 md:pt-0"
+            className="flex items-center space-x-1 pt-4 underline underline-offset-4 transition hover:text-ink md:pt-0"
             href="https://github.com/michaelbonner/lazy-uncle/issues/new?assignees=michaelbonner&labels=&template=feature_request.md&title="
           >
             <RiLightbulbFlashLine className="h-4 w-4" />
             <span>Request a feature</span>
           </a>
           <a
-            className="pt-4 underline underline-offset-4 md:pt-0"
+            className="pt-4 underline underline-offset-4 transition hover:text-ink md:pt-0"
             href="https://github.com/sponsors/michaelbonner?o=esb"
           >
             Sponsor Me
@@ -206,13 +176,13 @@ const MainLayout = ({
 
           <Link
             href="/policies"
-            className="pt-4 underline underline-offset-4 md:pt-0"
+            className="pt-4 underline underline-offset-4 transition hover:text-ink md:pt-0"
           >
             Policies
           </Link>
           <Link
             href="/contact"
-            className="pt-4 underline underline-offset-4 md:pt-0"
+            className="pt-4 underline underline-offset-4 transition hover:text-ink md:pt-0"
           >
             Contact
           </Link>
