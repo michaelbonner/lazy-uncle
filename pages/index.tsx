@@ -8,8 +8,9 @@ export const HomePage: NextPage = () => {
     <MainLayout
       title="Lazy Uncle: Simple Free Birthday Reminder App"
       description="Keep track of birthdays easily with Lazy Uncle. Free app to manage reminders for family and friends. Sign in with GitHub or Google to get started."
+      theme="marketing"
     >
-      <main className="mx-auto max-w-7xl px-2 pb-8">
+      <main>
         <Welcome />
       </main>
     </MainLayout>
