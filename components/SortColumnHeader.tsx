@@ -18,9 +18,10 @@ const SortColumnHeader = ({
   setValue: (value: string) => void;
   value: string;
 }) => {
+  const isActive = value === ascendingString || value === descendingString;
   return (
     <button
-      className={`flex items-center space-x-1 py-3 text-left text-xs font-medium tracking-wider uppercase ${className}`}
+      className={`flex items-center gap-1 py-3 text-left text-sm font-medium transition ${isActive ? "text-ink" : "text-ink-muted hover:text-ink"} ${className}`}
       type="button"
       onClick={() => {
         if (value === ascendingString) {
