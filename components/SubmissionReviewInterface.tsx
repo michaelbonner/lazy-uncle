@@ -258,9 +258,9 @@ const SubmissionReviewInterface = () => {
 
   if (submissionsLoading) {
     return (
-      <div className="mt-8 rounded-lg border-t-4 border-b-4 border-t-gray-400 border-b-gray-400 bg-gray-50">
+      <div className="mt-8 rounded-lg border border-rule bg-paper-deep">
         <div className="flex justify-center py-8">
-          <LoadingSpinner spinnerTextColor="text-cyan-600" />
+          <LoadingSpinner spinnerTextColor="text-accent" />
         </div>
       </div>
     );
@@ -268,9 +268,9 @@ const SubmissionReviewInterface = () => {
 
   if (submissionsError) {
     return (
-      <div className="mt-8 rounded-lg border-t-4 border-b-4 border-t-red-400 border-b-red-400 bg-red-50">
+      <div className="mt-8 rounded-lg border border-rose-300 bg-rose-50">
         <div className="px-4 py-6 md:px-8">
-          <div className="flex items-center space-x-2 text-red-800">
+          <div className="flex items-center space-x-2 text-rose-900">
             <HiXCircle className="h-5 w-5" />
             <span>Error loading submissions: {submissionsError.message}</span>
           </div>
@@ -280,14 +280,16 @@ const SubmissionReviewInterface = () => {
   }
 
   return (
-    <div className="mt-8 rounded-lg border-t-4 border-b-4 border-t-gray-400 border-b-gray-400 bg-gray-50 text-gray-800">
-      <div className="px-4 py-6 md:px-8">
+    <div className="mt-8 rounded-lg border border-rule bg-paper-deep text-ink">
+      <div className="px-4 py-8 md:px-8 md:py-10">
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <IoPersonOutline className="h-6 w-6 text-cyan-600" />
-            <h2 className="text-2xl font-medium">Birthday Submissions</h2>
+            <IoPersonOutline className="h-6 w-6 text-accent" />
+            <h2 className="font-display text-2xl font-semibold">
+              Birthday submissions
+            </h2>
             {submissions.length > 0 && (
-              <span className="inline-flex items-center rounded-full bg-cyan-100 px-2 py-1 text-sm font-medium text-cyan-800">
+              <span className="inline-flex items-center rounded-full border border-rule bg-paper px-2 py-1 text-sm font-medium text-accent-deep">
                 {submissions.length} pending
               </span>
             )}
@@ -295,21 +297,21 @@ const SubmissionReviewInterface = () => {
         </div>
 
         {showSuccessMessage && (
-          <div className="mb-4 rounded-md border border-green-200 bg-green-50 p-4">
+          <div className="mb-4 rounded-md border border-emerald-300 bg-emerald-50 p-4">
             <div className="flex items-center space-x-2">
-              <HiCheckCircle className="h-5 w-5 text-green-600" />
-              <span className="text-green-800">{showSuccessMessage}</span>
+              <HiCheckCircle className="h-5 w-5 text-emerald-700" />
+              <span className="text-emerald-800">{showSuccessMessage}</span>
             </div>
           </div>
         )}
 
         {submissions.length === 0 ? (
           <div className="py-8 text-center">
-            <IoPersonOutline className="mx-auto mb-4 h-12 w-12 text-gray-400" />
-            <h3 className="mb-2 text-lg font-medium text-gray-900">
+            <IoPersonOutline className="mx-auto mb-4 h-12 w-12 text-ink-muted" />
+            <h3 className="mb-2 font-display text-lg font-semibold text-ink">
               No pending submissions
             </h3>
-            <p className="text-gray-500">
+            <p className="text-ink-soft">
               When people submit birthdays through your sharing links,
               they&apos;ll appear here for review.
             </p>
@@ -317,7 +319,7 @@ const SubmissionReviewInterface = () => {
         ) : (
           <>
             {/* Bulk Actions */}
-            <div className="mb-4 flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4">
+            <div className="mb-4 flex items-center justify-between rounded-lg border border-rule bg-paper p-4">
               <div className="flex items-center space-x-4">
                 <label className="flex items-center space-x-2">
                   <input
@@ -327,14 +329,14 @@ const SubmissionReviewInterface = () => {
                       submissions.length > 0
                     }
                     onChange={toggleAllSubmissions}
-                    className="h-4 w-4 rounded border-gray-300 text-cyan-600 focus:ring-cyan-500"
+                    className="h-4 w-4 rounded border-rule text-accent focus:ring-accent/40"
                   />
-                  <span className="text-sm font-medium text-gray-700">
+                  <span className="text-sm font-medium text-ink">
                     Select all ({submissions.length})
                   </span>
                 </label>
                 {selectedSubmissions.size > 0 && (
-                  <span className="text-sm text-gray-500">
+                  <span className="text-sm text-ink-soft">
                     {selectedSubmissions.size} selected
                   </span>
                 )}
@@ -347,12 +349,12 @@ const SubmissionReviewInterface = () => {
                     className={clsx(
                       "flex items-center space-x-1 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                       processingSubmissions.size > 0
-                        ? "bg-gray-100 text-gray-400"
-                        : "bg-green-100 text-green-800 hover:bg-green-200",
+                        ? "bg-paper-deep text-ink-muted"
+                        : "bg-emerald-100 text-emerald-800 hover:bg-emerald-200",
                     )}
                   >
                     <HiCheck className="h-4 w-4" />
-                    <span>Import Selected</span>
+                    <span>Import selected</span>
                   </button>
                   <button
                     onClick={handleBulkReject}
@@ -360,12 +362,12 @@ const SubmissionReviewInterface = () => {
                     className={clsx(
                       "flex items-center space-x-1 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                       processingSubmissions.size > 0
-                        ? "bg-gray-100 text-gray-400"
-                        : "bg-red-100 text-red-800 hover:bg-red-200",
+                        ? "bg-paper-deep text-ink-muted"
+                        : "bg-rose-100 text-rose-800 hover:bg-rose-200",
                     )}
                   >
                     <HiX className="h-4 w-4" />
-                    <span>Reject Selected</span>
+                    <span>Reject selected</span>
                   </button>
                 </div>
               )}
@@ -384,10 +386,11 @@ const SubmissionReviewInterface = () => {
                     key={submission.id}
                     className={clsx(
                       "rounded-lg border p-4 transition-colors",
-                      isSelected
-                        ? "border-cyan-300 bg-cyan-50"
-                        : "border-gray-200 bg-white hover:bg-gray-50",
-                      hasDuplicates && "border-l-4 border-l-yellow-400",
+                      hasDuplicates
+                        ? "border-amber-300 bg-amber-50"
+                        : isSelected
+                          ? "border-accent bg-paper"
+                          : "border-rule bg-paper hover:bg-paper-deep",
                     )}
                   >
                     <div className="flex items-start justify-between">
@@ -398,44 +401,42 @@ const SubmissionReviewInterface = () => {
                           onChange={() =>
                             toggleSubmissionSelection(submission.id)
                           }
-                          className="mt-1 h-4 w-4 rounded border-gray-300 text-cyan-600 focus:ring-cyan-500"
+                          className="mt-1 h-4 w-4 rounded border-rule text-accent focus:ring-accent/40"
                         />
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center space-x-2">
-                            <h4 className="text-lg font-medium text-gray-900">
+                            <h4 className="text-lg font-medium text-ink">
                               {submission.name}
                             </h4>
                             {hasDuplicates && (
-                              <HiExclamationCircle className="h-5 w-5 text-yellow-500" />
+                              <HiExclamationCircle className="h-5 w-5 text-amber-600" />
                             )}
                           </div>
-                          <div className="mt-1 flex items-center space-x-4 text-sm text-gray-600">
+                          <div className="mt-1 flex items-center space-x-4 text-sm text-ink-soft">
                             <div className="flex items-center space-x-1">
                               <IoCalendarOutline className="h-4 w-4" />
-                              <span>
-                                {formatSubmissionDate(submission)}
-                              </span>
+                              <span>{formatSubmissionDate(submission)}</span>
                             </div>
                             {submission.category && (
-                              <span className="rounded-full bg-gray-100 px-2 py-1 text-xs">
+                              <span className="rounded-full border border-rule bg-paper px-2 py-1 text-xs text-ink">
                                 {submission.category}
                               </span>
                             )}
                           </div>
                           {submission.submitterName && (
-                            <div className="mt-1 text-sm text-gray-500">
+                            <div className="mt-1 text-sm text-ink-soft">
                               Submitted by {submission.submitterName}
                               {submission.relationship &&
                                 ` (${submission.relationship})`}
                             </div>
                           )}
                           {submission.sharingLink.description && (
-                            <div className="mt-1 text-sm text-gray-500">
+                            <div className="mt-1 text-sm text-ink-soft">
                               via &quot;{submission.sharingLink.description}
                               &quot;
                             </div>
                           )}
-                          <div className="mt-1 text-xs text-gray-400">
+                          <div className="mt-1 text-xs text-ink-muted">
                             {format(
                               new Date(submission.createdAt),
                               "MMM d, yyyy 'at' h:mm a",
@@ -444,14 +445,14 @@ const SubmissionReviewInterface = () => {
 
                           {/* Duplicate Warning */}
                           {hasDuplicates && (
-                            <div className="mt-2 rounded-md bg-yellow-50 p-3">
+                            <div className="mt-2 rounded-md border border-amber-200 bg-amber-50 p-3">
                               <div className="flex items-start space-x-2">
-                                <HiExclamationCircle className="mt-0.5 h-4 w-4 text-yellow-600" />
+                                <HiExclamationCircle className="mt-0.5 h-4 w-4 text-amber-700" />
                                 <div className="text-sm">
-                                  <p className="font-medium text-yellow-800">
+                                  <p className="font-medium text-amber-900">
                                     Potential duplicate detected
                                   </p>
-                                  <p className="mt-1 text-yellow-700">
+                                  <p className="mt-1 text-amber-800">
                                     Similar birthdays already exist in your
                                     list:
                                   </p>
@@ -459,9 +460,9 @@ const SubmissionReviewInterface = () => {
                                     {submission.duplicates.map((duplicate) => (
                                       <li
                                         key={duplicate.id}
-                                        className="text-yellow-700"
+                                        className="text-amber-800"
                                       >
-                                        • {duplicate.name} -{" "}
+                                        • {duplicate.name},{" "}
                                         {formatSubmissionDate(duplicate)}
                                         {duplicate.category &&
                                           ` (${duplicate.category})`}
@@ -475,23 +476,23 @@ const SubmissionReviewInterface = () => {
 
                           {/* Expanded Details */}
                           {isExpanded && (
-                            <div className="mt-3 space-y-2 rounded-md bg-gray-50 p-3">
+                            <div className="mt-3 space-y-2 rounded-md bg-paper-deep p-3">
                               {submission.notes && (
                                 <div>
-                                  <span className="text-sm font-medium text-gray-700">
+                                  <span className="text-sm font-medium text-ink">
                                     Notes:
                                   </span>
-                                  <p className="mt-1 text-sm text-gray-600">
+                                  <p className="mt-1 text-sm text-ink-soft">
                                     {submission.notes}
                                   </p>
                                 </div>
                               )}
                               {submission.submitterEmail && (
                                 <div>
-                                  <span className="text-sm font-medium text-gray-700">
+                                  <span className="text-sm font-medium text-ink">
                                     Email:
                                   </span>
-                                  <p className="mt-1 text-sm text-gray-600">
+                                  <p className="mt-1 text-sm text-ink-soft">
                                     {submission.submitterEmail}
                                   </p>
                                 </div>
@@ -508,7 +509,7 @@ const SubmissionReviewInterface = () => {
                             onClick={() =>
                               toggleSubmissionExpansion(submission.id)
                             }
-                            className="rounded-md bg-gray-100 p-2 text-gray-600 hover:bg-gray-200"
+                            className="rounded-md border border-rule bg-paper p-2 text-ink-soft transition hover:bg-paper-deep hover:text-ink"
                             title={isExpanded ? "Show less" : "Show more"}
                           >
                             <HiInformationCircle className="h-4 w-4" />
@@ -520,8 +521,8 @@ const SubmissionReviewInterface = () => {
                           className={clsx(
                             "flex items-center space-x-1 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                             isProcessing
-                              ? "bg-gray-100 text-gray-400"
-                              : "bg-green-100 text-green-800 hover:bg-green-200",
+                              ? "bg-paper-deep text-ink-muted"
+                              : "bg-emerald-100 text-emerald-800 hover:bg-emerald-200",
                           )}
                         >
                           {isProcessing ? (
@@ -537,8 +538,8 @@ const SubmissionReviewInterface = () => {
                           className={clsx(
                             "flex items-center space-x-1 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                             isProcessing
-                              ? "bg-gray-100 text-gray-400"
-                              : "bg-red-100 text-red-800 hover:bg-red-200",
+                              ? "bg-paper-deep text-ink-muted"
+                              : "bg-rose-100 text-rose-800 hover:bg-rose-200",
                           )}
                         >
                           {isProcessing ? (
@@ -557,7 +558,7 @@ const SubmissionReviewInterface = () => {
           </>
         )}
 
-        <div className="mt-6 text-sm text-gray-500">
+        <div className="mt-6 text-sm text-ink-soft">
           <p>
             Review birthday submissions from your sharing links. Import the ones
             you want to add to your birthday list, or reject those you
