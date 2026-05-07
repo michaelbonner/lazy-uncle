@@ -388,7 +388,7 @@ To stop receiving these emails, unsubscribe here: ${unsubscribeUrl}`;
   /**
    * Send email using Resend or SMTP depending on environment
    */
-  private async sendEmail(options: {
+  async sendEmail(options: {
     to: string;
     subject: string;
     html: string;

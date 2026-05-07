@@ -1,7 +1,76 @@
 import { authClient } from "../lib/auth-client";
 import clsx from "clsx";
+import { useState } from "react";
 import { toast } from "react-hot-toast";
-import { GrGithub, GrGoogle } from "react-icons/gr";
+import { GrGithub, GrGoogle, GrMail } from "react-icons/gr";
+
+const MagicLinkForm = ({ idPrefix }: { idPrefix: string }) => {
+  const [email, setEmail] = useState("");
+  const [isSending, setIsSending] = useState(false);
+
+  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const trimmed = email.trim();
+    if (!trimmed) return;
+
+    setIsSending(true);
+    const { error } = await authClient.signIn.magicLink({
+      email: trimmed,
+      callbackURL: "/birthdays",
+    });
+    setIsSending(false);
+
+    if (error) {
+      console.error(error);
+      toast.error("Could not send sign-in link. Please try again.");
+      return;
+    }
+
+    toast.success("Check your inbox for a sign-in link.");
+    setEmail("");
+  };
+
+  const inputId = `${idPrefix}-magic-link-email`;
+
+  return (
+    <form
+      onSubmit={onSubmit}
+      className="flex w-full flex-col gap-2 sm:flex-row sm:items-center"
+    >
+      <label htmlFor={inputId} className="sr-only">
+        Email address
+      </label>
+      <input
+        id={inputId}
+        type="email"
+        required
+        autoComplete="email"
+        value={email}
+        onChange={(event) => setEmail(event.target.value)}
+        placeholder="you@example.com"
+        className={clsx(
+          "w-full flex-1 rounded-md border border-white/10 bg-white/10 px-4 py-3",
+          "text-sm text-white placeholder:text-cyan-100/50",
+          "focus:outline-hidden focus:ring-2 focus:ring-cyan-200/80",
+        )}
+      />
+      <button
+        type="submit"
+        disabled={isSending}
+        className={clsx(
+          "inline-flex w-full items-center justify-center space-x-2 rounded-md border border-cyan-200/30 px-6 py-3 font-medium shadow-xs transition",
+          "bg-cyan-500/20 text-white hover:bg-cyan-500/30",
+          "focus:outline-hidden focus:ring-2 focus:ring-cyan-200/80",
+          "disabled:cursor-not-allowed disabled:opacity-60",
+          "sm:w-auto",
+        )}
+      >
+        <GrMail className="h-5 w-5" />
+        <span>{isSending ? "Sending…" : "Email me a link"}</span>
+      </button>
+    </form>
+  );
+};
 
 const features = [
   {
@@ -141,6 +210,12 @@ const Welcome = () => {
                       );
                     })}
                 </div>
+                <div className="flex items-center gap-3 text-xs uppercase tracking-[0.3em] text-cyan-100/60">
+                  <span className="h-px flex-1 bg-white/10" />
+                  <span>or</span>
+                  <span className="h-px flex-1 bg-white/10" />
+                </div>
+                <MagicLinkForm idPrefix="hero" />
                 <span className="text-sm text-cyan-50/70">
                   No credit card. Your list starts instantly.
                 </span>
@@ -314,6 +389,14 @@ const Welcome = () => {
                   </button>
                 );
               })}
+          </div>
+          <div className="mx-auto mt-6 flex w-full max-w-md flex-col gap-3">
+            <div className="flex items-center gap-3 text-xs uppercase tracking-[0.3em] text-cyan-100/60">
+              <span className="h-px flex-1 bg-white/10" />
+              <span>or</span>
+              <span className="h-px flex-1 bg-white/10" />
+            </div>
+            <MagicLinkForm idPrefix="footer" />
           </div>
           <p className="mt-4 text-xs uppercase tracking-[0.3em] text-cyan-200/80">
             Free forever. No hidden upgrades.
