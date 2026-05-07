@@ -32,11 +32,11 @@ const EditBirthdayDialog = ({
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-cyan-600/25" />
+            <div className="fixed inset-0 bg-ink/30" />
           </TransitionChild>
 
           <div className="fixed inset-0 overflow-y-auto">
-            <div className="flex min-h-full items-center justify-center p-4 text-center text-gray-800">
+            <div className="flex min-h-full items-center justify-center p-4 text-left text-ink">
               <TransitionChild
                 as={Fragment}
                 enter="ease-out duration-300"
@@ -46,20 +46,21 @@ const EditBirthdayDialog = ({
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <DialogPanel className="w-full max-w-5xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all xl:px-12 xl:py-8">
+                <DialogPanel className="w-full max-w-5xl transform overflow-hidden rounded-2xl border border-rule bg-paper p-6 align-middle shadow-[0_24px_60px_-24px_oklch(0.22_0.018_60_/_0.35)] transition-all xl:px-12 xl:py-8">
                   <div className="flex items-center justify-between">
                     <DialogTitle
                       as="h3"
-                      className="text-lg leading-6 font-medium text-gray-900 xl:text-xl"
+                      className="font-display text-xl font-semibold leading-tight text-ink xl:text-2xl"
                     >
                       Edit {birthday.name}
                     </DialogTitle>
                     <button
-                      className="cursor-pointer"
+                      className="cursor-pointer rounded-md p-1 text-ink-soft transition hover:bg-paper-deep hover:text-ink focus:outline-hidden focus:ring-2 focus:ring-accent/30"
                       onClick={handleClose}
                       type="button"
+                      aria-label="Close"
                     >
-                      <HiX className="h-8 w-8 p-1" />
+                      <HiX className="h-6 w-6" />
                     </button>
                   </div>
                   <EditBirthdayForm
