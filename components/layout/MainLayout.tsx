@@ -103,9 +103,6 @@ const MainLayout = ({
         </Link>
         {session?.user && (
           <div className="items-center text-right text-sm text-ink-soft md:flex md:space-x-4">
-            <p className="hidden md:block">
-              Logged in as {session?.user?.email}
-            </p>
             <button
               className="underline underline-offset-4 transition hover:text-ink"
               onClick={async () => {
