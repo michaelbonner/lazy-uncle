@@ -86,7 +86,7 @@ const MainLayout = ({
         />
       </Head>
 
-      <header className="flex items-center justify-between px-6 pt-8 md:px-12 md:pt-10">
+      <header className="flex items-center justify-between gap-4 px-6 pt-8 md:px-12 md:pt-10">
         <Link
           href="/"
           aria-label="Lazy Uncle home"
@@ -101,8 +101,23 @@ const MainLayout = ({
             width={130}
           />
         </Link>
-        {session?.user && (
-          <div className="items-center text-right text-sm text-ink-soft md:flex md:space-x-4">
+        <nav
+          aria-label="Primary"
+          className="flex items-center gap-5 text-sm text-ink-soft sm:gap-6"
+        >
+          <Link
+            href="/features"
+            className="underline-offset-4 transition hover:text-ink hover:underline"
+          >
+            Features
+          </Link>
+          <Link
+            href="/how-it-works"
+            className="hidden underline-offset-4 transition hover:text-ink hover:underline sm:inline"
+          >
+            How it works
+          </Link>
+          {session?.user && (
             <button
               className="underline underline-offset-4 transition hover:text-ink"
               onClick={async () => {
@@ -118,8 +133,8 @@ const MainLayout = ({
             >
               Sign out
             </button>
-          </div>
-        )}
+          )}
+        </nav>
       </header>
       <Script
         async
@@ -146,6 +161,18 @@ const MainLayout = ({
           </a>
         </div>
         <div className="mt-4 flex flex-wrap justify-center space-x-6 md:mt-0">
+          <Link
+            href="/features"
+            className="pt-4 underline underline-offset-4 transition hover:text-ink md:pt-0"
+          >
+            Features
+          </Link>
+          <Link
+            href="/how-it-works"
+            className="pt-4 underline underline-offset-4 transition hover:text-ink md:pt-0"
+          >
+            How it works
+          </Link>
           <a
             className="pt-4 underline underline-offset-4 transition hover:text-ink md:pt-0"
             href="https://github.com/sponsors/michaelbonner?o=esb"
