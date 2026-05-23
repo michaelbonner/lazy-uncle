@@ -29,11 +29,8 @@
     "@paralleldrive/cuid2": "^3.3.0",
     "@react-email/render": "^2.0.8",
     "@tailwindcss/forms": "^0.5.11",
-    "@testing-library/react": "^16.3.2",
     "@tiptap/react": "^3.23.6",
     "@tiptap/starter-kit": "^3.23.6",
-    "@trivago/prettier-plugin-sort-imports": "^6.0.2",
-    "@types/nodemailer": "^8.0.0",
     "better-auth": "^1.6.11",
     "clsx": "^2.1.1",
     "csv-parse": "^6.2.1",
@@ -55,8 +52,7 @@
     "react-gtm-module": "^2.0.11",
     "react-hot-toast": "^2.6.0",
     "react-icons": "^5.6.0",
-    "resend": "^6.12.3",
-    "rxjs": "^7.8.2"
+    "resend": "^6.12.3"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -64,6 +60,9 @@
     "@tailwindcss/postcss": "^4.3.0",
     "@tailwindcss/typography": "^0.5.19",
     "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@trivago/prettier-plugin-sort-imports": "^6.0.2",
+    "@types/nodemailer": "^8.0.0",
     "@types/pg": "^8.20.0",
     "@types/pluralize": "^0.0.33",
     "@types/react": "^19.2.15",
