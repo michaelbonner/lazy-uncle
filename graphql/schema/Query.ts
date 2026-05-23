@@ -85,6 +85,8 @@ export const Query = queryType({
         birthdayId: nonNull(stringArg()),
       },
       resolve: async (_, args, ctx) => {
+        if (!ctx.user?.id) throw new Error("Unauthorized");
+
         const birthday = await ctx.db.query.birthdays.findFirst({
           where: eq(birthdays.id, args.birthdayId),
         });
@@ -105,11 +107,9 @@ export const Query = queryType({
     t.list.field("birthdays", {
       type: "Birthday",
       resolve: async (_, args, ctx) => {
+        if (!ctx.user?.id) throw new Error("Unauthorized");
         return ctx.db.query.birthdays.findMany({
-          where: eq(
-            birthdays.userId,
-            ctx.user.id || "6207fdc99b6c9796ff8e7d01",
-          ),
+          where: eq(birthdays.userId, ctx.user.id),
         });
       },
     });

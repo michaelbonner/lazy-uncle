@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { NexusGenObjects } from "../generated/nexus-typegen";
 import { auth } from "../lib/auth";
 import db from "../lib/db";
@@ -14,17 +13,27 @@ export type Context = {
   req?: RequestLike;
 };
 
+function toFetchHeaders(req?: RequestLike): Headers {
+  const headers = new Headers();
+  if (!req?.headers) return headers;
+  for (const [key, value] of Object.entries(req.headers)) {
+    if (Array.isArray(value)) {
+      for (const v of value) headers.append(key, v);
+    } else if (typeof value === "string") {
+      headers.set(key, value);
+    }
+  }
+  return headers;
+}
+
 export async function createContext(req?: RequestLike): Promise<Context> {
   const session = await auth.api.getSession({
-    headers: new Headers({
-      cookie: (await cookies()).toString(),
-    }),
+    headers: toFetchHeaders(req),
   });
-  if (!session) return { db, req };
-  // if the user is not logged in, omit returning the user
-  if (!session) return { db, user: {}, req };
 
-  const user = session?.user as NexusGenObjects["User"];
+  if (!session) return { db, req };
+
+  const user = session.user as NexusGenObjects["User"];
 
   return {
     user,
