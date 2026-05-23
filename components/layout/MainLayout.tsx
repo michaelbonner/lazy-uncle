@@ -60,10 +60,7 @@ const MainLayout = ({
         />
 
         {/* PWA */}
-        <link
-          rel="manifest"
-          href="https://www.lazyuncle.net/site.webmanifest"
-        />
+        <link rel="manifest" href="/site.webmanifest" />
         <meta name="theme-color" content="#0891b2" />
         <meta name="msapplication-TileColor" content="#0891b2" />
 
