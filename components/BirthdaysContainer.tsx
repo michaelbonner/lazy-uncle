@@ -217,14 +217,9 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
   ]);
 
   // Memoize datalist option arrays so they aren't rebuilt (and re-sorted
-  // inside <BirthdayFilterField>) on every render.
-  const nameOptions = useMemo(
-    () =>
-      Array.from(
-        new Set(workingDates.map((b) => b.name || "")),
-      ).sort(),
-    [workingDates],
-  );
+  // inside <BirthdayFilterField>) on every render. The name field intentionally
+  // omits its datalist — on iOS Safari, a datalist with hundreds of names
+  // re-filters on every keystroke and makes typing noticeably laggy.
   const categoryOptions = useMemo(
     () =>
       Array.from(
@@ -423,7 +418,6 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                       label="Name"
                       value={nameFilter}
                       setValue={setNameFilter}
-                      datalistOptions={nameOptions}
                     />
                   </div>
                   <div className="flex md:hidden">
