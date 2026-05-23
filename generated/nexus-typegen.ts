@@ -109,6 +109,7 @@ export interface NexusGenObjects {
   }
   Query: {};
   SharingLink: { // root type
+    category?: string | null; // String
     createdAt?: NexusGenScalars['DateTime'] | null; // DateTime
     description?: string | null; // String
     expiresAt?: NexusGenScalars['DateTime'] | null; // DateTime
@@ -239,6 +240,7 @@ export interface NexusGenFieldTypes {
     validateSharingLink: NexusGenRootTypes['SharingLinkValidation'] | null; // SharingLinkValidation
   }
   SharingLink: { // field return type
+    category: string | null; // String
     createdAt: NexusGenScalars['DateTime'] | null; // DateTime
     description: string | null; // String
     expiresAt: NexusGenScalars['DateTime'] | null; // DateTime
@@ -362,6 +364,7 @@ export interface NexusGenFieldTypeNames {
     validateSharingLink: 'SharingLinkValidation'
   }
   SharingLink: { // field return type name
+    category: 'String'
     createdAt: 'DateTime'
     description: 'String'
     expiresAt: 'DateTime'
@@ -413,6 +416,7 @@ export interface NexusGenArgTypes {
       year?: number | null; // Int
     }
     createSharingLink: { // args
+      category?: string | null; // String
       description?: string | null; // String
       expirationHours?: number | null; // Int
     }
@@ -444,7 +448,6 @@ export interface NexusGenArgTypes {
       linkId: string; // String!
     }
     submitBirthday: { // args
-      category?: string | null; // String
       day: number; // Int!
       month: number; // Int!
       name: string; // String!

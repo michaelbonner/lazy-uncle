@@ -1,0 +1,1 @@
+ALTER TABLE "SharingLink" ADD COLUMN "category" text;

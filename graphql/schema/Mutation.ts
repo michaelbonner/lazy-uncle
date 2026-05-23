@@ -199,9 +199,10 @@ export const Mutation = extendType({
       type: "SharingLink",
       args: {
         description: stringArg(),
+        category: stringArg(),
         expirationHours: intArg(),
       },
-      resolve: async (_, { description, expirationHours }, ctx) => {
+      resolve: async (_, { description, category, expirationHours }, ctx) => {
         const { SharingService } = await import("../../lib/sharing-service");
         const { SecurityMiddleware } =
           await import("../../lib/security-middleware");
@@ -232,6 +233,7 @@ export const Mutation = extendType({
           userId: ctx.user.id,
           expirationHours: expirationHours || undefined,
           description: description || undefined,
+          category: category || undefined,
         });
       },
     });
@@ -264,7 +266,6 @@ export const Mutation = extendType({
         year: intArg(),
         month: nonNull(intArg()),
         day: nonNull(intArg()),
-        category: stringArg(),
         notes: stringArg(),
         submitterName: stringArg(),
         submitterEmail: stringArg(),
@@ -310,7 +311,6 @@ export const Mutation = extendType({
           year: args.year ?? null,
           month: args.month,
           day: args.day,
-          category: args.category || undefined,
           notes: args.notes || undefined,
           submitterName: args.submitterName || undefined,
           submitterEmail: args.submitterEmail || undefined,
@@ -505,7 +505,6 @@ export const Mutation = extendType({
           year: submission.year ?? null,
           month: submission.month,
           day: submission.day,
-          category: submission.category || undefined,
           notes: submission.notes || undefined,
           submitterName: submission.submitterName || undefined,
           submitterEmail: submission.submitterEmail || undefined,

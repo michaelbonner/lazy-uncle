@@ -192,6 +192,7 @@ describe("Birthday Submission API", () => {
         expiresAt: new Date(Date.now() + 1000000),
         isActive: true,
         description: null,
+        category: null,
       });
       mockDb.query.birthdaySubmissions.findMany.mockResolvedValue([
         {
@@ -235,6 +236,7 @@ describe("Birthday Submission API", () => {
         expiresAt: new Date(Date.now() + 1000000),
         isActive: true,
         description: null,
+        category: null,
       });
       mockDb.query.birthdaySubmissions.findMany
         .mockResolvedValueOnce([]) // No duplicates
@@ -264,12 +266,13 @@ describe("Birthday Submission API", () => {
         userId: "user-1",
         createdAt: new Date(),
         description: null,
+        category: null,
       };
 
       mockDb.query.sharingLinks.findFirst.mockResolvedValue({
         ...mockLink,
         user: { id: "user-1" },
-      });
+      } as never);
 
       const result = await SharingService.validateSharingLink("valid-token");
 
@@ -288,6 +291,7 @@ describe("Birthday Submission API", () => {
         userId: "user-1",
         createdAt: new Date(),
         description: null,
+        category: null,
       };
 
       mockDb.query.sharingLinks.findFirst.mockResolvedValue({
@@ -311,6 +315,7 @@ describe("Birthday Submission API", () => {
         userId: "user-1",
         createdAt: new Date(),
         description: null,
+        category: null,
       };
 
       mockDb.query.sharingLinks.findFirst.mockResolvedValue({
@@ -341,6 +346,7 @@ describe("Birthday Submission API", () => {
         userId: "user-1",
         createdAt: new Date(),
         description: null,
+        category: null,
       };
 
       const mockSubmission = {
@@ -378,6 +384,7 @@ describe("Birthday Submission API", () => {
         userId: "user-1",
         createdAt: new Date(),
         description: null,
+        category: null,
       };
 
       mockDb.query.sharingLinks.findFirst.mockResolvedValue({

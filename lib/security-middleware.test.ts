@@ -125,7 +125,7 @@ describe("SecurityMiddleware", () => {
         dailyLinksCount: 1,
       });
 
-      mockDb.query.sharingLinks.findMany.mockResolvedValue([{ id: "link" }]);
+      mockDb.query.sharingLinks.findMany.mockResolvedValue([{ id: "link" }] as never);
 
       const result =
         await SecurityMiddleware.checkSharingLinkRateLimit(mockContext);
@@ -582,7 +582,7 @@ describe("SecurityMiddleware", () => {
         dailyLinksCount: 1,
       });
 
-      mockDb.query.sharingLinks.findMany.mockResolvedValue([{ id: "link" }]);
+      mockDb.query.sharingLinks.findMany.mockResolvedValue([{ id: "link" }] as never);
 
       // Mock console.log to throw an error
       vi.mocked(console.log).mockImplementation(() => {

@@ -1,9 +1,14 @@
 import { gql } from "@apollo/client";
 
 export const CREATE_SHARING_LINK_MUTATION = gql`
-  mutation CreateSharingLink($description: String, $expirationHours: Int) {
+  mutation CreateSharingLink(
+    $description: String
+    $category: String
+    $expirationHours: Int
+  ) {
     createSharingLink(
       description: $description
+      category: $category
       expirationHours: $expirationHours
     ) {
       id
@@ -12,6 +17,7 @@ export const CREATE_SHARING_LINK_MUTATION = gql`
       expiresAt
       isActive
       description
+      category
       submissionCount
       __typename
     }
@@ -36,7 +42,6 @@ export const SUBMIT_BIRTHDAY_MUTATION = gql`
     $year: Int
     $month: Int!
     $day: Int!
-    $category: String
     $notes: String
     $submitterName: String
     $submitterEmail: String
@@ -48,7 +53,6 @@ export const SUBMIT_BIRTHDAY_MUTATION = gql`
       year: $year
       month: $month
       day: $day
-      category: $category
       notes: $notes
       submitterName: $submitterName
       submitterEmail: $submitterEmail
@@ -81,6 +85,7 @@ export const GET_SHARING_LINKS_QUERY = gql`
       expiresAt
       isActive
       description
+      category
       submissionCount
       __typename
     }

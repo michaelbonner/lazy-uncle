@@ -899,8 +899,8 @@ describe("Submission Management GraphQL Operations", () => {
         {
           ...mockSubmission,
           sharingLink: {
-            id: "link-1",
             description: null,
+            createdAt: new Date(),
           },
         },
       ]);
@@ -971,8 +971,8 @@ describe("Submission Management GraphQL Operations", () => {
         {
           ...mockSubmission,
           sharingLink: {
-            id: "link-1",
             description: null,
+            createdAt: new Date(),
           },
         },
       ]);
