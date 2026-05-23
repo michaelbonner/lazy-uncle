@@ -99,7 +99,7 @@ const SharingSettingsPanel = () => {
     preferencesData?.notificationPreferences || null;
 
   return (
-    <div className="mt-8 rounded-lg border border-rule bg-paper-deep text-ink">
+    <div className="js-settings-panel mt-8 rounded-lg border border-rule bg-paper-deep text-ink">
       <div className="px-4 py-8 md:px-8 md:py-10">
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center space-x-3">

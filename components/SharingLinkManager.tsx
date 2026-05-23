@@ -151,7 +151,7 @@ const SharingLinkManager = () => {
           </div>
           <button
             className={clsx(
-              "flex items-center space-x-2 rounded-md border border-transparent bg-accent px-4 py-2 font-medium text-white transition",
+              "js-create-sharing-link flex items-center space-x-2 rounded-md border border-transparent bg-accent px-4 py-2 font-medium text-white transition",
               "hover:bg-accent-deep",
               "focus:outline-hidden focus:ring-2 focus:ring-accent/40 focus:ring-offset-2 focus:ring-offset-paper-deep",
             )}
