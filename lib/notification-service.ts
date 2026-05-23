@@ -42,15 +42,7 @@ export class NotificationService {
 
   constructor() {
     const key = process.env.RESEND_API_KEY;
-    if (!key) {
-      if (process.env.NODE_ENV === "production") {
-        throw new Error("RESEND_API_KEY is required in production");
-      }
-      console.warn("RESEND_API_KEY not set; emails will be logged only.");
-      this.resend = null;
-    } else {
-      this.resend = new Resend(key);
-    }
+    this.resend = key ? new Resend(key) : null;
   }
 
   /**
@@ -414,6 +406,11 @@ To stop receiving these emails, unsubscribe here: ${unsubscribeUrl}`;
       }
 
       if (!this.resend) {
+        if (process.env.NODE_ENV === "production") {
+          throw new Error(
+            "RESEND_API_KEY (or SMTP_HOST) is required to send email in production",
+          );
+        }
         console.warn("Resend client not initialized; skipping email send.");
         return;
       }
