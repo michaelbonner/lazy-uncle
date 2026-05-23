@@ -72,11 +72,11 @@ const SharingPage = ({ token }: SharingPageProps) => {
   if (error || !validation) {
     return (
       <PublicLayout title="Error | Lazy Uncle">
-        <div className="mx-auto max-w-2xl text-center">
+        <div className="mx-auto max-w-2xl rounded-lg border border-rule bg-paper p-8 text-center text-ink shadow-sm">
           <div className="mb-6">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-rose-100">
               <svg
-                className="h-8 w-8 text-red-600"
+                className="h-8 w-8 text-rose-700"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -90,16 +90,16 @@ const SharingPage = ({ token }: SharingPageProps) => {
               </svg>
             </div>
           </div>
-          <h1 className="mb-4 text-2xl font-bold text-gray-900">
+          <h1 className="mb-4 font-display text-2xl font-semibold text-ink">
             Something went wrong
           </h1>
-          <p className="mb-6 text-gray-700">
+          <p className="mb-6 text-ink">
             We encountered an error while loading this sharing link. Please try
             again or contact the person who shared this link with you.
           </p>
           <button
             onClick={handleClose}
-            className="inline-flex items-center rounded-md bg-cyan-600 px-4 py-2 text-sm font-medium text-white hover:bg-cyan-700 focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:outline-none"
+            className="inline-flex items-center rounded-md bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent-deep focus:outline-hidden focus:ring-2 focus:ring-accent/40 focus:ring-offset-2"
           >
             Go to Lazy Uncle
           </button>
@@ -137,11 +137,11 @@ const SharingPage = ({ token }: SharingPageProps) => {
 
     return (
       <PublicLayout title={`${getErrorTitle()} | Lazy Uncle`}>
-        <div className="mx-auto max-w-2xl text-center">
+        <div className="mx-auto max-w-2xl rounded-lg border border-rule bg-paper p-8 text-center text-ink shadow-sm">
           <div className="mb-6">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-yellow-100">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-amber-100">
               <svg
-                className="h-8 w-8 text-yellow-600"
+                className="h-8 w-8 text-amber-700"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -155,23 +155,23 @@ const SharingPage = ({ token }: SharingPageProps) => {
               </svg>
             </div>
           </div>
-          <h1 className="mb-4 text-2xl font-bold text-gray-900">
+          <h1 className="mb-4 font-display text-2xl font-semibold text-ink">
             {getErrorTitle()}
           </h1>
-          <p className="mb-6 text-gray-600">{getErrorDescription()}</p>
+          <p className="mb-6 text-ink">{getErrorDescription()}</p>
           <div className="space-y-4">
             <button
               onClick={handleClose}
-              className="inline-flex items-center rounded-md bg-cyan-600 px-4 py-2 text-sm font-medium text-white hover:bg-cyan-700 focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:outline-none"
+              className="inline-flex items-center rounded-md bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent-deep focus:outline-hidden focus:ring-2 focus:ring-accent/40 focus:ring-offset-2"
             >
               Go to Lazy Uncle
             </button>
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-ink-soft">
               <p>
                 Want to create your own birthday list?{" "}
                 <Link
                   href="/"
-                  className="font-medium text-cyan-600 hover:text-cyan-500"
+                  className="font-medium text-accent-deep underline underline-offset-4 hover:text-accent"
                 >
                   Sign up for free
                 </Link>
@@ -196,31 +196,32 @@ const SharingPage = ({ token }: SharingPageProps) => {
         sharingLink.ownerName || "someone"
       } keep track of important birthdays by adding birthday information.`}
     >
-      <div className="mx-auto max-w-4xl">
-        {/* Header Section */}
+      <div className="mx-auto max-w-6xl">
         <div className="mb-8 text-center">
-          <h1 className="mb-2 text-3xl font-bold text-white">
-            Add a Birthday
+          <h1 className="mb-2 font-display text-3xl font-semibold text-ink">
+            Add a birthday
             {sharingLink.ownerName && (
-              <span className="block text-2xl font-normal text-white">
+              <span className="block text-2xl font-normal text-ink-soft">
                 for {sharingLink.ownerName}
               </span>
             )}
           </h1>
           {sharingLink.description && (
-            <p className="mb-4 text-lg white">{sharingLink.description}</p>
+            <p className="mb-4 text-lg text-ink-soft">
+              {sharingLink.description}
+            </p>
           )}
-          <p className="text-white max-w-2xl mx-auto">
+          <p className="mx-auto max-w-2xl text-ink">
             Help keep track of important birthdays by adding the details below.
             Your submission will be reviewed before being added to the birthday
             list.
           </p>
           {isExpiringSoon && (
-            <div className="mt-4 rounded-md bg-yellow-50 p-4">
+            <div className="mt-4 rounded-md border border-amber-200 bg-amber-50 p-4 text-left">
               <div className="flex">
                 <div className="shrink-0">
                   <svg
-                    className="h-5 w-5 text-yellow-400"
+                    className="h-5 w-5 text-amber-600"
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
@@ -232,7 +233,7 @@ const SharingPage = ({ token }: SharingPageProps) => {
                   </svg>
                 </div>
                 <div className="ml-3">
-                  <p className="text-sm text-yellow-800">
+                  <p className="text-sm text-amber-900">
                     This sharing link expires on{" "}
                     {expiresAt.toLocaleDateString(undefined, {
                       weekday: "long",
@@ -250,8 +251,7 @@ const SharingPage = ({ token }: SharingPageProps) => {
           )}
         </div>
 
-        {/* Form Section */}
-        <div className="rounded-lg bg-white p-8 lg:py-12 shadow-sm ring-1 ring-gray-200">
+        <div className="rounded-lg border border-rule bg-paper p-4 shadow-sm md:p-6 lg:p-8">
           <BirthdaySubmissionForm
             token={token}
             onSuccess={() => {}}
@@ -259,18 +259,23 @@ const SharingPage = ({ token }: SharingPageProps) => {
           />
         </div>
 
-        {/* Info Section */}
-        <div className="mt-8 text-center text-sm text-white">
+        <div className="mt-8 text-center text-sm text-ink-soft">
           <p>
             Powered by{" "}
-            <Link href="/" className="font-medium">
+            <Link
+              href="/"
+              className="font-medium text-accent-deep underline underline-offset-4 hover:text-accent"
+            >
               Lazy Uncle
             </Link>{" "}
-            - The easy way to keep track of birthdays
+            — the easy way to keep track of birthdays
           </p>
           <p className="mt-2">
             Want to create your own birthday list?{" "}
-            <Link href="/" className="font-medium">
+            <Link
+              href="/"
+              className="font-medium text-accent-deep underline underline-offset-4 hover:text-accent"
+            >
               Sign up for free
             </Link>
           </p>

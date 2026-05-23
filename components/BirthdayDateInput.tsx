@@ -117,15 +117,18 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
   const maxDays = getDaysInMonth(parsedMonth || 1);
   const dayOptions = Array.from({ length: maxDays }, (_, i) => i + 1);
 
+  const inputClass =
+    "block h-11 w-full rounded-md border border-rule bg-paper px-3 text-sm text-ink placeholder:text-ink-soft focus:border-accent focus:outline-hidden focus:ring-1 focus:ring-accent";
+
   return (
-    <div className="flex flex-col space-y-2">
+    <div className="flex flex-col space-y-1.5">
       {!yearDisabled ? (
         // Date Picker Mode (includes year)
         <div>
           <input
             type="date"
             id={`${idPrefix}-date`}
-            className="block h-12 w-full rounded-sm border-gray-300 text-gray-900"
+            className={inputClass}
             value={dateValue}
             onChange={(e) => {
               const value = e.target.value;
@@ -154,12 +157,12 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
         </div>
       ) : (
         // Month/Day Dropdowns (no year)
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-2">
           {/* Month Dropdown */}
           <div>
             <select
               id={`${idPrefix}-month`}
-              className="block h-12 w-full rounded-sm border-gray-300 text-gray-900"
+              className={inputClass}
               value={localMonth}
               onChange={(e) => {
                 const newMonth = e.target.value;
@@ -192,7 +195,7 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
           <div>
             <select
               id={`${idPrefix}-day`}
-              className="block h-12 w-full rounded-sm border-gray-300 text-gray-900"
+              className={inputClass}
               value={localDay}
               onChange={(e) => {
                 const newDay = e.target.value;
@@ -232,11 +235,11 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
             id={`${idPrefix}-disable-year`}
             checked={yearDisabled}
             onChange={(e) => handleYearToggle(e.target.checked)}
-            className="h-4 w-4 rounded border-gray-300"
+            className="h-4 w-4 rounded border-rule text-accent focus:ring-accent"
           />
           <label
             htmlFor={`${idPrefix}-disable-year`}
-            className="text-sm text-gray-600 cursor-pointer"
+            className="cursor-pointer text-xs text-ink-soft"
           >
             Don&apos;t know the year
           </label>

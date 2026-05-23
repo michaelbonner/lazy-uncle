@@ -8,6 +8,7 @@ import { and, desc, eq, gt, gte, lt, lte } from "drizzle-orm";
 export interface CreateSharingLinkOptions {
   userId: string;
   description?: string;
+  category?: string;
   expirationHours?: number;
 }
 
@@ -37,6 +38,7 @@ export class SharingService {
     const {
       userId,
       description,
+      category,
       expirationHours = this.DEFAULT_EXPIRATION_HOURS,
     } = options;
 
@@ -110,6 +112,7 @@ export class SharingService {
         token,
         userId,
         description: description || null,
+        category: category || null,
         expiresAt,
         isActive: true,
       })

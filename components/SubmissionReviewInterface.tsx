@@ -10,7 +10,7 @@ import LoadingSpinner from "./LoadingSpinner";
 import { useMutation, useQuery } from "@apollo/client/react";
 import clsx from "clsx";
 import { format } from "date-fns";
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   HiCheck,
   HiCheckCircle,
@@ -373,187 +373,243 @@ const SubmissionReviewInterface = () => {
               )}
             </div>
 
-            {/* Submissions List */}
-            <div className="space-y-4">
-              {submissionsWithDuplicates.map((submission) => {
-                const isExpanded = expandedSubmissions.has(submission.id);
-                const isSelected = selectedSubmissions.has(submission.id);
-                const isProcessing = processingSubmissions.has(submission.id);
-                const hasDuplicates = submission.duplicates.length > 0;
+            {/* Submissions Table */}
+            <div className="overflow-x-auto rounded-lg border border-rule bg-paper">
+              <table className="w-full min-w-[1024px] text-sm text-ink">
+                <thead className="border-b border-rule bg-paper-deep text-left text-xs font-semibold uppercase tracking-wide text-ink">
+                  <tr>
+                    <th className="w-10 px-3 py-2.5"></th>
+                    <th className="px-3 py-2.5">Name</th>
+                    <th className="px-3 py-2.5">Birthday</th>
+                    <th className="px-3 py-2.5">Category</th>
+                    <th className="px-3 py-2.5">Submitter</th>
+                    <th className="px-3 py-2.5">Source</th>
+                    <th className="px-3 py-2.5">Submitted</th>
+                    <th className="px-3 py-2.5 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-rule">
+                  {submissionsWithDuplicates.map((submission) => {
+                    const isExpanded = expandedSubmissions.has(submission.id);
+                    const isSelected = selectedSubmissions.has(submission.id);
+                    const isProcessing = processingSubmissions.has(
+                      submission.id,
+                    );
+                    const hasDuplicates = submission.duplicates.length > 0;
+                    const hasDetails = Boolean(
+                      submission.notes || submission.submitterEmail,
+                    );
+                    const showExpandedRow = isExpanded && hasDetails;
+                    const expandable = hasDetails || hasDuplicates;
 
-                return (
-                  <div
-                    key={submission.id}
-                    className={clsx(
-                      "rounded-lg border p-4 transition-colors",
-                      hasDuplicates
-                        ? "border-amber-300 bg-amber-50"
-                        : isSelected
-                          ? "border-accent bg-paper"
-                          : "border-rule bg-paper hover:bg-paper-deep",
-                    )}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start space-x-3">
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() =>
-                            toggleSubmissionSelection(submission.id)
-                          }
-                          className="mt-1 h-4 w-4 rounded border-rule text-accent focus:ring-accent/40"
-                        />
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center space-x-2">
-                            <h4 className="text-lg font-medium text-ink">
-                              {submission.name}
-                            </h4>
-                            {hasDuplicates && (
-                              <HiExclamationCircle className="h-5 w-5 text-amber-600" />
-                            )}
-                          </div>
-                          <div className="mt-1 flex items-center space-x-4 text-sm text-ink-soft">
-                            <div className="flex items-center space-x-1">
-                              <IoCalendarOutline className="h-4 w-4" />
+                    return (
+                      <React.Fragment key={submission.id}>
+                        <tr
+                          className={clsx(
+                            "transition-colors",
+                            hasDuplicates
+                              ? "bg-amber-50 hover:bg-amber-100"
+                              : isSelected
+                                ? "bg-paper-deep"
+                                : "hover:bg-paper-deep",
+                          )}
+                        >
+                          <td className="px-3 py-3 align-top">
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() =>
+                                toggleSubmissionSelection(submission.id)
+                              }
+                              aria-label={`Select submission for ${submission.name}`}
+                              className="h-4 w-4 rounded border-rule text-accent focus:ring-accent/40"
+                            />
+                          </td>
+                          <td className="px-3 py-3 align-top">
+                            <div className="flex items-start gap-1.5">
+                              <span className="font-medium text-ink">
+                                {submission.name}
+                              </span>
+                              {hasDuplicates && (
+                                <HiExclamationCircle
+                                  className="mt-0.5 h-4 w-4 shrink-0 text-amber-700"
+                                  title={`${submission.duplicates.length} potential duplicate(s)`}
+                                />
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-3 py-3 align-top whitespace-nowrap text-ink">
+                            <div className="flex items-center gap-1.5">
+                              <IoCalendarOutline className="h-4 w-4 text-ink-soft" />
                               <span>{formatSubmissionDate(submission)}</span>
                             </div>
-                            {submission.category && (
-                              <span className="rounded-full border border-rule bg-paper px-2 py-1 text-xs text-ink">
+                          </td>
+                          <td className="px-3 py-3 align-top">
+                            {submission.category ? (
+                              <span className="inline-flex rounded-full border border-rule bg-paper px-2 py-0.5 text-xs text-ink">
                                 {submission.category}
                               </span>
+                            ) : (
+                              <span className="text-ink-soft">—</span>
                             )}
-                          </div>
-                          {submission.submitterName && (
-                            <div className="mt-1 text-sm text-ink-soft">
-                              Submitted by {submission.submitterName}
-                              {submission.relationship &&
-                                ` (${submission.relationship})`}
-                            </div>
-                          )}
-                          {submission.sharingLink.description && (
-                            <div className="mt-1 text-sm text-ink-soft">
-                              via &quot;{submission.sharingLink.description}
-                              &quot;
-                            </div>
-                          )}
-                          <div className="mt-1 text-xs text-ink-muted">
+                          </td>
+                          <td className="px-3 py-3 align-top text-ink">
+                            {submission.submitterName ? (
+                              <>
+                                <div>{submission.submitterName}</div>
+                                {submission.relationship && (
+                                  <div className="text-xs text-ink-soft">
+                                    {submission.relationship}
+                                  </div>
+                                )}
+                              </>
+                            ) : (
+                              <span className="text-ink-soft">Anonymous</span>
+                            )}
+                          </td>
+                          <td className="px-3 py-3 align-top text-ink">
+                            {submission.sharingLink.description || (
+                              <span className="text-ink-soft">—</span>
+                            )}
+                          </td>
+                          <td className="px-3 py-3 align-top whitespace-nowrap text-ink">
                             {format(
                               new Date(submission.createdAt),
-                              "MMM d, yyyy 'at' h:mm a",
+                              "MMM d, h:mm a",
                             )}
-                          </div>
-
-                          {/* Duplicate Warning */}
-                          {hasDuplicates && (
-                            <div className="mt-2 rounded-md border border-amber-200 bg-amber-50 p-3">
-                              <div className="flex items-start space-x-2">
-                                <HiExclamationCircle className="mt-0.5 h-4 w-4 text-amber-700" />
-                                <div className="text-sm">
-                                  <p className="font-medium text-amber-900">
-                                    Potential duplicate detected
-                                  </p>
-                                  <p className="mt-1 text-amber-800">
-                                    Similar birthdays already exist in your
-                                    list:
-                                  </p>
-                                  <ul className="mt-2 space-y-1">
-                                    {submission.duplicates.map((duplicate) => (
-                                      <li
-                                        key={duplicate.id}
-                                        className="text-amber-800"
-                                      >
-                                        • {duplicate.name},{" "}
-                                        {formatSubmissionDate(duplicate)}
-                                        {duplicate.category &&
-                                          ` (${duplicate.category})`}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Expanded Details */}
-                          {isExpanded && (
-                            <div className="mt-3 space-y-2 rounded-md bg-paper-deep p-3">
-                              {submission.notes && (
-                                <div>
-                                  <span className="text-sm font-medium text-ink">
-                                    Notes:
-                                  </span>
-                                  <p className="mt-1 text-sm text-ink-soft">
-                                    {submission.notes}
-                                  </p>
-                                </div>
+                          </td>
+                          <td className="px-3 py-3 align-top">
+                            <div className="flex items-center justify-end gap-1.5">
+                              {expandable && (
+                                <button
+                                  onClick={() =>
+                                    toggleSubmissionExpansion(submission.id)
+                                  }
+                                  className={clsx(
+                                    "rounded-md border border-rule bg-paper p-1.5 text-ink-soft transition hover:bg-paper-deep hover:text-ink",
+                                    isExpanded && "bg-paper-deep text-ink",
+                                  )}
+                                  title={isExpanded ? "Hide details" : "Show details"}
+                                  aria-expanded={isExpanded}
+                                >
+                                  <HiInformationCircle className="h-4 w-4" />
+                                </button>
                               )}
-                              {submission.submitterEmail && (
-                                <div>
-                                  <span className="text-sm font-medium text-ink">
-                                    Email:
-                                  </span>
-                                  <p className="mt-1 text-sm text-ink-soft">
-                                    {submission.submitterEmail}
-                                  </p>
-                                </div>
-                              )}
+                              <button
+                                onClick={() =>
+                                  handleImportSubmission(submission.id)
+                                }
+                                disabled={isProcessing}
+                                className={clsx(
+                                  "flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
+                                  isProcessing
+                                    ? "bg-paper-deep text-ink-soft"
+                                    : "bg-emerald-100 text-emerald-900 hover:bg-emerald-200",
+                                )}
+                              >
+                                {isProcessing ? (
+                                  <LoadingSpinner size="sm" />
+                                ) : (
+                                  <HiCheck className="h-4 w-4" />
+                                )}
+                                <span>Import</span>
+                              </button>
+                              <button
+                                onClick={() =>
+                                  handleRejectSubmission(submission.id)
+                                }
+                                disabled={isProcessing}
+                                className={clsx(
+                                  "flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
+                                  isProcessing
+                                    ? "bg-paper-deep text-ink-soft"
+                                    : "bg-rose-100 text-rose-900 hover:bg-rose-200",
+                                )}
+                              >
+                                {isProcessing ? (
+                                  <LoadingSpinner size="sm" />
+                                ) : (
+                                  <HiX className="h-4 w-4" />
+                                )}
+                                <span>Reject</span>
+                              </button>
                             </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Action Buttons */}
-                      <div className="flex items-center space-x-2">
-                        {(submission.notes || submission.submitterEmail) && (
-                          <button
-                            onClick={() =>
-                              toggleSubmissionExpansion(submission.id)
-                            }
-                            className="rounded-md border border-rule bg-paper p-2 text-ink-soft transition hover:bg-paper-deep hover:text-ink"
-                            title={isExpanded ? "Show less" : "Show more"}
+                          </td>
+                        </tr>
+                        {(hasDuplicates || showExpandedRow) && (
+                          <tr
+                            className={clsx(
+                              hasDuplicates ? "bg-amber-50" : "bg-paper-deep",
+                            )}
                           >
-                            <HiInformationCircle className="h-4 w-4" />
-                          </button>
+                            <td></td>
+                            <td colSpan={7} className="px-3 pb-3 pt-0">
+                              <div className="space-y-2">
+                                {hasDuplicates && (
+                                  <div className="rounded-md border border-amber-200 bg-amber-100/60 p-3">
+                                    <div className="flex items-start gap-2">
+                                      <HiExclamationCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-800" />
+                                      <div className="text-sm">
+                                        <p className="font-medium text-amber-900">
+                                          Potential duplicate detected
+                                        </p>
+                                        <ul className="mt-1 space-y-0.5">
+                                          {submission.duplicates.map(
+                                            (duplicate) => (
+                                              <li
+                                                key={duplicate.id}
+                                                className="text-amber-900"
+                                              >
+                                                • {duplicate.name},{" "}
+                                                {formatSubmissionDate(duplicate)}
+                                                {duplicate.category &&
+                                                  ` (${duplicate.category})`}
+                                              </li>
+                                            ),
+                                          )}
+                                        </ul>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+                                {showExpandedRow && (
+                                  <div className="rounded-md border border-rule bg-paper p-3">
+                                    {submission.notes && (
+                                      <div className="mb-2 last:mb-0">
+                                        <span className="text-xs font-semibold uppercase tracking-wide text-ink-soft">
+                                          Notes
+                                        </span>
+                                        <p className="mt-0.5 text-sm text-ink">
+                                          {submission.notes}
+                                        </p>
+                                      </div>
+                                    )}
+                                    {submission.submitterEmail && (
+                                      <div>
+                                        <span className="text-xs font-semibold uppercase tracking-wide text-ink-soft">
+                                          Email
+                                        </span>
+                                        <p className="mt-0.5 text-sm text-ink">
+                                          <a
+                                            href={`mailto:${submission.submitterEmail}`}
+                                            className="text-accent-deep underline underline-offset-4 hover:text-accent"
+                                          >
+                                            {submission.submitterEmail}
+                                          </a>
+                                        </p>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
                         )}
-                        <button
-                          onClick={() => handleImportSubmission(submission.id)}
-                          disabled={isProcessing}
-                          className={clsx(
-                            "flex items-center space-x-1 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                            isProcessing
-                              ? "bg-paper-deep text-ink-muted"
-                              : "bg-emerald-100 text-emerald-800 hover:bg-emerald-200",
-                          )}
-                        >
-                          {isProcessing ? (
-                            <LoadingSpinner size="sm" />
-                          ) : (
-                            <HiCheck className="h-4 w-4" />
-                          )}
-                          <span>Import</span>
-                        </button>
-                        <button
-                          onClick={() => handleRejectSubmission(submission.id)}
-                          disabled={isProcessing}
-                          className={clsx(
-                            "flex items-center space-x-1 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                            isProcessing
-                              ? "bg-paper-deep text-ink-muted"
-                              : "bg-rose-100 text-rose-800 hover:bg-rose-200",
-                          )}
-                        >
-                          {isProcessing ? (
-                            <LoadingSpinner size="sm" />
-                          ) : (
-                            <HiX className="h-4 w-4" />
-                          )}
-                          <span>Reject</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+                      </React.Fragment>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           </>
         )}

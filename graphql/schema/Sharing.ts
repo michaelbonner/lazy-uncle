@@ -24,6 +24,7 @@ export const SharingLink = objectType({
     });
     t.boolean("isActive");
     t.nullable.string("description");
+    t.nullable.string("category");
     t.int("submissionCount", {
       resolve: async (parent, args, ctx) => {
         if (!parent.id) {

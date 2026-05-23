@@ -110,11 +110,12 @@ describe("SubmissionService", () => {
       expiresAt: new Date(Date.now() + 86400000),
       isActive: true,
       description: "Test link",
+      category: "Friend",
     };
 
     it("should successfully process a valid submission", async () => {
       // Mock sharing link validation
-      mockSharingService.validateSharingLink.mockResolvedValue(mockSharingLink);
+      mockSharingService.validateSharingLink.mockResolvedValue(mockSharingLink as never);
 
       // Mock input validation
       mockInputValidator.validateBirthdaySubmission.mockReturnValue({
@@ -192,7 +193,7 @@ describe("SubmissionService", () => {
     });
 
     it("should reject submission with invalid input data", async () => {
-      mockSharingService.validateSharingLink.mockResolvedValue(mockSharingLink);
+      mockSharingService.validateSharingLink.mockResolvedValue(mockSharingLink as never);
 
       mockInputValidator.validateBirthdaySubmission.mockReturnValue({
         isValid: false,
@@ -212,7 +213,7 @@ describe("SubmissionService", () => {
     });
 
     it("should reject submission when rate limit exceeded", async () => {
-      mockSharingService.validateSharingLink.mockResolvedValue(mockSharingLink);
+      mockSharingService.validateSharingLink.mockResolvedValue(mockSharingLink as never);
 
       mockInputValidator.validateBirthdaySubmission.mockReturnValue({
         isValid: true,
@@ -240,7 +241,7 @@ describe("SubmissionService", () => {
     });
 
     it("should handle database errors gracefully", async () => {
-      mockSharingService.validateSharingLink.mockResolvedValue(mockSharingLink);
+      mockSharingService.validateSharingLink.mockResolvedValue(mockSharingLink as never);
 
       mockInputValidator.validateBirthdaySubmission.mockReturnValue({
         isValid: true,
@@ -555,6 +556,7 @@ describe("SubmissionService", () => {
           createdAt: new Date(),
           sharingLink: {
             description: "Family link",
+            category: null,
             createdAt: new Date(),
           },
           sharingLinkId: "link-123",
@@ -572,6 +574,7 @@ describe("SubmissionService", () => {
           createdAt: new Date(),
           sharingLink: {
             description: "Friends link",
+            category: null,
             createdAt: new Date(),
           },
           sharingLinkId: "link-123",

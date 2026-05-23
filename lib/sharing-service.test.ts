@@ -68,6 +68,7 @@ describe("SharingService", () => {
         token: "mock-token",
         userId: mockUserId,
         description: "Test sharing link",
+        category: null,
         createdAt: new Date(),
         expiresAt: new Date(Date.now() + 168 * 60 * 60 * 1000), // 7 days
         isActive: true,
@@ -83,6 +84,7 @@ describe("SharingService", () => {
           token: expect.any(String),
           userId: mockUserId,
           description: "Test sharing link",
+          category: null,
           expiresAt: expect.any(Date),
           isActive: true,
         }),
@@ -102,6 +104,7 @@ describe("SharingService", () => {
         token: "mock-token",
         userId: mockUserId,
         description: "Test sharing link",
+        category: null,
         createdAt: new Date(),
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
         isActive: true,
@@ -216,6 +219,7 @@ describe("SharingService", () => {
         userId: "user-123",
         createdAt: new Date(),
         description: null,
+        category: null,
       };
       mockDb.query.sharingLinks.findFirst.mockResolvedValueOnce(mockLink);
 
@@ -234,6 +238,7 @@ describe("SharingService", () => {
         userId: "user-123",
         createdAt: new Date(),
         description: null,
+        category: null,
       };
       mockDb.query.sharingLinks.findFirst.mockResolvedValueOnce(mockLink);
       mockUpdate().set().where.mockResolvedValueOnce([mockLink]);
@@ -255,6 +260,7 @@ describe("SharingService", () => {
         userId: "user-123",
         createdAt: new Date(),
         description: null,
+        category: null,
       };
       mockDb.query.sharingLinks.findFirst.mockResolvedValueOnce(mockLink);
 
@@ -275,6 +281,7 @@ describe("SharingService", () => {
           expiresAt: new Date(),
           isActive: true,
           description: "Link 1",
+          category: null,
           submissions: Array(5).fill({ id: "sub" }),
         },
         {
@@ -285,6 +292,7 @@ describe("SharingService", () => {
           expiresAt: new Date(),
           isActive: false,
           description: "Link 2",
+          category: null,
           submissions: Array(2).fill({ id: "sub" }),
         },
       ];
@@ -310,6 +318,7 @@ describe("SharingService", () => {
           expiresAt: new Date(Date.now() + 1000000),
           isActive: true,
           description: "Active Link",
+          category: null,
           submissions: Array(3).fill({ id: "sub" }),
         },
       ];
@@ -333,6 +342,7 @@ describe("SharingService", () => {
         createdAt: new Date(),
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
         description: null,
+        category: null,
       };
 
       mockDb.query.sharingLinks.findFirst.mockResolvedValueOnce(mockLink);
@@ -396,6 +406,7 @@ describe("SharingService", () => {
         expiresAt: new Date(),
         isActive: true,
         description: null,
+        category: null,
       };
       mockDb.query.sharingLinks.findFirst.mockResolvedValueOnce(mockLink);
 
@@ -481,6 +492,7 @@ describe("SharingService", () => {
         expiresAt: new Date(),
         isActive: true,
         description: null,
+        category: null,
       };
       // Set up the mock chain before calling
       const mockReturning = vi.fn().mockResolvedValueOnce([mockSharingLink]);

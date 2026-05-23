@@ -162,6 +162,7 @@ describe("RateLimitService Integration", () => {
         expiresAt: new Date(Date.now() + 1000000),
         isActive: true,
         description: null,
+        category: null,
       });
       mockDb.query.birthdaySubmissions.findMany.mockResolvedValueOnce([
         {
@@ -194,6 +195,7 @@ describe("RateLimitService Integration", () => {
         expiresAt: new Date(Date.now() + 1000000),
         isActive: true,
         description: null,
+        category: null,
       });
       mockDb.query.birthdaySubmissions.findMany
         .mockResolvedValueOnce([]) // duplicate count (no duplicates)
@@ -225,6 +227,7 @@ describe("RateLimitService Integration", () => {
         expiresAt: new Date(Date.now() + 1000000),
         isActive: true,
         description: null,
+        category: null,
       });
       mockDb.query.birthdaySubmissions.findMany
         .mockResolvedValueOnce([]) // duplicate count (no duplicates)
@@ -254,6 +257,7 @@ describe("RateLimitService Integration", () => {
         expiresAt: new Date(Date.now() + 1000000),
         isActive: true,
         description: null,
+        category: null,
       });
       mockDb.query.birthdaySubmissions.findMany.mockResolvedValueOnce([]); // duplicate count only
 
@@ -362,6 +366,7 @@ describe("RateLimitService Integration", () => {
         expiresAt: new Date(Date.now() + 1000000),
         isActive: true,
         description: null,
+        category: null,
       });
       mockDb.query.birthdaySubmissions.findMany.mockRejectedValue(
         new Error("Query timeout"),

@@ -42,7 +42,6 @@ export interface ProcessedSubmissionData {
   month: number;
   day: number;
   date?: string; // Deprecated: for backward compatibility
-  category?: string;
   notes?: string;
   submitterName?: string;
   submitterEmail?: string;
@@ -99,7 +98,8 @@ export class SubmissionService {
         validation.sanitizedData as BirthdaySubmissionInput,
       );
 
-      // Store the submission
+      // Store the submission. Category is inherited from the sharing link
+      // itself — submitters no longer choose it.
       const [submission] = await db
         .insert(birthdaySubmissions)
         .values({
@@ -109,7 +109,7 @@ export class SubmissionService {
           year: processedData.year,
           month: processedData.month,
           day: processedData.day,
-          category: processedData.category || null,
+          category: sharingLink.category || null,
           notes: processedData.notes || null,
           submitterName: processedData.submitterName || null,
           submitterEmail: processedData.submitterEmail || null,
@@ -475,7 +475,6 @@ export class SubmissionService {
       month: sanitizedData.month,
       day: sanitizedData.day,
       date: sanitizedData.date, // Keep for backward compatibility
-      category: sanitizedData.category || undefined,
       notes: sanitizedData.notes || undefined,
       submitterName: sanitizedData.submitterName || undefined,
       submitterEmail: sanitizedData.submitterEmail || undefined,

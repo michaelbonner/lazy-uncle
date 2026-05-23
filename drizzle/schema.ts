@@ -120,6 +120,7 @@ export const sharingLinks = pgTable(
     expiresAt: timestamp("expiresAt").notNull(),
     isActive: boolean("isActive").default(true).notNull(),
     description: text("description"),
+    category: text("category"),
   },
   (table) => [
     unique().on(table.token),
