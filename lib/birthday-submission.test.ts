@@ -3,7 +3,7 @@ import { SubmissionStatus } from "../drizzle/schema";
 import { InputValidator } from "./input-validator";
 import { RateLimitService } from "./rate-limiter";
 import { SharingService } from "./sharing-service";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from "vitest";
 
 // Mock db
 vi.mock("./db", () => {
@@ -34,8 +34,8 @@ vi.mock("./db", () => {
 });
 
 const mockDb = vi.mocked(await import("./db"), true).default;
-const mockInsert = mockDb.insert as ReturnType<typeof vi.fn>;
-const mockUpdate = mockDb.update as ReturnType<typeof vi.fn>;
+const mockInsert = mockDb.insert as unknown as Mock;
+const mockUpdate = mockDb.update as unknown as Mock;
 
 describe("Birthday Submission API", () => {
   beforeEach(() => {
@@ -179,7 +179,9 @@ describe("Birthday Submission API", () => {
       const token = "test-token";
       const submissionData = {
         name: "John Doe",
-        date: "1990-05-15",
+        year: 1990,
+        month: 5,
+        day: 15,
         submitterEmail: "john@example.com",
       };
 
@@ -198,6 +200,9 @@ describe("Birthday Submission API", () => {
         {
           id: "sub-1",
           name: "John Doe",
+          year: 1990,
+          month: 5,
+          day: 15,
           date: "1990-05-15",
           sharingLinkId: "link-1",
           category: null,
@@ -223,7 +228,9 @@ describe("Birthday Submission API", () => {
       const token = "test-token";
       const submissionData = {
         name: "John Doe",
-        date: "1990-05-15",
+        year: 1990,
+        month: 5,
+        day: 15,
         submitterEmail: "spam@example.com",
       };
 

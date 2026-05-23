@@ -3,7 +3,7 @@ import { RateLimitService } from "./rate-limiter";
 import { SecurityContext, SecurityMiddleware } from "./security-middleware";
 import { SharingService } from "./sharing-service";
 import { NextRequest } from "next/server";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from "vitest";
 
 // Mock dependencies
 vi.mock("./rate-limiter", () => ({
@@ -43,7 +43,7 @@ vi.mock("./db", () => {
 });
 
 const mockDb = vi.mocked(await import("./db"), true).default;
-const mockUpdate = mockDb.update as ReturnType<typeof vi.fn>;
+const mockUpdate = mockDb.update as unknown as Mock;
 
 describe("SecurityMiddleware", () => {
   beforeEach(() => {
@@ -227,7 +227,9 @@ describe("SecurityMiddleware", () => {
 
     const mockSubmissionData = {
       name: "John Doe",
-      date: "1990-01-01",
+      year: 1990,
+      month: 1,
+      day: 1,
       submitterEmail: "john@example.com",
     };
 
@@ -406,7 +408,9 @@ describe("SecurityMiddleware", () => {
     it("should detect suspicious content in submission data", async () => {
       const suspiciousSubmissionData = {
         name: "<script>alert('xss')</script>",
-        date: "1990-01-01",
+        year: 1990,
+        month: 1,
+        day: 1,
         submitterEmail: "test@example.com",
       };
 

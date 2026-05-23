@@ -3,7 +3,7 @@ import {
   SubmissionNotificationData,
 } from "./notification-service";
 import "@testing-library/jest-dom";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from "vitest";
 
 // Mock db
 vi.mock("./db", () => {
@@ -37,7 +37,7 @@ vi.mock("./db", () => {
 });
 
 const mockDb = vi.mocked(await import("./db"), true).default;
-const mockInsert = mockDb.insert as ReturnType<typeof vi.fn>;
+const mockInsert = mockDb.insert as unknown as Mock;
 
 describe("NotificationService", () => {
   let notificationService: NotificationService;
@@ -63,6 +63,7 @@ describe("NotificationService", () => {
         summaryNotifications: false,
         id: "pref-1",
         userId: "user123",
+        birthdayReminders: false,
       };
 
       mockDb.query.notificationPreferences.findFirst.mockResolvedValue(
@@ -217,6 +218,7 @@ describe("NotificationService", () => {
         summaryNotifications: false,
         id: "pref-1",
         userId: "user123",
+        birthdayReminders: false,
       });
 
       mockDb.query.users.findFirst.mockResolvedValue({
@@ -247,6 +249,7 @@ describe("NotificationService", () => {
         summaryNotifications: false,
         id: "pref-1",
         userId: "user123",
+        birthdayReminders: false,
       });
 
       await notificationService.sendSubmissionNotification(
@@ -265,6 +268,7 @@ describe("NotificationService", () => {
         summaryNotifications: false,
         id: "pref-1",
         userId: "user123",
+        birthdayReminders: false,
       });
 
       mockDb.query.users.findFirst.mockResolvedValue(undefined);
@@ -285,6 +289,7 @@ describe("NotificationService", () => {
         summaryNotifications: false,
         id: "pref-1",
         userId: "user123",
+        birthdayReminders: false,
       });
 
       mockDb.query.users.findFirst.mockResolvedValue({
@@ -324,6 +329,7 @@ describe("NotificationService", () => {
         summaryNotifications: false,
         id: "pref-1",
         userId: "user123",
+        birthdayReminders: false,
       });
 
       mockDb.query.users.findFirst.mockResolvedValue({
@@ -377,6 +383,7 @@ describe("NotificationService", () => {
         summaryNotifications: true,
         id: "pref-1",
         userId: "user123",
+        birthdayReminders: false,
       });
 
       mockDb.query.users.findFirst.mockResolvedValue({
@@ -407,6 +414,7 @@ describe("NotificationService", () => {
         summaryNotifications: true,
         id: "pref-1",
         userId: "user123",
+        birthdayReminders: false,
       });
 
       await notificationService.sendSummaryNotification(
@@ -423,6 +431,7 @@ describe("NotificationService", () => {
         summaryNotifications: false,
         id: "pref-1",
         userId: "user123",
+        birthdayReminders: false,
       });
 
       await notificationService.sendSummaryNotification(
@@ -439,6 +448,7 @@ describe("NotificationService", () => {
         summaryNotifications: true,
         id: "pref-1",
         userId: "user123",
+        birthdayReminders: false,
       });
 
       mockDb.query.users.findFirst.mockResolvedValue({
@@ -481,6 +491,7 @@ describe("NotificationService", () => {
         summaryNotifications: false,
         id: "pref-1",
         userId: "user123",
+        birthdayReminders: false,
       });
 
       mockDb.query.users.findFirst.mockResolvedValue({
@@ -516,6 +527,7 @@ describe("NotificationService", () => {
         summaryNotifications: true,
         id: "pref-1",
         userId: "user123",
+        birthdayReminders: false,
       });
 
       mockDb.query.users.findFirst.mockResolvedValue({

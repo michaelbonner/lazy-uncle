@@ -59,7 +59,9 @@ describe("GraphQL Security Integration", () => {
 
       const submissionData = {
         name: "John Doe",
-        date: "1990-01-01",
+        year: 1990,
+        month: 1,
+        day: 1,
         submitterEmail: "jane@example.com",
       };
 
@@ -121,7 +123,9 @@ describe("GraphQL Security Integration", () => {
 
       const suspiciousSubmissionData = {
         name: "<script>alert('xss')</script>",
-        date: "1990-01-01",
+        year: 1990,
+        month: 1,
+        day: 1,
         submitterEmail: "test@example.com",
       };
 
@@ -326,7 +330,9 @@ describe("GraphQL Security Integration", () => {
         },
         {
           name: "<script>alert('xss')</script>",
-          date: "1990-01-01",
+          year: 1990,
+          month: 1,
+          day: 1,
         },
       );
 

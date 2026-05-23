@@ -1,6 +1,6 @@
 import { SharingLink } from "../drizzle/schema";
 import { CreateSharingLinkOptions, SharingService } from "./sharing-service";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from "vitest";
 
 // Mock the db client
 vi.mock("./db", () => {
@@ -31,8 +31,8 @@ vi.mock("./db", () => {
 });
 
 const mockDb = vi.mocked(await import("./db"), true).default;
-const mockInsert = mockDb.insert as ReturnType<typeof vi.fn>;
-const mockUpdate = mockDb.update as ReturnType<typeof vi.fn>;
+const mockInsert = mockDb.insert as unknown as Mock;
+const mockUpdate = mockDb.update as unknown as Mock;
 
 describe("SharingService", () => {
   beforeEach(() => {

@@ -168,8 +168,18 @@ describe("RateLimitService Integration", () => {
         {
           id: "sub-1",
           name: "John Doe",
+          year: 1990,
+          month: 1,
+          day: 1,
           date: "1990-01-01",
           sharingLinkId: "link-123",
+          category: null,
+          notes: null,
+          submitterName: null,
+          submitterEmail: "john@example.com",
+          relationship: null,
+          status: "PENDING",
+          createdAt: new Date(),
         },
       ]); // duplicate count
 
@@ -177,7 +187,9 @@ describe("RateLimitService Integration", () => {
         "test-token",
         {
           name: "John Doe",
-          date: "1990-01-01",
+          year: 1990,
+          month: 1,
+          day: 1,
           submitterEmail: "john@example.com",
         },
       );
@@ -207,7 +219,9 @@ describe("RateLimitService Integration", () => {
         "test-token",
         {
           name: "Jane Doe",
-          date: "1985-05-15",
+          year: 1985,
+          month: 5,
+          day: 15,
           submitterEmail: "jane@example.com",
         },
       );
@@ -239,7 +253,9 @@ describe("RateLimitService Integration", () => {
         "test-token",
         {
           name: "Bob Smith",
-          date: "1992-12-25",
+          year: 1992,
+          month: 12,
+          day: 25,
           submitterEmail: "bob@example.com",
         },
       );
@@ -265,7 +281,9 @@ describe("RateLimitService Integration", () => {
         "test-token",
         {
           name: "Anonymous User",
-          date: "1988-03-10",
+          year: 1988,
+          month: 3,
+          day: 10,
         },
       );
 
@@ -375,7 +393,9 @@ describe("RateLimitService Integration", () => {
       await expect(
         RateLimitService.detectSuspiciousActivity("test-token", {
           name: "Test User",
-          date: "1990-01-01",
+          year: 1990,
+          month: 1,
+          day: 1,
         }),
       ).rejects.toThrow("Query timeout");
     });

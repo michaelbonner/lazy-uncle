@@ -10,10 +10,12 @@ export interface ValidationResult {
 
 export interface BirthdaySubmissionInput {
   name: string;
-  // NEW: Date components
+  // NEW: Date components. Optional in the input because callers may still
+  // submit the deprecated `date` string instead; the validator parses one
+  // into the other and the sanitized output is guaranteed to have month/day.
   year?: number | null;
-  month: number;
-  day: number;
+  month?: number;
+  day?: number;
   // DEPRECATED: Keep for backward compatibility during migration
   date?: string;
   category?: string | null;

@@ -3,7 +3,7 @@ import { InputValidator } from "./input-validator";
 import { SharingService } from "./sharing-service";
 import { SubmissionService } from "./submission-service";
 import "@testing-library/jest-dom";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
 
 // Mock dependencies
 vi.mock("./db", () => {
@@ -52,9 +52,9 @@ vi.mock("./notification-service", () => ({
 }));
 
 const mockDb = vi.mocked(await import("./db"), true).default;
-const mockInsert = mockDb.insert as ReturnType<typeof vi.fn>;
-const mockUpdate = mockDb.update as ReturnType<typeof vi.fn>;
-const mockDelete = mockDb.delete as ReturnType<typeof vi.fn>;
+const mockInsert = mockDb.insert as unknown as Mock;
+const mockUpdate = mockDb.update as unknown as Mock;
+const mockDelete = mockDb.delete as unknown as Mock;
 const mockSharingService = vi.mocked(SharingService);
 const mockInputValidator = vi.mocked(InputValidator);
 const { notificationService: mockNotificationService } = vi.mocked(
@@ -63,6 +63,9 @@ const { notificationService: mockNotificationService } = vi.mocked(
 );
 
 describe("SubmissionService", () => {
+  // `sharingLink` is the eager-loaded relation Drizzle returns when the
+  // resolver uses `with: { sharingLink: true }`; cast since the inferred
+  // select type doesn't include it.
   const mockSubmission = {
     id: "submission-123",
     sharingLinkId: "link-123",
@@ -82,7 +85,7 @@ describe("SubmissionService", () => {
       id: "link-123",
       userId: "user-123",
     },
-  };
+  } as unknown as BirthdaySubmission & { sharingLink: { userId: string } };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -272,7 +275,9 @@ describe("SubmissionService", () => {
   describe("detectDuplicates", () => {
     const submissionData = {
       name: "John Doe",
-      date: "1990-05-15",
+      year: 1990,
+      month: 5,
+      day: 15,
       category: "Friend",
     };
 
@@ -281,6 +286,9 @@ describe("SubmissionService", () => {
         {
           id: "birthday-1",
           name: "John Doe",
+          year: 1990,
+          month: 5,
+          day: 15,
           date: "1990-05-15",
           category: "Friend",
           userId: "user-123",
@@ -288,10 +296,14 @@ describe("SubmissionService", () => {
           parent: null,
           notes: null,
           importSource: null,
+          remindersEnabled: true,
         },
         {
           id: "birthday-2",
           name: "Jane Smith",
+          year: 1985,
+          month: 3,
+          day: 20,
           date: "1985-03-20",
           category: "Family",
           userId: "user-123",
@@ -299,6 +311,7 @@ describe("SubmissionService", () => {
           parent: null,
           notes: null,
           importSource: null,
+          remindersEnabled: true,
         },
       ];
 
@@ -320,6 +333,9 @@ describe("SubmissionService", () => {
         {
           id: "birthday-1",
           name: "Jon Doe", // Similar name
+          year: 1990,
+          month: 5,
+          day: 15,
           date: "1990-05-15", // Same date
           category: "Friend",
           userId: "user-123",
@@ -327,6 +343,7 @@ describe("SubmissionService", () => {
           parent: null,
           notes: null,
           importSource: null,
+          remindersEnabled: true,
         },
       ];
 
@@ -347,6 +364,9 @@ describe("SubmissionService", () => {
         {
           id: "birthday-1",
           name: "Jane Smith",
+          year: 1985,
+          month: 3,
+          day: 20,
           date: "1985-03-20",
           category: "Family",
           userId: "user-123",
@@ -354,10 +374,14 @@ describe("SubmissionService", () => {
           parent: null,
           notes: null,
           importSource: null,
+          remindersEnabled: true,
         },
         {
           id: "birthday-2",
           name: "Bob Johnson",
+          year: 1992,
+          month: 12,
+          day: 10,
           date: "1992-12-10",
           category: "Work",
           userId: "user-123",
@@ -365,6 +389,7 @@ describe("SubmissionService", () => {
           parent: null,
           notes: null,
           importSource: null,
+          remindersEnabled: true,
         },
       ];
 
@@ -413,6 +438,7 @@ describe("SubmissionService", () => {
         createdAt: new Date(),
         parent: null,
         importSource: null,
+        remindersEnabled: true,
       };
       mockInsert().values().returning.mockResolvedValue([mockBirthday]);
 
@@ -490,7 +516,7 @@ describe("SubmissionService", () => {
       mockDb.query.birthdaySubmissions.findFirst.mockResolvedValue({
         ...mockSubmission,
         sharingLink: { userId: "user-123" },
-      });
+      } as never);
       mockUpdate()
         .set()
         .where.mockResolvedValue([
@@ -530,7 +556,7 @@ describe("SubmissionService", () => {
       mockDb.query.birthdaySubmissions.findFirst.mockResolvedValue({
         ...mockSubmission,
         sharingLink: { userId: "user-123" },
-      });
+      } as never);
       mockUpdate().set().where.mockRejectedValue(new Error("Database error"));
 
       const result = await SubmissionService.rejectSubmission(
@@ -551,6 +577,9 @@ describe("SubmissionService", () => {
         {
           id: "submission-1",
           name: "John Doe",
+          year: 1990,
+          month: 5,
+          day: 15,
           date: "1990-05-15",
           status: "PENDING" as SubmissionStatus,
           createdAt: new Date(),
@@ -569,6 +598,9 @@ describe("SubmissionService", () => {
         {
           id: "submission-2",
           name: "Jane Smith",
+          year: 1985,
+          month: 3,
+          day: 20,
           date: "1985-03-20",
           status: "PENDING" as SubmissionStatus,
           createdAt: new Date(),
@@ -587,10 +619,10 @@ describe("SubmissionService", () => {
       ];
 
       mockDb.query.sharingLinks.findMany.mockResolvedValue([
-        { id: "link-123" },
+        { id: "link-123" } as never,
       ]);
       mockDb.query.birthdaySubmissions.findMany.mockResolvedValue(
-        mockSubmissions,
+        mockSubmissions as never,
       );
 
       const result = await SubmissionService.getPendingSubmissions("user-123");
@@ -620,6 +652,9 @@ describe("SubmissionService", () => {
           id: "sub-1",
           sharingLinkId: "link-123",
           name: "John Doe",
+          year: 1990,
+          month: 5,
+          day: 15,
           date: "1990-05-15",
           category: "Friend",
           notes: null,
@@ -629,11 +664,14 @@ describe("SubmissionService", () => {
           submitterEmail: "jane@example.com",
           relationship: "Friend",
           sharingLink: { userId: "user-123" },
-        })
+        } as never)
         .mockResolvedValueOnce({
           id: "sub-2",
           sharingLinkId: "link-123",
           name: "Jane Smith",
+          year: 1985,
+          month: 3,
+          day: 20,
           date: "1985-03-20",
           category: "Family",
           notes: null,
@@ -643,11 +681,14 @@ describe("SubmissionService", () => {
           submitterEmail: "jane@example.com",
           relationship: "Friend",
           sharingLink: { userId: "user-123" },
-        })
+        } as never)
         .mockResolvedValueOnce({
           id: "sub-3",
           sharingLinkId: "link-123",
           name: "Bob Johnson",
+          year: 1992,
+          month: 12,
+          day: 10,
           date: "1992-12-10",
           category: "Work",
           notes: null,
@@ -657,7 +698,7 @@ describe("SubmissionService", () => {
           submitterEmail: "jane@example.com",
           relationship: "Friend",
           sharingLink: { userId: "user-123" },
-        });
+        } as never);
 
       mockInsert()
         .values()
@@ -665,6 +706,9 @@ describe("SubmissionService", () => {
           {
             id: "birthday-1",
             name: "John Doe",
+            year: 1990,
+            month: 5,
+            day: 15,
             date: "1990-05-15",
             category: "Friend",
             notes: null,
@@ -672,12 +716,16 @@ describe("SubmissionService", () => {
             userId: "user-123",
             parent: null,
             importSource: null,
+            remindersEnabled: true,
           },
         ])
         .mockResolvedValueOnce([
           {
             id: "birthday-2",
             name: "Jane Smith",
+            year: 1985,
+            month: 3,
+            day: 20,
             date: "1985-03-20",
             category: "Family",
             notes: null,
@@ -685,12 +733,16 @@ describe("SubmissionService", () => {
             userId: "user-123",
             parent: null,
             importSource: null,
+            remindersEnabled: true,
           },
         ])
         .mockResolvedValueOnce([
           {
             id: "birthday-3",
             name: "Bob Johnson",
+            year: 1992,
+            month: 12,
+            day: 10,
             date: "1992-12-10",
             category: "Work",
             notes: null,
@@ -698,6 +750,7 @@ describe("SubmissionService", () => {
             userId: "user-123",
             parent: null,
             importSource: null,
+            remindersEnabled: true,
           },
         ]);
 
@@ -726,6 +779,9 @@ describe("SubmissionService", () => {
           id: "sub-1",
           sharingLinkId: "link-123",
           name: "John Doe",
+          year: 1990,
+          month: 5,
+          day: 15,
           date: "1990-05-15",
           category: "Friend",
           notes: null,
@@ -735,7 +791,7 @@ describe("SubmissionService", () => {
           submitterEmail: "jane@example.com",
           relationship: "Friend",
           sharingLink: { userId: "user-123" },
-        })
+        } as never)
         .mockResolvedValueOnce(undefined); // Second import fails
 
       mockInsert()
@@ -744,6 +800,9 @@ describe("SubmissionService", () => {
           {
             id: "birthday-1",
             name: "John Doe",
+            year: 1990,
+            month: 5,
+            day: 15,
             date: "1990-05-15",
             category: "Friend",
             notes: null,
@@ -751,6 +810,7 @@ describe("SubmissionService", () => {
             userId: "user-123",
             parent: null,
             importSource: null,
+            remindersEnabled: true,
           },
         ]);
       mockUpdate()
@@ -779,15 +839,15 @@ describe("SubmissionService", () => {
         .mockResolvedValueOnce({
           ...mockSubmission,
           sharingLink: { userId: "user-123" },
-        })
+        } as never)
         .mockResolvedValueOnce({
           ...mockSubmission,
           sharingLink: { userId: "user-123" },
-        })
+        } as never)
         .mockResolvedValueOnce({
           ...mockSubmission,
           sharingLink: { userId: "user-123" },
-        });
+        } as never);
 
       mockUpdate()
         .set()
@@ -812,7 +872,7 @@ describe("SubmissionService", () => {
         .mockResolvedValueOnce({
           ...mockSubmission,
           sharingLink: { userId: "user-123" },
-        }) // First succeeds
+        } as never) // First succeeds
         .mockResolvedValueOnce(undefined); // Second fails
 
       mockUpdate()

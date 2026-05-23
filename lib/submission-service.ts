@@ -469,11 +469,13 @@ export class SubmissionService {
   private static processSubmissionData(
     sanitizedData: BirthdaySubmissionInput,
   ): ProcessedSubmissionData {
+    // Validator guarantees month/day are populated on a successful result
+    // (either from the new components or by parsing the deprecated date).
     return {
       name: sanitizedData.name,
       year: sanitizedData.year ?? null,
-      month: sanitizedData.month,
-      day: sanitizedData.day,
+      month: sanitizedData.month!,
+      day: sanitizedData.day!,
       date: sanitizedData.date, // Keep for backward compatibility
       notes: sanitizedData.notes || undefined,
       submitterName: sanitizedData.submitterName || undefined,

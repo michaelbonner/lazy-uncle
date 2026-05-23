@@ -96,7 +96,9 @@ const mockSubmitBirthdayResolver = async (
     sanitizedData.token,
     {
       name: sanitizedData.name,
-      date: sanitizedData.date,
+      year: sanitizedData.year,
+      month: sanitizedData.month!,
+      day: sanitizedData.day!,
       submitterEmail: sanitizedData.submitterEmail,
     },
   );
@@ -155,12 +157,16 @@ describe("submitBirthday GraphQL Mutation", () => {
       userId: "user-1",
       createdAt: new Date(),
       description: null,
+      category: null,
     };
 
     const mockSubmission = {
       id: "submission-1",
       sharingLinkId: "link-1",
       name: "John Doe",
+      year: 1990,
+      month: 5,
+      day: 15,
       date: "1990-05-15",
       category: null,
       notes: null,
@@ -205,7 +211,7 @@ describe("submitBirthday GraphQL Mutation", () => {
 
     vi.mocked(SharingService.validateSharingLink).mockResolvedValue({
       ...mockSharingLink,
-      user: { id: "user-1" },
+      user: { name: "Test User" },
     });
 
     vi.mocked(RateLimitService.detectSuspiciousActivity).mockResolvedValue({
@@ -361,6 +367,7 @@ describe("submitBirthday GraphQL Mutation", () => {
       userId: "user-1",
       createdAt: new Date(),
       description: null,
+      category: null,
     };
 
     vi.mocked(InputValidator.validateBirthdaySubmission).mockReturnValue({
@@ -396,7 +403,7 @@ describe("submitBirthday GraphQL Mutation", () => {
 
     vi.mocked(SharingService.validateSharingLink).mockResolvedValue({
       ...mockSharingLink,
-      user: { id: "user-1" },
+      user: { name: "Test User" },
     });
 
     vi.mocked(RateLimitService.detectSuspiciousActivity).mockResolvedValue({
@@ -466,6 +473,9 @@ describe("Submission Management GraphQL Operations", () => {
         .map((_, i) => ({
           id: `sub-${i + 1}`,
           name: "Test",
+          year: 1990,
+          month: 1,
+          day: 1,
           date: "1990-01-01",
           status: "PENDING" as SubmissionStatus,
           createdAt: new Date(),
@@ -507,6 +517,9 @@ describe("Submission Management GraphQL Operations", () => {
       const allSubmissions = Array(15).fill({
         id: "sub",
         name: "Test",
+        year: 1990,
+        month: 1,
+        day: 1,
         date: "1990-01-01",
         status: "PENDING" as SubmissionStatus,
         createdAt: new Date(),
@@ -566,6 +579,9 @@ describe("Submission Management GraphQL Operations", () => {
       const mockBirthday = {
         id: "birthday-1",
         name: "John Doe",
+        year: 1990,
+        month: 5,
+        day: 15,
         date: "1990-05-15",
         userId: "user-1",
         category: null,
@@ -576,6 +592,7 @@ describe("Submission Management GraphQL Operations", () => {
         createdAt: new Date(),
         parent: null,
         importSource: null,
+        remindersEnabled: true,
       };
 
       vi.mocked(SubmissionService.importSubmission).mockResolvedValue({
@@ -643,6 +660,9 @@ describe("Submission Management GraphQL Operations", () => {
       const mockSubmission = {
         id: "sub-1",
         name: "John Doe",
+        year: 1990,
+        month: 5,
+        day: 15,
         status: "REJECTED" as SubmissionStatus,
         sharingLinkId: "link-1",
         category: null,
@@ -853,8 +873,9 @@ describe("Submission Management GraphQL Operations", () => {
         ctx.user?.id as string,
         {
           name: submission.name,
-          date: submission.date,
-          category: submission.category || undefined,
+          year: submission.year,
+          month: submission.month,
+          day: submission.day,
           notes: submission.notes || undefined,
           submitterName: submission.submitterName || undefined,
           submitterEmail: submission.submitterEmail || undefined,
@@ -869,6 +890,9 @@ describe("Submission Management GraphQL Operations", () => {
       const mockSubmission = {
         id: "sub-1",
         name: "John Doe",
+        year: 1990,
+        month: 5,
+        day: 15,
         date: "1990-05-15",
         category: null,
         notes: null,
@@ -886,7 +910,9 @@ describe("Submission Management GraphQL Operations", () => {
           {
             id: "birthday-1",
             name: "John Doe",
-            date: "1990-05-15",
+            year: 1990,
+            month: 5,
+            day: 15,
             category: "Family",
             similarity: 0.95,
           },
@@ -919,8 +945,9 @@ describe("Submission Management GraphQL Operations", () => {
         "user-1",
         {
           name: "John Doe",
-          date: "1990-05-15",
-          category: undefined,
+          year: 1990,
+          month: 5,
+          day: 15,
           notes: undefined,
           submitterName: undefined,
           submitterEmail: undefined,
@@ -947,6 +974,9 @@ describe("Submission Management GraphQL Operations", () => {
       const mockSubmission = {
         id: "sub-1",
         name: "Unique Person",
+        year: 2000,
+        month: 1,
+        day: 1,
         date: "2000-01-01",
         category: null,
         notes: null,
