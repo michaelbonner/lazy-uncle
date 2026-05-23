@@ -38,7 +38,7 @@ export interface NotificationQueue {
 }
 
 export class NotificationService {
-  private resend: Resend;
+  private resend: Resend | null;
 
   constructor() {
     const key = process.env.RESEND_API_KEY;
@@ -47,8 +47,10 @@ export class NotificationService {
         throw new Error("RESEND_API_KEY is required in production");
       }
       console.warn("RESEND_API_KEY not set; emails will be logged only.");
+      this.resend = null;
+    } else {
+      this.resend = new Resend(key);
     }
-    this.resend = new Resend(key ?? "re_123");
   }
 
   /**
@@ -362,7 +364,7 @@ To stop receiving these emails, unsubscribe here: ${unsubscribeUrl}`;
     text: string;
   }): Promise<void> {
     const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
+      host: process.env.SMTP_HOST ?? "localhost",
       port: parseInt(process.env.SMTP_PORT ?? "1025", 10),
       secure: false,
       auth:
@@ -408,6 +410,11 @@ To stop receiving these emails, unsubscribe here: ${unsubscribeUrl}`;
         console.log("Text Content:");
         console.log(options.text);
         console.log("========================");
+        return;
+      }
+
+      if (!this.resend) {
+        console.warn("Resend client not initialized; skipping email send.");
         return;
       }
 
