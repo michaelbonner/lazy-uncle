@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build --webpack",
+    "build": "next build",
     "start": "bun run db:migrate && next start",
     "lint": "eslint .",
     "db:generate": "drizzle-kit generate",
