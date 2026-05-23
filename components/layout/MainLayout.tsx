@@ -1,11 +1,12 @@
 import { authClient } from "../../lib/auth-client";
 import ClientOnly from "../ClientOnly";
+import SignInDialog from "../SignInDialog";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import posthog from "posthog-js";
-import { ReactElement, useEffect } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import Script from "next/script";
 
 const MainLayout = ({
@@ -19,6 +20,7 @@ const MainLayout = ({
 }) => {
   const { data: session, isPending } = authClient.useSession();
   const router = useRouter();
+  const [isSignInOpen, setIsSignInOpen] = useState(false);
 
   useEffect(() => {
     if (isPending) return;
@@ -117,7 +119,7 @@ const MainLayout = ({
           >
             How it works
           </Link>
-          {session?.user && (
+          {session?.user ? (
             <button
               className="underline underline-offset-4 transition hover:text-ink"
               onClick={async () => {
@@ -133,9 +135,22 @@ const MainLayout = ({
             >
               Sign out
             </button>
+          ) : (
+            !isPending && (
+              <button
+                className="underline underline-offset-4 transition hover:text-ink"
+                onClick={() => setIsSignInOpen(true)}
+              >
+                Sign in
+              </button>
+            )
           )}
         </nav>
       </header>
+      <SignInDialog
+        isOpen={isSignInOpen}
+        handleClose={() => setIsSignInOpen(false)}
+      />
       <Script
         async
         src="https://easycustomerfeedback.com/widget/d1f086e2aab04637a566c3babcee1493/embed"
