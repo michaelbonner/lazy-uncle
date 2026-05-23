@@ -364,7 +364,7 @@ To stop receiving these emails, unsubscribe here: ${unsubscribeUrl}`;
     text: string;
   }): Promise<void> {
     const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST ?? "localhost",
+      host: process.env.SMTP_HOST,
       port: parseInt(process.env.SMTP_PORT ?? "1025", 10),
       secure: false,
       auth:
