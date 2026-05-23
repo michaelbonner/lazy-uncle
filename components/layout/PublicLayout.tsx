@@ -15,7 +15,7 @@ const PublicLayout = ({
   const router = useRouter();
 
   return (
-    <div className="flex min-h-screen flex-col justify-between">
+    <div className="flex min-h-screen flex-col justify-between bg-paper text-ink">
       <Head>
         {/* General */}
         <title>{title}</title>
@@ -75,7 +75,7 @@ const PublicLayout = ({
               alt="Lazy Uncle"
               height={47}
               priority
-              src="/lazy-uncle-white.svg"
+              src="/lazy-uncle.svg"
               width={160}
             />
           </Link>
@@ -84,11 +84,14 @@ const PublicLayout = ({
 
       <main className="flex-1 px-4 py-8 md:px-8">{children}</main>
 
-      <footer className="px-4 py-6 text-center text-gray-200 md:flex md:justify-between md:px-8">
+      <footer className="px-4 py-6 text-center text-ink-soft md:flex md:justify-between md:px-8">
         <div>
           &copy; 2020-{new Date().getFullYear()}
           {` `}
-          <a className="underline" href="https://michaelbonner.dev">
+          <a
+            className="underline underline-offset-4 hover:text-ink"
+            href="https://michaelbonner.dev"
+          >
             Michael Bonner
           </a>
         </div>
