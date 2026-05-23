@@ -4,7 +4,6 @@ import { GET_ALL_BIRTHDAYS_QUERY } from "../graphql/Birthday";
 import { authClient } from "../lib/auth-client";
 // import the auth client
 import { SearchContext } from "../providers/SearchProvider";
-import { getDateFromComponents } from "../shared/getDateFromComponents";
 import { getDaysUntilNextBirthday } from "../shared/getDaysUntilNextBirthday";
 import { getZodiacSignFromComponents } from "../shared/getZodiacSignForDateYmdString";
 import BirthdayFilterField from "./BirthdayFilterField";
@@ -13,10 +12,15 @@ import LoadingSpinner from "./LoadingSpinner";
 import SortColumnHeader from "./SortColumnHeader";
 import { useQuery } from "@apollo/client/react";
 import clsx from "clsx";
-import { format } from "date-fns";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useContext, useEffect, useMemo, useState } from "react";
+import {
+  useContext,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { BsFillCaretDownFill } from "react-icons/bs";
 import { GrFormFilter, GrRefresh } from "react-icons/gr";
 import { HiOutlineCalendar, HiXCircle } from "react-icons/hi";
@@ -75,16 +79,24 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
   const [isAddBirthdayDialogVisible, setIsAddBirthdayDialogVisible] =
     useState(false);
 
+  // Deferring the name filter keeps the input responsive on slow devices —
+  // typing updates the input immediately while the filtered list rebuilds
+  // at a lower priority.
+  const deferredNameFilter = useDeferredValue(nameFilter);
+  const deferredCategoryFilter = useDeferredValue(categoryFilter);
+  const deferredParentFilter = useDeferredValue(parentFilter);
+  const deferredZodiacSignFilter = useDeferredValue(zodiacSignFilter);
+
   const workingDates: NexusGenObjects["Birthday"][] = useMemo(() => {
     if (!birthdaysData?.birthdays?.length) {
       return [];
     }
 
     // Pre-compute lowercase filter strings once
-    const nameFilterLower = nameFilter.toLowerCase();
-    const categoryFilterLower = categoryFilter.toLowerCase();
-    const parentFilterLower = parentFilter.toLowerCase();
-    const zodiacSignFilterLower = zodiacSignFilter.toLowerCase();
+    const nameFilterLower = deferredNameFilter.toLowerCase();
+    const categoryFilterLower = deferredCategoryFilter.toLowerCase();
+    const parentFilterLower = deferredParentFilter.toLowerCase();
+    const zodiacSignFilterLower = deferredZodiacSignFilter.toLowerCase();
 
     // Single pass filtering - much faster than chained filters
     const dates = birthdaysData.birthdays.filter(
@@ -96,7 +108,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
 
         // Name filter
         if (
-          nameFilter &&
+          deferredNameFilter &&
           !birthday?.name?.toLowerCase().includes(nameFilterLower)
         ) {
           return false;
@@ -104,7 +116,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
 
         // Category filter
         if (
-          categoryFilter &&
+          deferredCategoryFilter &&
           !birthday?.category?.toLowerCase().includes(categoryFilterLower)
         ) {
           return false;
@@ -112,14 +124,14 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
 
         // Parent filter
         if (
-          parentFilter &&
+          deferredParentFilter &&
           !birthday?.parent?.toLowerCase().includes(parentFilterLower)
         ) {
           return false;
         }
 
         // Zodiac sign filter - only compute when filter is active
-        if (zodiacSignFilter && birthday?.month && birthday?.day) {
+        if (deferredZodiacSignFilter && birthday?.month && birthday?.day) {
           const birthdayZodiacSign = getZodiacSignFromComponents(
             birthday.month,
             birthday.day,
@@ -148,103 +160,96 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
       } as NexusGenObjects["Birthday"]);
     }
 
-    // Optimize sorting by pre-computing values when needed
-    return unsortedDates.sort(
-      (a: NexusGenObjects["Birthday"], b: NexusGenObjects["Birthday"]) => {
-        if (sortBy === "date_asc") {
-          const aDate =
-            a.month && a.day
-              ? format(getDateFromComponents(null, a.month, a.day), "MM-dd")
-              : "";
-          const bDate =
-            b.month && b.day
-              ? format(getDateFromComponents(null, b.month, b.day), "MM-dd")
-              : "";
-          return aDate > bDate ? 1 : -1;
-        }
-        if (sortBy === "date_desc") {
-          const aDate =
-            a.month && a.day
-              ? format(getDateFromComponents(null, a.month, a.day), "MM-dd")
-              : "";
-          const bDate =
-            b.month && b.day
-              ? format(getDateFromComponents(null, b.month, b.day), "MM-dd")
-              : "";
-          return aDate > bDate ? -1 : 1;
-        }
-        if (sortBy === "name_asc") {
-          const aName = a.name || "";
-          const bName = b.name || "";
-          return aName > bName ? 1 : -1;
-        }
-        if (sortBy === "name_desc") {
-          const aName = a.name || "";
-          const bName = b.name || "";
-          return aName > bName ? -1 : 1;
-        }
-        if (sortBy === "age_asc") {
-          if (!a.year && !b.year) return 0;
-          if (!a.year) return 1;
-          if (!b.year) return -1;
-          const aYear = a.year || 0;
-          const bYear = b.year || 0;
-          return aYear > bYear ? 1 : -1;
-        }
-        if (sortBy === "age_desc") {
-          if (!a.year && !b.year) return 0;
-          if (!a.year) return 1;
-          if (!b.year) return -1;
-          const aYear = a.year || 0;
-          const bYear = b.year || 0;
-          return aYear > bYear ? -1 : 1;
-        }
-        if (sortBy === "category_asc") {
-          const aCategory = a.category || "";
-          const bCategory = b.category || "";
-          return aCategory > bCategory ? 1 : -1;
-        }
-        if (sortBy === "category_desc") {
-          const aCategory = a.category || "";
-          const bCategory = b.category || "";
-          return aCategory > bCategory ? -1 : 1;
-        }
-        if (sortBy === "parent_asc") {
-          const aParent = a.parent || "";
-          const bParent = b.parent || "";
-          return aParent > bParent ? 1 : -1;
-        }
-        if (sortBy === "parent_desc") {
-          const aParent = a.parent || "";
-          const bParent = b.parent || "";
-          return aParent > bParent ? -1 : 1;
-        }
-        if (sortBy === "sign_asc") {
-          const aZodiacSign =
-            a.month && a.day ? getZodiacSignFromComponents(a.month, a.day) : "";
-          const bZodiacSign =
-            b.month && b.day ? getZodiacSignFromComponents(b.month, b.day) : "";
-          return aZodiacSign > bZodiacSign ? 1 : -1;
-        }
-        if (sortBy === "sign_desc") {
-          const aZodiacSign =
-            a.month && a.day ? getZodiacSignFromComponents(a.month, a.day) : "";
-          const bZodiacSign =
-            b.month && b.day ? getZodiacSignFromComponents(b.month, b.day) : "";
-          return aZodiacSign > bZodiacSign ? -1 : 1;
-        }
+    // Precompute the sort key for each row once, then sort by index — avoids
+    // recomputing date/zodiac strings inside every comparator invocation.
+    const sortField = sortBy.replace(/_(asc|desc)$/, "");
+    const sortDirection = sortBy.endsWith("_desc") ? -1 : 1;
 
-        return 1;
+    const sortKeys: (string | number | null)[] = unsortedDates.map(
+      (b: NexusGenObjects["Birthday"]) => {
+        switch (sortField) {
+          case "date":
+            if (!b.month || !b.day) return "";
+            return `${String(b.month).padStart(2, "0")}-${String(b.day).padStart(2, "0")}`;
+          case "name":
+            return b.name || "";
+          case "age":
+            return b.year ?? null;
+          case "category":
+            return b.category || "";
+          case "parent":
+            return b.parent || "";
+          case "sign":
+            return b.month && b.day
+              ? getZodiacSignFromComponents(b.month, b.day)
+              : "";
+          default:
+            return "";
+        }
       },
     );
+
+    const indices = unsortedDates.map((_, i) => i);
+    indices.sort((ai, bi) => {
+      const ak = sortKeys[ai];
+      const bk = sortKeys[bi];
+      if (sortField === "age") {
+        // Match original behavior: rows missing a year always sort last,
+        // regardless of asc/desc.
+        if (ak === null && bk === null) return 0;
+        if (ak === null) return 1;
+        if (bk === null) return -1;
+        if (ak === bk) return 0;
+        return ((ak as number) > (bk as number) ? 1 : -1) * sortDirection;
+      }
+      if (ak === bk) return 0;
+      return ((ak as string) > (bk as string) ? 1 : -1) * sortDirection;
+    });
+
+    return indices.map((i) => unsortedDates[i]);
   }, [
     birthdaysData,
-    categoryFilter,
-    nameFilter,
-    parentFilter,
+    deferredCategoryFilter,
+    deferredNameFilter,
+    deferredParentFilter,
     sortBy,
-    zodiacSignFilter,
+    deferredZodiacSignFilter,
   ]);
+
+  // Memoize datalist option arrays so they aren't rebuilt (and re-sorted
+  // inside <BirthdayFilterField>) on every render.
+  const nameOptions = useMemo(
+    () =>
+      Array.from(
+        new Set(workingDates.map((b) => b.name || "")),
+      ).sort(),
+    [workingDates],
+  );
+  const categoryOptions = useMemo(
+    () =>
+      Array.from(
+        new Set(workingDates.map((b) => b.category || "")),
+      ).sort(),
+    [workingDates],
+  );
+  const parentOptions = useMemo(
+    () =>
+      Array.from(
+        new Set(workingDates.map((b) => b.parent || "")),
+      ).sort(),
+    [workingDates],
+  );
+  const zodiacOptions = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          workingDates.map((b) =>
+            b.month && b.day ? getZodiacSignFromComponents(b.month, b.day) : "",
+          ),
+        ),
+      ).sort(),
+    [workingDates],
+  );
 
   const workingDatesCount = useMemo(() => {
     return workingDates.filter((date) => date.name !== "Today").length;
@@ -418,11 +423,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                       label="Name"
                       value={nameFilter}
                       setValue={setNameFilter}
-                      datalistOptions={Array.from(
-                        new Set(
-                          workingDates.map((birthday) => birthday.name || ""),
-                        ),
-                      )}
+                      datalistOptions={nameOptions}
                     />
                   </div>
                   <div className="flex md:hidden">
@@ -454,11 +455,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                     label="Category"
                     value={categoryFilter}
                     setValue={setCategoryFilter}
-                    datalistOptions={Array.from(
-                      new Set(
-                        workingDates.map((birthday) => birthday.category || ""),
-                      ),
-                    )}
+                    datalistOptions={categoryOptions}
                   />
                 </div>
                 <div
@@ -475,11 +472,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                     label="Parent"
                     value={parentFilter}
                     setValue={setParentFilter}
-                    datalistOptions={Array.from(
-                      new Set(
-                        workingDates.map((birthday) => birthday.parent || ""),
-                      ),
-                    )}
+                    datalistOptions={parentOptions}
                   />
                 </div>
                 <div
@@ -496,18 +489,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                     label="Zodiac Sign"
                     value={zodiacSignFilter}
                     setValue={setZodiacSignFilter}
-                    datalistOptions={Array.from(
-                      new Set(
-                        workingDates.map((birthday) =>
-                          birthday.month && birthday.day
-                            ? getZodiacSignFromComponents(
-                                birthday.month,
-                                birthday.day,
-                              )
-                            : "",
-                        ),
-                      ),
-                    )}
+                    datalistOptions={zodiacOptions}
                   />
                 </div>
               </div>

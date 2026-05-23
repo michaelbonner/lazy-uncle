@@ -8,7 +8,7 @@ import ZodiacSignCharacter from "./ZodiacSignCharacter";
 import clsx from "clsx";
 import { format } from "date-fns";
 import pluralize from "pluralize";
-import { FC, useState } from "react";
+import { FC, memo, useState } from "react";
 import { GiBalloons } from "react-icons/gi";
 import {
   HiBackspace,
@@ -309,4 +309,4 @@ const BirthdayRow: FC<Props> = ({
     </>
   );
 };
-export default BirthdayRow;
+export default memo(BirthdayRow);
