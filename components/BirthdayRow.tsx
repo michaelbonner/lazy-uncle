@@ -291,9 +291,12 @@ const BirthdayRow: FC<Props> = ({
             </p>
           </button>
         ) : (
-          <div>
+          <div className="flex w-full items-center justify-between">
             <p className="flex items-center space-x-2 text-sm text-ink-muted">
               <span>{birthday.name}</span>
+            </p>
+            <p className="text-xl font-medium text-accent-deep">
+              {format(birthDate, "MMM d")}
             </p>
           </div>
         )}
