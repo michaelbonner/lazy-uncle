@@ -26,9 +26,8 @@ const sourceSerif = Source_Serif_4({
 if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
   // checks that we are client-side
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
-    api_host:
-      process.env.NEXT_PUBLIC_POSTHOG_HOST ||
-      "https://www.lazyuncle.net/ingest",
+    api_host: "https://g.michaelbonner.dev",
+    defaults: "2026-05-30",
     person_profiles: "identified_only",
     loaded: (posthog) => {
       if (process.env.NODE_ENV === "development") posthog.debug();
