@@ -4,43 +4,22 @@ This document describes the public birthday submission API endpoint that allows 
 
 ## Overview
 
-The `submitBirthday` GraphQL mutation provides a public endpoint for submitting birthday information without requiring authentication. It includes comprehensive input validation, sanitization, rate limiting, and security measures.
+The `submission.submit` tRPC procedure provides a public endpoint for submitting birthday information without requiring authentication. It includes comprehensive input validation, sanitization, rate limiting, and security measures.
 
-## GraphQL Mutation
+## tRPC Procedure
 
-```graphql
-mutation SubmitBirthday(
-  $token: String!
-  $name: String!
-  $date: String!
-  $category: String
-  $notes: String
-  $submitterName: String
-  $submitterEmail: String
-  $relationship: String
-) {
-  submitBirthday(
-    token: $token
-    name: $name
-    date: $date
-    category: $category
-    notes: $notes
-    submitterName: $submitterName
-    submitterEmail: $submitterEmail
-    relationship: $relationship
-  ) {
-    id
-    name
-    date
-    category
-    notes
-    submitterName
-    submitterEmail
-    relationship
-    status
-    createdAt
-  }
-}
+```ts
+await trpc.submission.submit.mutate({
+  token,
+  name,
+  year,
+  month,
+  day,
+  notes,
+  submitterName,
+  submitterEmail,
+  relationship,
+});
 ```
 
 ## Parameters
@@ -49,10 +28,12 @@ mutation SubmitBirthday(
 
 - **token** (String!): The sharing link token provided by the link owner
 - **name** (String!): The name of the person whose birthday is being submitted (1-100 characters, must contain at least one letter)
-- **date** (String!): The birth date in YYYY-MM-DD format (must be between 1900 and next year)
+- **month** (Number): Birth month, 1-12
+- **day** (Number): Birth day for the selected month
 
 ### Optional Parameters
 
+- **year** (Number): Birth year between 1900 and next year. Omit when the year is unknown.
 - **category** (String): Category for the birthday (max 50 characters)
 - **notes** (String): Additional notes about the birthday (max 500 characters)
 - **submitterName** (String): Name of the person submitting the birthday (1-100 characters)
@@ -73,7 +54,7 @@ The API performs comprehensive input validation and sanitization:
 ### Validation Rules
 
 - **Name**: Must be 1-100 characters and contain at least one letter
-- **Date**: Must be in YYYY-MM-DD format and represent a valid date between 1900 and next year
+- **Date components**: Month and day must form a valid calendar date. Year must be between 1900 and next year when provided.
 - **Email**: Must be a valid email format (if provided)
 - **Category**: Maximum 50 characters
 - **Notes**: Maximum 500 characters
@@ -168,53 +149,20 @@ The API implements multiple layers of rate limiting:
 
 ## Usage Example
 
-```javascript
-const submitBirthday = async (token, birthdayData) => {
-  const mutation = `
-    mutation SubmitBirthday($token: String!, $name: String!, $date: String!, $submitterName: String, $submitterEmail: String) {
-      submitBirthday(
-        token: $token
-        name: $name
-        date: $date
-        submitterName: $submitterName
-        submitterEmail: $submitterEmail
-      ) {
-        id
-        name
-        date
-        status
-        createdAt
-      }
-    }
-  `;
-
-  const variables = {
-    token: token,
-    name: birthdayData.name,
-    date: birthdayData.date,
-    submitterName: birthdayData.submitterName,
-    submitterEmail: birthdayData.submitterEmail,
-  };
-
+```typescript
+const submitBirthday = async (token: string, birthdayData: BirthdayData) => {
   try {
-    const response = await fetch("/api/graphql", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        query: mutation,
-        variables: variables,
-      }),
+    const result = await submitBirthdayMutation.mutateAsync({
+      token,
+      name: birthdayData.name,
+      year: birthdayData.year,
+      month: birthdayData.month,
+      day: birthdayData.day,
+      submitterName: birthdayData.submitterName,
+      submitterEmail: birthdayData.submitterEmail,
     });
 
-    const result = await response.json();
-
-    if (result.errors) {
-      throw new Error(result.errors[0].message);
-    }
-
-    return result.data.submitBirthday;
+    return result;
   } catch (error) {
     console.error("Failed to submit birthday:", error);
     throw error;
@@ -224,7 +172,9 @@ const submitBirthday = async (token, birthdayData) => {
 // Usage
 submitBirthday("sharing-token-123", {
   name: "John Doe",
-  date: "1990-05-15",
+  year: 1990,
+  month: 5,
+  day: 15,
   submitterName: "Jane Smith",
   submitterEmail: "jane@example.com",
 });
@@ -244,7 +194,7 @@ Run tests with:
 
 ```bash
 npm test -- lib/birthday-submission.test.ts --run
-npm test -- graphql/schema/Mutation.test.ts --run
+npm test -- server/routers/submission.test.ts --run
 ```
 
 ## Security Considerations

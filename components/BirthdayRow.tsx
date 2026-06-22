@@ -1,4 +1,4 @@
-import { NexusGenObjects } from "../generated/nexus-typegen";
+import type { Birthday } from "../lib/trpc";
 import { getAgeForHumansFromComponents } from "../shared/getAgeForHumans";
 import { getDateFromComponents } from "../shared/getDateFromComponents";
 import { getDaysUntilNextBirthday } from "../shared/getDaysUntilNextBirthday";
@@ -18,7 +18,7 @@ import {
 } from "react-icons/hi";
 
 interface Props {
-  birthday: NexusGenObjects["Birthday"];
+  birthday: Birthday;
   categoryFilter: string;
   setCategoryFilter: (text: string) => void;
   parentFilter: string;

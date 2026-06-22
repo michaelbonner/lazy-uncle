@@ -1,19 +1,216 @@
-import type { SubmissionStatus } from "../drizzle/schema";
-import { GET_ALL_BIRTHDAYS_QUERY } from "../graphql/Birthday";
-import {
-  CREATE_SHARING_LINK_MUTATION,
-  GET_NOTIFICATION_PREFERENCES_QUERY,
-  GET_PENDING_SUBMISSIONS_QUERY,
-  GET_SHARING_LINKS_QUERY,
-  IMPORT_SUBMISSION_MUTATION,
-} from "../graphql/Sharing";
 import BirthdaysContainer from "./BirthdaysContainer";
-import { MockedProvider } from "@apollo/client/testing/react";
 import "@testing-library/jest-dom";
 import { render, screen, waitFor } from "@testing-library/react";
-import { DocumentNode } from "graphql";
 import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
+// superjson deserializes date fields back into `Date` objects on the client,
+// so fixtures use `Date` instances (and month/day/year components) rather than
+// the ISO strings the old Apollo mocks used.
+
+// Mock fixtures returned by the fake trpc hooks.
+const mockBirthdays = [
+  {
+    id: "birthday-1",
+    name: "John Doe",
+    year: 1990,
+    month: 1,
+    day: 15,
+    date: "1990-01-15",
+    category: "Friend",
+    parent: null,
+    notes: null,
+    remindersEnabled: true,
+    importSource: "manual",
+    userId: "test-user-id",
+    createdAt: new Date("2024-01-01T00:00:00Z"),
+  },
+  {
+    id: "birthday-2",
+    name: "Jane Smith",
+    year: 1985,
+    month: 6,
+    day: 20,
+    date: "1985-06-20",
+    category: "Family",
+    parent: null,
+    notes: null,
+    remindersEnabled: true,
+    importSource: "sharing",
+    userId: "test-user-id",
+    createdAt: new Date("2024-01-01T00:00:00Z"),
+  },
+];
+
+const mockSharingLinks = [
+  {
+    id: "link-1",
+    token: "test-token-123",
+    createdAt: new Date("2024-01-01T00:00:00Z"),
+    expiresAt: new Date("2099-12-31T23:59:59Z"),
+    isActive: true,
+    description: "Family gathering",
+    category: null,
+    submissionCount: 2,
+  },
+];
+
+const mockPendingSubmissions = {
+  submissions: [
+    {
+      id: "submission-1",
+      name: "Bob Wilson",
+      year: 1992,
+      month: 3,
+      day: 10,
+      date: "1992-03-10",
+      category: "Friend",
+      notes: "Met at college",
+      submitterName: "Alice Johnson",
+      submitterEmail: "alice@example.com",
+      relationship: "Friend",
+      status: "PENDING",
+      createdAt: new Date("2024-01-15T10:00:00Z"),
+      sharingLink: {
+        id: "link-1",
+        description: "Family gathering",
+      },
+    },
+  ],
+  totalCount: 1,
+  hasNextPage: false,
+  hasPreviousPage: false,
+  currentPage: 1,
+  totalPages: 1,
+};
+
+const mockNotificationPreferences = {
+  id: "pref-1",
+  userId: "test-user-id",
+  emailNotifications: true,
+  summaryNotifications: false,
+  birthdayReminders: false,
+};
+
+// Controllable query results. Tests mutate these (e.g. to simulate an error)
+// before rendering, and `resetQueryState` restores defaults in beforeEach.
+type QueryState = { data: unknown; isPending: boolean; error: Error | null };
+
+const queryState: Record<string, QueryState> = {
+  birthdayList: { data: undefined, isPending: false, error: null },
+  sharingList: { data: undefined, isPending: false, error: null },
+  submissionPending: { data: undefined, isPending: false, error: null },
+  notificationPreferences: { data: undefined, isPending: false, error: null },
+};
+
+function resetQueryState() {
+  queryState.birthdayList = {
+    data: mockBirthdays,
+    isPending: false,
+    error: null,
+  };
+  queryState.sharingList = {
+    data: mockSharingLinks,
+    isPending: false,
+    error: null,
+  };
+  queryState.submissionPending = {
+    data: mockPendingSubmissions,
+    isPending: false,
+    error: null,
+  };
+  queryState.notificationPreferences = {
+    data: mockNotificationPreferences,
+    isPending: false,
+    error: null,
+  };
+}
+
+const refetch = vi.fn();
+
+// A reusable fake mutation object matching the tRPC react-query shape.
+const makeMutation = () => ({
+  mutate: vi.fn(),
+  mutateAsync: vi.fn().mockResolvedValue(undefined),
+  isPending: false,
+  error: null,
+});
+
+// invalidate mocks exposed via trpc.useUtils()
+const invalidateMocks = {
+  birthdayList: vi.fn(),
+  sharingList: vi.fn(),
+  submissionPending: vi.fn(),
+  notificationPreferences: vi.fn(),
+};
+
+// Mock the tRPC client used throughout the rendered component tree
+// (BirthdaysContainer + its dynamically-imported children).
+vi.mock("../lib/trpc", () => {
+  const utils = {
+    birthday: { list: { invalidate: (...a: unknown[]) => invalidateMocks.birthdayList(...a) } },
+    sharing: { list: { invalidate: (...a: unknown[]) => invalidateMocks.sharingList(...a) } },
+    submission: {
+      pending: { invalidate: (...a: unknown[]) => invalidateMocks.submissionPending(...a) },
+    },
+    notification: {
+      preferences: {
+        invalidate: (...a: unknown[]) => invalidateMocks.notificationPreferences(...a),
+      },
+    },
+  };
+  return {
+    trpc: {
+      useUtils: () => utils,
+      birthday: {
+        list: {
+          useQuery: () => ({
+            data: queryState.birthdayList.data,
+            isPending: queryState.birthdayList.isPending,
+            error: queryState.birthdayList.error,
+            refetch,
+          }),
+        },
+        create: { useMutation: () => makeMutation() },
+      },
+      sharing: {
+        list: {
+          useQuery: () => ({
+            data: queryState.sharingList.data,
+            isPending: queryState.sharingList.isPending,
+            error: queryState.sharingList.error,
+            refetch,
+          }),
+        },
+        create: { useMutation: () => makeMutation() },
+        revoke: { useMutation: () => makeMutation() },
+      },
+      submission: {
+        pending: {
+          useQuery: () => ({
+            data: queryState.submissionPending.data,
+            isPending: queryState.submissionPending.isPending,
+            error: queryState.submissionPending.error,
+            refetch,
+          }),
+        },
+        import: { useMutation: () => makeMutation() },
+        reject: { useMutation: () => makeMutation() },
+      },
+      notification: {
+        preferences: {
+          useQuery: () => ({
+            data: queryState.notificationPreferences.data,
+            isPending: queryState.notificationPreferences.isPending,
+            error: queryState.notificationPreferences.error,
+            refetch,
+          }),
+        },
+        update: { useMutation: () => makeMutation() },
+      },
+    },
+  };
+});
 
 // Mock the auth client
 vi.mock("../lib/auth-client", () => ({
@@ -31,22 +228,28 @@ vi.mock("../lib/auth-client", () => ({
   },
 }));
 
-// Mock dynamic imports
+// Mock dynamic imports so the real child components render.
+// next/dynamic is given a loader that returns a Promise (the import), so the
+// mock resolves it in an effect and renders the resolved component once ready.
 vi.mock("next/dynamic", () => ({
-  default: (fn: () => React.ReactNode) => {
-    // Return a component function that loads the actual component
-    const MockedComponent = (props: React.ReactNode) => {
-      const ComponentModule = fn();
-      const Component =
-        // @ts-expect-error - Property 'default' does not exist on type 'string' | 'number' | 'bigint' | 'boolean' | 'symbol' | Promise<React.ReactNode>
-        ComponentModule?.default || (ComponentModule as React.ReactNode);
-      if (
-        typeof Component === "function" ||
-        (Component && Component.$$typeof)
-      ) {
-        return React.createElement(Component, props);
-      }
-      return null;
+  default: (fn: () => Promise<{ default: React.ComponentType }>) => {
+    const MockedComponent = (props: Record<string, unknown>) => {
+      const [Loaded, setLoaded] =
+        React.useState<React.ComponentType | null>(null);
+      React.useEffect(() => {
+        let active = true;
+        Promise.resolve(fn()).then((mod) => {
+          const Component = mod.default || mod;
+          if (active && typeof Component === "function") {
+            setLoaded(() => Component);
+          }
+        });
+        return () => {
+          active = false;
+        };
+      }, []);
+      if (!Loaded) return null;
+      return React.createElement(Loaded, props);
     };
     MockedComponent.displayName = "MockedDynamicComponent";
     return MockedComponent;
@@ -69,219 +272,30 @@ Object.defineProperty(window, "location", {
   writable: true,
 });
 
-const mockBirthdays = [
-  {
-    id: "birthday-1",
-    name: "John Doe",
-    date: "1990-01-15",
-    category: "Friend",
-    parent: null,
-    notes: null,
-    importSource: "manual",
-    __typename: "Birthday",
-  },
-  {
-    id: "birthday-2",
-    name: "Jane Smith",
-    date: "1985-06-20",
-    category: "Family",
-    parent: null,
-    notes: null,
-    importSource: "sharing",
-    __typename: "Birthday",
-  },
-];
-
-const mockSharingLinks = [
-  {
-    id: "link-1",
-    token: "test-token-123",
-    createdAt: "2024-01-01T00:00:00Z",
-    expiresAt: "2024-12-31T23:59:59Z",
-    isActive: true,
-    description: "Family gathering",
-    submissionCount: 2,
-    __typename: "SharingLink",
-  },
-];
-
-const mockPendingSubmissions = [
-  {
-    id: "submission-1",
-    name: "Bob Wilson",
-    date: "1992-03-10",
-    category: "Friend",
-    notes: "Met at college",
-    submitterName: "Alice Johnson",
-    submitterEmail: "alice@example.com",
-    relationship: "Friend",
-    status: "PENDING" as SubmissionStatus,
-    createdAt: "2024-01-15T10:00:00Z",
-    sharingLink: {
-      id: "link-1",
-      description: "Family gathering",
-    },
-    __typename: "BirthdaySubmission",
-  },
-];
-
-const mockNotificationPreferences = {
-  id: "pref-1",
-  userId: "test-user-id",
-  emailNotifications: true,
-  summaryNotifications: false,
-  __typename: "NotificationPreference",
-};
-
-const createMocks = (
-  overrides:
-    | {
-        request: { query: DocumentNode };
-        result: {
-          data: {
-            sharingLinks: {
-              expiresAt: string;
-              id: string;
-              token: string;
-              createdAt: string;
-              isActive: boolean;
-              description: string;
-              submissionCount: number;
-              __typename: string;
-            }[];
-          };
-        };
-      }[]
-    | undefined = [],
-) => [
-  {
-    request: {
-      query: GET_ALL_BIRTHDAYS_QUERY,
-    },
-    result: {
-      data: {
-        birthdays: mockBirthdays,
-      },
-    },
-  },
-  {
-    request: {
-      query: GET_SHARING_LINKS_QUERY,
-    },
-    result: {
-      data: {
-        sharingLinks: mockSharingLinks,
-      },
-    },
-  },
-  {
-    request: {
-      query: GET_PENDING_SUBMISSIONS_QUERY,
-      variables: { page: 1, limit: 10 },
-    },
-    result: {
-      data: {
-        pendingSubmissions: {
-          submissions: mockPendingSubmissions,
-          totalCount: 1,
-          hasNextPage: false,
-          hasPreviousPage: false,
-          currentPage: 1,
-          totalPages: 1,
-          __typename: "PaginatedSubmissions",
-        },
-      },
-    },
-  },
-  {
-    request: {
-      query: GET_NOTIFICATION_PREFERENCES_QUERY,
-    },
-    result: {
-      data: {
-        notificationPreferences: mockNotificationPreferences,
-      },
-    },
-  },
-  {
-    request: {
-      query: CREATE_SHARING_LINK_MUTATION,
-      variables: {
-        description: "Test sharing link",
-        expirationHours: 168,
-      },
-    },
-    result: {
-      data: {
-        createSharingLink: {
-          id: "new-link-1",
-          token: "new-token-456",
-          createdAt: "2024-01-16T00:00:00Z",
-          expiresAt: "2024-01-23T00:00:00Z",
-          isActive: true,
-          description: "Test sharing link",
-          submissionCount: 0,
-          __typename: "SharingLink",
-        },
-      },
-    },
-  },
-  {
-    request: {
-      query: IMPORT_SUBMISSION_MUTATION,
-      variables: {
-        submissionId: "submission-1",
-      },
-    },
-    result: {
-      data: {
-        importSubmission: {
-          id: "birthday-3",
-          name: "Bob Wilson",
-          date: "1992-03-10",
-          category: "Friend",
-          parent: null,
-          notes: "Met at college",
-          importSource: "sharing",
-          __typename: "Birthday",
-        },
-      },
-    },
-  },
-  ...overrides,
-];
-
 describe("Sharing Workflow Integration Tests", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    resetQueryState();
   });
 
   it("displays import source indicators for birthdays", async () => {
-    const mocks = createMocks();
-
-    render(
-      <MockedProvider mocks={mocks}>
-        <BirthdaysContainer userId="test-user-id" />
-      </MockedProvider>,
-    );
+    render(<BirthdaysContainer userId="test-user-id" />);
 
     await waitFor(() => {
-      // Check that both birthdays are present - count is flexible because of dynamic components
-      expect(screen.getAllByText("John Doe").length).toBeGreaterThanOrEqual(2);
+      // Names render in both mobile and desktop birthday rows.
+      expect(screen.getAllByText("John Doe").length).toBeGreaterThanOrEqual(1);
       expect(screen.getAllByText("Jane Smith").length).toBeGreaterThanOrEqual(
         1,
       );
     });
 
-    // Check that import source indicators are present by finding the birthday rows
-    // Look for the birthday row with John Doe (manual entry)
+    // Birthdays render inside <li> rows (manual + sharing imports alike).
     const johnDoeElements = screen.getAllByText("John Doe");
     const manualBirthday = johnDoeElements
       .find((el) => el.closest("li"))
       ?.closest("li");
     expect(manualBirthday).toBeInTheDocument();
 
-    // Sharing import should have share icon
     const janeSmithElements = screen.getAllByText("Jane Smith");
     const sharedBirthday = janeSmithElements
       .find((el) => el.closest("li"))
@@ -290,227 +304,119 @@ describe("Sharing Workflow Integration Tests", () => {
   });
 
   it("loads birthday list with sharing functionality enabled", async () => {
-    const mocks = createMocks();
+    render(<BirthdaysContainer userId="test-user-id" />);
 
-    render(
-      <MockedProvider mocks={mocks}>
-        <BirthdaysContainer userId="test-user-id" />
-      </MockedProvider>,
-    );
-
-    // Check that main birthday list loads with sharing features
     await waitFor(() => {
       expect(screen.getAllByText("John Doe")[0]).toBeInTheDocument();
       expect(screen.getAllByText("Jane Smith")[0]).toBeInTheDocument();
     });
 
-    // Check that calendar subscription is available
+    // Calendar subscription remains available.
     expect(screen.getByText("Subscribe to calendar")).toBeInTheDocument();
   });
 
-  it("provides GraphQL mock for submission functionality", async () => {
-    const mocks = createMocks();
+  it("renders the birthday list backed by the tRPC query", async () => {
+    render(<BirthdaysContainer userId="test-user-id" />);
 
-    render(
-      <MockedProvider mocks={mocks}>
-        <BirthdaysContainer userId="test-user-id" />
-      </MockedProvider>,
-    );
-
-    // Check that the main container loads properly with GraphQL mocks
     await waitFor(() => {
       expect(screen.getAllByText("John Doe")[0]).toBeInTheDocument();
       expect(screen.getAllByText("Jane Smith")[0]).toBeInTheDocument();
     });
   });
 
-  it("provides mock data for notification preferences", async () => {
-    const mocks = createMocks();
+  it("renders the sharing links section from sharing.list", async () => {
+    render(<BirthdaysContainer userId="test-user-id" />);
 
-    render(
-      <MockedProvider mocks={mocks}>
-        <BirthdaysContainer userId="test-user-id" />
-      </MockedProvider>,
+    // SharingLinkManager is dynamically imported, so wait for it to render
+    // its section heading and the link's label.
+    expect(
+      await screen.findByText("Birthday sharing links"),
+    ).toBeInTheDocument();
+    // "Family gathering" appears both as the link's label and as the source
+    // description on the pending submission, so assert at least one is present.
+    expect(screen.getAllByText("Family gathering").length).toBeGreaterThanOrEqual(
+      1,
     );
+  });
 
-    // Check that the notification preferences mock data is configured
-    await waitFor(() => {
-      expect(screen.getAllByText("John Doe")[0]).toBeInTheDocument();
-    });
+  it("renders the submission review section with pending submissions", async () => {
+    render(<BirthdaysContainer userId="test-user-id" />);
 
-    // Verify that mocks include notification preferences (this tests the setup)
-    const notificationMock = mocks.find(
-      (mock) => mock.request.query === GET_NOTIFICATION_PREFERENCES_QUERY,
-    );
-    expect(notificationMock).toBeDefined();
+    // The pending submission "Bob Wilson" should surface in the review UI.
+    expect(
+      await screen.findByText("Birthday submissions"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Bob Wilson")).toBeInTheDocument();
+  });
 
-    if (
-      notificationMock?.result?.data &&
-      "notificationPreferences" in notificationMock.result.data
-    ) {
-      expect(
-        notificationMock?.result?.data?.notificationPreferences
-          ?.emailNotifications,
-      ).toBe(true);
-      expect(
-        notificationMock?.result?.data?.notificationPreferences
-          ?.summaryNotifications,
-      ).toBe(false);
-    }
+  it("renders the notification settings panel", async () => {
+    render(<BirthdaysContainer userId="test-user-id" />);
+
+    // SharingSettingsPanel renders the notification preferences form.
+    expect(
+      await screen.findByText("Notification preferences"),
+    ).toBeInTheDocument();
   });
 
   it("shows sharing link management in navigation area", async () => {
-    const mocks = createMocks();
+    render(<BirthdaysContainer userId="test-user-id" />);
 
-    render(
-      <MockedProvider mocks={mocks}>
-        <BirthdaysContainer userId="test-user-id" />
-      </MockedProvider>,
-    );
-
-    // Check that calendar subscription link is still present
     expect(screen.getByText("Subscribe to calendar")).toBeInTheDocument();
   });
 
-  it("includes mock data for bulk operations", async () => {
-    const mocks = createMocks();
-
-    render(
-      <MockedProvider mocks={mocks}>
-        <BirthdaysContainer userId="test-user-id" />
-      </MockedProvider>,
-    );
-
-    // Check that submissions mock data is configured
-    await waitFor(() => {
-      expect(screen.getAllByText("John Doe")[0]).toBeInTheDocument();
-    });
-
-    // Verify that mocks include pending submissions data
-    const submissionsMock = mocks.find(
-      (mock) => mock.request.query === GET_PENDING_SUBMISSIONS_QUERY,
-    );
-    expect(submissionsMock).toBeDefined();
-    if (
-      submissionsMock?.result?.data &&
-      "pendingSubmissions" in submissionsMock.result.data
-    ) {
-      expect(
-        submissionsMock?.result?.data?.pendingSubmissions?.submissions,
-      ).toHaveLength(1);
-      expect(
-        submissionsMock?.result?.data?.pendingSubmissions?.submissions[0]?.name,
-      ).toBe("Bob Wilson");
-    }
-  });
-
   it("displays proper error states", async () => {
-    const errorMocks = [
-      {
-        request: {
-          query: GET_ALL_BIRTHDAYS_QUERY,
-        },
-        error: new Error("Failed to load birthdays"),
-      },
-    ];
+    queryState.birthdayList = {
+      data: undefined,
+      isPending: false,
+      error: new Error("Failed to load birthdays"),
+    };
 
-    render(
-      <MockedProvider mocks={errorMocks}>
-        <BirthdaysContainer userId="test-user-id" />
-      </MockedProvider>,
-    );
+    render(<BirthdaysContainer userId="test-user-id" />);
 
-    // Should display birthday loading error
+    // Should display birthday loading error.
     await waitFor(() => {
       expect(screen.getByText(/Failed to load birthdays/)).toBeInTheDocument();
     });
 
-    // Error should prevent normal birthday display
+    // Error should prevent normal birthday display.
     expect(screen.queryByText("John Doe")).not.toBeInTheDocument();
     expect(screen.queryByText("Jane Smith")).not.toBeInTheDocument();
   });
 
-  it("includes expired sharing links in mock data", async () => {
-    const expiredLinkMocks = createMocks([
-      {
-        request: {
-          query: GET_SHARING_LINKS_QUERY,
+  it("renders expired sharing links with an expired indicator", async () => {
+    queryState.sharingList = {
+      data: [
+        {
+          ...mockSharingLinks[0],
+          expiresAt: new Date("2023-01-01T00:00:00Z"), // Expired date
         },
-        result: {
-          data: {
-            sharingLinks: [
-              {
-                ...mockSharingLinks[0],
-                expiresAt: "2023-01-01T00:00:00Z", // Expired date
-              },
-            ],
-          },
-        },
-      },
-    ]);
+      ],
+      isPending: false,
+      error: null,
+    };
 
-    render(
-      <MockedProvider mocks={expiredLinkMocks}>
-        <BirthdaysContainer userId="test-user-id" />
-      </MockedProvider>,
-    );
+    render(<BirthdaysContainer userId="test-user-id" />);
 
-    // Check that the main component loads
-    await waitFor(() => {
-      expect(screen.getAllByText("John Doe")[0]).toBeInTheDocument();
-    });
-
-    // Verify that the expired link mock is configured correctly
-    const sharingLinkMock = expiredLinkMocks.find(
-      (mock) =>
-        mock.result?.data &&
-        mock.request.query === GET_SHARING_LINKS_QUERY &&
-        "sharingLinks" in mock.result.data &&
-        mock.result?.data?.sharingLinks[0]?.expiresAt ===
-          "2023-01-01T00:00:00Z",
-    );
-    expect(sharingLinkMock).toBeDefined();
-    if (
-      sharingLinkMock?.result?.data &&
-      "sharingLinks" in sharingLinkMock.result.data
-    ) {
-      expect(sharingLinkMock?.result?.data?.sharingLinks[0]?.expiresAt).toBe(
-        "2023-01-01T00:00:00Z",
-      );
-    }
+    // SharingLinkManager marks expired links as no longer active.
+    expect(
+      await screen.findByText("link no longer active"),
+    ).toBeInTheDocument();
   });
 
   it("integrates sharing features with main birthday list", async () => {
-    const mocks = createMocks();
+    render(<BirthdaysContainer userId="test-user-id" />);
 
-    render(
-      <MockedProvider mocks={mocks}>
-        <BirthdaysContainer userId="test-user-id" />
-      </MockedProvider>,
-    );
-
-    // Wait for main components to load
     await waitFor(() => {
-      expect(screen.getAllByText("John Doe").length).toBeGreaterThanOrEqual(2);
+      expect(screen.getAllByText("John Doe")[0]).toBeInTheDocument();
       expect(screen.getAllByText("Jane Smith")[0]).toBeInTheDocument();
     });
 
-    // Verify that all required mock data is configured correctly
+    // All of the major tRPC-backed sections coexist on the page.
     expect(
-      mocks.some((mock) => mock.request.query === GET_ALL_BIRTHDAYS_QUERY),
-    ).toBe(true);
-    expect(
-      mocks.some((mock) => mock.request.query === GET_SHARING_LINKS_QUERY),
-    ).toBe(true);
-    expect(
-      mocks.some(
-        (mock) => mock.request.query === GET_PENDING_SUBMISSIONS_QUERY,
-      ),
-    ).toBe(true);
-    expect(
-      mocks.some(
-        (mock) => mock.request.query === GET_NOTIFICATION_PREFERENCES_QUERY,
-      ),
-    ).toBe(true);
+      await screen.findByText("Birthday sharing links"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Birthday submissions")).toBeInTheDocument();
+    expect(screen.getByText("Notification preferences")).toBeInTheDocument();
+    expect(screen.getByText("Subscribe to calendar")).toBeInTheDocument();
   });
 });

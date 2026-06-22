@@ -1,6 +1,4 @@
-import type { Birthday } from "../drizzle/schema";
-import { NexusGenObjects } from "../generated/nexus-typegen";
-import { GET_ALL_BIRTHDAYS_QUERY } from "../graphql/Birthday";
+import { type Birthday, trpc } from "../lib/trpc";
 import { authClient } from "../lib/auth-client";
 // import the auth client
 import { SearchContext } from "../providers/SearchProvider";
@@ -10,7 +8,6 @@ import BirthdayFilterField from "./BirthdayFilterField";
 import BirthdayRow from "./BirthdayRow";
 import LoadingSpinner from "./LoadingSpinner";
 import SortColumnHeader from "./SortColumnHeader";
-import { useQuery } from "@apollo/client/react";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -68,13 +65,11 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
     setShowFilters,
   } = useContext(SearchContext);
   const {
-    data: birthdaysData,
-    loading: birthdaysLoading,
+    data: birthdays,
+    isPending: birthdaysLoading,
     error: birthdaysError,
     refetch: birthdaysRefetch,
-  } = useQuery(GET_ALL_BIRTHDAYS_QUERY, {
-    fetchPolicy: "cache-and-network",
-  });
+  } = trpc.birthday.list.useQuery();
   const { isPending } = authClient.useSession();
   const [isAddBirthdayDialogVisible, setIsAddBirthdayDialogVisible] =
     useState(false);
@@ -87,8 +82,8 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
   const deferredParentFilter = useDeferredValue(parentFilter);
   const deferredZodiacSignFilter = useDeferredValue(zodiacSignFilter);
 
-  const workingDates: NexusGenObjects["Birthday"][] = useMemo(() => {
-    if (!birthdaysData?.birthdays?.length) {
+  const workingDates: Birthday[] = useMemo(() => {
+    if (!birthdays?.length) {
       return [];
     }
 
@@ -99,8 +94,8 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
     const zodiacSignFilterLower = deferredZodiacSignFilter.toLowerCase();
 
     // Single pass filtering - much faster than chained filters
-    const dates = birthdaysData.birthdays.filter(
-      (birthday: NexusGenObjects["Birthday"]) => {
+    const dates = birthdays.filter(
+      (birthday: Birthday) => {
         // Skip filtering for items without id
         if (!birthday.id) {
           return true;
@@ -157,7 +152,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
         month: today.getMonth() + 1, // getMonth() returns 0-11, we need 1-12
         day: today.getDate(),
         year: null,
-      } as NexusGenObjects["Birthday"]);
+      } as unknown as Birthday);
     }
 
     // Precompute the sort key for each row once, then sort by index — avoids
@@ -166,7 +161,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
     const sortDirection = sortBy.endsWith("_desc") ? -1 : 1;
 
     const sortKeys: (string | number | null)[] = unsortedDates.map(
-      (b: NexusGenObjects["Birthday"]) => {
+      (b: Birthday) => {
         switch (sortField) {
           case "date":
             if (!b.month || !b.day) return "";
@@ -208,7 +203,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
 
     return indices.map((i) => unsortedDates[i]);
   }, [
-    birthdaysData,
+    birthdays,
     deferredCategoryFilter,
     deferredNameFilter,
     deferredParentFilter,
@@ -251,30 +246,24 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
   }, [workingDates]);
 
   const birthdaysCount = useMemo<number>(() => {
-    return birthdaysData?.birthdays?.length || 0;
-  }, [birthdaysData]);
+    return birthdays?.length || 0;
+  }, [birthdays]);
 
-  const upcomingBirthdays: NexusGenObjects["Birthday"][] = useMemo<
-    Birthday[]
-  >(() => {
-    if (birthdaysData?.birthdays?.length < 1) {
+  const upcomingBirthdays: Birthday[] = useMemo<Birthday[]>(() => {
+    if (!birthdays || birthdays.length < 1) {
       return [];
     }
 
-    const upcoming = birthdaysData?.birthdays?.filter(
-      (birthday: NexusGenObjects["Birthday"]) => {
-        return getDaysUntilNextBirthday(birthday) <= 7;
-      },
-    );
+    const upcoming = birthdays.filter((birthday: Birthday) => {
+      return getDaysUntilNextBirthday(birthday) <= 7;
+    });
 
-    return upcoming?.sort(
-      (a: NexusGenObjects["Birthday"], b: NexusGenObjects["Birthday"]) => {
-        const aDaysUntilNextBirthday = getDaysUntilNextBirthday(a);
-        const bDaysUntilNextBirthday = getDaysUntilNextBirthday(b);
-        return aDaysUntilNextBirthday > bDaysUntilNextBirthday ? 1 : -1;
-      },
-    );
-  }, [birthdaysData]);
+    return upcoming.sort((a: Birthday, b: Birthday) => {
+      const aDaysUntilNextBirthday = getDaysUntilNextBirthday(a);
+      const bDaysUntilNextBirthday = getDaysUntilNextBirthday(b);
+      return aDaysUntilNextBirthday > bDaysUntilNextBirthday ? 1 : -1;
+    });
+  }, [birthdays]);
 
   const handleRefresh = async () => {
     await birthdaysRefetch();
@@ -310,7 +299,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
             Upcoming birthdays
           </h2>
           <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-ink-soft md:mt-0">
-            {upcomingBirthdays.map((birthday: NexusGenObjects["Birthday"]) => {
+            {upcomingBirthdays.map((birthday: Birthday) => {
               const daysUntil = getDaysUntilNextBirthday(birthday);
               return (
                 <button
@@ -365,7 +354,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
             <span>Clear filters</span>
           </button>
           <div className="text-sm text-ink-muted md:text-right">
-            {workingDatesCount}/{birthdaysData?.birthdays?.length} visible
+            {workingDatesCount}/{birthdaysCount} visible
           </div>
         </div>
         <div className="mt-4 flex items-center justify-end space-x-4 md:hidden">
@@ -412,7 +401,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                   <div className="relative w-full min-w-[220px] grow">
                     <BirthdayFilterField
                       disabled={
-                        !birthdaysData?.birthdays?.length &&
+                        !birthdays?.length &&
                         !workingDates.length
                       }
                       label="Name"
@@ -444,7 +433,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                 >
                   <BirthdayFilterField
                     disabled={
-                      !birthdaysData?.birthdays?.length && !workingDates.length
+                      !birthdays?.length && !workingDates.length
                     }
                     label="Category"
                     value={categoryFilter}
@@ -461,7 +450,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                 >
                   <BirthdayFilterField
                     disabled={
-                      !birthdaysData?.birthdays?.length && !workingDates.length
+                      !birthdays?.length && !workingDates.length
                     }
                     label="Parent"
                     value={parentFilter}
@@ -478,7 +467,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                 >
                   <BirthdayFilterField
                     disabled={
-                      !birthdaysData?.birthdays?.length && !workingDates.length
+                      !birthdays?.length && !workingDates.length
                     }
                     label="Zodiac Sign"
                     value={zodiacSignFilter}
@@ -575,7 +564,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                   <BsFillCaretDownFill />
                 </button>
               </li>
-              {workingDates.map((birthday: NexusGenObjects["Birthday"]) => {
+              {workingDates.map((birthday: Birthday) => {
                 return (
                   <BirthdayRow
                     birthday={birthday}

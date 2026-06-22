@@ -1,7 +1,6 @@
-import { SUBMIT_BIRTHDAY_MUTATION } from "../graphql/Sharing";
+import { trpc } from "../lib/trpc";
 import BirthdayDateInput from "./BirthdayDateInput";
 import PrimaryButton from "./PrimaryButton";
-import { useMutation } from "@apollo/client/react";
 import clsx from "clsx";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -41,7 +40,7 @@ const BirthdaySubmissionForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedNames, setSubmittedNames] = useState<string[]>([]);
 
-  const [submitBirthday] = useMutation(SUBMIT_BIRTHDAY_MUTATION);
+  const submitBirthday = trpc.submission.submit.useMutation();
 
   const updateEntry = (id: string, updates: Partial<BirthdayEntry>) => {
     setEntries((prev) =>
@@ -124,24 +123,54 @@ const BirthdaySubmissionForm = ({
 
     setIsSubmitting(true);
     try {
-      await Promise.all(
+      const results = await Promise.allSettled(
         entries.map((entry) =>
-          submitBirthday({
-            variables: {
-              token,
-              name: entry.name.trim(),
-              year: entry.year,
-              month: entry.month,
-              day: entry.day,
-              notes: entry.notes.trim() || null,
-              submitterName: trimmedSubmitterName,
-              submitterEmail: trimmedSubmitterEmail,
-            },
+          submitBirthday.mutateAsync({
+            token,
+            name: entry.name.trim(),
+            year: entry.year,
+            month: entry.month,
+            day: entry.day,
+            notes: entry.notes.trim() || null,
+            submitterName: trimmedSubmitterName,
+            submitterEmail: trimmedSubmitterEmail,
           }),
         ),
       );
 
-      setSubmittedNames(entries.map((e) => e.name.trim()));
+      const succeededNames: string[] = [];
+      const failedEntries: BirthdayEntry[] = [];
+
+      results.forEach((result, index) => {
+        const entry = entries[index];
+        if (!entry) return;
+
+        if (result.status === "fulfilled") {
+          succeededNames.push(entry.name.trim());
+        } else {
+          failedEntries.push(entry);
+          console.error("Submission error:", result.reason);
+        }
+      });
+
+      if (failedEntries.length > 0) {
+        setEntries(failedEntries);
+        if (succeededNames.length > 0) {
+          toast.success(
+            `${succeededNames.length} submission${
+              succeededNames.length === 1 ? "" : "s"
+            } sent successfully.`,
+          );
+        }
+        toast.error(
+          `${failedEntries.length} submission${
+            failedEntries.length === 1 ? "" : "s"
+          } failed. Please review and retry.`,
+        );
+        return;
+      }
+
+      setSubmittedNames(succeededNames);
 
       if (onSuccess) {
         onSuccess();

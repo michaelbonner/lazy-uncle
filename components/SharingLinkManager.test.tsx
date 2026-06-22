@@ -1,4 +1,3 @@
-import { gql } from "@apollo/client";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 interface SharingLink {
@@ -206,83 +205,6 @@ describe("SharingLinkManager Component", () => {
 
       expect(formData.description).toBe("");
       expect(formData.expirationHours).toBe(168);
-    });
-  });
-
-  describe("GraphQL Operations", () => {
-    it("should define correct GraphQL queries and mutations", () => {
-      const GET_SHARING_LINKS_QUERY = gql`
-        query SharingLinks {
-          sharingLinks {
-            id
-            token
-            createdAt
-            expiresAt
-            isActive
-            description
-            submissionCount
-            __typename
-          }
-        }
-      `;
-
-      const CREATE_SHARING_LINK_MUTATION = gql`
-        mutation CreateSharingLink(
-          $description: String
-          $expirationHours: Int
-        ) {
-          createSharingLink(
-            description: $description
-            expirationHours: $expirationHours
-          ) {
-            id
-            token
-            createdAt
-            expiresAt
-            isActive
-            description
-            submissionCount
-            __typename
-          }
-        }
-      `;
-
-      const REVOKE_SHARING_LINK_MUTATION = gql`
-        mutation RevokeSharingLink($linkId: String!) {
-          revokeSharingLink(linkId: $linkId) {
-            id
-            token
-            isActive
-            __typename
-          }
-        }
-      `;
-
-      expect(GET_SHARING_LINKS_QUERY).toBeDefined();
-      expect(CREATE_SHARING_LINK_MUTATION).toBeDefined();
-      expect(REVOKE_SHARING_LINK_MUTATION).toBeDefined();
-    });
-
-    it("should prepare correct mutation variables for creating links", () => {
-      const formData = {
-        description: "Family gathering",
-        expirationHours: 168,
-      };
-
-      const variables = {
-        description: formData.description.trim() || undefined,
-        expirationHours: formData.expirationHours,
-      };
-
-      expect(variables.description).toBe("Family gathering");
-      expect(variables.expirationHours).toBe(168);
-    });
-
-    it("should prepare correct mutation variables for revoking links", () => {
-      const linkId = "test-link-id";
-      const variables = { linkId };
-
-      expect(variables.linkId).toBe("test-link-id");
     });
   });
 

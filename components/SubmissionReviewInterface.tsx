@@ -1,13 +1,7 @@
 import type { Birthday } from "../drizzle/schema";
-import { GET_ALL_BIRTHDAYS_QUERY } from "../graphql/Birthday";
-import {
-  GET_PENDING_SUBMISSIONS_QUERY,
-  IMPORT_SUBMISSION_MUTATION,
-  REJECT_SUBMISSION_MUTATION,
-} from "../graphql/Sharing";
+import { type RouterOutputs, trpc } from "../lib/trpc";
 import { formatDateForDisplay } from "../shared/getDateFromComponents";
 import LoadingSpinner from "./LoadingSpinner";
-import { useMutation, useQuery } from "@apollo/client/react";
 import clsx from "clsx";
 import { format } from "date-fns";
 import React, { useMemo, useState } from "react";
@@ -21,25 +15,10 @@ import {
 } from "react-icons/hi";
 import { IoCalendarOutline, IoPersonOutline } from "react-icons/io5";
 
-interface BirthdaySubmission {
-  id: string;
-  name: string;
-  year?: number | null;
-  month: number;
-  day: number;
-  date?: string | null; // Computed field for backward compatibility
-  category?: string;
-  notes?: string;
-  submitterName?: string;
-  submitterEmail?: string;
-  relationship?: string;
-  status: string;
-  createdAt: string;
-  sharingLink: {
-    id: string;
-    description?: string;
-  };
-}
+type BirthdaySubmission =
+  RouterOutputs["submission"]["pending"]["submissions"][number];
+
+const PAGE_SIZE = 10;
 
 interface DuplicateMatch {
   id: string;
@@ -65,43 +44,36 @@ const SubmissionReviewInterface = () => {
   const [expandedSubmissions, setExpandedSubmissions] = useState<Set<string>>(
     new Set(),
   );
+  const [currentPage, setCurrentPage] = useState(1);
 
+  const utils = trpc.useUtils();
   const {
     data: submissionsData,
-    loading: submissionsLoading,
+    isPending: submissionsLoading,
     error: submissionsError,
-    refetch: refetchSubmissions,
-  } = useQuery(GET_PENDING_SUBMISSIONS_QUERY, {
-    fetchPolicy: "cache-and-network",
+  } = trpc.submission.pending.useQuery({
+    page: currentPage,
+    limit: PAGE_SIZE,
   });
 
-  const { data: birthdaysData, loading: birthdaysLoading } = useQuery(
-    GET_ALL_BIRTHDAYS_QUERY,
-    {
-      fetchPolicy: "cache-first",
-    },
-  );
+  const { data: birthdaysData, isPending: birthdaysLoading } =
+    trpc.birthday.list.useQuery();
 
-  const [importSubmission] = useMutation(IMPORT_SUBMISSION_MUTATION, {
-    onCompleted: () => {
-      refetchSubmissions();
-    },
-    refetchQueries: [{ query: GET_ALL_BIRTHDAYS_QUERY }],
-  });
+  const importSubmission = trpc.submission.import.useMutation();
 
-  const [rejectSubmission] = useMutation(REJECT_SUBMISSION_MUTATION, {
-    onCompleted: () => {
-      refetchSubmissions();
-    },
-  });
+  const rejectSubmission = trpc.submission.reject.useMutation();
 
   const submissions = useMemo<BirthdaySubmission[]>(() => {
-    return submissionsData?.pendingSubmissions?.submissions || [];
+    return submissionsData?.submissions ?? [];
   }, [submissionsData]);
+  const totalSubmissions = submissionsData?.totalCount ?? submissions.length;
+  const totalPages = Math.max(submissionsData?.totalPages ?? 1, 1);
+  const hasPreviousPage = submissionsData?.hasPreviousPage ?? false;
+  const hasNextPage = submissionsData?.hasNextPage ?? false;
 
   // Calculate potential duplicates for each submission
   const submissionsWithDuplicates = useMemo(() => {
-    if (!birthdaysData?.birthdays || birthdaysLoading) {
+    if (!birthdaysData || birthdaysLoading) {
       return submissions.map((submission) => ({
         ...submission,
         duplicates: [],
@@ -109,10 +81,7 @@ const SubmissionReviewInterface = () => {
     }
 
     return submissions.map((submission) => {
-      const duplicates = findPotentialDuplicates(
-        submission,
-        birthdaysData.birthdays,
-      );
+      const duplicates = findPotentialDuplicates(submission, birthdaysData);
       return {
         ...submission,
         duplicates,
@@ -123,9 +92,12 @@ const SubmissionReviewInterface = () => {
   const handleImportSubmission = async (submissionId: string) => {
     setProcessingSubmissions((prev) => new Set(prev).add(submissionId));
     try {
-      await importSubmission({
-        variables: { submissionId },
-      });
+      await importSubmission.mutateAsync({ submissionId });
+      await Promise.all([
+        utils.submission.pending.invalidate(),
+        utils.birthday.list.invalidate(),
+      ]);
+      setCurrentPage(1);
       setShowSuccessMessage("Birthday imported successfully!");
       setTimeout(() => setShowSuccessMessage(null), 3000);
     } catch (error) {
@@ -141,9 +113,9 @@ const SubmissionReviewInterface = () => {
   const handleRejectSubmission = async (submissionId: string) => {
     setProcessingSubmissions((prev) => new Set(prev).add(submissionId));
     try {
-      await rejectSubmission({
-        variables: { submissionId },
-      });
+      await rejectSubmission.mutateAsync({ submissionId });
+      await utils.submission.pending.invalidate();
+      setCurrentPage(1);
       setShowSuccessMessage("Submission rejected");
       setTimeout(() => setShowSuccessMessage(null), 3000);
     } catch (error) {
@@ -165,9 +137,7 @@ const SubmissionReviewInterface = () => {
 
     for (const submissionId of submissionIds) {
       try {
-        await importSubmission({
-          variables: { submissionId },
-        });
+        await importSubmission.mutateAsync({ submissionId });
         imported++;
       } catch (error) {
         console.error(`Error importing submission ${submissionId}:`, error);
@@ -175,8 +145,16 @@ const SubmissionReviewInterface = () => {
       }
     }
 
+    if (imported > 0) {
+      await Promise.all([
+        utils.submission.pending.invalidate(),
+        utils.birthday.list.invalidate(),
+      ]);
+    }
+
     setProcessingSubmissions(new Set());
     setSelectedSubmissions(new Set());
+    setCurrentPage(1);
 
     if (failed === 0) {
       setShowSuccessMessage(`Successfully imported ${imported} birthdays!`);
@@ -197,9 +175,7 @@ const SubmissionReviewInterface = () => {
 
     for (const submissionId of submissionIds) {
       try {
-        await rejectSubmission({
-          variables: { submissionId },
-        });
+        await rejectSubmission.mutateAsync({ submissionId });
         rejected++;
       } catch (error) {
         console.error(`Error rejecting submission ${submissionId}:`, error);
@@ -207,8 +183,13 @@ const SubmissionReviewInterface = () => {
       }
     }
 
+    if (rejected > 0) {
+      await utils.submission.pending.invalidate();
+    }
+
     setProcessingSubmissions(new Set());
     setSelectedSubmissions(new Set());
+    setCurrentPage(1);
 
     if (failed === 0) {
       setShowSuccessMessage(`Rejected ${rejected} submissions`);
@@ -233,10 +214,15 @@ const SubmissionReviewInterface = () => {
   };
 
   const toggleAllSubmissions = () => {
-    if (selectedSubmissions.size === submissions.length) {
+    const allCurrentPageIds = submissions.map((s) => s.id);
+    const allCurrentPageSelected =
+      allCurrentPageIds.length > 0 &&
+      allCurrentPageIds.every((id) => selectedSubmissions.has(id));
+
+    if (allCurrentPageSelected) {
       setSelectedSubmissions(new Set());
     } else {
-      setSelectedSubmissions(new Set(submissions.map((s) => s.id)));
+      setSelectedSubmissions(new Set(allCurrentPageIds));
     }
   };
 
@@ -252,8 +238,18 @@ const SubmissionReviewInterface = () => {
     });
   };
 
-  const formatSubmissionDate = (item: { year?: number | null; month: number; day: number; }) => {
+  const formatSubmissionDate = (item: {
+    year?: number | null;
+    month: number;
+    day: number;
+  }) => {
     return formatDateForDisplay(item.year ?? null, item.month, item.day);
+  };
+
+  const goToPage = (page: number) => {
+    setSelectedSubmissions(new Set());
+    setExpandedSubmissions(new Set());
+    setCurrentPage(Math.min(Math.max(page, 1), totalPages));
   };
 
   if (submissionsLoading) {
@@ -288,9 +284,9 @@ const SubmissionReviewInterface = () => {
             <h2 className="font-display text-2xl font-semibold">
               Birthday submissions
             </h2>
-            {submissions.length > 0 && (
+            {totalSubmissions > 0 && (
               <span className="inline-flex items-center rounded-full border border-rule bg-paper px-2 py-1 text-sm font-medium text-accent-deep">
-                {submissions.length} pending
+                {totalSubmissions} pending
               </span>
             )}
           </div>
@@ -332,7 +328,7 @@ const SubmissionReviewInterface = () => {
                     className="h-4 w-4 rounded border-rule text-accent focus:ring-accent/40"
                   />
                   <span className="text-sm font-medium text-ink">
-                    Select all ({submissions.length})
+                    Select page ({submissions.length})
                   </span>
                 </label>
                 {selectedSubmissions.size > 0 && (
@@ -611,6 +607,41 @@ const SubmissionReviewInterface = () => {
                 </tbody>
               </table>
             </div>
+            {totalPages > 1 && (
+              <div className="mt-4 flex flex-col gap-3 text-sm text-ink-soft sm:flex-row sm:items-center sm:justify-between">
+                <span>
+                  Page {currentPage} of {totalPages}
+                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => goToPage(currentPage - 1)}
+                    disabled={!hasPreviousPage || processingSubmissions.size > 0}
+                    className={clsx(
+                      "rounded-md border border-rule px-3 py-1.5 font-medium transition-colors",
+                      hasPreviousPage && processingSubmissions.size === 0
+                        ? "bg-paper text-ink hover:bg-paper-deep"
+                        : "bg-paper-deep text-ink-muted",
+                    )}
+                  >
+                    Previous
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => goToPage(currentPage + 1)}
+                    disabled={!hasNextPage || processingSubmissions.size > 0}
+                    className={clsx(
+                      "rounded-md border border-rule px-3 py-1.5 font-medium transition-colors",
+                      hasNextPage && processingSubmissions.size === 0
+                        ? "bg-paper text-ink hover:bg-paper-deep"
+                        : "bg-paper-deep text-ink-muted",
+                    )}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
           </>
         )}
 

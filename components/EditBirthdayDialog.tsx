@@ -1,4 +1,4 @@
-import { NexusGenObjects } from "../generated/nexus-typegen";
+import type { Birthday } from "../lib/trpc";
 import EditBirthdayForm from "./EditBirthdayForm";
 import {
   Dialog,
@@ -15,7 +15,7 @@ const EditBirthdayDialog = ({
   isOpen,
   handleClose,
 }: {
-  birthday: NexusGenObjects["Birthday"];
+  birthday: Birthday;
   isOpen: boolean;
   handleClose: () => void;
 }) => {

@@ -5,7 +5,6 @@ const nextConfig: NextConfig = {
   output: "standalone",
   reactStrictMode: true,
   typescript: { ignoreBuildErrors: true },
-  eslint: { ignoreDuringBuilds: true },
   turbopack: {
     root: path.join(__dirname, ".."),
   },

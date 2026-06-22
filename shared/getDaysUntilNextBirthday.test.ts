@@ -1,6 +1,6 @@
 import { addDays, addWeeks, subYears } from "date-fns";
 import { describe, expect, it } from "vitest";
-import { NexusGenObjects } from "../generated/nexus-typegen";
+import type { Birthday } from "../lib/trpc";
 import { getDaysUntilNextBirthday } from "./getDaysUntilNextBirthday";
 
 const baseBirthDay = {
@@ -10,39 +10,39 @@ const baseBirthDay = {
 };
 
 const today = new Date();
-const todayBirthday: NexusGenObjects["Birthday"] = {
+const todayBirthday = {
   month: today.getMonth() + 1,
   day: today.getDate(),
   ...baseBirthDay,
-};
+} as unknown as Birthday;
 
 const oneYearAgo = subYears(new Date(), 1);
-const oneYearAgoBirthday: NexusGenObjects["Birthday"] = {
+const oneYearAgoBirthday = {
   month: oneYearAgo.getMonth() + 1,
   day: oneYearAgo.getDate(),
   ...baseBirthDay,
-};
+} as unknown as Birthday;
 
 const oneYearAgoTomorrow = subYears(addDays(new Date(), 1), 1);
-const oneYearAgoTomorrowBirthday: NexusGenObjects["Birthday"] = {
+const oneYearAgoTomorrowBirthday = {
   month: oneYearAgoTomorrow.getMonth() + 1,
   day: oneYearAgoTomorrow.getDate(),
   ...baseBirthDay,
-};
+} as unknown as Birthday;
 
 const oneYearAgoThreeDays = subYears(addDays(new Date(), 3), 1);
-const oneYearAgoThreeDaysFromNowBirthday: NexusGenObjects["Birthday"] = {
+const oneYearAgoThreeDaysFromNowBirthday = {
   month: oneYearAgoThreeDays.getMonth() + 1,
   day: oneYearAgoThreeDays.getDate(),
   ...baseBirthDay,
-};
+} as unknown as Birthday;
 
 const oneYearAgoThreeWeeks = subYears(addWeeks(new Date(), 3), 1);
-const oneYearAgoThreeWeeksFromNowBirthday: NexusGenObjects["Birthday"] = {
+const oneYearAgoThreeWeeksFromNowBirthday = {
   month: oneYearAgoThreeWeeks.getMonth() + 1,
   day: oneYearAgoThreeWeeks.getDate(),
   ...baseBirthDay,
-};
+} as unknown as Birthday;
 
 describe("get age for humans", () => {
   it("a date of today returns 0", () => {
@@ -63,5 +63,23 @@ describe("get age for humans", () => {
     expect(
       getDaysUntilNextBirthday(oneYearAgoThreeWeeksFromNowBirthday),
     ).toEqual(21);
+  });
+  it("a birthday with no month returns positive infinity", () => {
+    expect(
+      getDaysUntilNextBirthday({ day: 15 } as unknown as Birthday),
+    ).toBe(Number.POSITIVE_INFINITY);
+  });
+  it("a birthday with no day returns positive infinity", () => {
+    expect(
+      getDaysUntilNextBirthday({ month: 5 } as unknown as Birthday),
+    ).toBe(Number.POSITIVE_INFINITY);
+  });
+  it("a birthday with null date components returns positive infinity", () => {
+    expect(
+      getDaysUntilNextBirthday({
+        month: null,
+        day: null,
+      } as unknown as Birthday),
+    ).toBe(Number.POSITIVE_INFINITY);
   });
 });

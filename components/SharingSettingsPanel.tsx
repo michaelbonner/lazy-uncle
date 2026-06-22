@@ -1,11 +1,7 @@
-import {
-  GET_NOTIFICATION_PREFERENCES_QUERY,
-  UPDATE_NOTIFICATION_PREFERENCES_MUTATION,
-} from "../graphql/Sharing";
+import { trpc } from "../lib/trpc";
 import LoadingSpinner from "./LoadingSpinner";
 import PrimaryButton from "./PrimaryButton";
-import { useMutation, useQuery } from "@apollo/client/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { HiCog, HiMail, HiMailOpen } from "react-icons/hi";
 import { IoSettingsOutline } from "react-icons/io5";
 import { MdCake } from "react-icons/md";
@@ -18,85 +14,77 @@ interface NotificationPreference {
   birthdayReminders: boolean;
 }
 
+type NotificationPreferenceDraft = Pick<
+  NotificationPreference,
+  "emailNotifications" | "summaryNotifications" | "birthdayReminders"
+>;
+
+const defaultPreferences: NotificationPreferenceDraft = {
+  emailNotifications: true,
+  summaryNotifications: false,
+  birthdayReminders: false,
+};
+
 const SharingSettingsPanel = () => {
-  const [emailNotifications, setEmailNotifications] = useState(true);
-  const [summaryNotifications, setSummaryNotifications] = useState(false);
-  const [birthdayReminders, setBirthdayReminders] = useState(false);
+  const [draftPreferences, setDraftPreferences] =
+    useState<NotificationPreferenceDraft | null>(null);
+  const utils = trpc.useUtils();
   const {
     data: preferencesData,
-    loading: preferencesLoading,
+    isPending: preferencesLoading,
     error: preferencesError,
-    refetch: refetchPreferences,
-  } = useQuery(GET_NOTIFICATION_PREFERENCES_QUERY, {
-    fetchPolicy: "cache-and-network",
-  });
+  } = trpc.notification.preferences.useQuery();
 
-  // Sync Apollo query data to local form state
-  useEffect(() => {
-    if (preferencesData?.notificationPreferences) {
-      const preferences = preferencesData.notificationPreferences;
-      if (emailNotifications !== preferences.emailNotifications) {
-        setEmailNotifications(preferences.emailNotifications);
-      }
-      if (summaryNotifications !== preferences.summaryNotifications) {
-        setSummaryNotifications(preferences.summaryNotifications);
-      }
-      if (birthdayReminders !== preferences.birthdayReminders) {
-        setBirthdayReminders(preferences.birthdayReminders);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [preferencesData]);
+  const formPreferences =
+    draftPreferences ?? preferencesData ?? defaultPreferences;
 
-  const [updatePreferences, { loading: updateLoading }] = useMutation(
-    UPDATE_NOTIFICATION_PREFERENCES_MUTATION,
-    {
-      onCompleted: () => {
-        refetchPreferences();
-      },
-      onError: (error) => {
-        console.error("Error updating notification preferences:", error);
-      },
+  const updatePreferences = trpc.notification.update.useMutation({
+    onSuccess: () => {
+      utils.notification.preferences.invalidate();
     },
-  );
+    onError: (error) => {
+      console.error("Error updating notification preferences:", error);
+    },
+  });
+  const updateLoading = updatePreferences.isPending;
 
-  const hasChanges = preferencesData
-    ? preferencesData.notificationPreferences
-      ? emailNotifications !==
-          preferencesData.notificationPreferences.emailNotifications ||
-        summaryNotifications !==
-          preferencesData.notificationPreferences.summaryNotifications ||
-        birthdayReminders !==
-          preferencesData.notificationPreferences.birthdayReminders
-      : true // No preferences row yet — always show Save
-    : false; // Still loading — hide Save
+  const hasChanges =
+    preferencesData === undefined
+      ? false // Still loading — hide Save
+      : preferencesData
+        ? formPreferences.emailNotifications !==
+            preferencesData.emailNotifications ||
+          formPreferences.summaryNotifications !==
+            preferencesData.summaryNotifications ||
+          formPreferences.birthdayReminders !== preferencesData.birthdayReminders
+        : true; // No preferences row yet — always show Save
+
+  const updateDraftPreference = (
+    key: keyof NotificationPreferenceDraft,
+    value: boolean,
+  ) => {
+    setDraftPreferences({ ...formPreferences, [key]: value });
+  };
 
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await updatePreferences({
-        variables: {
-          emailNotifications,
-          summaryNotifications,
-          birthdayReminders,
-        },
+      await updatePreferences.mutateAsync({
+        emailNotifications: formPreferences.emailNotifications,
+        summaryNotifications: formPreferences.summaryNotifications,
+        birthdayReminders: formPreferences.birthdayReminders,
       });
+      setDraftPreferences(null);
     } catch (error) {
       console.error("Failed to update notification preferences:", error);
     }
   };
 
   const handleResetSettings = () => {
-    if (preferencesData?.notificationPreferences) {
-      const preferences = preferencesData.notificationPreferences;
-      setEmailNotifications(preferences.emailNotifications);
-      setSummaryNotifications(preferences.summaryNotifications);
-      setBirthdayReminders(preferences.birthdayReminders);
-    }
+    setDraftPreferences(null);
   };
 
-  const preferences: NotificationPreference | null =
-    preferencesData?.notificationPreferences || null;
+  const preferences: NotificationPreference | null = preferencesData ?? null;
 
   return (
     <div className="js-settings-panel mt-8 rounded-lg border border-rule bg-paper-deep text-ink">
@@ -133,8 +121,13 @@ const SharingSettingsPanel = () => {
                     <input
                       id="emailNotifications"
                       type="checkbox"
-                      checked={emailNotifications}
-                      onChange={(e) => setEmailNotifications(e.target.checked)}
+                      checked={formPreferences.emailNotifications}
+                      onChange={(e) =>
+                        updateDraftPreference(
+                          "emailNotifications",
+                          e.target.checked,
+                        )
+                      }
                       className="h-4 w-4 rounded border-rule text-accent focus:ring-accent/40"
                     />
                   </div>
@@ -158,9 +151,12 @@ const SharingSettingsPanel = () => {
                     <input
                       id="summaryNotifications"
                       type="checkbox"
-                      checked={summaryNotifications}
+                      checked={formPreferences.summaryNotifications}
                       onChange={(e) =>
-                        setSummaryNotifications(e.target.checked)
+                        updateDraftPreference(
+                          "summaryNotifications",
+                          e.target.checked,
+                        )
                       }
                       className="h-4 w-4 rounded border-rule text-accent focus:ring-accent/40"
                     />
@@ -185,8 +181,13 @@ const SharingSettingsPanel = () => {
                     <input
                       id="birthdayReminders"
                       type="checkbox"
-                      checked={birthdayReminders}
-                      onChange={(e) => setBirthdayReminders(e.target.checked)}
+                      checked={formPreferences.birthdayReminders}
+                      onChange={(e) =>
+                        updateDraftPreference(
+                          "birthdayReminders",
+                          e.target.checked,
+                        )
+                      }
                       className="h-4 w-4 rounded border-rule text-accent focus:ring-accent/40"
                     />
                   </div>
