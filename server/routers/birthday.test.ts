@@ -86,7 +86,7 @@ describe("birthday.byId", () => {
       month: 5,
       day: 15,
       userId: "user-1",
-    });
+    } as never);
 
     const result = await caller().birthday.byId({ birthdayId: "b1" });
     expect(result).toMatchObject({ id: "b1", date: "1990-05-15" });
@@ -105,7 +105,7 @@ describe("birthday.byId", () => {
       month: 5,
       day: 15,
       userId: "someone-else",
-    });
+    } as never);
     expect(await caller().birthday.byId({ birthdayId: "b1" })).toBeNull();
   });
 });
@@ -115,7 +115,7 @@ describe("birthday.list", () => {
     mockDb.query.birthdays.findMany.mockResolvedValue([
       { id: "b1", name: "A", year: 1990, month: 5, day: 15, userId: "user-1" },
       { id: "b2", name: "B", year: null, month: 1, day: 2, userId: "user-1" },
-    ]);
+    ] as never);
 
     const result = await caller().birthday.list();
     expect(result).toHaveLength(2);

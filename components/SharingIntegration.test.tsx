@@ -1,4 +1,5 @@
 import BirthdayRow from "./BirthdayRow";
+import type { Birthday } from "../lib/trpc";
 import { render, screen } from "@testing-library/react";
 import React from "react";
 import { describe, expect, it, vi } from "vitest";
@@ -34,16 +35,34 @@ describe("Sharing Integration Tests", () => {
     setZodiacSignFilter: vi.fn(),
   };
 
+  const birthdayFixture = (overrides: Partial<Birthday>): Birthday => ({
+    id: "birthday-id",
+    name: "Test Birthday",
+    date: "1990-01-01",
+    year: 1990,
+    month: 1,
+    day: 1,
+    category: null,
+    parent: null,
+    notes: null,
+    remindersEnabled: true,
+    importSource: "manual",
+    userId: "test-user-id",
+    createdAt: new Date("2024-01-01T00:00:00Z"),
+    ...overrides,
+  });
+
   it("displays import source indicators for manual birthdays", () => {
-    const manualBirthday = {
+    const manualBirthday = birthdayFixture({
       id: "birthday-1",
       name: "John Doe",
       date: "1990-01-15",
+      year: 1990,
+      month: 1,
+      day: 15,
       category: "Friend",
-      parent: null,
-      notes: null,
       importSource: "manual",
-    };
+    });
 
     render(
       <BirthdayRow
@@ -61,15 +80,16 @@ describe("Sharing Integration Tests", () => {
   });
 
   it("displays import source indicators for sharing birthdays", () => {
-    const sharedBirthday = {
+    const sharedBirthday = birthdayFixture({
       id: "birthday-2",
       name: "Jane Smith",
       date: "1985-06-20",
+      year: 1985,
+      month: 6,
+      day: 20,
       category: "Family",
-      parent: null,
-      notes: null,
       importSource: "sharing",
-    };
+    });
 
     render(
       <BirthdayRow
@@ -87,15 +107,16 @@ describe("Sharing Integration Tests", () => {
   });
 
   it("displays import source indicators for CSV birthdays", () => {
-    const csvBirthday = {
+    const csvBirthday = birthdayFixture({
       id: "birthday-3",
       name: "Bob Wilson",
       date: "1992-03-10",
+      year: 1992,
+      month: 3,
+      day: 10,
       category: "Work",
-      parent: null,
-      notes: null,
       importSource: "csv",
-    };
+    });
 
     render(
       <BirthdayRow
@@ -113,15 +134,15 @@ describe("Sharing Integration Tests", () => {
   });
 
   it("handles birthdays without import source", () => {
-    const legacyBirthday = {
+    const legacyBirthday = birthdayFixture({
       id: "birthday-4",
       name: "Alice Johnson",
       date: "1988-12-25",
-      category: null,
-      parent: null,
-      notes: null,
+      year: 1988,
+      month: 12,
+      day: 25,
       importSource: null,
-    };
+    });
 
     render(
       <BirthdayRow
@@ -139,15 +160,17 @@ describe("Sharing Integration Tests", () => {
   });
 
   it("displays birthday with notes and import source", () => {
-    const birthdayWithNotes = {
+    const birthdayWithNotes = birthdayFixture({
       id: "birthday-5",
       name: "Charlie Brown",
       date: "1995-07-04",
+      year: 1995,
+      month: 7,
+      day: 4,
       category: "Friend",
-      parent: null,
       notes: "Met at college",
       importSource: "sharing",
-    };
+    });
 
     render(
       <BirthdayRow

@@ -239,9 +239,7 @@ vi.mock("next/dynamic", () => ({
       React.useEffect(() => {
         let active = true;
         Promise.resolve(fn()).then((mod) => {
-          const Component =
-            // @ts-expect-error - dynamic import shape varies
-            mod?.default || mod;
+          const Component = mod.default || mod;
           if (active && typeof Component === "function") {
             setLoaded(() => Component);
           }

@@ -3,6 +3,7 @@ import BirthdayDateInput from "./BirthdayDateInput";
 import PrimaryButton from "./PrimaryButton";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { IoTrashOutline } from "react-icons/io5";
@@ -40,18 +41,29 @@ const EditBirthdayForm = ({
   const [remindersEnabled, setRemindersEnabled] = useState(
     birthday.remindersEnabled ?? true,
   );
+  const router = useRouter();
 
   const { data: preferences } = trpc.notification.preferences.useQuery();
   const birthdayRemindersEnabled = preferences?.birthdayReminders ?? false;
 
   const utils = trpc.useUtils();
   const editBirthday = trpc.birthday.edit.useMutation({
-    onSuccess: () => utils.birthday.list.invalidate(),
+    onSuccess: async (updatedBirthday) => {
+      await Promise.all([
+        utils.birthday.list.invalidate(),
+        utils.birthday.byId.invalidate({ birthdayId: updatedBirthday.id }),
+      ]);
+    },
   });
   const { isPending: loading, error } = editBirthday;
 
   const deleteBirthday = trpc.birthday.delete.useMutation({
-    onSuccess: () => utils.birthday.list.invalidate(),
+    onSuccess: async (deletedBirthday) => {
+      await Promise.all([
+        utils.birthday.list.invalidate(),
+        utils.birthday.byId.invalidate({ birthdayId: deletedBirthday.id }),
+      ]);
+    },
   });
   const { isPending: deleteLoading, error: deleteError } = deleteBirthday;
 
@@ -196,17 +208,21 @@ const EditBirthdayForm = ({
                 "focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:outline-hidden",
               )}
               disabled={deleteLoading}
-              onClick={() => {
+              onClick={async () => {
                 if (
                   window.confirm(
                     "Are you sure you want to delete this birthday?",
                   )
                 ) {
-                  deleteBirthday.mutate({
+                  await deleteBirthday.mutateAsync({
                     birthdayId: birthday.id,
                   });
                   toast("Birthday deleted");
-                  handleClose?.();
+                  if (handleClose) {
+                    handleClose();
+                  } else {
+                    await router.push("/birthdays");
+                  }
                 }
               }}
               type="button"

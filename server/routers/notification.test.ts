@@ -52,6 +52,8 @@ describe("notification.preferences", () => {
       id: "p1",
       userId: "user-1",
       emailNotifications: true,
+      summaryNotifications: false,
+      birthdayReminders: false,
     });
     const result = await caller().notification.preferences();
     expect(result).toMatchObject({ id: "p1", userId: "user-1" });
@@ -90,6 +92,9 @@ describe("notification.update", () => {
     mockDb.query.notificationPreferences.findFirst.mockResolvedValue({
       id: "p1",
       userId: "user-1",
+      emailNotifications: true,
+      summaryNotifications: false,
+      birthdayReminders: false,
     });
     await caller().notification.update({});
     expect(notificationService.updateNotificationPreferences).toHaveBeenCalledWith(

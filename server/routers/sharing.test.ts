@@ -58,7 +58,7 @@ describe("sharing.list", () => {
         submissions: [{ id: "s1" }, { id: "s2" }],
       },
       { id: "l2", userId: "user-1", isActive: true, submissions: [] },
-    ]);
+    ] as never);
 
     const result = await caller().sharing.list();
     expect(result).toHaveLength(2);
@@ -138,7 +138,7 @@ describe("sharing.validate (public)", () => {
       isActive: false,
       expiresAt: new Date(Date.now() + 100000),
       user: { name: "Owner" },
-    });
+    } as never);
     const result = await callerFor(undefined).sharing.validate({ token: "t" });
     expect(result).toMatchObject({ isValid: false, error: "INACTIVE_LINK" });
   });
@@ -150,7 +150,7 @@ describe("sharing.validate (public)", () => {
       isActive: true,
       expiresAt: new Date(Date.now() - 1000),
       user: { name: "Owner" },
-    });
+    } as never);
     const where = vi.fn().mockResolvedValue(undefined);
     const set = vi.fn().mockReturnValue({ where });
     mockDb.update.mockReturnValue({ set } as never);
@@ -168,7 +168,7 @@ describe("sharing.validate (public)", () => {
       isActive: true,
       expiresAt: new Date(Date.now() + 100000),
       user: { name: "Owner" },
-    });
+    } as never);
     const result = await callerFor(undefined).sharing.validate({ token: "t" });
     expect(result).toMatchObject({
       isValid: true,

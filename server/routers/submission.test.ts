@@ -55,7 +55,7 @@ describe("submission.pending", () => {
   });
 
   it("paginates pending submissions scoped to the user's links", async () => {
-    mockDb.query.sharingLinks.findMany.mockResolvedValue([{ id: "l1" }]);
+    mockDb.query.sharingLinks.findMany.mockResolvedValue([{ id: "l1" }] as never);
     const all = Array.from({ length: 15 }, (_, i) => ({
       id: `s${i}`,
       name: "N",
@@ -66,7 +66,7 @@ describe("submission.pending", () => {
       sharingLinkId: "l1",
       sharingLink: { id: "l1", description: "d" },
     }));
-    mockDb.query.birthdaySubmissions.findMany.mockResolvedValue(all);
+    mockDb.query.birthdaySubmissions.findMany.mockResolvedValue(all as never);
 
     const result = await caller().submission.pending({ page: 1, limit: 10 });
     expect(result.submissions).toHaveLength(10);
@@ -78,7 +78,7 @@ describe("submission.pending", () => {
   });
 
   it("computes second-page flags correctly", async () => {
-    mockDb.query.sharingLinks.findMany.mockResolvedValue([{ id: "l1" }]);
+    mockDb.query.sharingLinks.findMany.mockResolvedValue([{ id: "l1" }] as never);
     const all = Array.from({ length: 15 }, (_, i) => ({
       id: `s${i}`,
       name: "N",
@@ -89,7 +89,7 @@ describe("submission.pending", () => {
       sharingLinkId: "l1",
       sharingLink: { id: "l1", description: "d" },
     }));
-    mockDb.query.birthdaySubmissions.findMany.mockResolvedValue(all);
+    mockDb.query.birthdaySubmissions.findMany.mockResolvedValue(all as never);
 
     const result = await caller().submission.pending({ page: 2, limit: 10 });
     expect(result.currentPage).toBe(2);
@@ -114,7 +114,7 @@ describe("submission.submit (public)", () => {
       month: 5,
       day: 15,
       status: "PENDING",
-    });
+    } as never);
 
     const result = await callerFor(undefined).submission.submit({
       token: "tok",
@@ -177,7 +177,7 @@ describe("submission.import", () => {
       year: 1990,
       month: 5,
       day: 15,
-    });
+    } as never);
     const result = await caller().submission.import({ submissionId: "sub-1" });
     expect(result).toMatchObject({ id: "b1", date: "1990-05-15" });
     expect(SubmissionService.importSubmission).toHaveBeenCalledWith(
@@ -209,7 +209,7 @@ describe("submission.reject", () => {
       month: 5,
       day: 15,
       status: "REJECTED",
-    });
+    } as never);
     const result = await caller().submission.reject({ submissionId: "sub-1" });
     expect(result).toMatchObject({ id: "sub-1" });
   });
@@ -281,7 +281,7 @@ describe("submission.duplicates", () => {
       month: 5,
       day: 15,
       sharingLink: { userId: "someone-else" },
-    });
+    } as never);
     await expect(
       caller().submission.duplicates({ submissionId: "sub-1" }),
     ).rejects.toMatchObject({ code: "NOT_FOUND" });
@@ -296,7 +296,7 @@ describe("submission.duplicates", () => {
       month: 5,
       day: 15,
       sharingLink: { userId: "user-1" },
-    });
+    } as never);
     vi.mocked(SubmissionService.detectDuplicates).mockResolvedValue({
       hasDuplicates: true,
       matches: [

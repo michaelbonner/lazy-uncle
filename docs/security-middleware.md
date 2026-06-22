@@ -141,12 +141,12 @@ Rate limiting implements progressive delays:
 
 ## Integration
 
-### GraphQL Resolvers
+### tRPC Routers
 
-Security middleware is integrated into GraphQL mutations:
+Security middleware is integrated into tRPC mutations:
 
 ```typescript
-// createSharingLink mutation
+// sharing.create mutation
 const securityResult = await SecurityMiddleware.checkSharingLinkRateLimit({
   ipAddress: extractedIP,
   userAgent: request.headers["user-agent"],
@@ -228,7 +228,7 @@ Run security tests:
 ```bash
 npm test -- --run lib/security-middleware.test.ts
 npm test -- --run lib/rate-limiter.integration.test.ts
-npm test -- --run graphql/schema/security-integration.test.ts
+npm test -- --run server/routers/sharing.test.ts
 ```
 
 ## Production Considerations

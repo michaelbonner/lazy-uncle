@@ -12,7 +12,7 @@ I just wanted to create a little app to keep track of birthdays. That's pretty m
 - Next.js
 - NextAuth
 - Drizzle
-- Apollo client
+- tRPC
 - Tailwind CSS
 
 ## Getting Started
@@ -27,4 +27,4 @@ I just wanted to create a little app to keep track of birthdays. That's pretty m
 
 ## Important files
 
-- `pages/graphql.ts`: All GraphQL requests hit this endpoint. Visit [http://localhost:3000/api/graphql]() to open the Apollo Studio
+- `app/api/trpc/[trpc]/route.ts`: All tRPC requests hit this endpoint.
