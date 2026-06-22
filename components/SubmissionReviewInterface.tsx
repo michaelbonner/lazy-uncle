@@ -1,13 +1,7 @@
 import type { Birthday } from "../drizzle/schema";
-import { GET_ALL_BIRTHDAYS_QUERY } from "../graphql/Birthday";
-import {
-  GET_PENDING_SUBMISSIONS_QUERY,
-  IMPORT_SUBMISSION_MUTATION,
-  REJECT_SUBMISSION_MUTATION,
-} from "../graphql/Sharing";
+import { type RouterOutputs, trpc } from "../lib/trpc";
 import { formatDateForDisplay } from "../shared/getDateFromComponents";
 import LoadingSpinner from "./LoadingSpinner";
-import { useMutation, useQuery } from "@apollo/client/react";
 import clsx from "clsx";
 import { format } from "date-fns";
 import React, { useMemo, useState } from "react";
@@ -21,25 +15,8 @@ import {
 } from "react-icons/hi";
 import { IoCalendarOutline, IoPersonOutline } from "react-icons/io5";
 
-interface BirthdaySubmission {
-  id: string;
-  name: string;
-  year?: number | null;
-  month: number;
-  day: number;
-  date?: string | null; // Computed field for backward compatibility
-  category?: string;
-  notes?: string;
-  submitterName?: string;
-  submitterEmail?: string;
-  relationship?: string;
-  status: string;
-  createdAt: string;
-  sharingLink: {
-    id: string;
-    description?: string;
-  };
-}
+type BirthdaySubmission =
+  RouterOutputs["submission"]["pending"]["submissions"][number];
 
 interface DuplicateMatch {
   id: string;
@@ -66,42 +43,36 @@ const SubmissionReviewInterface = () => {
     new Set(),
   );
 
+  const utils = trpc.useUtils();
   const {
     data: submissionsData,
-    loading: submissionsLoading,
+    isPending: submissionsLoading,
     error: submissionsError,
-    refetch: refetchSubmissions,
-  } = useQuery(GET_PENDING_SUBMISSIONS_QUERY, {
-    fetchPolicy: "cache-and-network",
+  } = trpc.submission.pending.useQuery();
+
+  const { data: birthdaysData, isPending: birthdaysLoading } =
+    trpc.birthday.list.useQuery();
+
+  const importSubmission = trpc.submission.import.useMutation({
+    onSuccess: () => {
+      utils.submission.pending.invalidate();
+      utils.birthday.list.invalidate();
+    },
   });
 
-  const { data: birthdaysData, loading: birthdaysLoading } = useQuery(
-    GET_ALL_BIRTHDAYS_QUERY,
-    {
-      fetchPolicy: "cache-first",
-    },
-  );
-
-  const [importSubmission] = useMutation(IMPORT_SUBMISSION_MUTATION, {
-    onCompleted: () => {
-      refetchSubmissions();
-    },
-    refetchQueries: [{ query: GET_ALL_BIRTHDAYS_QUERY }],
-  });
-
-  const [rejectSubmission] = useMutation(REJECT_SUBMISSION_MUTATION, {
-    onCompleted: () => {
-      refetchSubmissions();
+  const rejectSubmission = trpc.submission.reject.useMutation({
+    onSuccess: () => {
+      utils.submission.pending.invalidate();
     },
   });
 
   const submissions = useMemo<BirthdaySubmission[]>(() => {
-    return submissionsData?.pendingSubmissions?.submissions || [];
+    return submissionsData?.submissions ?? [];
   }, [submissionsData]);
 
   // Calculate potential duplicates for each submission
   const submissionsWithDuplicates = useMemo(() => {
-    if (!birthdaysData?.birthdays || birthdaysLoading) {
+    if (!birthdaysData || birthdaysLoading) {
       return submissions.map((submission) => ({
         ...submission,
         duplicates: [],
@@ -109,10 +80,7 @@ const SubmissionReviewInterface = () => {
     }
 
     return submissions.map((submission) => {
-      const duplicates = findPotentialDuplicates(
-        submission,
-        birthdaysData.birthdays,
-      );
+      const duplicates = findPotentialDuplicates(submission, birthdaysData);
       return {
         ...submission,
         duplicates,
@@ -123,9 +91,7 @@ const SubmissionReviewInterface = () => {
   const handleImportSubmission = async (submissionId: string) => {
     setProcessingSubmissions((prev) => new Set(prev).add(submissionId));
     try {
-      await importSubmission({
-        variables: { submissionId },
-      });
+      await importSubmission.mutateAsync({ submissionId });
       setShowSuccessMessage("Birthday imported successfully!");
       setTimeout(() => setShowSuccessMessage(null), 3000);
     } catch (error) {
@@ -141,9 +107,7 @@ const SubmissionReviewInterface = () => {
   const handleRejectSubmission = async (submissionId: string) => {
     setProcessingSubmissions((prev) => new Set(prev).add(submissionId));
     try {
-      await rejectSubmission({
-        variables: { submissionId },
-      });
+      await rejectSubmission.mutateAsync({ submissionId });
       setShowSuccessMessage("Submission rejected");
       setTimeout(() => setShowSuccessMessage(null), 3000);
     } catch (error) {
@@ -165,9 +129,7 @@ const SubmissionReviewInterface = () => {
 
     for (const submissionId of submissionIds) {
       try {
-        await importSubmission({
-          variables: { submissionId },
-        });
+        await importSubmission.mutateAsync({ submissionId });
         imported++;
       } catch (error) {
         console.error(`Error importing submission ${submissionId}:`, error);
@@ -197,9 +159,7 @@ const SubmissionReviewInterface = () => {
 
     for (const submissionId of submissionIds) {
       try {
-        await rejectSubmission({
-          variables: { submissionId },
-        });
+        await rejectSubmission.mutateAsync({ submissionId });
         rejected++;
       } catch (error) {
         console.error(`Error rejecting submission ${submissionId}:`, error);

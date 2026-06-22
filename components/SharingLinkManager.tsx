@@ -1,27 +1,13 @@
-import {
-  CREATE_SHARING_LINK_MUTATION,
-  GET_SHARING_LINKS_QUERY,
-  REVOKE_SHARING_LINK_MUTATION,
-} from "../graphql/Sharing";
+import { type RouterOutputs, trpc } from "../lib/trpc";
 import LoadingSpinner from "./LoadingSpinner";
 import PrimaryButton from "./PrimaryButton";
-import { useMutation, useQuery } from "@apollo/client/react";
 import clsx from "clsx";
 import { format } from "date-fns";
 import { useState } from "react";
 import { HiClipboard, HiClipboardCheck, HiTrash } from "react-icons/hi";
 import { IoAddCircleOutline, IoShareOutline } from "react-icons/io5";
 
-interface SharingLink {
-  id: string;
-  token: string;
-  createdAt: string;
-  expiresAt: string;
-  isActive: boolean;
-  description?: string;
-  category?: string;
-  submissionCount: number;
-}
+type SharingLink = RouterOutputs["sharing"]["list"][number];
 
 const SharingLinkManager = () => {
   const [copiedLinkId, setCopiedLinkId] = useState<string | null>(null);
@@ -30,34 +16,30 @@ const SharingLinkManager = () => {
   const [category, setCategory] = useState("");
   const [expirationHours, setExpirationHours] = useState(168); // 7 days default
 
+  const utils = trpc.useUtils();
   const {
     data: sharingLinksData,
-    loading: sharingLinksLoading,
+    isPending: sharingLinksLoading,
     error: sharingLinksError,
-    refetch: refetchSharingLinks,
-  } = useQuery(GET_SHARING_LINKS_QUERY, {
-    fetchPolicy: "cache-and-network",
-  });
+  } = trpc.sharing.list.useQuery();
 
-  const [createSharingLink, { loading: createLoading }] = useMutation(
-    CREATE_SHARING_LINK_MUTATION,
-    {
-      onCompleted: () => {
-        setDescription("");
-        setCategory("");
-        setExpirationHours(168);
-        setShowCreateForm(false);
-        refetchSharingLinks();
-      },
-      onError: (error) => {
-        console.error("Error creating sharing link:", error);
-      },
+  const createSharingLink = trpc.sharing.create.useMutation({
+    onSuccess: () => {
+      setDescription("");
+      setCategory("");
+      setExpirationHours(168);
+      setShowCreateForm(false);
+      utils.sharing.list.invalidate();
     },
-  );
+    onError: (error) => {
+      console.error("Error creating sharing link:", error);
+    },
+  });
+  const createLoading = createSharingLink.isPending;
 
-  const [revokeSharingLink] = useMutation(REVOKE_SHARING_LINK_MUTATION, {
-    onCompleted: () => {
-      refetchSharingLinks();
+  const revokeSharingLink = trpc.sharing.revoke.useMutation({
+    onSuccess: () => {
+      utils.sharing.list.invalidate();
     },
     onError: (error) => {
       console.error("Error revoking sharing link:", error);
@@ -69,12 +51,10 @@ const SharingLinkManager = () => {
     const trimmedDescription = description.trim() || undefined;
     const trimmedCategory = category.trim() || undefined;
     try {
-      await createSharingLink({
-        variables: {
-          description: trimmedDescription,
-          category: trimmedCategory,
-          expirationHours,
-        },
+      await createSharingLink.mutateAsync({
+        description: trimmedDescription,
+        category: trimmedCategory,
+        expirationHours,
       });
     } catch (error) {
       console.error("Failed to create sharing link:", error);
@@ -84,9 +64,7 @@ const SharingLinkManager = () => {
   const handleRevokeLink = async (linkId: string) => {
     if (window.confirm("Are you sure you want to revoke this sharing link?")) {
       try {
-        await revokeSharingLink({
-          variables: { linkId },
-        });
+        await revokeSharingLink.mutateAsync({ linkId });
       } catch (error) {
         console.error("Failed to revoke sharing link:", error);
       }
@@ -113,11 +91,11 @@ const SharingLinkManager = () => {
     }
   };
 
-  const isExpired = (expiresAt: string) => {
+  const isExpired = (expiresAt: Date | string) => {
     return new Date(expiresAt) < new Date();
   };
 
-  const formatExpirationDate = (expiresAt: string) => {
+  const formatExpirationDate = (expiresAt: Date | string) => {
     const date = new Date(expiresAt);
     const now = new Date();
     const isExpiredLink = date < now;
@@ -137,7 +115,7 @@ const SharingLinkManager = () => {
     );
   };
 
-  const sharingLinks: SharingLink[] = sharingLinksData?.sharingLinks || [];
+  const sharingLinks: SharingLink[] = sharingLinksData ?? [];
 
   return (
     <div className="mt-8 rounded-lg border border-rule bg-paper-deep text-ink">

@@ -1,4 +1,3 @@
-import { gql } from "@apollo/client";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 describe("BirthdaySubmissionForm Component", () => {
@@ -315,43 +314,6 @@ describe("BirthdaySubmissionForm Component", () => {
       expect(variables.submitterName).toBe("Jane Smith");
       expect(variables.submitterEmail).toBe("jane@example.com");
       expect(variables.relationship).toBe("Best friend");
-    });
-  });
-
-  describe("GraphQL Mutation Definition", () => {
-    it("should define the correct GraphQL mutation", () => {
-      const SUBMIT_BIRTHDAY_MUTATION = gql`
-        mutation SubmitBirthday(
-          $token: String!
-          $name: String!
-          $date: String!
-          $category: String
-          $notes: String
-          $submitterName: String
-          $submitterEmail: String
-          $relationship: String
-        ) {
-          submitBirthday(
-            token: $token
-            name: $name
-            date: $date
-            category: $category
-            notes: $notes
-            submitterName: $submitterName
-            submitterEmail: $submitterEmail
-            relationship: $relationship
-          ) {
-            id
-            name
-            date
-            status
-            __typename
-          }
-        }
-      `;
-
-      expect(SUBMIT_BIRTHDAY_MUTATION).toBeDefined();
-      expect(SUBMIT_BIRTHDAY_MUTATION.kind).toBe("Document");
     });
   });
 

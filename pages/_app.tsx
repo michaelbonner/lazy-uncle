@@ -1,7 +1,6 @@
-import client from "../lib/apollo";
+import { TRPCProvider } from "../lib/trpc-provider";
 import { SearchProvider } from "../providers/SearchProvider";
 import "../styles/globals.css";
-import { ApolloProvider } from "@apollo/client/react";
 import type { AppProps } from "next/app";
 import dynamic from "next/dynamic";
 import { Figtree, Source_Serif_4 } from "next/font/google";
@@ -52,7 +51,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <PostHogProvider client={posthog}>
-      <ApolloProvider client={client}>
+      <TRPCProvider>
         <PageLoadingProgress />
         <SearchProvider>
           <div className={`${figtree.variable} ${sourceSerif.variable}`}>
@@ -60,7 +59,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           </div>
         </SearchProvider>
         <Toaster />
-      </ApolloProvider>
+      </TRPCProvider>
     </PostHogProvider>
   );
 }

@@ -1,13 +1,6 @@
-import {
-  CREATE_BIRTHDAY_MUTATION,
-  GET_ALL_BIRTHDAYS_QUERY,
-} from "../graphql/Birthday";
-import { GET_NOTIFICATION_PREFERENCES_QUERY } from "../graphql/Sharing";
-import { authClient } from "../lib/auth-client";
-// import the auth client
+import { trpc } from "../lib/trpc";
 import BirthdayDateInput from "./BirthdayDateInput";
 import PrimaryButton from "./PrimaryButton";
-import { useMutation, useQuery } from "@apollo/client/react";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
 import { useState } from "react";
@@ -22,7 +15,6 @@ const TextEdit = dynamic(() => import("./TextEdit"), {
 });
 
 const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
-  const { data: session } = authClient.useSession();
   const [name, setName] = useState("");
 
   const today = new Date();
@@ -38,15 +30,15 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
   const [parent, setParent] = useState("");
   const [notes, setNotes] = useState("");
   const [remindersEnabled, setRemindersEnabled] = useState(true);
-  const userId = session?.user?.id;
 
-  const { data: preferencesData } = useQuery(GET_NOTIFICATION_PREFERENCES_QUERY);
-  const birthdayRemindersEnabled =
-    preferencesData?.notificationPreferences?.birthdayReminders ?? false;
+  const { data: preferences } = trpc.notification.preferences.useQuery();
+  const birthdayRemindersEnabled = preferences?.birthdayReminders ?? false;
 
-  const [createBirthday, { loading, error }] = useMutation(
-    CREATE_BIRTHDAY_MUTATION,
-  );
+  const utils = trpc.useUtils();
+  const createBirthday = trpc.birthday.create.useMutation({
+    onSuccess: () => utils.birthday.list.invalidate(),
+  });
+  const { isPending: loading, error } = createBirthday;
 
   const handleDateChange = (y: number | null, m: number, d: number) => {
     setYear(y);
@@ -66,24 +58,16 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
           return;
         }
 
-        await createBirthday({
-          variables: {
-            name: name.trim(),
-            year: year,
-            month: month,
-            day: day,
-            category: category.trim(),
-            parent: parent.trim(),
-            notes: notes.trim(),
-            remindersEnabled,
-            userId,
-            importSource: "manual",
-          },
-          refetchQueries: [
-            {
-              query: GET_ALL_BIRTHDAYS_QUERY,
-            },
-          ],
+        await createBirthday.mutateAsync({
+          name: name.trim(),
+          year: year,
+          month: month,
+          day: day,
+          category: category.trim(),
+          parent: parent.trim(),
+          notes: notes.trim(),
+          remindersEnabled,
+          importSource: "manual",
         });
 
         // Reset form

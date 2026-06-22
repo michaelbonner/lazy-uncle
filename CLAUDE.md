@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Lazy Uncle is a birthday reminder application that allows users to track birthdays, share submission links with others, and receive notifications about upcoming birthdays. Live at: https://www.lazyuncle.net/
 
-**Core Stack**: Next.js 16+ (React 19), PostgreSQL, Drizzle ORM, GraphQL (Yoga + Nexus), Better Auth, Tailwind CSS 4.1+
+**Core Stack**: Next.js 16+ (React 19), PostgreSQL, Drizzle ORM, tRPC v11 (+ TanStack Query), Better Auth, Tailwind CSS 4.1+
 
 **Package Manager**: Bun (enforced via preinstall script)
 
@@ -57,7 +57,7 @@ bun up                     # Update packages
 
 - **Hybrid Next.js**: Pages Router for UI (`pages/`), App Router for API routes (`app/api/`)
 - **API Endpoints**:
-  - `/api/graphql` - GraphQL Yoga endpoint (all data operations)
+  - `/api/trpc/[trpc]` - tRPC endpoint (all data operations)
   - `/api/auth/[...all]` - Better Auth handlers
   - `/api/healthz` - Health check
   - `/api/calendar-subscription/[userId]` - iCal export
@@ -75,25 +75,29 @@ Key tables and their relationships:
 
 All user data is isolated by `userId` - enforce this in all queries.
 
-### GraphQL Schema
+### tRPC API
 
-**Location**: `graphql/schema/`
+**Location**: `server/`
 
-- `index.ts` - Schema builder (Nexus)
-- `Query.ts` - Query resolvers
-- `Mutation.ts` - Mutation resolvers
-- Auto-generated types: `generated/nexus-typegen.ts`
+- `trpc.ts` - tRPC init (superjson transformer, `publicProcedure`, `protectedProcedure`)
+- `context.ts` - Request context factory (Better Auth session + db)
+- `routers/_app.ts` - Root `appRouter` (composes the routers below) and `AppRouter` type
+- `routers/birthday.ts`, `sharing.ts`, `submission.ts`, `notification.ts` - Procedure definitions
+- `format.ts` - Shared shaping helpers (e.g. the derived `date` field)
 
-**Context**: Every GraphQL request includes:
+Client setup lives in `lib/trpc.ts` (`createTRPCReact`, plus inferred `RouterInputs`/`RouterOutputs`/`Birthday` types) and `lib/trpc-provider.tsx` (React Query + httpBatchLink). Types flow end-to-end via inference — there is no codegen step.
+
+**Context**: Every tRPC request includes:
 
 ```typescript
 {
-  user: { id, email, name },  // From Better Auth session
-  db: DrizzleDB                // Database instance
+  db: DrizzleDB,               // Database instance
+  user?: User,                 // From Better Auth session (undefined if signed out)
+  req?: RequestLike            // Lowercased headers + remoteAddress, for security middleware
 }
 ```
 
-**Authorization Pattern**: All resolvers must check `ctx.user.id` exists and filter by `userId`.
+**Authorization Pattern**: Use `protectedProcedure` for anything requiring a signed-in user — it throws `UNAUTHORIZED` and narrows `ctx.user` to non-null. Always filter queries by `ctx.user.id`. `publicProcedure` is only for the public sharing-link flow (`sharing.validate`, `submission.submit`).
 
 ### Service Layer Architecture
 
@@ -130,7 +134,7 @@ Core business logic lives in `lib/*-service.ts`:
 
 1. OAuth login → provider callback → session created in DB
 2. Session token stored in HTTP-only cookie
-3. GraphQL context automatically injects user from session
+3. tRPC context automatically injects user from session
 4. Client hook: `authClient.useSession()` (from `lib/auth-client.ts`)
 5. Route protection: Server-side via `getServerSideProps` + client-side checks
 
@@ -155,30 +159,28 @@ Core business logic lives in `lib/*-service.ts`:
 1. Update schema: `drizzle/schema.ts` (add column to `Birthday` table)
 2. Generate migration: `bun db:generate`
 3. Run migration: `bun db:migrate` (or `bun db:push` for dev)
-4. Update GraphQL type: `graphql/schema/Birthday.ts` (add field to Nexus object type)
+4. Expose the field on the relevant router output in `server/routers/birthday.ts` (the procedures return rows directly; `Birthday` type is inferred — no manual type to edit)
 5. Update input validation: `lib/input-validator.ts` (add sanitization rules)
 6. Update components: `components/AddBirthdayDialog.tsx`, `EditBirthdayDialog.tsx`
 7. Run tests: `bun test`
 
-### Creating a New GraphQL Mutation
+### Creating a New tRPC Procedure
 
-1. Define in `graphql/schema/Mutation.ts`:
+1. Add it to the relevant router in `server/routers/` (use `zod` for input):
 
 ```typescript
-t.field("myMutation", {
-  type: "Birthday",
-  args: { id: nonNull(stringArg()) },
-  resolve: async (_, args, ctx) => {
-    if (!ctx.user?.id) throw new Error("Unauthorized");
+myMutation: protectedProcedure
+  .input(z.object({ id: z.string() }))
+  .mutation(async ({ input, ctx }) => {
+    // ctx.user is guaranteed non-null on protectedProcedure
     // Business logic here - consider creating a service method
     return result;
-  },
-});
+  }),
 ```
 
 2. Add service method if complex: `lib/my-service.ts`
-3. Write tests: `graphql/schema/MyMutation.test.ts`
-4. Update frontend: Add mutation in `graphql/Birthday.ts`, use in component
+3. Write tests: `server/routers/myRouter.test.ts` (call via `appRouter.createCaller(ctx)`)
+4. Update frontend: call `trpc.myRouter.myMutation.useMutation()` (or `.useQuery()`); use `trpc.useUtils().myRouter.x.invalidate()` to refetch after a mutation
 
 ### Adding a New Service
 
@@ -186,7 +188,7 @@ t.field("myMutation", {
 2. Export pure functions that accept `db` instance as parameter
 3. Return result objects: `{ success: boolean, data?, errors? }`
 4. Write comprehensive tests: `lib/my-service.test.ts`
-5. Import in GraphQL resolvers or other services
+5. Import in tRPC procedures or other services
 
 ### Working with Background Jobs
 
@@ -246,7 +248,7 @@ NEXT_PUBLIC_POSTHOG_KEY=                # Analytics (optional)
 
 - **Unit tests**: Services, utilities, validators (`lib/*.test.ts`)
 - **Integration tests**: Rate limiting, security (`lib/*.integration.test.ts`)
-- **Security tests**: `graphql/schema/security-integration.test.ts`
+- **API tests**: tRPC procedures (`server/routers/*.test.ts`, via `appRouter.createCaller`)
 - **Component tests**: React components (`components/*.test.tsx`)
 
 When writing tests:
@@ -258,11 +260,12 @@ When writing tests:
 
 ## Common Troubleshooting
 
-### GraphQL Endpoint Issues
+### tRPC Endpoint Issues
 
-- Visit `http://localhost:3000/api/graphql` for GraphQL playground
-- Check `graphql/context.ts` for auth context setup
+- The endpoint is `http://localhost:3000/api/trpc` (handler in `app/api/trpc/[trpc]/route.ts`)
+- Check `server/context.ts` for auth context setup
 - Verify session cookie is being sent with requests
+- Remember the client uses superjson, so `Date`/`undefined` round-trip correctly
 
 ### Database Connection Issues
 
@@ -305,11 +308,12 @@ When writing tests:
 - Simpler session management
 - Easier to customize
 
-### Why Nexus for GraphQL?
+### Why tRPC?
 
-- Code-first schema with full TypeScript inference
-- Auto-generates types and schema
-- Better DX than schema-first approaches
+- End-to-end type safety by inference — no schema, codegen, or generated types to keep in sync
+- Single in-house consumer (this app's own client), so a public GraphQL contract added little value
+- Replaced an unmaintained Nexus + Apollo stack that blocked dependency upgrades (e.g. graphql v17)
+- Procedures call the same `lib/*-service.ts` layer the resolvers used, so business logic was untouched
 
 ### Why In-Memory Rate Limiter?
 
@@ -332,12 +336,16 @@ components/          # React components (presentational + containers)
 ├── layout/         # Layout wrappers (MainLayout, PublicLayout)
 └── [Feature]*.tsx  # Feature-specific components (e.g., AddBirthdayDialog)
 
-graphql/            # GraphQL schema and queries
-├── schema/         # Nexus schema definition (Query, Mutation, types)
-└── Birthday.ts     # Client-side queries/mutations (Apollo)
+server/             # tRPC API
+├── routers/        # Routers (birthday, sharing, submission, notification) + _app.ts
+├── trpc.ts         # tRPC init (procedures, transformer)
+├── context.ts      # Request context (auth + db)
+└── format.ts       # Shared output shaping helpers
 
 lib/                # Business logic services
 ├── *-service.ts    # Core services (sharing, submission, notification)
+├── trpc.ts         # tRPC React client + inferred types
+├── trpc-provider.tsx # React Query + tRPC provider
 ├── db.ts           # Database singleton
 ├── auth*.ts        # Authentication (server + client)
 └── *.test.ts       # Service tests
@@ -347,7 +355,7 @@ pages/              # Next.js Pages Router (UI routes)
 └── [routes].tsx    # Page components
 
 app/                # Next.js App Router (API only)
-└── api/            # Modern API routes (auth, graphql)
+└── api/            # Modern API routes (auth, trpc)
 
 drizzle/            # Database layer
 ├── schema.ts       # Drizzle schema definition
@@ -359,59 +367,43 @@ shared/             # Pure utility functions
 types/              # Shared TypeScript types
 ```
 
-## GraphQL Query Examples
+## tRPC Usage Examples
+
+All calls are fully typed from `AppRouter`. In components, use the React hooks from `lib/trpc.ts`:
 
 ### Fetch All Birthdays
 
-```graphql
-query GetAllBirthdays {
-  birthdays {
-    id
-    name
-    date
-    category
-    notes
-  }
-}
+```typescript
+const { data: birthdays, isPending } = trpc.birthday.list.useQuery();
 ```
 
 ### Create Sharing Link
 
-```graphql
-mutation CreateSharingLink($description: String, $expirationHours: Int) {
-  createSharingLink(
-    description: $description
-    expirationHours: $expirationHours
-  ) {
-    id
-    token
-    expiresAt
-    isActive
-  }
-}
+```typescript
+const utils = trpc.useUtils();
+const createLink = trpc.sharing.create.useMutation({
+  onSuccess: () => utils.sharing.list.invalidate(),
+});
+createLink.mutate({ description, expirationHours });
 ```
 
 ### Submit Birthday (Public, No Auth)
 
-```graphql
-mutation SubmitBirthday($token: String!, $name: String!, $date: String!) {
-  submitBirthday(token: $token, name: $name, date: $date) {
-    id
-    status
-  }
-}
+```typescript
+const submit = trpc.submission.submit.useMutation();
+await submit.mutateAsync({ token, name, month, day, year });
 ```
 
 ### Import Submission
 
-```graphql
-mutation ImportSubmission($submissionId: String!) {
-  importSubmission(submissionId: $submissionId) {
-    id
-    name
-    date
-  }
-}
+```typescript
+const importSubmission = trpc.submission.import.useMutation({
+  onSuccess: () => {
+    utils.submission.pending.invalidate();
+    utils.birthday.list.invalidate();
+  },
+});
+importSubmission.mutate({ submissionId });
 ```
 
 ## Scripts & Automation
@@ -436,15 +428,15 @@ The script:
 
 ## Performance Considerations
 
-- Apollo Client cache: Normalized cache enabled, use `update` function after mutations
+- React Query cache: tRPC is backed by TanStack Query; invalidate with `trpc.useUtils().<router>.<proc>.invalidate()` after mutations
 - Database indexes: All FK columns indexed, see `drizzle/schema.ts` for index definitions
 - N+1 queries: Use Drizzle `.with()` for eager loading relationships
-- Pagination: Implemented for submissions (`pendingSubmissions` query), add to other lists as needed
+- Pagination: Implemented for submissions (`submission.pending` procedure), add to other lists as needed
 
 ## Security Checklist for New Features
 
 - [ ] Validate all user input (use `lib/input-validator.ts`)
-- [ ] Check user authorization (`ctx.user.id` in GraphQL resolvers)
+- [ ] Check user authorization (use `protectedProcedure`; `ctx.user.id` in procedures)
 - [ ] Filter queries by `userId` (row-level security)
 - [ ] Apply rate limiting for public endpoints
 - [ ] Sanitize output to prevent XSS

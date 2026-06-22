@@ -1,4 +1,3 @@
-import { gql } from "@apollo/client";
 import { describe, expect, it } from "vitest";
 
 describe("SharingSettingsPanel Component", () => {
@@ -96,48 +95,6 @@ describe("SharingSettingsPanel Component", () => {
 
       expect(variables.emailNotifications).toBe(false);
       expect(variables.summaryNotifications).toBe(true);
-    });
-  });
-
-  describe("GraphQL Operations", () => {
-    it("should define correct notification preferences query", () => {
-      const GET_NOTIFICATION_PREFERENCES_QUERY = gql`
-        query NotificationPreferences {
-          notificationPreferences {
-            id
-            userId
-            emailNotifications
-            summaryNotifications
-            __typename
-          }
-        }
-      `;
-
-      expect(GET_NOTIFICATION_PREFERENCES_QUERY).toBeDefined();
-      expect(GET_NOTIFICATION_PREFERENCES_QUERY.kind).toBe("Document");
-    });
-
-    it("should define correct update preferences mutation", () => {
-      const UPDATE_NOTIFICATION_PREFERENCES_MUTATION = gql`
-        mutation UpdateNotificationPreferences(
-          $emailNotifications: Boolean
-          $summaryNotifications: Boolean
-        ) {
-          updateNotificationPreferences(
-            emailNotifications: $emailNotifications
-            summaryNotifications: $summaryNotifications
-          ) {
-            id
-            userId
-            emailNotifications
-            summaryNotifications
-            __typename
-          }
-        }
-      `;
-
-      expect(UPDATE_NOTIFICATION_PREFERENCES_MUTATION).toBeDefined();
-      expect(UPDATE_NOTIFICATION_PREFERENCES_MUTATION.kind).toBe("Document");
     });
   });
 

@@ -5,7 +5,6 @@ import {
   isToday,
   startOfDay,
 } from "date-fns";
-import { NexusGenObjects } from "../generated/nexus-typegen";
 
 /**
  * Calculate days until next birthday from components
@@ -33,7 +32,7 @@ export function getDaysUntilNextBirthdayFromComponents(
 }
 
 export const getDaysUntilNextBirthday = (
-  birthday: NexusGenObjects["Birthday"],
+  birthday: { month?: number | null; day?: number | null },
 ): number => {
   // Use components (all birthdays should have month and day after migration)
   if (birthday.month && birthday.day) {

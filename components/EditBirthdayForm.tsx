@@ -1,13 +1,6 @@
-import { NexusGenObjects } from "../generated/nexus-typegen";
-import {
-  DELETE_BIRTHDAY_MUTATION,
-  EDIT_BIRTHDAY_MUTATION,
-  GET_ALL_BIRTHDAYS_QUERY,
-} from "../graphql/Birthday";
-import { GET_NOTIFICATION_PREFERENCES_QUERY } from "../graphql/Sharing";
+import { type Birthday, trpc } from "../lib/trpc";
 import BirthdayDateInput from "./BirthdayDateInput";
 import PrimaryButton from "./PrimaryButton";
-import { useMutation, useQuery } from "@apollo/client/react";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
 import { useState } from "react";
@@ -26,7 +19,7 @@ const EditBirthdayForm = ({
   birthday,
   handleClose,
 }: {
-  birthday: NexusGenObjects["Birthday"];
+  birthday: Birthday;
   handleClose?: () => void;
 }) => {
   const [name, setName] = useState(birthday.name);
@@ -48,16 +41,19 @@ const EditBirthdayForm = ({
     birthday.remindersEnabled ?? true,
   );
 
-  const { data: preferencesData } = useQuery(GET_NOTIFICATION_PREFERENCES_QUERY);
-  const birthdayRemindersEnabled =
-    preferencesData?.notificationPreferences?.birthdayReminders ?? false;
+  const { data: preferences } = trpc.notification.preferences.useQuery();
+  const birthdayRemindersEnabled = preferences?.birthdayReminders ?? false;
 
-  const [editBirthday, { loading, error }] = useMutation(
-    EDIT_BIRTHDAY_MUTATION,
-  );
+  const utils = trpc.useUtils();
+  const editBirthday = trpc.birthday.edit.useMutation({
+    onSuccess: () => utils.birthday.list.invalidate(),
+  });
+  const { isPending: loading, error } = editBirthday;
 
-  const [deleteBirthday, { loading: deleteLoading, error: deleteError }] =
-    useMutation(DELETE_BIRTHDAY_MUTATION);
+  const deleteBirthday = trpc.birthday.delete.useMutation({
+    onSuccess: () => utils.birthday.list.invalidate(),
+  });
+  const { isPending: deleteLoading, error: deleteError } = deleteBirthday;
 
   const handleDateChange = (y: number | null, m: number, d: number) => {
     setYear(y);
@@ -78,19 +74,17 @@ const EditBirthdayForm = ({
             return;
           }
 
-          await editBirthday({
-            variables: {
-              id: birthday.id,
-              name: name?.trim(),
-              year: year,
-              month: month,
-              day: day,
-              category: category.trim(),
-              parent: parent.trim(),
-              notes: notes.trim(),
-              remindersEnabled,
-              importSource: birthday.importSource,
-            },
+          await editBirthday.mutateAsync({
+            id: birthday.id,
+            name: name?.trim() ?? "",
+            year: year,
+            month: month,
+            day: day,
+            category: category.trim(),
+            parent: parent.trim(),
+            notes: notes.trim(),
+            remindersEnabled,
+            importSource: birthday.importSource,
           });
 
           handleClose?.();
@@ -208,15 +202,8 @@ const EditBirthdayForm = ({
                     "Are you sure you want to delete this birthday?",
                   )
                 ) {
-                  deleteBirthday({
-                    variables: {
-                      birthdayId: birthday?.id,
-                    },
-                    refetchQueries: [
-                      {
-                        query: GET_ALL_BIRTHDAYS_QUERY,
-                      },
-                    ],
+                  deleteBirthday.mutate({
+                    birthdayId: birthday.id,
                   });
                   toast("Birthday deleted");
                   handleClose?.();

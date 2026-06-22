@@ -1,27 +1,19 @@
 import type { Birthday } from "../drizzle/schema";
-import {
-  CREATE_BIRTHDAY_MUTATION,
-  GET_ALL_BIRTHDAYS_QUERY,
-} from "../graphql/Birthday";
-import { authClient } from "../lib/auth-client";
-// import the auth client
+import { trpc } from "../lib/trpc";
 import PrimaryButton from "./PrimaryButton";
-import { useMutation } from "@apollo/client/react";
 import { parse as csvParse } from "csv-parse/browser/esm/sync";
 import { format, isValid } from "date-fns";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 
 const UploadCsvBirthdayForm = () => {
-  const { data: session } = authClient.useSession();
   const [birthdays, setBirthdays] = useState<
     Pick<Birthday, "name" | "date" | "category" | "parent" | "notes">[]
   >([]);
-  const userId = session?.user?.id;
 
-  const [createBirthday, { loading, error }] = useMutation(
-    CREATE_BIRTHDAY_MUTATION,
-  );
+  const utils = trpc.useUtils();
+  const createBirthday = trpc.birthday.create.useMutation();
+  const { isPending: loading, error } = createBirthday;
 
   // handle file upload
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,24 +64,23 @@ const UploadCsvBirthdayForm = () => {
 
         for (const birthday of birthdays) {
           const { name, date, category, parent, notes } = birthday;
-          await createBirthday({
-            variables: {
-              name,
-              date,
-              category,
-              parent,
-              notes,
-              userId,
-              importSource: "csv",
-            },
-            refetchQueries: [
-              {
-                query: GET_ALL_BIRTHDAYS_QUERY,
-              },
-            ],
+          // CSV dates are stored as "yyyy-MM-dd"; split into components for the API.
+          const [year, month, day] = (date ?? "")
+            .split("-")
+            .map((part) => Number(part));
+          await createBirthday.mutateAsync({
+            name,
+            year: year || null,
+            month,
+            day,
+            category,
+            parent,
+            notes,
+            importSource: "csv",
           });
           (e.target as HTMLFormElement).reset();
         }
+        await utils.birthday.list.invalidate();
         toast.success(`${birthdays.length} birthdays created successfully`);
       }}
     >

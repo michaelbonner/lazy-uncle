@@ -1,10 +1,9 @@
 import LoadingSpinner from "../../components/LoadingSpinner";
 import MainLayout from "../../components/layout/MainLayout";
-import { GET_BIRTHDAY_BY_ID_QUERY } from "../../graphql/Birthday";
 import { auth } from "../../lib/auth";
+import { trpc } from "../../lib/trpc";
 import getAgeForHumans from "../../shared/getAgeForHumans";
 import getDateFromYmdString from "../../shared/getDateFromYmdString";
-import { useQuery } from "@apollo/client/react";
 import { GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -18,11 +17,9 @@ const EditBirthdayForm = dynamic(
 const Birthday = ({ id }: { id: string }) => {
   const {
     data: birthdayData,
-    loading: birthdayLoading,
+    isPending: birthdayLoading,
     error: birthdayError,
-  } = useQuery(GET_BIRTHDAY_BY_ID_QUERY, {
-    variables: { birthdayId: id },
-  });
+  } = trpc.birthday.byId.useQuery({ birthdayId: id });
 
   return (
     <MainLayout title={`Birthday`}>
@@ -45,20 +42,20 @@ const Birthday = ({ id }: { id: string }) => {
               <>
                 <div className="justify-between md:flex md:items-center md:px-8">
                   <h1 className="text-2xl font-medium">
-                    Edit {birthdayData?.birthday?.name}&apos;s Birthday
+                    Edit {birthdayData?.name}&apos;s Birthday
                   </h1>
                   <h3 className="flex items-end space-x-1">
                     <span className="text-sm font-light">Age</span>
                     <span>
                       {getAgeForHumans(
-                        getDateFromYmdString(birthdayData?.birthday?.date),
+                        getDateFromYmdString(birthdayData?.date ?? ""),
                         true,
                       )}
                     </span>
                   </h3>
                 </div>
                 <div className="mt-6 md:px-24">
-                  <EditBirthdayForm birthday={birthdayData?.birthday} />
+                  {birthdayData && <EditBirthdayForm birthday={birthdayData} />}
                 </div>
               </>
             )}

@@ -1,8 +1,7 @@
 import BirthdaySubmissionForm from "../../components/BirthdaySubmissionForm";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import PublicLayout from "../../components/layout/PublicLayout";
-import { VALIDATE_SHARING_LINK_QUERY } from "../../graphql/Sharing";
-import { useQuery } from "@apollo/client/react";
+import { trpc } from "../../lib/trpc";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -12,36 +11,18 @@ interface SharingPageProps {
   token: string;
 }
 
-interface SharingLinkInfo {
-  id: string;
-  token: string;
-  description: string | null;
-  expiresAt: string;
-  ownerName: string | null;
-}
-
-interface SharingLinkValidation {
-  isValid: boolean;
-  error: string | null;
-  message: string | null;
-  sharingLink: SharingLinkInfo | null;
-}
-
-function isLinkExpiringSoon(expiresAt: string): boolean {
+function isLinkExpiringSoon(expiresAt: Date | string): boolean {
   return new Date(expiresAt).getTime() - Date.now() < 24 * 60 * 60 * 1000;
 }
 
 const SharingPage = ({ token }: SharingPageProps) => {
   const router = useRouter();
 
-  const { data, loading, error } = useQuery<{
-    validateSharingLink: SharingLinkValidation;
-  }>(VALIDATE_SHARING_LINK_QUERY, {
-    variables: { token },
-    errorPolicy: "all",
-  });
-
-  const validation = data?.validateSharingLink;
+  const {
+    data: validation,
+    isPending: loading,
+    error,
+  } = trpc.sharing.validate.useQuery({ token });
 
   useEffect(() => {
     // Track page view for analytics
