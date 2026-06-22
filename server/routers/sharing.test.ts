@@ -1,7 +1,7 @@
 import { SecurityMiddleware } from "../../lib/security-middleware";
 import { SharingService } from "../../lib/sharing-service";
 import { appRouter } from "./_app";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("../../lib/security-middleware");
 vi.mock("../../lib/sharing-service");
@@ -38,6 +38,11 @@ function caller() {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  vi.useRealTimers();
+});
+
+afterEach(() => {
+  vi.useRealTimers();
 });
 
 describe("sharing router — auth", () => {
@@ -149,6 +154,26 @@ describe("sharing.validate (public)", () => {
       token: "t",
       isActive: true,
       expiresAt: new Date(Date.now() - 1000),
+      user: { name: "Owner" },
+    } as never);
+    const where = vi.fn().mockResolvedValue(undefined);
+    const set = vi.fn().mockReturnValue({ where });
+    mockDb.update.mockReturnValue({ set } as never);
+
+    const result = await callerFor(undefined).sharing.validate({ token: "t" });
+    expect(result).toMatchObject({ isValid: false, error: "EXPIRED_LINK" });
+    expect(set).toHaveBeenCalledWith({ isActive: false });
+  });
+
+  it("deactivates and returns EXPIRED_LINK when the link expires exactly now", async () => {
+    const now = new Date("2026-01-01T00:00:00.000Z");
+    vi.useFakeTimers();
+    vi.setSystemTime(now);
+    mockDb.query.sharingLinks.findFirst.mockResolvedValue({
+      id: "l1",
+      token: "t",
+      isActive: true,
+      expiresAt: now,
       user: { name: "Owner" },
     } as never);
     const where = vi.fn().mockResolvedValue(undefined);

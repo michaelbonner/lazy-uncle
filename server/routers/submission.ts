@@ -4,8 +4,10 @@ import { SubmissionService } from "../../lib/submission-service";
 import { formatBirthdayDate, withBirthdayDate } from "../format";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { z } from "zod";
+
+const MAX_BULK_SUBMISSIONS = 100;
 
 export const submissionRouter = router({
   // Paginated pending submissions across the current user's sharing links.
@@ -13,8 +15,8 @@ export const submissionRouter = router({
     .input(
       z
         .object({
-          page: z.number().default(1),
-          limit: z.number().default(10),
+          page: z.number().int().min(1).default(1),
+          limit: z.number().int().min(1).max(100).default(10),
         })
         .default({ page: 1, limit: 10 }),
     )
@@ -39,24 +41,28 @@ export const submissionRouter = router({
         };
       }
 
-      const allSubmissions = await ctx.db.query.birthdaySubmissions.findMany({
-        where: and(
-          eq(birthdaySubmissions.status, "PENDING"),
-          inArray(birthdaySubmissions.sharingLinkId, sharingLinkIds),
-        ),
+      const where = and(
+        eq(birthdaySubmissions.status, "PENDING"),
+        inArray(birthdaySubmissions.sharingLinkId, sharingLinkIds),
+      );
+      const [countRow] = await ctx.db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(birthdaySubmissions)
+        .where(where);
+      const totalCount = countRow?.count ?? 0;
+
+      const paginatedSubmissions = await ctx.db.query.birthdaySubmissions.findMany({
+        where,
         with: {
           sharingLink: { columns: { id: true, description: true } },
         },
         orderBy: [desc(birthdaySubmissions.createdAt)],
+        limit,
+        offset: skip,
       });
 
-      const totalCount = allSubmissions.length;
-      const paginatedSubmissions = allSubmissions
-        .slice(skip, skip + limit)
-        .map(withBirthdayDate);
-
       return {
-        submissions: paginatedSubmissions,
+        submissions: paginatedSubmissions.map(withBirthdayDate),
         totalCount,
         hasNextPage: skip + limit < totalCount,
         hasPreviousPage: page > 1,
@@ -186,7 +192,11 @@ export const submissionRouter = router({
     }),
 
   bulkImport: protectedProcedure
-    .input(z.object({ submissionIds: z.array(z.string()) }))
+    .input(
+      z.object({
+        submissionIds: z.array(z.string()).max(MAX_BULK_SUBMISSIONS),
+      }),
+    )
     .mutation(async ({ input, ctx }) => {
       const result = await SubmissionService.bulkImportSubmissions(
         input.submissionIds,
@@ -203,7 +213,11 @@ export const submissionRouter = router({
     }),
 
   bulkReject: protectedProcedure
-    .input(z.object({ submissionIds: z.array(z.string()) }))
+    .input(
+      z.object({
+        submissionIds: z.array(z.string()).max(MAX_BULK_SUBMISSIONS),
+      }),
+    )
     .mutation(async ({ input, ctx }) => {
       const result = await SubmissionService.bulkRejectSubmissions(
         input.submissionIds,

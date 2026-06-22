@@ -123,7 +123,7 @@ const BirthdaySubmissionForm = ({
 
     setIsSubmitting(true);
     try {
-      await Promise.all(
+      const results = await Promise.allSettled(
         entries.map((entry) =>
           submitBirthday.mutateAsync({
             token,
@@ -138,7 +138,39 @@ const BirthdaySubmissionForm = ({
         ),
       );
 
-      setSubmittedNames(entries.map((e) => e.name.trim()));
+      const succeededNames: string[] = [];
+      const failedEntries: BirthdayEntry[] = [];
+
+      results.forEach((result, index) => {
+        const entry = entries[index];
+        if (!entry) return;
+
+        if (result.status === "fulfilled") {
+          succeededNames.push(entry.name.trim());
+        } else {
+          failedEntries.push(entry);
+          console.error("Submission error:", result.reason);
+        }
+      });
+
+      if (failedEntries.length > 0) {
+        setEntries(failedEntries);
+        if (succeededNames.length > 0) {
+          toast.success(
+            `${succeededNames.length} submission${
+              succeededNames.length === 1 ? "" : "s"
+            } sent successfully.`,
+          );
+        }
+        toast.error(
+          `${failedEntries.length} submission${
+            failedEntries.length === 1 ? "" : "s"
+          } failed. Please review and retry.`,
+        );
+        return;
+      }
+
+      setSubmittedNames(succeededNames);
 
       if (onSuccess) {
         onSuccess();

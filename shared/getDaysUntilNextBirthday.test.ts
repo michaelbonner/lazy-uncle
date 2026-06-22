@@ -64,4 +64,22 @@ describe("get age for humans", () => {
       getDaysUntilNextBirthday(oneYearAgoThreeWeeksFromNowBirthday),
     ).toEqual(21);
   });
+  it("a birthday with no month returns positive infinity", () => {
+    expect(
+      getDaysUntilNextBirthday({ day: 15 } as unknown as Birthday),
+    ).toBe(Number.POSITIVE_INFINITY);
+  });
+  it("a birthday with no day returns positive infinity", () => {
+    expect(
+      getDaysUntilNextBirthday({ month: 5 } as unknown as Birthday),
+    ).toBe(Number.POSITIVE_INFINITY);
+  });
+  it("a birthday with null date components returns positive infinity", () => {
+    expect(
+      getDaysUntilNextBirthday({
+        month: null,
+        day: null,
+      } as unknown as Birthday),
+    ).toBe(Number.POSITIVE_INFINITY);
+  });
 });

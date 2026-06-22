@@ -1,10 +1,20 @@
 import { sharingLinks } from "../../drizzle/schema";
+import { InputValidator } from "../../lib/input-validator";
 import { SecurityMiddleware } from "../../lib/security-middleware";
 import { SharingService } from "../../lib/sharing-service";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { and, desc, eq } from "drizzle-orm";
 import { z } from "zod";
+
+const sanitizedOptionalString = z
+  .string()
+  .nullish()
+  .transform((value) => InputValidator.sanitizeString(value) || null);
+
+const sanitizedString = z
+  .string()
+  .transform((value) => InputValidator.sanitizeString(value));
 
 export const sharingRouter = router({
   // Active sharing links for the current user, with submission counts.
@@ -27,8 +37,8 @@ export const sharingRouter = router({
   create: protectedProcedure
     .input(
       z.object({
-        description: z.string().nullish(),
-        category: z.string().nullish(),
+        description: sanitizedOptionalString,
+        category: sanitizedOptionalString,
         expirationHours: z.number().nullish(),
       }),
     )
@@ -64,7 +74,7 @@ export const sharingRouter = router({
     }),
 
   revoke: protectedProcedure
-    .input(z.object({ linkId: z.string() }))
+    .input(z.object({ linkId: sanitizedString }))
     .mutation(async ({ input, ctx }) => {
       const result = await SharingService.revokeSharingLink(
         input.linkId,
@@ -81,7 +91,7 @@ export const sharingRouter = router({
 
   // Public: validate a sharing link by token (used on the public /share page).
   validate: publicProcedure
-    .input(z.object({ token: z.string() }))
+    .input(z.object({ token: sanitizedString }))
     .query(async ({ input, ctx }) => {
       const sharingLink = await ctx.db.query.sharingLinks.findFirst({
         where: eq(sharingLinks.token, input.token),

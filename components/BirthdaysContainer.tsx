@@ -354,7 +354,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
             <span>Clear filters</span>
           </button>
           <div className="text-sm text-ink-muted md:text-right">
-            {workingDatesCount}/{birthdays?.length} visible
+            {workingDatesCount}/{birthdaysCount} visible
           </div>
         </div>
         <div className="mt-4 flex items-center justify-end space-x-4 md:hidden">

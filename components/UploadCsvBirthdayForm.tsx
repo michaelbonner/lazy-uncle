@@ -62,12 +62,25 @@ const UploadCsvBirthdayForm = () => {
       onSubmit={async (e) => {
         e.preventDefault();
 
+        let createdCount = 0;
         for (const birthday of birthdays) {
           const { name, date, category, parent, notes } = birthday;
           // CSV dates are stored as "yyyy-MM-dd"; split into components for the API.
-          const [year, month, day] = (date ?? "")
+          const dateParts = (date ?? "")
             .split("-")
             .map((part) => Number(part));
+          const [year, month, day] = dateParts;
+
+          if (
+            dateParts.length !== 3 ||
+            [year, month, day].some((part) => Number.isNaN(part)) ||
+            !month ||
+            !day
+          ) {
+            toast.error(`Invalid date for ${name}; skipping`);
+            continue;
+          }
+
           await createBirthday.mutateAsync({
             name,
             year: year || null,
@@ -78,10 +91,11 @@ const UploadCsvBirthdayForm = () => {
             notes,
             importSource: "csv",
           });
+          createdCount++;
           (e.target as HTMLFormElement).reset();
         }
         await utils.birthday.list.invalidate();
-        toast.success(`${birthdays.length} birthdays created successfully`);
+        toast.success(`${createdCount} birthdays created successfully`);
       }}
     >
       <div className="grid gap-4">

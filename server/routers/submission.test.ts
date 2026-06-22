@@ -9,6 +9,7 @@ vi.mock("../../lib/submission-service");
 vi.mock("../../lib/db", () => {
   return {
     default: {
+      select: vi.fn(),
       query: {
         sharingLinks: { findMany: vi.fn() },
         birthdaySubmissions: { findMany: vi.fn(), findFirst: vi.fn() },
@@ -34,6 +35,13 @@ function caller() {
   return callerFor(user);
 }
 
+function mockSubmissionCount(count: number) {
+  const where = vi.fn().mockResolvedValue([{ count }]);
+  const from = vi.fn().mockReturnValue({ where });
+  mockDb.select.mockReturnValue({ from } as never);
+  return { from, where };
+}
+
 beforeEach(() => {
   vi.clearAllMocks();
 });
@@ -43,6 +51,26 @@ describe("submission router — auth", () => {
     await expect(callerFor(undefined).submission.pending()).rejects.toMatchObject({
       code: "UNAUTHORIZED",
     });
+  });
+
+  it("rejects unauthenticated callers for every protected submission procedure", async () => {
+    const unauthenticated = callerFor(undefined).submission;
+
+    await expect(
+      unauthenticated.import({ submissionId: "sub-1" }),
+    ).rejects.toMatchObject({ code: "UNAUTHORIZED" });
+    await expect(
+      unauthenticated.reject({ submissionId: "sub-1" }),
+    ).rejects.toMatchObject({ code: "UNAUTHORIZED" });
+    await expect(
+      unauthenticated.bulkImport({ submissionIds: ["sub-1"] }),
+    ).rejects.toMatchObject({ code: "UNAUTHORIZED" });
+    await expect(
+      unauthenticated.bulkReject({ submissionIds: ["sub-1"] }),
+    ).rejects.toMatchObject({ code: "UNAUTHORIZED" });
+    await expect(
+      unauthenticated.duplicates({ submissionId: "sub-1" }),
+    ).rejects.toMatchObject({ code: "UNAUTHORIZED" });
   });
 });
 
@@ -66,7 +94,10 @@ describe("submission.pending", () => {
       sharingLinkId: "l1",
       sharingLink: { id: "l1", description: "d" },
     }));
-    mockDb.query.birthdaySubmissions.findMany.mockResolvedValue(all as never);
+    mockSubmissionCount(all.length);
+    mockDb.query.birthdaySubmissions.findMany.mockResolvedValue(
+      all.slice(0, 10) as never,
+    );
 
     const result = await caller().submission.pending({ page: 1, limit: 10 });
     expect(result.submissions).toHaveLength(10);
@@ -75,6 +106,9 @@ describe("submission.pending", () => {
     expect(result.hasPreviousPage).toBe(false);
     expect(result.totalPages).toBe(2);
     expect(result.submissions[0]).toHaveProperty("date");
+    expect(mockDb.query.birthdaySubmissions.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ limit: 10, offset: 0 }),
+    );
   });
 
   it("computes second-page flags correctly", async () => {
@@ -89,12 +123,19 @@ describe("submission.pending", () => {
       sharingLinkId: "l1",
       sharingLink: { id: "l1", description: "d" },
     }));
-    mockDb.query.birthdaySubmissions.findMany.mockResolvedValue(all as never);
+    mockSubmissionCount(all.length);
+    mockDb.query.birthdaySubmissions.findMany.mockResolvedValue(
+      all.slice(10, 15) as never,
+    );
 
     const result = await caller().submission.pending({ page: 2, limit: 10 });
     expect(result.currentPage).toBe(2);
     expect(result.hasNextPage).toBe(false);
     expect(result.hasPreviousPage).toBe(true);
+    expect(result.submissions).toHaveLength(5);
+    expect(mockDb.query.birthdaySubmissions.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ limit: 10, offset: 10 }),
+    );
   });
 });
 
@@ -262,6 +303,24 @@ describe("submission.bulkImport / bulkReject", () => {
       failedIds: ["b"],
       errors: ["Submission b already processed"],
     });
+  });
+
+  it("rejects bulk import requests above the maximum batch size", async () => {
+    await expect(
+      caller().submission.bulkImport({
+        submissionIds: Array.from({ length: 101 }, (_, i) => `sub-${i}`),
+      }),
+    ).rejects.toMatchObject({ code: "BAD_REQUEST" });
+    expect(SubmissionService.bulkImportSubmissions).not.toHaveBeenCalled();
+  });
+
+  it("rejects bulk reject requests above the maximum batch size", async () => {
+    await expect(
+      caller().submission.bulkReject({
+        submissionIds: Array.from({ length: 101 }, (_, i) => `sub-${i}`),
+      }),
+    ).rejects.toMatchObject({ code: "BAD_REQUEST" });
+    expect(SubmissionService.bulkRejectSubmissions).not.toHaveBeenCalled();
   });
 });
 

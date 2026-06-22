@@ -7,6 +7,14 @@ import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
+const sanitizedString = z
+  .string()
+  .transform((value) => InputValidator.sanitizeString(value));
+const sanitizedOptionalString = z
+  .string()
+  .nullish()
+  .transform((value) => InputValidator.sanitizeString(value) || null);
+
 function validateDateComponents(
   month: number,
   day: number,
@@ -37,11 +45,13 @@ export const birthdayRouter = router({
     .input(z.object({ birthdayId: z.string() }))
     .query(async ({ input, ctx }) => {
       const birthday = await ctx.db.query.birthdays.findFirst({
-        where: eq(birthdays.id, input.birthdayId),
+        where: and(
+          eq(birthdays.id, input.birthdayId),
+          eq(birthdays.userId, ctx.user.id),
+        ),
       });
 
-      // Don't show birthdays that don't exist or belong to other users
-      if (!birthday || birthday.userId !== ctx.user.id) {
+      if (!birthday) {
         return null;
       }
 
@@ -58,15 +68,15 @@ export const birthdayRouter = router({
   create: protectedProcedure
     .input(
       z.object({
-        name: z.string(),
+        name: sanitizedString,
         year: z.number().nullish(),
         month: z.number(),
         day: z.number(),
-        category: z.string().nullish(),
-        parent: z.string().nullish(),
-        notes: z.string().nullish(),
+        category: sanitizedOptionalString,
+        parent: sanitizedOptionalString,
+        notes: sanitizedOptionalString,
         remindersEnabled: z.boolean().nullish(),
-        importSource: z.string().nullish(),
+        importSource: sanitizedOptionalString,
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -97,15 +107,15 @@ export const birthdayRouter = router({
     .input(
       z.object({
         id: z.string(),
-        name: z.string(),
+        name: sanitizedString,
         year: z.number().nullish(),
         month: z.number(),
         day: z.number(),
-        category: z.string().nullish(),
-        parent: z.string().nullish(),
-        notes: z.string().nullish(),
+        category: sanitizedOptionalString,
+        parent: sanitizedOptionalString,
+        notes: sanitizedOptionalString,
         remindersEnabled: z.boolean().nullish(),
-        importSource: z.string().nullish(),
+        importSource: sanitizedOptionalString,
       }),
     )
     .mutation(async ({ input, ctx }) => {

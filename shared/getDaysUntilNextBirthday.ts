@@ -39,6 +39,6 @@ export const getDaysUntilNextBirthday = (
     return getDaysUntilNextBirthdayFromComponents(birthday.month, birthday.day);
   }
 
-  // Fallback: If no date information available, return 0
-  return 0;
+  // Missing dates should sort after real upcoming birthdays.
+  return Number.POSITIVE_INFINITY;
 };

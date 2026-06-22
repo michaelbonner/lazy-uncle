@@ -59,18 +59,9 @@ const SubmissionReviewInterface = () => {
   const { data: birthdaysData, isPending: birthdaysLoading } =
     trpc.birthday.list.useQuery();
 
-  const importSubmission = trpc.submission.import.useMutation({
-    onSuccess: () => {
-      utils.submission.pending.invalidate();
-      utils.birthday.list.invalidate();
-    },
-  });
+  const importSubmission = trpc.submission.import.useMutation();
 
-  const rejectSubmission = trpc.submission.reject.useMutation({
-    onSuccess: () => {
-      utils.submission.pending.invalidate();
-    },
-  });
+  const rejectSubmission = trpc.submission.reject.useMutation();
 
   const submissions = useMemo<BirthdaySubmission[]>(() => {
     return submissionsData?.submissions ?? [];
@@ -102,6 +93,10 @@ const SubmissionReviewInterface = () => {
     setProcessingSubmissions((prev) => new Set(prev).add(submissionId));
     try {
       await importSubmission.mutateAsync({ submissionId });
+      await Promise.all([
+        utils.submission.pending.invalidate(),
+        utils.birthday.list.invalidate(),
+      ]);
       setCurrentPage(1);
       setShowSuccessMessage("Birthday imported successfully!");
       setTimeout(() => setShowSuccessMessage(null), 3000);
@@ -119,6 +114,7 @@ const SubmissionReviewInterface = () => {
     setProcessingSubmissions((prev) => new Set(prev).add(submissionId));
     try {
       await rejectSubmission.mutateAsync({ submissionId });
+      await utils.submission.pending.invalidate();
       setCurrentPage(1);
       setShowSuccessMessage("Submission rejected");
       setTimeout(() => setShowSuccessMessage(null), 3000);
@@ -147,6 +143,13 @@ const SubmissionReviewInterface = () => {
         console.error(`Error importing submission ${submissionId}:`, error);
         failed++;
       }
+    }
+
+    if (imported > 0) {
+      await Promise.all([
+        utils.submission.pending.invalidate(),
+        utils.birthday.list.invalidate(),
+      ]);
     }
 
     setProcessingSubmissions(new Set());
@@ -178,6 +181,10 @@ const SubmissionReviewInterface = () => {
         console.error(`Error rejecting submission ${submissionId}:`, error);
         failed++;
       }
+    }
+
+    if (rejected > 0) {
+      await utils.submission.pending.invalidate();
     }
 
     setProcessingSubmissions(new Set());

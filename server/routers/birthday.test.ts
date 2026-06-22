@@ -61,6 +61,9 @@ beforeEach(() => {
     isValid: true,
     sanitized: 1990,
   });
+  vi.mocked(InputValidator.sanitizeString).mockImplementation((value) =>
+    typeof value === "string" ? value.trim().replace(/[<>]/g, "") : "",
+  );
 });
 
 describe("birthday router — auth", () => {
@@ -98,14 +101,7 @@ describe("birthday.byId", () => {
   });
 
   it("returns null when owned by a different user", async () => {
-    mockDb.query.birthdays.findFirst.mockResolvedValue({
-      id: "b1",
-      name: "Bob",
-      year: 1990,
-      month: 5,
-      day: 15,
-      userId: "someone-else",
-    } as never);
+    mockDb.query.birthdays.findFirst.mockResolvedValue(undefined);
     expect(await caller().birthday.byId({ birthdayId: "b1" })).toBeNull();
   });
 });
@@ -248,11 +244,8 @@ describe("birthday.delete", () => {
 // Ensure TRPCError is the thrown type, not a plain Error.
 describe("error typing", () => {
   it("throws TRPCError instances", async () => {
-    mockDb.query.birthdays.findFirst.mockResolvedValue(undefined);
-    try {
-      await callerFor(undefined).birthday.byId({ birthdayId: "x" });
-    } catch (e) {
-      expect(e).toBeInstanceOf(TRPCError);
-    }
+    await expect(
+      callerFor(undefined).birthday.byId({ birthdayId: "x" }),
+    ).rejects.toBeInstanceOf(TRPCError);
   });
 });
