@@ -1,0 +1,3 @@
+[install]
+# Require packages to be at least 3 hours old before installing
+minimumReleaseAge = 10800
