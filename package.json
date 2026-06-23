@@ -27,7 +27,7 @@
     "@paralleldrive/cuid2": "^3.3.0",
     "@react-email/render": "^2.0.9",
     "@tailwindcss/forms": "^0.5.11",
-    "@tanstack/react-query": "^5.66.0",
+    "@tanstack/react-query": "^5.101.1",
     "@tiptap/react": "^3.27.1",
     "@tiptap/starter-kit": "^3.27.1",
     "@trpc/client": "^11.0.0",
@@ -44,7 +44,7 @@
     "nodemailer": "^9.0.1",
     "pg": "^8.22.0",
     "pluralize": "^8.0.0",
-    "posthog-js": "^1.391.2",
+    "posthog-js": "^1.393.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-gtm-module": "^2.0.11",
@@ -52,7 +52,7 @@
     "react-icons": "^5.6.0",
     "resend": "^6.14.0",
     "superjson": "^2.2.2",
-    "zod": "^3.24.1"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -78,7 +78,7 @@
     "prettier-plugin-tailwindcss": "^0.8.0",
     "tailwindcss": "^4.3.1",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.61.1",
+    "typescript-eslint": "^8.62.0",
     "vitest": "^4.1.9"
   },
   "trustedDependencies": [
