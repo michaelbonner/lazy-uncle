@@ -46,7 +46,7 @@
     "nodemailer": "^9.0.4",
     "pg": "^8.22.0",
     "pluralize": "^8.0.0",
-    "posthog-js": "^1.412.1",
+    "posthog-js": "^1.413.2",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-gtm-module": "^2.0.11",
