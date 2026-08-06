@@ -42,6 +42,12 @@ COPY --from=build /app/.next/static ./app/.next/static
 COPY --from=build /app/public ./app/public
 COPY --from=build /app/drizzle ./drizzle
 COPY --from=build /app/drizzle.config.ts ./drizzle.config.ts
+
+# The Dokploy schedules `docker exec` into this container and run the
+# package.json job scripts, which Next.js does not trace into standalone.
+COPY --from=build /app/scripts ./scripts
+COPY --from=build /app/lib ./lib
+
 COPY --from=build /app/package.json ./package.json
 
 EXPOSE 3000
