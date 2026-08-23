@@ -8,6 +8,7 @@ import {
   text,
   timestamp,
   unique,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 // Enums
@@ -37,6 +38,7 @@ export const accounts = pgTable(
     oauthTokenSecret: text("oauth_token_secret"),
     oauthToken: text("oauth_token"),
     accountId: text("accountId").notNull(),
+    issuer: text("issuer").notNull(),
     providerId: text("providerId").notNull(),
     accessToken: text("accessToken"),
     refreshToken: text("refreshToken"),
@@ -47,7 +49,13 @@ export const accounts = pgTable(
     createdAt: timestamp("createdAt").notNull(),
     updatedAt: timestamp("updatedAt").notNull(),
   },
-  (table) => [index("account_userId_idx").on(table.userId)],
+  (table) => [
+    index("account_userId_idx").on(table.userId),
+    uniqueIndex("account_issuer_accountId_uidx").on(
+      table.issuer,
+      table.accountId,
+    ),
+  ],
 );
 
 export const sessions = pgTable(
