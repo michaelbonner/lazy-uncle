@@ -36,6 +36,13 @@
       "when": 1787461295897,
       "tag": "0004_add_account_issuer",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1790283508031,
+      "tag": "0005_relax_account_issuer",
+      "breakpoints": true
     }
   ]
 }
