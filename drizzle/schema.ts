@@ -8,7 +8,6 @@ import {
   text,
   timestamp,
   unique,
-  uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 // Enums
@@ -38,7 +37,8 @@ export const accounts = pgTable(
     oauthTokenSecret: text("oauth_token_secret"),
     oauthToken: text("oauth_token"),
     accountId: text("accountId").notNull(),
-    issuer: text("issuer").notNull(),
+    // Legacy from Better Auth 1.7.0–1.7.2; 1.7.3+ never writes it. Safe to drop later.
+    issuer: text("issuer"),
     providerId: text("providerId").notNull(),
     accessToken: text("accessToken"),
     refreshToken: text("refreshToken"),
@@ -51,10 +51,6 @@ export const accounts = pgTable(
   },
   (table) => [
     index("account_userId_idx").on(table.userId),
-    uniqueIndex("account_issuer_accountId_uidx").on(
-      table.issuer,
-      table.accountId,
-    ),
   ],
 );
 
