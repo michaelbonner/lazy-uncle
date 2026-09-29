@@ -8,6 +8,7 @@ import {
   text,
   timestamp,
   unique,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 // Enums
@@ -51,6 +52,12 @@ export const accounts = pgTable(
   },
   (table) => [
     index("account_userId_idx").on(table.userId),
+    // Better Auth resolves OAuth sign-in by (providerId, accountId) and errors
+    // if more than one row matches, so duplicates must be impossible.
+    uniqueIndex("account_providerId_accountId_uidx").on(
+      table.providerId,
+      table.accountId,
+    ),
   ],
 );
 

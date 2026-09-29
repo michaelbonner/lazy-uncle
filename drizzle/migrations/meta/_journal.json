@@ -43,6 +43,13 @@
       "when": 1790283508031,
       "tag": "0005_relax_account_issuer",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790722948478,
+      "tag": "0006_account_provider_unique",
+      "breakpoints": true
     }
   ]
 }
