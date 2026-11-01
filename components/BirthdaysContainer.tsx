@@ -5,6 +5,7 @@ import { SearchContext } from "../providers/SearchProvider";
 import { getDaysUntilNextBirthday } from "../shared/getDaysUntilNextBirthday";
 import { getZodiacSignFromComponents } from "../shared/getZodiacSignForDateYmdString";
 import BirthdayAreaNav from "./BirthdayAreaNav";
+import BirthdayCalendar from "./BirthdayCalendar";
 import BirthdayFilterField from "./BirthdayFilterField";
 import BirthdayRow from "./BirthdayRow";
 import LoadingSpinner from "./LoadingSpinner";
@@ -26,6 +27,7 @@ import { HiOutlineCalendar, HiXCircle } from "react-icons/hi";
 import { IoAddCircleOutline } from "react-icons/io5";
 
 const currentHost = typeof window !== "undefined" ? window.location.host : "";
+const birthdayViews: Array<"list" | "calendar"> = ["list", "calendar"];
 
 const AddBirthdayDialog = dynamic(() => import("./AddBirthdayDialog"), {
   ssr: false,
@@ -60,6 +62,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
   const { isPending } = authClient.useSession();
   const [isAddBirthdayDialogVisible, setIsAddBirthdayDialogVisible] =
     useState(false);
+  const [view, setView] = useState<"list" | "calendar">("list");
 
   // Deferring the name filter keeps the input responsive on slow devices —
   // typing updates the input immediately while the filtered list rebuilds
@@ -219,7 +222,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
   );
 
   const workingDatesCount = useMemo(() => {
-    return workingDates.filter((date) => date.name !== "Today").length;
+    return workingDates.filter((date) => date.id).length;
   }, [workingDates]);
 
   const birthdaysCount = useMemo<number>(() => {
@@ -287,27 +290,20 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                   key={birthday.id}
                   className="flex items-center gap-4 rounded-lg border border-cream/20 px-4 py-3 text-left hover:bg-cream/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream"
                   onClick={() => {
-                    const birthDayLiElementMobile: HTMLLIElement | null =
-                      document.querySelector(`#birthday-${birthday.id}`);
-                    const birthDayLiElementDesktop: HTMLLIElement | null =
-                      document.querySelector(
-                        `#desktop-birthday-${birthday.id}`,
+                    setView("list");
+                    requestAnimationFrame(() => {
+                      const row = document.getElementById(
+                        `desktop-birthday-${birthday.id}`,
                       );
-
-                    if (birthDayLiElementMobile || birthDayLiElementDesktop) {
-                      if (birthDayLiElementDesktop?.offsetTop) {
-                        window.scrollTo({
-                          top: birthDayLiElementDesktop?.offsetTop - 124,
-                          behavior: "smooth",
-                        });
-                        return;
-                      }
-
-                      window.scrollTo({
-                        top: (birthDayLiElementMobile?.offsetTop || 76) - 76,
+                      const mobileRow = document.getElementById(
+                        `birthday-${birthday.id}`,
+                      );
+                      const target = row?.offsetParent ? row : mobileRow;
+                      target?.scrollIntoView({
                         behavior: "smooth",
+                        block: "center",
                       });
-                    }
+                    });
                   }}
                   type="button"
                 >
@@ -385,6 +381,31 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
         )}
         <div className="overflow-hidden rounded-xl border border-rule bg-paper text-ink">
           <div className="sticky top-0 z-10 bg-paper">
+            <div className="flex items-center justify-between gap-3 border-b border-rule px-4 py-3 sm:px-6">
+              <p className="text-sm text-ink-soft">Your birthdays</p>
+              <div
+                className="flex rounded-md border border-rule bg-paper-deep/60 p-1"
+                role="group"
+                aria-label="Birthday view"
+              >
+                {birthdayViews.map((option) => (
+                  <button
+                    aria-pressed={view === option}
+                    className={clsx(
+                      "rounded px-3 py-1.5 text-sm capitalize focus-visible:outline-2 focus-visible:outline-accent",
+                      view === option
+                        ? "bg-paper font-medium text-ink shadow-sm"
+                        : "text-ink-soft hover:text-ink",
+                    )}
+                    key={option}
+                    onClick={() => setView(option)}
+                    type="button"
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="border-b border-rule bg-paper-deep/60">
               <div className="grid gap-2 p-3 md:grid-cols-2 md:p-5 xl:flex">
                 <div className="flex w-full gap-2">
@@ -473,7 +494,12 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                 </div>
               </div>
             </div>
-            <div className="hidden border-b border-rule bg-paper px-4 text-ink md:grid md:grid-cols-12 md:px-8">
+            <div
+              className={clsx(
+                "hidden border-b border-rule bg-paper px-4 text-ink md:grid-cols-12 md:px-8",
+                view === "list" && "md:grid",
+              )}
+            >
               <SortColumnHeader
                 ascendingString="name_asc"
                 className="col-span-3"
@@ -524,7 +550,13 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
               />
             </div>
           </div>
-          {workingDatesCount ? (
+          {view === "calendar" ? (
+            <BirthdayCalendar
+              birthdays={workingDates.filter((birthday) =>
+                Boolean(birthday.id),
+              )}
+            />
+          ) : workingDatesCount ? (
             <ul>
               <li>
                 <button
