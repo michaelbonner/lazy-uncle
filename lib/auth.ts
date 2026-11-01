@@ -1,5 +1,6 @@
 import * as schema from "../drizzle/schema";
 import db from "./db";
+import { magicLinkEmail } from "./email-templates";
 import { NotificationService } from "./notification-service";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
@@ -28,10 +29,7 @@ export const auth = betterAuth({
         await notificationService.sendEmail({
           to: email,
           subject: "Your Lazy Uncle sign-in link",
-          html: `<p>Click the link below to sign in to Lazy Uncle. This link expires in 5 minutes and can only be used once.</p>
-<p><a href="${url}">Sign in to Lazy Uncle</a></p>
-<p>If you didn't request this, you can safely ignore this email.</p>`,
-          text: `Sign in to Lazy Uncle: ${url}\n\nThis link expires in 5 minutes and can only be used once. If you didn't request this, you can safely ignore this email.`,
+          ...magicLinkEmail(url),
         });
       },
     }),
