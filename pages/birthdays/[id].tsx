@@ -22,46 +22,45 @@ const Birthday = ({ id }: { id: string }) => {
   } = trpc.birthday.byId.useQuery({ birthdayId: id });
 
   return (
-    <MainLayout title={`Birthday`}>
-      <>
-        {birthdayError && <p>Error loading birthday</p>}
-        <div className="mx-auto mt-8 max-w-7xl px-2 md:px-8">
+    <MainLayout title="Edit birthday | Lazy Uncle">
+      <main className="mx-auto max-w-5xl px-5 pb-16 sm:px-8">
+        <div className="py-9 sm:py-12">
           <Link
             href="/birthdays"
-            className="flex items-center space-x-1 text-cyan-100 underline md:px-0"
+            className="inline-flex items-center gap-1 text-sm text-ink-soft hover:text-accent-deep focus-visible:outline-2 focus-visible:outline-accent"
           >
-            <HiChevronLeft className="mt-1 h-6 w-6" />
-            <span>Back to all birthdays</span>
+            <HiChevronLeft aria-hidden className="size-5" />
+            <span>Back to birthdays</span>
           </Link>
-          <div className="mt-4 rounded-xl bg-white px-4 py-8 text-gray-800">
-            {birthdayLoading ? (
-              <div className="flex min-h-[300px] items-center justify-center">
-                <LoadingSpinner spinnerTextColor="text-cyan-40" />
-              </div>
-            ) : (
-              <>
-                <div className="justify-between md:flex md:items-center md:px-8">
-                  <h1 className="text-2xl font-medium">
-                    Edit {birthdayData?.name}&apos;s Birthday
-                  </h1>
-                  <h3 className="flex items-end space-x-1">
-                    <span className="text-sm font-light">Age</span>
-                    <span>
-                      {getAgeForHumans(
-                        getDateFromYmdString(birthdayData?.date ?? ""),
-                        true,
-                      )}
-                    </span>
-                  </h3>
-                </div>
-                <div className="mt-6 md:px-24">
-                  {birthdayData && <EditBirthdayForm birthday={birthdayData} />}
-                </div>
-              </>
+          <p className="mt-8 text-sm font-medium tracking-[0.12em] text-accent-deep uppercase">
+            Your people
+          </p>
+          <div className="mt-2 flex flex-wrap items-end justify-between gap-3">
+            <h1 className="font-display text-4xl text-ink sm:text-5xl">
+              {birthdayData ? `Edit ${birthdayData.name}` : "Edit birthday"}
+            </h1>
+            {birthdayData?.date && (
+              <p className="text-sm text-ink-soft">
+                {getAgeForHumans(getDateFromYmdString(birthdayData.date), true)}
+              </p>
             )}
           </div>
         </div>
-      </>
+        {birthdayError && (
+          <p role="alert" className="mb-5 text-rose-800">
+            Error loading birthday: {birthdayError.message}
+          </p>
+        )}
+        <section className="rounded-xl border border-rule/70 bg-white p-5 sm:p-8">
+          {birthdayLoading ? (
+            <div className="flex min-h-[300px] items-center justify-center">
+              <LoadingSpinner spinnerTextColor="text-accent" />
+            </div>
+          ) : (
+            birthdayData && <EditBirthdayForm birthday={birthdayData} />
+          )}
+        </section>
+      </main>
     </MainLayout>
   );
 };

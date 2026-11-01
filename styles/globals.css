@@ -23,31 +23,47 @@
 }
 
 @theme {
-  --color-paper: oklch(0.97 0.012 80);
-  --color-paper-deep: oklch(0.93 0.015 78);
-  --color-ink: oklch(0.22 0.018 60);
-  --color-ink-soft: oklch(0.42 0.014 70);
-  --color-ink-muted: oklch(0.5 0.012 72);
-  --color-rule: oklch(0.86 0.012 78);
-  --color-accent: oklch(0.45 0.085 200);
-  --color-accent-deep: oklch(0.36 0.075 200);
+  --color-paper: oklch(0.965 0.012 77);
+  --color-paper-deep: oklch(0.92 0.018 78);
+  --color-ink: oklch(0.24 0.025 163);
+  --color-ink-soft: oklch(0.41 0.022 160);
+  --color-ink-muted: oklch(0.49 0.018 160);
+  --color-rule: oklch(0.83 0.022 78);
+  --color-accent: oklch(0.47 0.118 30);
+  --color-accent-deep: oklch(0.37 0.096 30);
+  --color-evergreen: oklch(0.275 0.05 162);
+  --color-evergreen-soft: oklch(0.36 0.045 162);
+  --color-cream: oklch(0.98 0.012 78);
 
   --font-display:
     var(--font-source-serif), ui-serif, Georgia, "Times New Roman", serif;
   --font-sans:
-    var(--font-figtree), ui-sans-serif, system-ui, -apple-system,
-    "Segoe UI", sans-serif;
+    var(--font-figtree), ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    sans-serif;
 }
 
 html,
 body {
-  font-family: var(--font-sans);
   color: var(--color-ink);
   background-color: var(--color-paper);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+.site-font {
+  --font-sans: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-source-serif), ui-serif, Georgia, serif;
+  font-family: var(--font-sans);
+}
+
+::selection {
+  color: var(--color-cream);
+  background: var(--color-evergreen-soft);
+}
+
+:focus-visible {
+  outline-color: var(--color-accent);
+}
 
 div.ptr {
   @apply overflow-visible;

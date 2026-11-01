@@ -3,7 +3,6 @@ import LoadingSpinner from "./LoadingSpinner";
 import PrimaryButton from "./PrimaryButton";
 import { useState } from "react";
 import { HiCog, HiMail, HiMailOpen } from "react-icons/hi";
-import { IoSettingsOutline } from "react-icons/io5";
 import { MdCake } from "react-icons/md";
 
 interface NotificationPreference {
@@ -56,7 +55,8 @@ const SharingSettingsPanel = () => {
             preferencesData.emailNotifications ||
           formPreferences.summaryNotifications !==
             preferencesData.summaryNotifications ||
-          formPreferences.birthdayReminders !== preferencesData.birthdayReminders
+          formPreferences.birthdayReminders !==
+            preferencesData.birthdayReminders
         : true; // No preferences row yet — always show Save
 
   const updateDraftPreference = (
@@ -87,15 +87,8 @@ const SharingSettingsPanel = () => {
   const preferences: NotificationPreference | null = preferencesData ?? null;
 
   return (
-    <div className="js-settings-panel mt-8 rounded-lg border border-rule bg-paper-deep text-ink">
-      <div className="px-4 py-8 md:px-8 md:py-10">
-        <div className="mb-6 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <IoSettingsOutline className="h-6 w-6 text-accent" />
-            <h2 className="font-display text-2xl font-semibold">Settings</h2>
-          </div>
-        </div>
-
+    <section className="js-settings-panel max-w-3xl text-ink">
+      <div>
         {preferencesError && (
           <div className="mb-4 rounded-md border border-rose-300 bg-rose-50 p-4">
             <p className="text-rose-900">
@@ -104,20 +97,25 @@ const SharingSettingsPanel = () => {
           </div>
         )}
 
-        <div className="rounded-lg border border-rule bg-paper p-6">
-          <h3 className="mb-6 font-display text-lg font-semibold">
-            Notification preferences
-          </h3>
+        <div className="overflow-hidden rounded-xl border border-rule/70 bg-white">
+          <div className="border-b border-rule/70 px-5 py-5 sm:px-7">
+            <h2 className="font-display text-2xl font-semibold">
+              Notification preferences
+            </h2>
+            <p className="mt-1 text-sm text-ink-soft">
+              Choose the emails you want to receive.
+            </p>
+          </div>
 
           {preferencesLoading ? (
             <div className="flex justify-center py-8">
               <LoadingSpinner spinnerTextColor="text-accent" />
             </div>
           ) : (
-            <form onSubmit={handleSaveSettings} className="space-y-6">
-              <div className="space-y-4">
-                <div className="flex items-start space-x-3">
-                  <div className="flex h-5 items-center">
+            <form onSubmit={handleSaveSettings}>
+              <div className="divide-y divide-rule/70">
+                <div className="flex items-start gap-4 px-5 py-5 sm:px-7">
+                  <div className="flex h-6 items-center">
                     <input
                       id="emailNotifications"
                       type="checkbox"
@@ -128,26 +126,26 @@ const SharingSettingsPanel = () => {
                           e.target.checked,
                         )
                       }
-                      className="h-4 w-4 rounded border-rule text-accent focus:ring-accent/40"
+                      className="size-5 rounded border-rule text-accent focus:ring-accent/40"
                     />
                   </div>
                   <div className="flex-1">
                     <label
                       htmlFor="emailNotifications"
-                      className="flex items-center space-x-2 text-sm font-medium text-ink"
+                      className="flex items-center gap-2 font-medium text-ink"
                     >
                       <HiMail className="h-4 w-4 text-accent" />
                       <span>Email notifications for new submissions</span>
                     </label>
-                    <p className="mt-1 text-sm text-ink-soft">
+                    <p className="mt-1 max-w-2xl text-sm leading-6 text-ink-soft">
                       Receive an email notification whenever someone submits a
                       birthday through your sharing links.
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-3">
-                  <div className="flex h-5 items-center">
+                <div className="flex items-start gap-4 px-5 py-5 sm:px-7">
+                  <div className="flex h-6 items-center">
                     <input
                       id="summaryNotifications"
                       type="checkbox"
@@ -158,26 +156,26 @@ const SharingSettingsPanel = () => {
                           e.target.checked,
                         )
                       }
-                      className="h-4 w-4 rounded border-rule text-accent focus:ring-accent/40"
+                      className="size-5 rounded border-rule text-accent focus:ring-accent/40"
                     />
                   </div>
                   <div className="flex-1">
                     <label
                       htmlFor="summaryNotifications"
-                      className="flex items-center space-x-2 text-sm font-medium text-ink"
+                      className="flex items-center gap-2 font-medium text-ink"
                     >
                       <HiMailOpen className="h-4 w-4 text-accent" />
                       <span>Daily summary notifications</span>
                     </label>
-                    <p className="mt-1 text-sm text-ink-soft">
+                    <p className="mt-1 max-w-2xl text-sm leading-6 text-ink-soft">
                       Receive a daily summary email of all pending submissions
                       instead of individual notifications.
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-3">
-                  <div className="flex h-5 items-center">
+                <div className="flex items-start gap-4 px-5 py-5 sm:px-7">
+                  <div className="flex h-6 items-center">
                     <input
                       id="birthdayReminders"
                       type="checkbox"
@@ -188,18 +186,18 @@ const SharingSettingsPanel = () => {
                           e.target.checked,
                         )
                       }
-                      className="h-4 w-4 rounded border-rule text-accent focus:ring-accent/40"
+                      className="size-5 rounded border-rule text-accent focus:ring-accent/40"
                     />
                   </div>
                   <div className="flex-1">
                     <label
                       htmlFor="birthdayReminders"
-                      className="flex items-center space-x-2 text-sm font-medium text-ink"
+                      className="flex items-center gap-2 font-medium text-ink"
                     >
                       <MdCake className="h-4 w-4 text-accent" />
                       <span>Birthday reminder emails</span>
                     </label>
-                    <p className="mt-1 text-sm text-ink-soft">
+                    <p className="mt-1 max-w-2xl text-sm leading-6 text-ink-soft">
                       Get an email on the day of each birthday. Individual
                       birthdays can be opted out in the birthday settings.
                     </p>
@@ -208,14 +206,14 @@ const SharingSettingsPanel = () => {
               </div>
 
               {hasChanges && (
-                <div className="flex space-x-3 border-t border-rule pt-6">
+                <div className="flex flex-wrap gap-3 border-t border-rule/70 bg-white/55 px-5 py-4 sm:px-7">
                   <PrimaryButton type="submit" disabled={updateLoading}>
                     {updateLoading ? "Saving…" : "Save changes"}
                   </PrimaryButton>
                   <button
                     type="button"
                     onClick={handleResetSettings}
-                    className="rounded-md border border-rule bg-paper px-4 py-2 text-sm font-medium text-ink transition hover:bg-paper-deep"
+                    className="rounded-md border border-rule bg-white px-4 py-2 text-sm font-medium text-ink transition hover:bg-paper"
                   >
                     Reset
                   </button>
@@ -223,7 +221,7 @@ const SharingSettingsPanel = () => {
               )}
 
               {!hasChanges && preferences && (
-                <div className="border-t border-rule pt-6">
+                <div className="border-t border-rule/70 bg-white/55 px-5 py-4 sm:px-7">
                   <div className="flex items-center space-x-2 text-sm text-emerald-700">
                     <HiCog className="h-4 w-4" />
                     <span>Settings saved</span>
@@ -233,16 +231,8 @@ const SharingSettingsPanel = () => {
             </form>
           )}
         </div>
-
-        <div className="mt-6 text-sm text-ink-soft">
-          <p>
-            Configure your sharing preferences and notification settings. These
-            settings control how you receive updates about birthday submissions
-            from your sharing links.
-          </p>
-        </div>
       </div>
-    </div>
+    </section>
   );
 };
 

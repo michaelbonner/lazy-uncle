@@ -10,7 +10,7 @@ import { IoTrashOutline } from "react-icons/io5";
 
 const TextEdit = dynamic(() => import("./TextEdit"), {
   loading: () => (
-    <div className="flex h-full min-h-[250px] w-full items-center justify-center rounded-lg border-t-4 border-b-4 bg-white text-center text-gray-800">
+    <div className="flex h-full min-h-[250px] w-full items-center justify-center rounded-lg border border-rule bg-paper text-center text-ink">
       <p className="animate-pulse">Loading editor...</p>
     </div>
   ),
@@ -76,7 +76,7 @@ const EditBirthdayForm = ({
   return (
     <>
       <form
-        className="flex flex-col space-y-6"
+        className="flex flex-col gap-6 text-ink"
         onSubmit={async (e) => {
           e.preventDefault();
 
@@ -104,13 +104,13 @@ const EditBirthdayForm = ({
           toast.success("Birthday updated");
         }}
       >
-        <div className="grid gap-x-4 md:grid-cols-2">
+        <div className="grid gap-x-5 gap-y-4 md:grid-cols-2">
           <div>
-            <label className="mt-4 block" htmlFor="name">
+            <label className="mb-2 block text-sm font-medium" htmlFor="name">
               Name
             </label>
             <input
-              className="block h-12 w-full rounded-sm border-gray-300"
+              className="block h-12 w-full rounded-md border-rule bg-white focus:border-accent focus:ring-accent"
               id="name"
               onChange={(e) => setName(e.target.value)}
               required={true}
@@ -119,7 +119,7 @@ const EditBirthdayForm = ({
             />
           </div>
           <div>
-            <label className="mt-4 block">Birthday</label>
+            <label className="mb-2 block text-sm font-medium">Birthday</label>
             <BirthdayDateInput
               year={year}
               month={month}
@@ -131,11 +131,14 @@ const EditBirthdayForm = ({
             />
           </div>
           <div>
-            <label className="mt-4 block" htmlFor="category">
+            <label
+              className="mb-2 block text-sm font-medium"
+              htmlFor="category"
+            >
               Category (optional)
             </label>
             <input
-              className="block h-12 w-full rounded-sm border-gray-300"
+              className="block h-12 w-full rounded-md border-rule bg-white focus:border-accent focus:ring-accent"
               id="category"
               onChange={(e) => setCategory(e.target.value)}
               type="text"
@@ -143,11 +146,11 @@ const EditBirthdayForm = ({
             />
           </div>
           <div>
-            <label className="mt-4 block" htmlFor="parent">
+            <label className="mb-2 block text-sm font-medium" htmlFor="parent">
               Parent (optional)
             </label>
             <input
-              className="block h-12 w-full rounded-sm border-gray-300"
+              className="block h-12 w-full rounded-md border-rule bg-white focus:border-accent focus:ring-accent"
               id="parent"
               onChange={(e) => setParent(e.target.value)}
               type="text"
@@ -156,7 +159,7 @@ const EditBirthdayForm = ({
           </div>
         </div>
         <div>
-          <label className="block" htmlFor="notes">
+          <label className="mb-2 block text-sm font-medium" htmlFor="notes">
             Notes (optional)
           </label>
           <TextEdit
@@ -172,17 +175,17 @@ const EditBirthdayForm = ({
                 type="checkbox"
                 checked={remindersEnabled}
                 onChange={(e) => setRemindersEnabled(e.target.checked)}
-                className="h-4 w-4 rounded border-gray-300 text-cyan-600 focus:ring-cyan-500"
+                className="h-4 w-4 rounded border-rule text-accent focus:ring-accent"
               />
             </div>
             <div className="flex-1">
               <label
                 htmlFor="remindersEnabled"
-                className="text-sm font-medium text-gray-700"
+                className="text-sm font-medium text-ink"
               >
                 Remind me on their birthday
               </label>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-ink-soft">
                 Send me an email on the day of this birthday.
               </p>
             </div>
@@ -194,7 +197,7 @@ const EditBirthdayForm = ({
             <code>{error.message}</code>
           </div>
         )}
-        <div className="sticky bottom-2 flex items-center justify-between gap-4 text-right">
+        <div className="sticky bottom-2 flex items-center justify-between gap-4 rounded-md border border-rule bg-white/95 p-3 text-right backdrop-blur-sm">
           <div className="text-left">
             {deleteError && (
               <p className="text-sm text-red-700">
@@ -205,9 +208,10 @@ const EditBirthdayForm = ({
               className={clsx(
                 "inline-flex items-center rounded-md border border-transparent bg-transparent px-4 py-2 text-sm font-medium text-red-700",
                 "hover:bg-red-100",
-                "focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:outline-hidden",
+                "focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:outline-hidden",
               )}
               disabled={deleteLoading}
+              aria-label={`Delete ${birthday.name}'s birthday`}
               onClick={async () => {
                 if (
                   window.confirm(
@@ -236,8 +240,8 @@ const EditBirthdayForm = ({
               <button
                 className={clsx(
                   "inline-flex items-center rounded-md border border-transparent px-4 py-2 font-medium",
-                  "hover:bg-gray-100",
-                  "focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:outline-hidden",
+                  "hover:bg-paper-deep",
+                  "focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:outline-hidden",
                 )}
                 onClick={handleClose}
                 type="button"

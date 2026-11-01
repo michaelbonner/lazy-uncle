@@ -14,7 +14,7 @@ const PublicLayout = ({
   const router = useRouter();
 
   return (
-    <div className="flex min-h-screen flex-col justify-between bg-paper text-ink">
+    <div className="flex min-h-dvh flex-col bg-paper text-ink antialiased">
       <Head>
         {/* General */}
         <title>{title}</title>
@@ -39,11 +39,15 @@ const PublicLayout = ({
           property="og:image"
           content="https://www.lazyuncle.net/og-image.png"
         />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content="https://www.lazyuncle.net/og-image.png" />
 
         {/* PWA */}
         <link rel="manifest" href="/site.webmanifest" />
-        <meta name="theme-color" content="#0891b2" />
-        <meta name="msapplication-TileColor" content="#0891b2" />
+        <meta name="theme-color" content="#24483e" />
+        <meta name="msapplication-TileColor" content="#24483e" />
 
         {/* Icons */}
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -63,13 +67,15 @@ const PublicLayout = ({
         <link
           rel="mask-icon"
           href="https://www.lazyuncle.net/safari-pinned-tab.svg"
-          color="#13b8a6"
+          color="#24483e"
         />
       </Head>
 
       <PublicHeader />
 
-      <main className="flex-1 px-4 py-8 md:px-8">{children}</main>
+      <main className="isolate flex-1 px-5 py-8 sm:px-8 lg:px-12">
+        {children}
+      </main>
 
       <PublicFooter />
     </div>

@@ -34,7 +34,7 @@ function html(title: string, body: string): Response {
     body { font-family: system-ui, sans-serif; max-width: 480px; margin: 80px auto; padding: 0 24px; color: #111; }
     h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
     p  { color: #555; line-height: 1.6; }
-    a  { color: #0891b2; }
+    a  { color: #24483e; }
   </style>
 </head>
 <body>${body}</body>

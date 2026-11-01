@@ -2,12 +2,11 @@ import { authClient } from "../../lib/auth-client";
 import ClientOnly from "../ClientOnly";
 import SignInDialog from "../SignInDialog";
 import Head from "next/head";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import Script from "next/script";
 import posthog from "posthog-js";
 import { ReactElement, useEffect, useState } from "react";
-import Script from "next/script";
 
 const MainLayout = ({
   children,
@@ -35,7 +34,7 @@ const MainLayout = ({
   }, [session, isPending]);
 
   return (
-    <div className="flex min-h-screen flex-col justify-between bg-paper text-ink">
+    <div className="flex min-h-dvh flex-col bg-paper text-ink antialiased">
       <Head>
         {/* General */}
         <title>{title}</title>
@@ -60,11 +59,15 @@ const MainLayout = ({
           property="og:image"
           content="https://www.lazyuncle.net/og-image.png"
         />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content="https://www.lazyuncle.net/og-image.png" />
 
         {/* PWA */}
         <link rel="manifest" href="/site.webmanifest" />
-        <meta name="theme-color" content="#0891b2" />
-        <meta name="msapplication-TileColor" content="#0891b2" />
+        <meta name="theme-color" content="#24483e" />
+        <meta name="msapplication-TileColor" content="#24483e" />
 
         {/* Icons */}
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -84,68 +87,84 @@ const MainLayout = ({
         <link
           rel="mask-icon"
           href="https://www.lazyuncle.net/safari-pinned-tab.svg"
-          color="#13b8a6"
+          color="#24483e"
         />
       </Head>
 
-      <header className="flex items-center justify-between gap-4 px-6 pt-8 md:px-12 md:pt-10">
-        <Link
-          href="/"
-          aria-label="Lazy Uncle home"
-          className="inline-flex items-center"
-        >
-          <Image
-            alt="Lazy Uncle"
-            height={39}
-            priority
-            src="/lazy-uncle.svg"
-            style={{ height: "auto" }}
-            width={130}
-          />
-        </Link>
-        <nav
-          aria-label="Primary"
-          className="flex items-center gap-5 text-sm text-ink-soft sm:gap-6"
-        >
+      <header className="border-b border-rule/70">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-5 gap-y-2 px-5 py-4 sm:px-8 lg:px-12">
           <Link
-            href="/features"
-            className="underline-offset-4 transition hover:text-ink hover:underline"
+            href="/"
+            aria-label="Lazy Uncle home"
+            className="inline-flex items-center"
           >
-            Features
+            <span className="font-display text-2xl font-semibold tracking-tight text-evergreen">
+              lazy uncle<span className="text-accent">.</span>
+            </span>
           </Link>
-          <Link
-            href="/how-it-works"
-            className="hidden underline-offset-4 transition hover:text-ink hover:underline sm:inline"
+          <nav
+            aria-label="Primary"
+            className="order-3 flex w-full items-center gap-5 overflow-x-auto border-t border-rule/70 pt-2 text-sm text-ink-soft sm:order-none sm:w-auto sm:border-0 sm:pt-0"
           >
-            How it works
-          </Link>
-          {session?.user ? (
-            <button
-              className="underline underline-offset-4 transition hover:text-ink"
-              onClick={async () => {
-                await authClient.signOut({
-                  fetchOptions: {
-                    onSuccess: () => {
-                      router.push("/");
-                      posthog.reset();
-                    },
-                  },
-                });
-              }}
-            >
-              Sign out
-            </button>
-          ) : (
-            !isPending && (
-              <button
-                className="underline underline-offset-4 transition hover:text-ink"
-                onClick={() => setIsSignInOpen(true)}
+            {session?.user && (
+              <Link
+                href="/birthdays"
+                aria-current={
+                  router.asPath.startsWith("/birthdays") ? "page" : undefined
+                }
+                className="shrink-0 py-2 underline-offset-4 hover:text-ink hover:underline aria-[current=page]:text-ink aria-[current=page]:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               >
-                Sign in
+                My birthdays
+              </Link>
+            )}
+            <Link
+              href="/features"
+              aria-current={
+                router.pathname === "/features" ? "page" : undefined
+              }
+              className="shrink-0 py-2 underline-offset-4 hover:text-ink hover:underline aria-[current=page]:text-ink aria-[current=page]:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
+              Features
+            </Link>
+            <Link
+              href="/how-it-works"
+              aria-current={
+                router.pathname === "/how-it-works" ? "page" : undefined
+              }
+              className="shrink-0 py-2 underline-offset-4 hover:text-ink hover:underline aria-[current=page]:text-ink aria-[current=page]:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
+              How it works
+            </Link>
+            {session?.user ? (
+              <button
+                type="button"
+                className="ml-auto shrink-0 py-2 underline underline-offset-4 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:ml-0"
+                onClick={async () => {
+                  await authClient.signOut({
+                    fetchOptions: {
+                      onSuccess: () => {
+                        router.push("/");
+                        posthog.reset();
+                      },
+                    },
+                  });
+                }}
+              >
+                Sign out
               </button>
-            )
-          )}
-        </nav>
+            ) : (
+              !isPending && (
+                <button
+                  type="button"
+                  className="ml-auto shrink-0 py-2 underline underline-offset-4 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:ml-0"
+                  onClick={() => setIsSignInOpen(true)}
+                >
+                  Sign in
+                </button>
+              )
+            )}
+          </nav>
+        </div>
       </header>
       <SignInDialog
         isOpen={isSignInOpen}
@@ -163,50 +182,54 @@ const MainLayout = ({
           "data-user-id": session.user.id,
         })}
       />
-      <ClientOnly>{children}</ClientOnly>
-      <footer className="border-t border-rule px-6 py-6 text-center text-sm text-ink-soft md:flex md:justify-between md:px-12">
-        <div>
-          &copy; 2020-{new Date().getFullYear()}
-          {` `}
-          <a
-            className="underline underline-offset-4 transition hover:text-ink"
-            href="https://michaelbonner.dev"
-          >
-            Michael Bonner
-          </a>
-        </div>
-        <div className="mt-4 flex flex-wrap justify-center space-x-6 md:mt-0">
-          <Link
-            href="/features"
-            className="pt-4 underline underline-offset-4 transition hover:text-ink md:pt-0"
-          >
-            Features
-          </Link>
-          <Link
-            href="/how-it-works"
-            className="pt-4 underline underline-offset-4 transition hover:text-ink md:pt-0"
-          >
-            How it works
-          </Link>
-          <a
-            className="pt-4 underline underline-offset-4 transition hover:text-ink md:pt-0"
-            href="https://github.com/sponsors/michaelbonner?o=esb"
-          >
-            Sponsor Me
-          </a>
+      <div className="isolate flex-1">
+        <ClientOnly>{children}</ClientOnly>
+      </div>
+      <footer className="border-t border-rule px-5 py-8 text-sm text-ink-soft sm:px-8 lg:px-12">
+        <div className="mx-auto flex max-w-7xl flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            &copy; 2020-{new Date().getFullYear()}
+            {` `}
+            <a
+              className="underline underline-offset-4 transition hover:text-ink"
+              href="https://michaelbonner.dev"
+            >
+              Michael Bonner
+            </a>
+          </div>
+          <div className="flex flex-wrap gap-x-5 gap-y-2">
+            <Link
+              href="/features"
+              className="underline underline-offset-4 hover:text-ink"
+            >
+              Features
+            </Link>
+            <Link
+              href="/how-it-works"
+              className="underline underline-offset-4 hover:text-ink"
+            >
+              How it works
+            </Link>
+            <a
+              className="underline underline-offset-4 hover:text-ink"
+              href="https://github.com/sponsors/michaelbonner?o=esb"
+            >
+              Sponsor Me
+            </a>
 
-          <Link
-            href="/policies"
-            className="pt-4 underline underline-offset-4 transition hover:text-ink md:pt-0"
-          >
-            Policies
-          </Link>
-          <Link
-            href="/contact"
-            className="pt-4 underline underline-offset-4 transition hover:text-ink md:pt-0"
-          >
-            Contact
-          </Link>
+            <Link
+              href="/policies"
+              className="underline underline-offset-4 hover:text-ink"
+            >
+              Policies
+            </Link>
+            <Link
+              href="/contact"
+              className="underline underline-offset-4 hover:text-ink"
+            >
+              Contact
+            </Link>
+          </div>
         </div>
       </footer>
     </div>

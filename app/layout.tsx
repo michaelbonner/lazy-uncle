@@ -18,20 +18,29 @@ export const metadata: Metadata = {
     apple: "https://www.lazyuncle.net/apple-touch-icon.png",
   },
   manifest: "/site.webmanifest",
+  openGraph: {
+    images: [{ url: "https://www.lazyuncle.net/og-image.png", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: ["https://www.lazyuncle.net/og-image.png"],
+  },
 };
 
 export const viewport: Viewport = {
   colorScheme: "light",
-  themeColor: "#0891b2",
+  themeColor: "#24483e",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${figtree.variable} ${sourceSerif.variable}`}>
-      <body>
-        <div className="flex min-h-screen flex-col justify-between bg-paper text-ink">
+      <body className="site-font">
+        <div className="flex min-h-dvh flex-col bg-paper text-ink antialiased">
           <PublicHeader />
-          <main className="flex-1 px-4 py-8 md:px-8">{children}</main>
+          <main className="isolate flex-1 px-5 py-8 sm:px-8 lg:px-12">
+            {children}
+          </main>
           <PublicFooter />
         </div>
       </body>
