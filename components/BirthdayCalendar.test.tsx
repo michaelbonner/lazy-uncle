@@ -1,6 +1,6 @@
 import type { Birthday } from "../lib/trpc";
 import BirthdayCalendar from "./BirthdayCalendar";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("./EditBirthdayDialog", () => ({
@@ -26,7 +26,10 @@ const birthdayFixture = (overrides: Partial<Birthday>): Birthday => ({
   ...overrides,
 });
 
-afterEach(() => vi.useRealTimers());
+afterEach(() => {
+  vi.useRealTimers();
+  vi.unstubAllGlobals();
+});
 
 describe("BirthdayCalendar", () => {
   it("shows filtered birthdays on their recurring date and opens the editor", () => {
@@ -70,5 +73,43 @@ describe("BirthdayCalendar", () => {
     expect(
       screen.getByRole("button", { name: "Test Birthday" }),
     ).toBeInTheDocument();
+  });
+
+  it("opens selected dates in a dismissible mobile sheet and can edit a birthday", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(2028, 0, 15, 12));
+    vi.stubGlobal("innerWidth", 390);
+    render(
+      <BirthdayCalendar
+        birthdays={[birthdayFixture({ name: "Alex", month: 1, day: 20 })]}
+      />,
+    );
+
+    await act(async () => {
+      fireEvent.click(
+        screen.getByRole("button", { name: /January 19, 2028, 0 birthdays/ }),
+      );
+    });
+    expect(
+      within(screen.getByRole("dialog")).getByText("No birthdays on this day."),
+    ).toBeInTheDocument();
+    await act(async () => {
+      fireEvent.click(
+        screen.getByRole("button", { name: "Close selected date" }),
+      );
+    });
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.click(
+        screen.getByRole("button", { name: /January 20, 2028, 1 birthday/ }),
+      );
+    });
+    const sheet = await screen.findByRole("dialog", { name: "January 20" });
+    await act(async () => {
+      fireEvent.click(within(sheet).getByRole("button", { name: "Alex" }));
+    });
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.getByText("Editing Alex")).toBeInTheDocument();
   });
 });
