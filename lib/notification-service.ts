@@ -6,6 +6,11 @@ import {
   birthdaySubmissions,
 } from "../drizzle/schema";
 import db from "./db";
+import {
+  birthdayReminderEmail,
+  submissionEmail,
+  summaryEmail,
+} from "./email-templates";
 import { buildUnsubscribeUrl } from "./unsubscribe-token";
 import { createId } from "@paralleldrive/cuid2";
 import { and, eq } from "drizzle-orm";
@@ -82,7 +87,7 @@ export class NotificationService {
       // Send email
       await this.sendEmail({
         to: user.email,
-        subject: "New Birthday Submission Received",
+        subject: "A birthday to review on Lazy Uncle",
         html: emailContent.html,
         text: emailContent.text,
       });
@@ -129,7 +134,7 @@ export class NotificationService {
 
       await this.sendEmail({
         to: user.email,
-        subject: `${submissions.length} New Birthday Submissions`,
+        subject: `${submissions.length} birthday submissions to review on Lazy Uncle`,
         html: emailContent.html,
         text: emailContent.text,
       });
@@ -211,70 +216,11 @@ export class NotificationService {
     userName: string | null | undefined,
     userId: string,
   ): { html: string; text: string } {
-    const greeting = userName ? `Hi ${userName}` : "Hello";
-    const submitterInfo = submission.submitterName
-      ? `from ${submission.submitterName}`
-      : "from someone";
-
-    const relationshipInfo = submission.relationship
-      ? ` (${submission.relationship})`
-      : "";
-
-    const linkInfo = submission.sharingLinkDescription
-      ? ` via your "${submission.sharingLinkDescription}" sharing link`
-      : "";
-
-    const notesSection = submission.notes
-      ? `\n\nNotes: ${submission.notes}`
-      : "";
-
-    const unsubscribeUrl = buildUnsubscribeUrl(userId, "submission");
-
-    const text = `${greeting},
-
-You've received a new birthday submission ${submitterInfo}${linkInfo}!
-
-Birthday Details:
-- Name: ${submission.birthdayName}${relationshipInfo}
-- Date: ${submission.birthdayDate}${notesSection}
-
-You can review and import this birthday by visiting your Lazy Uncle dashboard.
-
-Best regards,
-The Lazy Uncle Team
-
----
-To stop receiving these emails, unsubscribe here: ${unsubscribeUrl}`;
-
-    const html = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #333;">New Birthday Submission</h2>
-
-        <p>${greeting},</p>
-
-        <p>You've received a new birthday submission ${submitterInfo}${linkInfo}!</p>
-
-        <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <h3 style="margin-top: 0; color: #555;">Birthday Details</h3>
-          <p><strong>Name:</strong> ${submission.birthdayName}${relationshipInfo}</p>
-          <p><strong>Date:</strong> ${submission.birthdayDate}</p>
-          ${submission.notes ? `<p><strong>Notes:</strong> ${submission.notes}</p>` : ""}
-        </div>
-
-        <p>You can review and import this birthday by visiting your Lazy Uncle dashboard.</p>
-
-        <p style="color: #666; font-size: 14px;">
-          Best regards,<br>
-          The Lazy Uncle Team
-        </p>
-        <p style="color: #999; font-size: 12px; border-top: 1px solid #eee; margin-top: 24px; padding-top: 12px;">
-          You're receiving this because you have new submission notifications enabled.
-          <a href="${unsubscribeUrl}" style="color: #999;">Unsubscribe</a>
-        </p>
-      </div>
-    `;
-
-    return { html, text };
+    return submissionEmail({
+      submission,
+      userName,
+      unsubscribeUrl: buildUnsubscribeUrl(userId, "submission"),
+    });
   }
 
   /**
@@ -285,65 +231,11 @@ To stop receiving these emails, unsubscribe here: ${unsubscribeUrl}`;
     userName: string | null | undefined,
     userId: string,
   ): { html: string; text: string } {
-    const greeting = userName ? `Hi ${userName}` : "Hello";
-    const count = submissions.length;
-    const unsubscribeUrl = buildUnsubscribeUrl(userId, "summary");
-
-    const text = `${greeting},
-
-You have ${count} new birthday submissions waiting for review!
-
-${submissions
-  .map(
-    (sub, index) =>
-      `${index + 1}. ${sub.birthdayName} (${sub.birthdayDate})${sub.submitterName ? ` from ${sub.submitterName}` : ""}`,
-  )
-  .join("\n")}
-
-You can review and import these birthdays by visiting your Lazy Uncle dashboard.
-
-Best regards,
-The Lazy Uncle Team
-
----
-To stop receiving these emails, unsubscribe here: ${unsubscribeUrl}`;
-
-    const submissionsList = submissions
-      .map(
-        (sub) =>
-          `<li>${sub.birthdayName} (${sub.birthdayDate})${sub.submitterName ? ` from ${sub.submitterName}` : ""}</li>`,
-      )
-      .join("");
-
-    const html = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #333;">${count} New Birthday Submissions</h2>
-
-        <p>${greeting},</p>
-
-        <p>You have ${count} new birthday submissions waiting for review!</p>
-
-        <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <h3 style="margin-top: 0; color: #555;">Submissions</h3>
-          <ol style="margin: 0; padding-left: 20px;">
-            ${submissionsList}
-          </ol>
-        </div>
-
-        <p>You can review and import these birthdays by visiting your Lazy Uncle dashboard.</p>
-
-        <p style="color: #666; font-size: 14px;">
-          Best regards,<br>
-          The Lazy Uncle Team
-        </p>
-        <p style="color: #999; font-size: 12px; border-top: 1px solid #eee; margin-top: 24px; padding-top: 12px;">
-          You're receiving this because you have daily summary notifications enabled.
-          <a href="${unsubscribeUrl}" style="color: #999;">Unsubscribe</a>
-        </p>
-      </div>
-    `;
-
-    return { html, text };
+    return summaryEmail({
+      submissions,
+      userName,
+      unsubscribeUrl: buildUnsubscribeUrl(userId, "summary"),
+    });
   }
 
   /**
@@ -359,13 +251,12 @@ To stop receiving these emails, unsubscribe here: ${unsubscribeUrl}`;
       host: process.env.SMTP_HOST,
       port: parseInt(process.env.SMTP_PORT ?? "1025", 10),
       secure: false,
-      auth:
-        process.env.SMTP_USER
-          ? {
-              user: process.env.SMTP_USER,
-              pass: process.env.SMTP_PASS ?? "",
-            }
-          : undefined,
+      auth: process.env.SMTP_USER
+        ? {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS ?? "",
+          }
+        : undefined,
     });
 
     await transporter.sendMail({
@@ -508,7 +399,11 @@ To stop receiving these emails, unsubscribe here: ${unsubscribeUrl}`;
       if (!user?.email) continue;
 
       try {
-        await this.sendBirthdayReminderEmail(pref.userId, user, todaysBirthdays);
+        await this.sendBirthdayReminderEmail(
+          pref.userId,
+          user,
+          todaysBirthdays,
+        );
       } catch (error) {
         console.error(
           `Failed to send birthday reminder for user ${pref.userId}:`,
@@ -568,7 +463,9 @@ To stop receiving these emails, unsubscribe here: ${unsubscribeUrl}`;
       }
     }
 
-    console.log(`Processed daily summary notifications for ${prefs.length} eligible users`);
+    console.log(
+      `Processed daily summary notifications for ${prefs.length} eligible users`,
+    );
   }
 
   /**
@@ -584,70 +481,21 @@ To stop receiving these emails, unsubscribe here: ${unsubscribeUrl}`;
       day: number;
     }>,
   ): Promise<void> {
-    const greeting = user.name ? `Hi ${user.name}` : "Hello";
     const count = todaysBirthdays.length;
     const isSingle = count === 1;
-    const unsubscribeUrl = buildUnsubscribeUrl(userId, "reminder");
-
-    const birthdayLines = todaysBirthdays.map((b) => {
-      const age =
-        b.year != null ? ` (turns ${new Date().getFullYear() - b.year})` : "";
-      return `${b.name}${age}`;
+    const content = birthdayReminderEmail({
+      birthdays: todaysBirthdays,
+      userName: user.name,
+      unsubscribeUrl: buildUnsubscribeUrl(userId, "reminder"),
+      currentYear: new Date().getFullYear(),
     });
-
-    const text = `${greeting},
-
-${isSingle ? `It's ${birthdayLines[0]}'s birthday today!` : `It's a big day — ${count} birthdays today!`}
-
-${isSingle ? "" : birthdayLines.map((l, i) => `${i + 1}. ${l}`).join("\n") + "\n"}
-Don't forget to wish them a happy birthday!
-
-Best regards,
-The Lazy Uncle Team
-
----
-To stop receiving these emails, unsubscribe here: ${unsubscribeUrl}`;
-
-    const listHtml = isSingle
-      ? `<p><strong>${birthdayLines[0]}</strong></p>`
-      : `<ol style="margin: 0; padding-left: 20px;">${todaysBirthdays
-          .map((b) => {
-            const age =
-              b.year != null
-                ? ` (turns ${new Date().getFullYear() - b.year})`
-                : "";
-            return `<li><strong>${b.name}</strong>${age}</li>`;
-          })
-          .join("")}</ol>`;
-
-    const html = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #333;">🎂 Birthday Reminder</h2>
-        <p>${greeting},</p>
-        <p>${isSingle ? `It's <strong>${birthdayLines[0]}</strong>'s birthday today!` : `It's a big day — <strong>${count} birthdays</strong> today!`}</p>
-        <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          ${listHtml}
-        </div>
-        <p>Don't forget to wish them a happy birthday!</p>
-        <p style="color: #666; font-size: 14px;">
-          Best regards,<br>
-          The Lazy Uncle Team
-        </p>
-        <p style="color: #999; font-size: 12px; border-top: 1px solid #eee; margin-top: 24px; padding-top: 12px;">
-          You're receiving this because you have birthday reminder emails enabled.
-          <a href="${unsubscribeUrl}" style="color: #999;">Unsubscribe</a>
-        </p>
-      </div>
-    `;
 
     await this.sendEmail({
       to: user.email,
-      subject:
-        isSingle
-          ? `🎂 It's ${todaysBirthdays[0].name}'s birthday today!`
-          : `🎂 ${count} birthdays today!`,
-      html,
-      text,
+      subject: isSingle
+        ? `${todaysBirthdays[0].name}'s birthday is today | Lazy Uncle`
+        : `${count} birthdays today | Lazy Uncle`,
+      ...content,
     });
 
     console.log(

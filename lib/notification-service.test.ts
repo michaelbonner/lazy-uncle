@@ -3,7 +3,15 @@ import {
   SubmissionNotificationData,
 } from "./notification-service";
 import "@testing-library/jest-dom";
-import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from "vitest";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+  type Mock,
+} from "vitest";
 
 // Mock db
 vi.mock("./db", () => {
@@ -239,7 +247,7 @@ describe("NotificationService", () => {
       expect(consoleSpy).toHaveBeenCalledWith("=== EMAIL NOTIFICATION ===");
       expect(consoleSpy).toHaveBeenCalledWith("To: user@example.com");
       expect(consoleSpy).toHaveBeenCalledWith(
-        "Subject: New Birthday Submission Received",
+        "Subject: A birthday to review on Lazy Uncle",
       );
     });
 
@@ -404,7 +412,7 @@ describe("NotificationService", () => {
       expect(consoleSpy).toHaveBeenCalledWith("=== EMAIL NOTIFICATION ===");
       expect(consoleSpy).toHaveBeenCalledWith("To: user@example.com");
       expect(consoleSpy).toHaveBeenCalledWith(
-        "Subject: 2 New Birthday Submissions",
+        "Subject: 2 birthday submissions to review on Lazy Uncle",
       );
     });
 
