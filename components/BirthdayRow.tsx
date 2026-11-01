@@ -242,10 +242,10 @@ const BirthdayRow: FC<Props> = ({
             onClick={() => {
               setIsEditBirthdayDialogOpen(true);
             }}
-            className="flex w-full items-center justify-between"
+            className="flex w-full items-start justify-between gap-4 text-left"
           >
-            <div>
-              <p className="flex items-center space-x-2 text-xl">
+            <div className="min-w-0">
+              <p className="flex flex-wrap items-center gap-x-2 text-xl font-medium">
                 {todaysDateMonthAndDay === birthDateMonthAndDay && (
                   <span title={`Today is ${birthday.name}'s birthday!`}>
                     <GiBalloons className="top-0 right-0 text-lg text-rose-500" />
@@ -257,7 +257,7 @@ const BirthdayRow: FC<Props> = ({
                 )}
                 {getImportSourceIcon(birthday.importSource)}
               </p>
-              <div className="flex justify-start space-x-4 pt-1 text-ink-soft">
+              <div className="flex flex-wrap justify-start gap-x-4 gap-y-1 pt-1 text-ink-soft">
                 {age ? (
                   <p>
                     <span className="text-sm font-light">Age</span>{" "}
@@ -281,12 +281,12 @@ const BirthdayRow: FC<Props> = ({
                   </p>
                 )}
               </div>
-              <p className="mt-1 flex items-center space-x-2 text-ink-soft">
+              <p className="mt-1 flex items-center gap-2 text-ink-soft">
                 <ZodiacSignCharacter name={zodiacSign ?? ""} />
                 <span className="text-xs">{zodiacSign ?? ""}</span>
               </p>
             </div>
-            <p className="text-xl font-medium text-accent-deep">
+            <p className="shrink-0 text-xl font-medium tabular-nums text-accent-deep">
               {format(birthDate, "MMM d")}
             </p>
           </button>

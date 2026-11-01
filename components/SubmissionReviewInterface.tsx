@@ -276,8 +276,8 @@ const SubmissionReviewInterface = () => {
   }
 
   return (
-    <div className="mt-8 rounded-lg border border-rule bg-paper-deep text-ink">
-      <div className="px-4 py-8 md:px-8 md:py-10">
+    <div className="text-ink">
+      <div>
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <IoPersonOutline className="h-6 w-6 text-accent" />
@@ -485,7 +485,9 @@ const SubmissionReviewInterface = () => {
                                     "rounded-md border border-rule bg-paper p-1.5 text-ink-soft transition hover:bg-paper-deep hover:text-ink",
                                     isExpanded && "bg-paper-deep text-ink",
                                   )}
-                                  title={isExpanded ? "Hide details" : "Show details"}
+                                  title={
+                                    isExpanded ? "Hide details" : "Show details"
+                                  }
                                   aria-expanded={isExpanded}
                                 >
                                   <HiInformationCircle className="h-4 w-4" />
@@ -557,7 +559,9 @@ const SubmissionReviewInterface = () => {
                                                 className="text-amber-900"
                                               >
                                                 • {duplicate.name},{" "}
-                                                {formatSubmissionDate(duplicate)}
+                                                {formatSubmissionDate(
+                                                  duplicate,
+                                                )}
                                                 {duplicate.category &&
                                                   ` (${duplicate.category})`}
                                               </li>
@@ -616,7 +620,9 @@ const SubmissionReviewInterface = () => {
                   <button
                     type="button"
                     onClick={() => goToPage(currentPage - 1)}
-                    disabled={!hasPreviousPage || processingSubmissions.size > 0}
+                    disabled={
+                      !hasPreviousPage || processingSubmissions.size > 0
+                    }
                     className={clsx(
                       "rounded-md border border-rule px-3 py-1.5 font-medium transition-colors",
                       hasPreviousPage && processingSubmissions.size === 0
@@ -687,7 +693,13 @@ function findPotentialDuplicates(
 // Helper function to calculate similarity between submission and existing birthday
 function calculateSimilarity(
   submission: BirthdaySubmission,
-  existing: { name: string; year?: number | null; month: number; day: number; category?: string | null },
+  existing: {
+    name: string;
+    year?: number | null;
+    month: number;
+    day: number;
+    category?: string | null;
+  },
 ): number {
   let similarity = 0;
   let factors = 0;
@@ -701,10 +713,7 @@ function calculateSimilarity(
   factors += 0.6;
 
   // Date similarity using components
-  if (
-    existing.month === submission.month &&
-    existing.day === submission.day
-  ) {
+  if (existing.month === submission.month && existing.day === submission.day) {
     // Exact month/day match
     if (existing.year === submission.year) {
       similarity += 0.4; // Perfect match including year

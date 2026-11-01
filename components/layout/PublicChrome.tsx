@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 
 // Header and footer for public (signed-out) surfaces. Free of next/router and
@@ -6,40 +5,65 @@ import Link from "next/link";
 // App Router (app/layout.tsx, which only serves the not-found page).
 
 export const PublicHeader = () => (
-  <header className="flex justify-center px-4 md:px-8">
-    <h1 className="pt-4 text-4xl font-semibold">
-      <Link href="/">
-        <Image
-          alt="Lazy Uncle"
-          height={47}
-          priority
-          src="/lazy-uncle.svg"
-          width={160}
-        />
+  <header className="border-b border-rule/70">
+    <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-5 py-4 sm:px-8 lg:px-12">
+      <Link
+        href="/"
+        aria-label="Lazy Uncle home"
+        className="inline-flex shrink-0 items-center"
+      >
+        <span className="font-display text-2xl font-semibold tracking-tight text-evergreen">
+          lazy uncle<span className="text-accent">.</span>
+        </span>
       </Link>
-    </h1>
+      <nav
+        aria-label="Primary"
+        className="flex items-center gap-5 text-sm text-ink-soft"
+      >
+        <Link
+          href="/features"
+          className="py-2 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        >
+          Features
+        </Link>
+        <Link
+          href="/how-it-works"
+          className="py-2 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        >
+          How it works
+        </Link>
+      </nav>
+    </div>
   </header>
 );
 
 export const PublicFooter = () => (
-  <footer className="px-4 py-6 text-center text-ink-soft md:flex md:justify-between md:px-8">
-    <div>
-      &copy; 2020-{new Date().getFullYear()}
-      {` `}
-      <a
-        className="underline underline-offset-4 hover:text-ink"
-        href="https://michaelbonner.dev"
-      >
-        Michael Bonner
-      </a>
-    </div>
-    <div className="mt-4 flex flex-wrap justify-center space-x-6 md:mt-0">
-      <Link href="/policies" className="pt-4 underline md:pt-0">
-        Policies
-      </Link>
-      <Link href="/contact" className="pt-4 underline md:pt-0">
-        Contact
-      </Link>
+  <footer className="border-t border-rule px-5 py-8 text-sm text-ink-soft sm:px-8 lg:px-12">
+    <div className="mx-auto flex max-w-7xl flex-col gap-5 sm:flex-row sm:justify-between">
+      <div>
+        &copy; 2020-{new Date().getFullYear()}
+        {` `}
+        <a
+          className="underline underline-offset-4 hover:text-ink"
+          href="https://michaelbonner.dev"
+        >
+          Michael Bonner
+        </a>
+      </div>
+      <div className="flex flex-wrap gap-x-5 gap-y-2">
+        <Link
+          href="/policies"
+          className="underline underline-offset-4 hover:text-ink"
+        >
+          Policies
+        </Link>
+        <Link
+          href="/contact"
+          className="underline underline-offset-4 hover:text-ink"
+        >
+          Contact
+        </Link>
+      </div>
     </div>
   </footer>
 );

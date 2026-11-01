@@ -1,5 +1,5 @@
-import MainLayout from "../../components/layout/MainLayout";
 import SignInDialog from "../../components/SignInDialog";
+import MainLayout from "../../components/layout/MainLayout";
 import { authClient } from "../../lib/auth-client";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
@@ -23,7 +23,7 @@ export const BirthdaysPage: NextPage = () => {
   if (isPending) {
     return (
       <MainLayout title="Lazy Uncle">
-        <main className="mx-auto max-w-7xl px-2 pb-8" />
+        <main className="mx-auto max-w-7xl px-5 pb-12 sm:px-8 lg:px-12" />
       </MainLayout>
     );
   }
@@ -56,7 +56,20 @@ export const BirthdaysPage: NextPage = () => {
 
   return (
     <MainLayout title="Lazy Uncle">
-      <main className="mx-auto max-w-7xl px-2 pb-8">
+      <main className="mx-auto max-w-7xl px-5 pb-16 sm:px-8 lg:px-12">
+        <div className="flex flex-wrap items-end justify-between gap-2 py-9 sm:py-12">
+          <div>
+            <p className="text-sm font-medium tracking-[0.12em] text-accent-deep uppercase">
+              Your people
+            </p>
+            <h1 className="mt-2 font-display text-4xl text-ink sm:text-5xl">
+              Birthdays
+            </h1>
+          </div>
+          <p className="max-w-sm text-base text-ink-soft">
+            A little notice, right when you need it.
+          </p>
+        </div>
         <BirthdaysContainer userId={session?.user?.id} />
       </main>
     </MainLayout>

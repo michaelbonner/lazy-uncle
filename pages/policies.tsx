@@ -7,9 +7,18 @@ const Policies = () => {
       title="Policies | Lazy Uncle: Simple Free Birthday Reminder App"
       description="Privacy Policy and Terms of Service for Lazy Uncle: Simple Free Birthday Reminder App"
     >
-      <div className="mx-4 my-16 max-w-5xl rounded-lg bg-white px-4 py-12 md:mx-auto md:px-16">
-        <div className="prose max-w-5xl px-4 text-gray-700">
-          <h1>Privacy Policy and Terms of Service</h1>
+      <main>
+        <section className="bg-evergreen text-cream">
+          <div className="mx-auto max-w-7xl px-5 py-20 sm:px-8 md:py-28 lg:px-12">
+            <p className="text-sm font-semibold tracking-[0.16em] text-cream/70 uppercase">
+              Policies
+            </p>
+            <h1 className="mt-5 max-w-3xl font-display text-5xl leading-[1.06] text-balance sm:text-6xl">
+              Privacy and terms, in one place.
+            </h1>
+          </div>
+        </section>
+        <div className="prose prose-stone mx-auto max-w-3xl px-5 py-16 text-ink-soft sm:px-8 md:py-24 [&_h2]:font-display [&_h2]:text-ink [&_h3]:font-display [&_h3]:text-ink [&_a]:text-accent-deep">
           <h2>Privacy Policy</h2>
           <div>
             <p>
@@ -174,7 +183,7 @@ const Policies = () => {
             </p>
           </div>
         </div>
-      </div>
+      </main>
     </MainLayout>
   );
 };

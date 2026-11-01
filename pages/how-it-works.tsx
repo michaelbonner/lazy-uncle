@@ -1,12 +1,12 @@
-import Link from "next/link";
+import MainLayout from "../components/layout/MainLayout";
 import { NextPage } from "next";
+import Link from "next/link";
 import {
   HiOutlineCake,
   HiOutlineLink,
   HiOutlineMail,
   HiOutlineUserAdd,
 } from "react-icons/hi";
-import MainLayout from "../components/layout/MainLayout";
 
 type Step = {
   index: string;
@@ -22,8 +22,7 @@ const steps: Step[] = [
     eyebrow: "Sign in",
     title: "Start a list in under a minute.",
     body: [
-      "Sign in with Google, GitHub, or a magic link in your email. Your list starts empty and quiet. No onboarding tour you have to click through, no welcome email, no checklist of things you should be doing.",
-      "Your data is yours. You can export it or delete the whole account whenever you want.",
+      "Use Google, GitHub, or a sign-in link sent to your email. Your private list is ready right away.",
     ],
     icon: HiOutlineUserAdd,
   },
@@ -32,8 +31,8 @@ const steps: Step[] = [
     eyebrow: "Add the people you love",
     title: "Name, date, optional note. That's the form.",
     body: [
-      "Type a name. Pick a month and day. Add the year if you know it, skip it if you don't. If you want, leave yourself a one-line note about what they're into right now, the band, the snack, the book series, so future-you has a head start on a gift.",
-      "Migrating from a spreadsheet? Upload a CSV and Lazy Uncle will pull the birthdays in for you.",
+      "Add a name and a month and day. The year is optional. A short note can help you remember what they're into when it's time to celebrate.",
+      "Already have a spreadsheet? Import the dates from a CSV.",
     ],
     icon: HiOutlineCake,
   },
@@ -42,8 +41,8 @@ const steps: Step[] = [
     eyebrow: "Share a private link",
     title: "Let the people who remember do the remembering.",
     body: [
-      "Every family has one person who knows everyone's birthday by heart. Send them a private link and they can add the dates from their phone, no account, no password, no app to download. Their submissions show up in your review queue.",
-      "Approve the ones you want, skip the duplicates, edit what needs editing. Links expire after a week so nothing lingers.",
+      "Send a private link to someone who knows the dates. They can add birthdays from their phone without an account.",
+      "You review each submission before it joins your list. Links expire after a week by default.",
     ],
     icon: HiOutlineLink,
   },
@@ -52,8 +51,8 @@ const steps: Step[] = [
     eyebrow: "Be reminded",
     title: "One calm email, a few days before each birthday.",
     body: [
-      "When a birthday is coming up, you get an email at 9 a.m. your local time with the person's name, the date, their age (if you have it), and the note you left yourself. Prefer one summary a day instead? Switch it in settings.",
-      "If you'd rather not get email at all, subscribe to the iCal feed and birthdays will appear in your calendar of choice.",
+      "A reminder arrives ahead of the birthday, in your time zone, with the details you saved. Choose individual reminders or a daily summary.",
+      "You can also subscribe to a calendar feed.",
     ],
     icon: HiOutlineMail,
   },
@@ -62,10 +61,10 @@ const steps: Step[] = [
 const StepCard = ({ step, isLast }: { step: Step; isLast: boolean }) => {
   const Icon = step.icon;
   return (
-    <div className="relative grid gap-8 lg:grid-cols-12 lg:gap-16">
+    <div className="relative grid gap-6 lg:grid-cols-12 lg:gap-16">
       <div className="lg:col-span-3">
         <div className="flex items-baseline gap-4">
-          <span className="font-display text-5xl font-semibold text-accent md:text-6xl">
+          <span className="font-display text-6xl text-accent-deep md:text-7xl">
             {step.index}
           </span>
           <Icon
@@ -78,19 +77,16 @@ const StepCard = ({ step, isLast }: { step: Step; isLast: boolean }) => {
         </p>
       </div>
       <div className="lg:col-span-9">
-        <h2 className="font-display text-3xl font-semibold leading-tight text-balance text-ink md:text-4xl">
+        <h2 className="font-display text-4xl leading-[1.12] text-balance text-ink md:text-5xl">
           {step.title}
         </h2>
-        <div className="mt-5 space-y-4 font-sans text-lg leading-relaxed text-ink-soft">
+        <div className="mt-6 max-w-2xl space-y-4 font-sans text-lg/8 text-ink-soft">
           {step.body.map((p, i) => (
             <p key={i}>{p}</p>
           ))}
         </div>
         {!isLast && (
-          <div
-            aria-hidden
-            className="mt-14 h-px w-full bg-rule lg:mt-20"
-          />
+          <div aria-hidden className="mt-14 h-px w-full bg-rule lg:mt-20" />
         )}
       </div>
     </div>
@@ -104,18 +100,19 @@ const HowItWorksPage: NextPage = () => {
       description="Sign in, add the people you love, share a private link with the family member who actually remembers, and get a calm email a few days before each birthday."
     >
       <main className="font-sans text-ink">
-        <section className="mx-auto max-w-4xl px-6 pt-12 pb-16 md:px-12 md:pt-20 md:pb-24">
-          <p className="font-sans text-sm uppercase tracking-[0.18em] text-ink-muted">
-            How it works
-          </p>
-          <h1 className="mt-3 font-display text-4xl font-semibold leading-[1.08] text-balance text-ink md:text-5xl lg:text-[3.5rem]">
-            Four small steps. Then it runs itself.
-          </h1>
-          <p className="mt-6 max-w-2xl font-sans text-lg leading-relaxed text-ink-soft md:text-xl">
-            Lazy Uncle is built so the work is mostly upfront, and even that
-            isn&rsquo;t much. Here&rsquo;s the whole arc, from the first time
-            you sign in to the email that lands a few days before a birthday.
-          </p>
+        <section className="bg-evergreen text-cream">
+          <div className="mx-auto grid max-w-7xl gap-8 px-5 py-20 sm:px-8 md:grid-cols-[3fr_2fr] md:items-end md:gap-16 md:py-28 lg:px-12">
+            <p className="font-sans text-sm font-semibold uppercase tracking-[0.16em] text-cream/70 md:col-span-2">
+              How it works
+            </p>
+            <h1 className="font-display text-5xl leading-[1.06] text-balance sm:text-6xl">
+              Start a list. Get on with your life.
+            </h1>
+            <p className="max-w-xl font-sans text-lg/8 text-cream/85 md:text-xl/9">
+              Add a few dates now. A reminder will arrive when one is coming up.
+              You can always ask family to fill in the gaps.
+            </p>
+          </div>
         </section>
 
         <section className="border-t border-rule bg-paper-deep">

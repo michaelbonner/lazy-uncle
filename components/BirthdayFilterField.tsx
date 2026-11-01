@@ -15,11 +15,15 @@ const BirthdayFilterField = ({
   setValue: Dispatch<SetStateAction<string>>;
   value: string;
 }) => {
+  const inputId = `birthday-filter-${label.toLowerCase().replace(/\s+/g, "-")}`;
   return (
-    <div>
+    <div className="relative">
+      <label htmlFor={inputId} className="sr-only">
+        Filter by {label.toLowerCase()}
+      </label>
       <input
         className={clsx(
-          "block w-full rounded-md border border-rule bg-paper-deep px-4 py-3 text-ink",
+          "block w-full rounded-md border border-rule bg-paper px-4 py-3 text-base text-ink",
           "placeholder:text-ink-muted",
           "focus:border-accent focus:bg-paper focus:outline-hidden focus:ring-2 focus:ring-accent/30",
           `js-filter-${label.toLowerCase()}`,
@@ -27,7 +31,8 @@ const BirthdayFilterField = ({
           datalistOptions.length > 0 && value && "pr-16",
         )}
         disabled={disabled}
-        id={value}
+        id={inputId}
+        name={inputId}
         onChange={(e) => setValue(e.target.value)}
         onKeyUp={(e) => {
           if (e.key === "Escape") {
@@ -51,12 +56,19 @@ const BirthdayFilterField = ({
         </datalist>
       )}
       {value && (
-        <HiBackspace
-          className="absolute top-4 right-10 text-xl text-ink-muted transition hover:text-ink"
+        <button
+          aria-label={`Clear ${label.toLowerCase()} filter`}
+          className="absolute top-1/2 right-10 -translate-y-1/2 rounded-sm p-1 text-ink-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-accent"
           onClick={() => setValue("")}
-        />
+          type="button"
+        >
+          <HiBackspace aria-hidden className="size-4" />
+        </button>
       )}
-      <HiSearch className="absolute top-4 right-3 text-xl text-ink-muted" />
+      <HiSearch
+        aria-hidden
+        className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-ink-muted"
+      />
     </div>
   );
 };

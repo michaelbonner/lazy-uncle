@@ -1,12 +1,12 @@
-import Link from "next/link";
+import MainLayout from "../components/layout/MainLayout";
 import { NextPage } from "next";
+import Link from "next/link";
 import {
   HiOutlineCake,
   HiOutlineCalendar,
   HiOutlineLink,
   HiOutlineMail,
 } from "react-icons/hi";
-import MainLayout from "../components/layout/MainLayout";
 
 const SharingPreview = () => {
   return (
@@ -78,9 +78,7 @@ const NoYearPreview = () => {
             <HiOutlineCake className="h-4 w-4" aria-hidden />
             Avery
           </span>
-          <span className="font-sans text-xs text-ink-muted">
-            Year unknown
-          </span>
+          <span className="font-sans text-xs text-ink-muted">Year unknown</span>
         </div>
         <p className="mt-6 font-display text-5xl font-semibold leading-[1.05] text-balance text-ink md:text-6xl">
           May 9
@@ -154,53 +152,40 @@ const CalendarPreview = () => {
 };
 
 type FeatureBlockProps = {
+  number: string;
   eyebrow: string;
   title: string;
   paragraphs: string[];
-  bullets?: string[];
   visual: React.ReactNode;
   reverse?: boolean;
 };
 
 const FeatureBlock = ({
+  number,
   eyebrow,
   title,
   paragraphs,
-  bullets,
   visual,
   reverse,
 }: FeatureBlockProps) => {
   return (
     <div
-      className={`grid gap-12 lg:grid-cols-12 lg:gap-16 ${
+      className={`grid items-start gap-12 lg:grid-cols-12 lg:gap-20 ${
         reverse ? "lg:[&>*:first-child]:order-2" : ""
       }`}
     >
       <div className="lg:col-span-6">
-        <p className="font-sans text-sm uppercase tracking-[0.18em] text-ink-muted">
-          {eyebrow}
+        <p className="font-sans text-sm font-semibold uppercase tracking-[0.16em] text-accent-deep">
+          {number} / {eyebrow}
         </p>
-        <h2 className="mt-3 font-display text-3xl font-semibold leading-tight text-balance text-ink md:text-4xl">
+        <h2 className="mt-5 font-display text-4xl leading-[1.12] text-balance text-ink md:text-5xl">
           {title}
         </h2>
-        <div className="mt-6 space-y-5 font-sans text-lg leading-relaxed text-ink-soft">
+        <div className="mt-6 max-w-xl space-y-5 font-sans text-lg/8 text-ink-soft">
           {paragraphs.map((p, i) => (
             <p key={i}>{p}</p>
           ))}
         </div>
-        {bullets && (
-          <ul className="mt-6 space-y-3 font-sans text-base text-ink-soft">
-            {bullets.map((b) => (
-              <li key={b} className="flex items-start gap-3">
-                <span
-                  aria-hidden
-                  className="mt-2 inline-block h-1.5 w-1.5 flex-none rounded-full bg-accent"
-                />
-                <span>{b}</span>
-              </li>
-            ))}
-          </ul>
-        )}
       </div>
       <div className="lg:col-span-6">{visual}</div>
     </div>
@@ -214,33 +199,30 @@ const FeaturesPage: NextPage = () => {
       description="Sharing links without sign-ups, gentle email reminders, birthdays without years, and a calendar feed that follows you everywhere. Everything Lazy Uncle does, and nothing it doesn't."
     >
       <main className="font-sans text-ink">
-        <section className="mx-auto max-w-4xl px-6 pt-12 pb-16 md:px-12 md:pt-20 md:pb-24">
-          <p className="font-sans text-sm uppercase tracking-[0.18em] text-ink-muted">
-            Features
-          </p>
-          <h1 className="mt-3 font-display text-4xl font-semibold leading-[1.08] text-balance text-ink md:text-5xl lg:text-[3.5rem]">
-            Everything Lazy Uncle does, on purpose.
-          </h1>
-          <p className="mt-6 max-w-2xl font-sans text-lg leading-relaxed text-ink-soft md:text-xl">
-            A short list, deliberately. Lazy Uncle does four things well so you
-            never have to apologize for forgetting a birthday again. No
-            timelines, no streaks, no AI nudging you to do more.
-          </p>
+        <section className="bg-evergreen text-cream">
+          <div className="mx-auto grid max-w-7xl gap-8 px-5 py-20 sm:px-8 md:grid-cols-[3fr_2fr] md:items-end md:gap-16 md:py-28 lg:px-12">
+            <p className="font-sans text-sm font-semibold uppercase tracking-[0.16em] text-cream/70 md:col-span-2">
+              Features
+            </p>
+            <h1 className="font-display text-5xl leading-[1.06] text-balance sm:text-6xl">
+              Just enough birthday help.
+            </h1>
+            <p className="max-w-xl font-sans text-lg/8 text-cream/85 md:text-xl/9">
+              One place for dates, a way for family to help, and a heads-up
+              before the day. That&rsquo;s the whole product.
+            </p>
+          </div>
         </section>
 
         <section className="border-t border-rule bg-paper-deep">
           <div className="mx-auto max-w-6xl px-6 py-20 md:px-12 md:py-28">
             <FeatureBlock
+              number="01"
               eyebrow="Sharing"
               title="One private link. No sign-up for anyone else."
               paragraphs={[
-                "Most family birthdays live in one person's head, your mom, your partner, the sibling with the better memory. Send them a private link and they can add dates straight from their phone. No account, no app, no password reset to talk them through.",
-                "Submissions land in your review queue. You approve them, edit a date, or skip the ones you already know about.",
-              ]}
-              bullets={[
-                "Cryptographically secure tokens, expire after 7 days by default",
-                "Built-in duplicate detection so the same birthday doesn't land twice",
-                "Rate-limited and bot-protected, so your link can be shared freely",
+                "Send a private link to the person who remembers every date. They can add birthdays from their phone without creating an account.",
+                "You review each submission before it joins your list. Links expire after a week by default.",
               ]}
               visual={<SharingPreview />}
             />
@@ -250,16 +232,12 @@ const FeaturesPage: NextPage = () => {
         <section className="border-t border-rule">
           <div className="mx-auto max-w-6xl px-6 py-20 md:px-12 md:py-28">
             <FeatureBlock
+              number="02"
               eyebrow="Reminders"
               title="A calm email a few days before. That's it."
               paragraphs={[
-                "Lazy Uncle sends one email, in your time zone, ahead of the day, with a name, a date, and any note you left for yourself. No push notifications at midnight. No pop-ups in the corner of your laptop. No second reminder if you already opened the first.",
-                "If you'd rather see the whole week at once, switch to a daily summary instead. Same calm tone, one email a day.",
-              ]}
-              bullets={[
-                "Send time defaults to 9:00 a.m. local",
-                "Individual or daily-summary mode, your choice",
-                "Includes age, zodiac, and the notes you've kept",
+                "An email arrives before the birthday, in your time zone, with the name, date, and note you saved.",
+                "You can get individual reminders or switch to a daily summary.",
               ]}
               visual={<ReminderPreview />}
               reverse
@@ -270,11 +248,12 @@ const FeaturesPage: NextPage = () => {
         <section className="border-t border-rule bg-paper-deep">
           <div className="mx-auto max-w-6xl px-6 py-20 md:px-12 md:py-28">
             <FeatureBlock
+              number="03"
               eyebrow="No year required"
               title="Some birthdays are a month and a day. That's allowed."
               paragraphs={[
-                "Half the people in your life would rather you didn't know exactly how old they are, and the other half you just don't remember the year for. Lazy Uncle treats the year as optional. Add a name and a date, skip the rest, and the reminder still arrives on time.",
-                "When the year is there, you'll see the age and the zodiac sign quietly alongside. When it isn't, nothing is missing, just the reminder you came for.",
+                "Add a name, month, and day. If you don't know the year, leave it blank. The reminder still arrives on time.",
+                "When you do know the year, Lazy Uncle can show the age too.",
               ]}
               visual={<NoYearPreview />}
             />
@@ -284,16 +263,12 @@ const FeaturesPage: NextPage = () => {
         <section className="border-t border-rule">
           <div className="mx-auto max-w-6xl px-6 py-20 md:px-12 md:py-28">
             <FeatureBlock
+              number="04"
               eyebrow="Calendar feed"
               title="Birthdays show up wherever your calendar already lives."
               paragraphs={[
-                "Subscribe once with the iCal link Lazy Uncle gives you and every birthday on your list appears in Google Calendar, Apple Calendar, Outlook, or anything else that speaks the standard. When you add a new person, the feed updates on its own.",
-                "It's a one-way subscription, so the birthdays stay tidy in their own calendar layer rather than mixed in with your meetings.",
-              ]}
-              bullets={[
-                "Standard iCal format, works with every major calendar",
-                "Updates automatically when you add or edit birthdays",
-                "Keeps recurring annually with no year, when there isn't one",
+                "Subscribe to your birthday feed in Apple Calendar, Google Calendar, or Outlook. New dates appear as you add them.",
+                "The birthdays live in their own calendar layer, away from your meetings.",
               ]}
               visual={<CalendarPreview />}
               reverse

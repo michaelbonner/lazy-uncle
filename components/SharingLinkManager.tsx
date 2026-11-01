@@ -109,17 +109,15 @@ const SharingLinkManager = () => {
     }
 
     return (
-      <span className="text-ink">
-        Expires {format(date, "MMM d 'at' p")}
-      </span>
+      <span className="text-ink">Expires {format(date, "MMM d 'at' p")}</span>
     );
   };
 
   const sharingLinks: SharingLink[] = sharingLinksData ?? [];
 
   return (
-    <div className="mt-8 rounded-lg border border-rule bg-paper-deep text-ink">
-      <div className="px-4 py-8 md:px-8 md:py-10">
+    <section className="text-ink">
+      <div>
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <IoShareOutline className="h-6 w-6 text-accent" />
@@ -142,7 +140,7 @@ const SharingLinkManager = () => {
         </div>
 
         {showCreateForm && (
-          <div className="mb-6 rounded-lg border border-rule bg-paper p-4">
+          <div className="mb-6 max-w-3xl rounded-xl border border-rule/70 bg-white p-5 sm:p-7">
             <h3 className="mb-4 font-display text-lg font-semibold">
               Create sharing link
             </h3>
@@ -160,7 +158,7 @@ const SharingLinkManager = () => {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="e.g. Family gathering, work colleagues"
-                  className="w-full rounded-md border border-rule bg-paper px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:border-accent focus:outline-hidden focus:ring-1 focus:ring-accent"
+                  className="w-full rounded-md border border-rule bg-white px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:border-accent focus:outline-hidden focus:ring-1 focus:ring-accent"
                   maxLength={100}
                 />
               </div>
@@ -177,7 +175,7 @@ const SharingLinkManager = () => {
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   placeholder="e.g. Family, Coworkers"
-                  className="w-full rounded-md border border-rule bg-paper px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:border-accent focus:outline-hidden focus:ring-1 focus:ring-accent"
+                  className="w-full rounded-md border border-rule bg-white px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:border-accent focus:outline-hidden focus:ring-1 focus:ring-accent"
                   maxLength={50}
                 />
                 <p className="mt-1 text-xs text-ink-soft">
@@ -196,7 +194,7 @@ const SharingLinkManager = () => {
                   id="expirationHours"
                   value={expirationHours}
                   onChange={(e) => setExpirationHours(Number(e.target.value))}
-                  className="w-full rounded-md border border-rule bg-paper px-3 py-2 text-sm text-ink focus:border-accent focus:outline-hidden focus:ring-1 focus:ring-accent"
+                  className="w-full rounded-md border border-rule bg-white px-3 py-2 text-sm text-ink focus:border-accent focus:outline-hidden focus:ring-1 focus:ring-accent"
                 >
                   <option value={24}>1 day</option>
                   <option value={72}>3 days</option>
@@ -217,7 +215,7 @@ const SharingLinkManager = () => {
                     setCategory("");
                     setExpirationHours(168);
                   }}
-                  className="rounded-md border border-rule bg-paper px-4 py-2 text-sm font-medium text-ink transition hover:bg-paper-deep"
+                  className="rounded-md border border-rule bg-white px-4 py-2 text-sm font-medium text-ink transition hover:bg-paper-deep"
                 >
                   Cancel
                 </button>
@@ -366,7 +364,7 @@ const SharingLinkManager = () => {
           </p>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

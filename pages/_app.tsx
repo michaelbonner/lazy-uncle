@@ -42,7 +42,9 @@ function MyApp({ Component, pageProps }: AppProps) {
       <TRPCProvider>
         <PageLoadingProgress />
         <SearchProvider>
-          <div className={`${figtree.variable} ${sourceSerif.variable}`}>
+          <div
+            className={`${figtree.variable} ${sourceSerif.variable} site-font`}
+          >
             <Component {...pageProps} />
           </div>
         </SearchProvider>

@@ -44,6 +44,7 @@ export const MagicLinkForm = ({ idPrefix }: { idPrefix: string }) => {
       </label>
       <input
         id={inputId}
+        name="email"
         type="email"
         required
         autoComplete="email"
@@ -51,7 +52,7 @@ export const MagicLinkForm = ({ idPrefix }: { idPrefix: string }) => {
         onChange={(event) => setEmail(event.target.value)}
         placeholder="you@example.com"
         className={clsx(
-          "w-full flex-1 rounded-md border border-rule bg-white/60 px-4 py-3",
+          "min-w-0 w-full flex-1 rounded-md border border-rule bg-paper px-4 py-3",
           "text-base text-ink placeholder:text-ink-muted",
           "focus:border-accent focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-accent/30",
         )}
@@ -60,7 +61,7 @@ export const MagicLinkForm = ({ idPrefix }: { idPrefix: string }) => {
         type="submit"
         disabled={isSending}
         className={clsx(
-          "inline-flex items-center justify-center rounded-md px-6 py-3 font-medium transition",
+          "inline-flex items-center justify-center rounded-md px-5 py-3 font-medium",
           "bg-accent text-white hover:bg-accent-deep",
           "focus:outline-hidden focus:ring-2 focus:ring-accent/40 focus:ring-offset-2 focus:ring-offset-paper",
           "disabled:cursor-not-allowed disabled:opacity-60",
@@ -73,7 +74,7 @@ export const MagicLinkForm = ({ idPrefix }: { idPrefix: string }) => {
   );
 };
 
-export const OAuthRow = () => {
+export const OAuthRow = ({ light = false }: { light?: boolean }) => {
   const onSignIn = async (provider: "google" | "github") => {
     const { error } = await authClient.signIn.social({
       provider,
@@ -86,12 +87,17 @@ export const OAuthRow = () => {
   };
 
   return (
-    <p className="text-sm text-ink-soft">
+    <p className={clsx("text-sm", light ? "text-cream/85" : "text-ink-soft")}>
       <span>Or continue with </span>
       <button
         type="button"
         onClick={() => onSignIn("google")}
-        className="inline-flex items-center gap-1 underline decoration-rule decoration-1 underline-offset-4 transition hover:text-ink hover:decoration-accent focus:outline-hidden focus:ring-2 focus:ring-accent/30 focus:ring-offset-2 focus:ring-offset-paper rounded-sm"
+        className={clsx(
+          "inline-flex items-center gap-1 rounded-sm underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2",
+          light
+            ? "decoration-cream/50 hover:text-cream focus-visible:outline-cream"
+            : "decoration-rule hover:text-ink focus-visible:outline-accent",
+        )}
       >
         <GrGoogle className="h-4 w-4" aria-hidden />
         <span>Google</span>
@@ -100,7 +106,12 @@ export const OAuthRow = () => {
       <button
         type="button"
         onClick={() => onSignIn("github")}
-        className="inline-flex items-center gap-1 underline decoration-rule decoration-1 underline-offset-4 transition hover:text-ink hover:decoration-accent focus:outline-hidden focus:ring-2 focus:ring-accent/30 focus:ring-offset-2 focus:ring-offset-paper rounded-sm"
+        className={clsx(
+          "inline-flex items-center gap-1 rounded-sm underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2",
+          light
+            ? "decoration-cream/50 hover:text-cream focus-visible:outline-cream"
+            : "decoration-rule hover:text-ink focus-visible:outline-accent",
+        )}
       >
         <GrGithub className="h-4 w-4" aria-hidden />
         <span>GitHub</span>

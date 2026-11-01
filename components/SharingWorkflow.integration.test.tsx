@@ -1,4 +1,7 @@
 import BirthdaysContainer from "./BirthdaysContainer";
+import SharingLinkManager from "./SharingLinkManager";
+import SharingSettingsPanel from "./SharingSettingsPanel";
+import SubmissionReviewInterface from "./SubmissionReviewInterface";
 import "@testing-library/jest-dom";
 import { render, screen, waitFor } from "@testing-library/react";
 import React from "react";
@@ -148,14 +151,26 @@ const invalidateMocks = {
 // (BirthdaysContainer + its dynamically-imported children).
 vi.mock("../lib/trpc", () => {
   const utils = {
-    birthday: { list: { invalidate: (...a: unknown[]) => invalidateMocks.birthdayList(...a) } },
-    sharing: { list: { invalidate: (...a: unknown[]) => invalidateMocks.sharingList(...a) } },
+    birthday: {
+      list: {
+        invalidate: (...a: unknown[]) => invalidateMocks.birthdayList(...a),
+      },
+    },
+    sharing: {
+      list: {
+        invalidate: (...a: unknown[]) => invalidateMocks.sharingList(...a),
+      },
+    },
     submission: {
-      pending: { invalidate: (...a: unknown[]) => invalidateMocks.submissionPending(...a) },
+      pending: {
+        invalidate: (...a: unknown[]) =>
+          invalidateMocks.submissionPending(...a),
+      },
     },
     notification: {
       preferences: {
-        invalidate: (...a: unknown[]) => invalidateMocks.notificationPreferences(...a),
+        invalidate: (...a: unknown[]) =>
+          invalidateMocks.notificationPreferences(...a),
       },
     },
   };
@@ -234,8 +249,9 @@ vi.mock("../lib/auth-client", () => ({
 vi.mock("next/dynamic", () => ({
   default: (fn: () => Promise<{ default: React.ComponentType }>) => {
     const MockedComponent = (props: Record<string, unknown>) => {
-      const [Loaded, setLoaded] =
-        React.useState<React.ComponentType | null>(null);
+      const [Loaded, setLoaded] = React.useState<React.ComponentType | null>(
+        null,
+      );
       React.useEffect(() => {
         let active = true;
         Promise.resolve(fn()).then((mod) => {
@@ -324,33 +340,28 @@ describe("Sharing Workflow Integration Tests", () => {
     });
   });
 
-  it("renders the sharing links section from sharing.list", async () => {
-    render(<BirthdaysContainer userId="test-user-id" />);
+  it("shows pending submissions and links together on the sharing page", async () => {
+    render(
+      <>
+        <SubmissionReviewInterface />
+        <SharingLinkManager />
+      </>,
+    );
 
-    // SharingLinkManager is dynamically imported, so wait for it to render
-    // its section heading and the link's label.
+    expect(await screen.findByText("Birthday submissions")).toBeInTheDocument();
+    expect(screen.getByText("Bob Wilson")).toBeInTheDocument();
     expect(
       await screen.findByText("Birthday sharing links"),
     ).toBeInTheDocument();
     // "Family gathering" appears both as the link's label and as the source
     // description on the pending submission, so assert at least one is present.
-    expect(screen.getAllByText("Family gathering").length).toBeGreaterThanOrEqual(
-      1,
-    );
-  });
-
-  it("renders the submission review section with pending submissions", async () => {
-    render(<BirthdaysContainer userId="test-user-id" />);
-
-    // The pending submission "Bob Wilson" should surface in the review UI.
     expect(
-      await screen.findByText("Birthday submissions"),
-    ).toBeInTheDocument();
-    expect(screen.getByText("Bob Wilson")).toBeInTheDocument();
+      screen.getAllByText("Family gathering").length,
+    ).toBeGreaterThanOrEqual(1);
   });
 
-  it("renders the notification settings panel", async () => {
-    render(<BirthdaysContainer userId="test-user-id" />);
+  it("renders the notification settings panel on its own page", async () => {
+    render(<SharingSettingsPanel />);
 
     // SharingSettingsPanel renders the notification preferences form.
     expect(
@@ -361,6 +372,19 @@ describe("Sharing Workflow Integration Tests", () => {
   it("shows sharing link management in navigation area", async () => {
     render(<BirthdaysContainer userId="test-user-id" />);
 
+    expect(screen.getByRole("link", { name: "Sharing" })).toHaveAttribute(
+      "href",
+      "/birthdays/tools/sharing",
+    );
+    expect(screen.queryByRole("link", { name: "Review" })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Settings" })).toHaveAttribute(
+      "href",
+      "/birthdays/tools/settings",
+    );
+    expect(screen.getByRole("link", { name: "Import" })).toHaveAttribute(
+      "href",
+      "/birthdays/tools/import",
+    );
     expect(screen.getByText("Subscribe to calendar")).toBeInTheDocument();
   });
 
@@ -395,15 +419,14 @@ describe("Sharing Workflow Integration Tests", () => {
       error: null,
     };
 
-    render(<BirthdaysContainer userId="test-user-id" />);
+    render(<SharingLinkManager />);
 
-    // SharingLinkManager marks expired links as no longer active.
     expect(
       await screen.findByText("link no longer active"),
     ).toBeInTheDocument();
   });
 
-  it("integrates sharing features with main birthday list", async () => {
+  it("keeps management panels off the birthday list", async () => {
     render(<BirthdaysContainer userId="test-user-id" />);
 
     await waitFor(() => {
@@ -411,12 +434,16 @@ describe("Sharing Workflow Integration Tests", () => {
       expect(screen.getAllByText("Jane Smith")[0]).toBeInTheDocument();
     });
 
-    // All of the major tRPC-backed sections coexist on the page.
     expect(
-      await screen.findByText("Birthday sharing links"),
-    ).toBeInTheDocument();
-    expect(screen.getByText("Birthday submissions")).toBeInTheDocument();
-    expect(screen.getByText("Notification preferences")).toBeInTheDocument();
+      screen.queryByText("Birthday sharing links"),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Birthday submissions")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Notification preferences"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Import birthdays from CSV"),
+    ).not.toBeInTheDocument();
     expect(screen.getByText("Subscribe to calendar")).toBeInTheDocument();
   });
 });

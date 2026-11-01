@@ -1,14 +1,16 @@
-import { type Birthday, trpc } from "../lib/trpc";
 import { authClient } from "../lib/auth-client";
+import { type Birthday, trpc } from "../lib/trpc";
 // import the auth client
 import { SearchContext } from "../providers/SearchProvider";
 import { getDaysUntilNextBirthday } from "../shared/getDaysUntilNextBirthday";
 import { getZodiacSignFromComponents } from "../shared/getZodiacSignForDateYmdString";
+import BirthdayAreaNav from "./BirthdayAreaNav";
 import BirthdayFilterField from "./BirthdayFilterField";
 import BirthdayRow from "./BirthdayRow";
 import LoadingSpinner from "./LoadingSpinner";
 import SortColumnHeader from "./SortColumnHeader";
 import clsx from "clsx";
+import { format } from "date-fns";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import {
@@ -28,22 +30,7 @@ const currentHost = typeof window !== "undefined" ? window.location.host : "";
 const AddBirthdayDialog = dynamic(() => import("./AddBirthdayDialog"), {
   ssr: false,
 });
-const UploadCsvBirthdayForm = dynamic(() => import("./UploadCsvBirthdayForm"), {
-  ssr: false,
-});
 const OnboardingWalkthrough = dynamic(() => import("./OnboardingWalkthrough"), {
-  ssr: false,
-});
-const SharingLinkManager = dynamic(() => import("./SharingLinkManager"), {
-  ssr: false,
-});
-const SubmissionReviewInterface = dynamic(
-  () => import("./SubmissionReviewInterface"),
-  {
-    ssr: false,
-  },
-);
-const SharingSettingsPanel = dynamic(() => import("./SharingSettingsPanel"), {
   ssr: false,
 });
 
@@ -94,53 +81,49 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
     const zodiacSignFilterLower = deferredZodiacSignFilter.toLowerCase();
 
     // Single pass filtering - much faster than chained filters
-    const dates = birthdays.filter(
-      (birthday: Birthday) => {
-        // Skip filtering for items without id
-        if (!birthday.id) {
-          return true;
-        }
-
-        // Name filter
-        if (
-          deferredNameFilter &&
-          !birthday?.name?.toLowerCase().includes(nameFilterLower)
-        ) {
-          return false;
-        }
-
-        // Category filter
-        if (
-          deferredCategoryFilter &&
-          !birthday?.category?.toLowerCase().includes(categoryFilterLower)
-        ) {
-          return false;
-        }
-
-        // Parent filter
-        if (
-          deferredParentFilter &&
-          !birthday?.parent?.toLowerCase().includes(parentFilterLower)
-        ) {
-          return false;
-        }
-
-        // Zodiac sign filter - only compute when filter is active
-        if (deferredZodiacSignFilter && birthday?.month && birthday?.day) {
-          const birthdayZodiacSign = getZodiacSignFromComponents(
-            birthday.month,
-            birthday.day,
-          );
-          if (
-            !birthdayZodiacSign.toLowerCase().includes(zodiacSignFilterLower)
-          ) {
-            return false;
-          }
-        }
-
+    const dates = birthdays.filter((birthday: Birthday) => {
+      // Skip filtering for items without id
+      if (!birthday.id) {
         return true;
-      },
-    );
+      }
+
+      // Name filter
+      if (
+        deferredNameFilter &&
+        !birthday?.name?.toLowerCase().includes(nameFilterLower)
+      ) {
+        return false;
+      }
+
+      // Category filter
+      if (
+        deferredCategoryFilter &&
+        !birthday?.category?.toLowerCase().includes(categoryFilterLower)
+      ) {
+        return false;
+      }
+
+      // Parent filter
+      if (
+        deferredParentFilter &&
+        !birthday?.parent?.toLowerCase().includes(parentFilterLower)
+      ) {
+        return false;
+      }
+
+      // Zodiac sign filter - only compute when filter is active
+      if (deferredZodiacSignFilter && birthday?.month && birthday?.day) {
+        const birthdayZodiacSign = getZodiacSignFromComponents(
+          birthday.month,
+          birthday.day,
+        );
+        if (!birthdayZodiacSign.toLowerCase().includes(zodiacSignFilterLower)) {
+          return false;
+        }
+      }
+
+      return true;
+    });
 
     if (dates.length < 1) return [];
 
@@ -216,17 +199,11 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
   // omits its datalist — on iOS Safari, a datalist with hundreds of names
   // re-filters on every keystroke and makes typing noticeably laggy.
   const categoryOptions = useMemo(
-    () =>
-      Array.from(
-        new Set(workingDates.map((b) => b.category || "")),
-      ).sort(),
+    () => Array.from(new Set(workingDates.map((b) => b.category || ""))).sort(),
     [workingDates],
   );
   const parentOptions = useMemo(
-    () =>
-      Array.from(
-        new Set(workingDates.map((b) => b.parent || "")),
-      ).sort(),
+    () => Array.from(new Set(workingDates.map((b) => b.parent || ""))).sort(),
     [workingDates],
   );
   const zodiacOptions = useMemo(
@@ -292,19 +269,23 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
 
   return (
     <div>
+      <BirthdayAreaNav currentPath="/birthdays" />
       {!birthdaysLoading && !birthdaysCount && <OnboardingWalkthrough />}
       {upcomingBirthdays?.length > 0 && (
-        <div className="my-4 items-center gap-x-8 rounded-lg border border-rule bg-paper-deep px-6 py-4 text-ink md:flex">
-          <h2 className="font-display text-xl font-semibold">
-            Upcoming birthdays
-          </h2>
-          <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-ink-soft md:mt-0">
+        <section className="mb-9 overflow-hidden rounded-xl bg-evergreen px-5 py-6 text-cream sm:px-7 sm:py-8">
+          <div className="mb-5 flex flex-wrap items-baseline justify-between gap-2">
+            <h2 className="font-display text-2xl sm:text-3xl">
+              Coming up soon
+            </h2>
+            <p className="text-sm text-cream/70">Within the next 7 days</p>
+          </div>
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {upcomingBirthdays.map((birthday: Birthday) => {
               const daysUntil = getDaysUntilNextBirthday(birthday);
               return (
                 <button
                   key={birthday.id}
-                  className="rounded-sm transition hover:text-ink focus:outline-hidden focus:ring-2 focus:ring-accent/30"
+                  className="flex items-center gap-4 rounded-lg border border-cream/20 px-4 py-3 text-left hover:bg-cream/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream"
                   onClick={() => {
                     const birthDayLiElementMobile: HTMLLIElement | null =
                       document.querySelector(`#birthday-${birthday.id}`);
@@ -330,22 +311,35 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                   }}
                   type="button"
                 >
-                  <span className="font-light">{birthday.name}</span>{" "}
-                  {getDaysLabel(daysUntil)}
+                  <span className="flex size-14 shrink-0 flex-col items-center justify-center rounded-md bg-cream text-accent-deep">
+                    <span className="text-xs font-semibold uppercase">
+                      {birthday.month &&
+                        format(new Date(2000, birthday.month - 1, 1), "MMM")}
+                    </span>
+                    <span className="font-display text-2xl leading-none tabular-nums">
+                      {birthday.day}
+                    </span>
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block truncate font-medium text-cream">
+                      {birthday.name}
+                    </span>
+                    <span className="block text-sm text-cream/75">
+                      {getDaysLabel(daysUntil)}
+                    </span>
+                  </span>
                 </button>
               );
             })}
           </div>
-        </div>
+        </section>
       )}
-      <div className="flex items-end justify-between space-x-2 md:justify-end">
-        <div className="items-center pl-2 md:flex md:space-x-4 md:pl-0">
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-3">
+        <div className="flex items-center gap-4">
           <button
             className={clsx(
-              isFiltered
-                ? "text-accent-deep hover:text-ink"
-                : "text-ink-muted",
-              "js-clear-filters flex items-center space-x-1 transition",
+              isFiltered ? "text-accent-deep hover:text-ink" : "text-ink-muted",
+              "js-clear-filters flex items-center gap-1 text-sm",
             )}
             disabled={!isFiltered}
             onClick={() => clearFilters()}
@@ -353,21 +347,31 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
             <HiXCircle />
             <span>Clear filters</span>
           </button>
-          <div className="text-sm text-ink-muted md:text-right">
+          <div className="text-sm tabular-nums text-ink-muted">
             {workingDatesCount}/{birthdaysCount} visible
           </div>
         </div>
-        <div className="mt-4 flex items-center justify-end space-x-4 md:hidden">
+        <div className="flex items-center md:hidden">
           <button
-            className="flex items-center space-x-2 rounded-md border border-rule bg-paper-deep px-4 py-2 text-sm text-ink transition hover:bg-paper"
+            className="flex items-center gap-2 rounded-md border border-rule bg-paper px-3 py-2 text-sm text-ink hover:bg-paper-deep"
             onClick={() => {
               setShowFilters(!showFilters);
             }}
           >
             <GrFormFilter />
-            <span>Toggle additional filters</span>
+            <span>{showFilters ? "Hide filters" : "More filters"}</span>
           </button>
         </div>
+        <Link
+          href={`webcal://${currentHost}/api/calendar-subscription/${userId}`}
+          className="js-subscribe-to-calendar inline-flex items-center gap-2 text-sm text-ink-soft underline underline-offset-4 hover:text-ink focus-visible:outline-2 focus-visible:outline-accent"
+        >
+          <HiOutlineCalendar
+            aria-hidden
+            className="size-4 shrink-0 text-accent"
+          />
+          <span>Subscribe to calendar</span>
+        </Link>
       </div>
 
       <AddBirthdayDialog
@@ -379,14 +383,14 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
         {birthdaysError && (
           <p className="pt-3 text-ink-soft">{birthdaysError.message}</p>
         )}
-        <div className="mt-4 overflow-hidden rounded-lg border border-rule bg-paper text-ink md:mt-2">
+        <div className="overflow-hidden rounded-xl border border-rule bg-paper text-ink">
           <div className="sticky top-0 z-10 bg-paper">
-            <div className="border-b border-rule bg-paper-deep">
-              <div className="grid gap-x-2 gap-y-2 px-3 py-3 md:px-6 md:py-4 lg:flex">
+            <div className="border-b border-rule bg-paper-deep/60">
+              <div className="grid gap-2 p-3 md:grid-cols-2 md:p-5 xl:flex">
                 <div className="flex w-full gap-2">
                   <button
                     className={clsx(
-                      "js-add-birthday-button flex h-12 w-12 items-center justify-center rounded-md bg-accent p-3 text-white transition",
+                      "js-add-birthday-button flex size-12 shrink-0 items-center justify-center rounded-md bg-accent text-white",
                       "hover:bg-accent-deep",
                       "focus:outline-hidden focus:ring-2 focus:ring-accent/40 focus:ring-offset-2 focus:ring-offset-paper-deep",
                     )}
@@ -398,12 +402,9 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                   >
                     <IoAddCircleOutline className="h-5 w-5" />
                   </button>
-                  <div className="relative w-full min-w-[220px] grow">
+                  <div className="min-w-0 grow">
                     <BirthdayFilterField
-                      disabled={
-                        !birthdays?.length &&
-                        !workingDates.length
-                      }
+                      disabled={!birthdays?.length && !workingDates.length}
                       label="Name"
                       value={nameFilter}
                       setValue={setNameFilter}
@@ -411,14 +412,15 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                   </div>
                   <div className="flex md:hidden">
                     <button
-                      className="ml-2 flex w-full items-center justify-center rounded-md border border-rule bg-paper text-ink transition hover:bg-paper-deep"
+                      className="flex size-12 items-center justify-center rounded-md border border-rule bg-paper text-ink hover:bg-paper-deep"
                       onClick={handleRefresh}
                       title="Refresh"
+                      type="button"
                     >
                       <GrRefresh
                         className={clsx(
                           birthdaysLoading && "animate-spin",
-                          "w-10",
+                          "size-4",
                         )}
                       />
                     </button>
@@ -427,14 +429,12 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                 <div
                   className={clsx(
                     !showFilters && "hidden",
-                    "relative w-full min-w-[220px]",
-                    "md:block md:w-auto",
+                    "min-w-0 w-full",
+                    "md:block xl:w-auto xl:grow",
                   )}
                 >
                   <BirthdayFilterField
-                    disabled={
-                      !birthdays?.length && !workingDates.length
-                    }
+                    disabled={!birthdays?.length && !workingDates.length}
                     label="Category"
                     value={categoryFilter}
                     setValue={setCategoryFilter}
@@ -444,14 +444,12 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                 <div
                   className={clsx(
                     !showFilters && "hidden",
-                    "relative w-full min-w-[220px]",
-                    "md:block md:w-auto",
+                    "min-w-0 w-full",
+                    "md:block xl:w-auto xl:grow",
                   )}
                 >
                   <BirthdayFilterField
-                    disabled={
-                      !birthdays?.length && !workingDates.length
-                    }
+                    disabled={!birthdays?.length && !workingDates.length}
                     label="Parent"
                     value={parentFilter}
                     setValue={setParentFilter}
@@ -461,14 +459,12 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                 <div
                   className={clsx(
                     !showFilters && "hidden",
-                    "relative w-full min-w-[220px]",
-                    "md:block md:w-auto",
+                    "min-w-0 w-full",
+                    "md:block xl:w-auto xl:grow",
                   )}
                 >
                   <BirthdayFilterField
-                    disabled={
-                      !birthdays?.length && !workingDates.length
-                    }
+                    disabled={!birthdays?.length && !workingDates.length}
                     label="Zodiac Sign"
                     value={zodiacSignFilter}
                     setValue={setZodiacSignFilter}
@@ -589,7 +585,8 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                 <div className="prose prose-stone mx-auto">
                   <h2 className="font-display text-ink">No birthdays found</h2>
                   <p className="text-ink-soft">
-                    Use the form below to add a birthday or two, or thirty-eight.
+                    Use the form below to add a birthday or two, or
+                    thirty-eight.
                   </p>
                 </div>
               )}
@@ -610,30 +607,6 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
               <IoAddCircleOutline />
               <span>Add a birthday</span>
             </button>
-          </div>
-        </div>
-      </div>
-      <div className="mt-8 flex items-center justify-between text-ink-soft">
-        <div className="flex items-center space-x-6">
-          <Link
-            href={`webcal://${currentHost}/api/calendar-subscription/${userId}`}
-            className="js-subscribe-to-calendar group flex items-center space-x-2 text-ink-soft underline underline-offset-4 transition hover:text-ink"
-          >
-            <HiOutlineCalendar className="text-accent transition group-hover:text-ink" />
-            <span>Subscribe to calendar</span>
-          </Link>
-        </div>
-      </div>
-      <SharingLinkManager />
-      <SubmissionReviewInterface />
-      <SharingSettingsPanel />
-      <div className="mt-8 rounded-lg border border-rule bg-paper-deep text-ink">
-        <div className="px-4 py-10 md:px-8 md:py-12">
-          <div className="max-w-2xl">
-            <h3 className="mb-4 font-display text-2xl font-semibold">
-              Import birthdays from CSV
-            </h3>
-            <UploadCsvBirthdayForm />
           </div>
         </div>
       </div>
