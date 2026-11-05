@@ -114,7 +114,7 @@ export default function BirthdayCalendar({
   return (
     <div className="text-left lg:grid lg:grid-cols-3">
       <div className="min-w-0 lg:col-span-2 lg:border-r lg:border-rule">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-rule px-4 py-4 sm:px-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-rule px-5 py-4 sm:px-8 md:px-6">
           <div>
             <h2 className="font-display text-2xl text-ink" aria-live="polite">
               {format(month, "MMMM yyyy")}
@@ -156,73 +156,78 @@ export default function BirthdayCalendar({
             </button>
           </div>
         </div>
-        <div className="grid grid-cols-7 border-b border-rule bg-paper-deep/60 text-center text-xs font-semibold text-ink-soft sm:text-sm">
-          {weekdays.map((weekday) => (
-            <div className="py-2" key={weekday}>
-              {weekday}
+        {/* Inset from the screen edge on phones; flush inside the card at md+ */}
+        <div className="px-5 py-4 sm:px-8 md:p-0">
+          <div className="overflow-hidden rounded-lg border border-rule md:rounded-none md:border-0">
+            <div className="grid grid-cols-7 border-b border-rule bg-paper-deep/60 text-center text-xs font-semibold text-ink-soft sm:text-sm">
+              {weekdays.map((weekday) => (
+                <div className="py-2" key={weekday}>
+                  {weekday}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-        <div
-          className="grid grid-cols-7 gap-px bg-rule"
-          aria-label={format(month, "MMMM yyyy")}
-        >
-          {Array.from({ length: leadingDays }, (_, index) => (
             <div
-              className="min-h-16 bg-paper-deep/40 sm:min-h-28"
-              key={`empty-${index}`}
-            />
-          ))}
-          {Array.from({ length: daysInMonth }, (_, index) => {
-            const day = index + 1;
-            const onDay = monthBirthdays.get(day) ?? [];
-            const isToday = isCurrentMonth && today.getDate() === day;
-            return (
-              <button
-                aria-label={`${format(new Date(month.getFullYear(), month.getMonth(), day), "MMMM d, yyyy")}, ${onDay.length} ${onDay.length === 1 ? "birthday" : "birthdays"}`}
-                aria-pressed={selectedDay === day}
-                className={clsx(
-                  "min-h-16 min-w-0 bg-paper p-1 text-left align-top hover:bg-paper-deep focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-accent sm:min-h-28 sm:p-2",
-                  selectedDay === day &&
-                    "bg-paper-deep outline-2 outline-accent -outline-offset-2",
-                )}
-                key={day}
-                onClick={() => selectDay(day)}
-                type="button"
-              >
-                <span
-                  className={clsx(
-                    "flex size-6 items-center justify-center rounded-full text-sm tabular-nums sm:size-7",
-                    isToday && "bg-accent font-semibold text-white",
-                  )}
-                >
-                  {day}
-                </span>
-                {onDay.length > 0 && (
-                  <>
-                    <span className="mt-1 block text-center text-xs font-semibold text-accent-deep sm:hidden">
-                      {onDay.length}
-                    </span>
-                    <span className="mt-1 hidden space-y-0.5 sm:block">
-                      {onDay.slice(0, 2).map((birthday) => (
-                        <span
-                          className="block truncate rounded bg-accent/10 px-1.5 py-0.5 text-xs text-accent-deep"
-                          key={birthday.id}
-                        >
-                          {birthday.name}
-                        </span>
-                      ))}
-                      {onDay.length > 2 && (
-                        <span className="block px-1 text-xs text-ink-soft">
-                          +{onDay.length - 2} more
-                        </span>
+              className="grid grid-cols-7 gap-px bg-rule"
+              aria-label={format(month, "MMMM yyyy")}
+            >
+              {Array.from({ length: leadingDays }, (_, index) => (
+                <div
+                  className="min-h-16 bg-paper-deep/40 sm:min-h-28"
+                  key={`empty-${index}`}
+                />
+              ))}
+              {Array.from({ length: daysInMonth }, (_, index) => {
+                const day = index + 1;
+                const onDay = monthBirthdays.get(day) ?? [];
+                const isToday = isCurrentMonth && today.getDate() === day;
+                return (
+                  <button
+                    aria-label={`${format(new Date(month.getFullYear(), month.getMonth(), day), "MMMM d, yyyy")}, ${onDay.length} ${onDay.length === 1 ? "birthday" : "birthdays"}`}
+                    aria-pressed={selectedDay === day}
+                    className={clsx(
+                      "min-h-16 min-w-0 bg-paper p-1 text-left align-top hover:bg-paper-deep focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-accent sm:min-h-28 sm:p-2",
+                      selectedDay === day &&
+                        "bg-paper-deep outline-2 outline-accent -outline-offset-2",
+                    )}
+                    key={day}
+                    onClick={() => selectDay(day)}
+                    type="button"
+                  >
+                    <span
+                      className={clsx(
+                        "flex size-6 items-center justify-center rounded-full text-sm tabular-nums sm:size-7",
+                        isToday && "bg-accent font-semibold text-white",
                       )}
+                    >
+                      {day}
                     </span>
-                  </>
-                )}
-              </button>
-            );
-          })}
+                    {onDay.length > 0 && (
+                      <>
+                        <span className="mt-1 block text-center text-xs font-semibold text-accent-deep sm:hidden">
+                          {onDay.length}
+                        </span>
+                        <span className="mt-1 hidden space-y-0.5 sm:block">
+                          {onDay.slice(0, 2).map((birthday) => (
+                            <span
+                              className="block truncate rounded bg-accent/10 px-1.5 py-0.5 text-xs text-accent-deep"
+                              key={birthday.id}
+                            >
+                              {birthday.name}
+                            </span>
+                          ))}
+                          {onDay.length > 2 && (
+                            <span className="block px-1 text-xs text-ink-soft">
+                              +{onDay.length - 2} more
+                            </span>
+                          )}
+                        </span>
+                      </>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
       <aside

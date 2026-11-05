@@ -33,8 +33,10 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
   });
 
   // For month/day mode (when year is disabled)
-  const [localMonth, setLocalMonth] = useState<string>(month?.toString() || "");
-  const [localDay, setLocalDay] = useState<string>(day?.toString() || "");
+  const [localMonth, setLocalMonth] = useState<string>(
+    month ? String(month) : "",
+  );
+  const [localDay, setLocalDay] = useState<string>(day ? String(day) : "");
   const [prevYear, setPrevYear] = useState(year);
   const [prevMonth, setPrevMonth] = useState(month);
   const [prevDay, setPrevDay] = useState(day);
@@ -55,8 +57,8 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
       setDateValue("");
     }
 
-    setLocalMonth(month?.toString() || "");
-    setLocalDay(day?.toString() || "");
+    setLocalMonth(month ? String(month) : "");
+    setLocalDay(day ? String(day) : "");
   }
 
   const handleYearToggle = (disabled: boolean) => {
@@ -118,13 +120,16 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
   const dayOptions = Array.from({ length: maxDays }, (_, i) => i + 1);
 
   const inputClass =
-    "block h-11 w-full rounded-md border border-rule bg-paper px-3 text-sm text-ink placeholder:text-ink-soft focus:border-accent focus:outline-hidden focus:ring-1 focus:ring-accent";
+    "block h-11 w-full rounded-md border border-rule bg-paper px-3 text-base text-ink placeholder:text-ink-soft focus:border-accent focus:outline-hidden focus:ring-1 focus:ring-accent sm:text-sm";
 
   return (
     <div className="flex flex-col space-y-1.5">
       {!yearDisabled ? (
         // Date Picker Mode (includes year)
         <div>
+          <label htmlFor={`${idPrefix}-date`} className="sr-only">
+            Date
+          </label>
           <input
             type="date"
             id={`${idPrefix}-date`}
@@ -160,6 +165,9 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
         <div className="grid grid-cols-2 gap-2">
           {/* Month Dropdown */}
           <div>
+            <label htmlFor={`${idPrefix}-month`} className="sr-only">
+              Month
+            </label>
             <select
               id={`${idPrefix}-month`}
               className={inputClass}
@@ -193,6 +201,9 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
 
           {/* Day Dropdown */}
           <div>
+            <label htmlFor={`${idPrefix}-day`} className="sr-only">
+              Day
+            </label>
             <select
               id={`${idPrefix}-day`}
               className={inputClass}

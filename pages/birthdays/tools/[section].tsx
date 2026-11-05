@@ -51,7 +51,7 @@ const ToolPage: NextPage<{ section: ToolSection }> = ({ section }) => {
         <Head>
           <meta name="robots" content="noindex, nofollow" />
         </Head>
-        <div className="py-9 sm:py-12">
+        <div className="py-7 sm:py-12">
           <p className="text-sm font-medium tracking-[0.12em] text-accent-deep uppercase">
             Your people
           </p>

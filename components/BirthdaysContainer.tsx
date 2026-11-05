@@ -22,8 +22,7 @@ import {
   useState,
 } from "react";
 import { BsFillCaretDownFill } from "react-icons/bs";
-import { GrFormFilter, GrRefresh } from "react-icons/gr";
-import { HiOutlineCalendar, HiXCircle } from "react-icons/hi";
+import { HiAdjustments, HiOutlineCalendar, HiXCircle } from "react-icons/hi";
 import { IoAddCircleOutline } from "react-icons/io5";
 
 const currentHost = typeof window !== "undefined" ? window.location.host : "";
@@ -245,15 +244,23 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
     });
   }, [birthdays]);
 
-  const handleRefresh = async () => {
-    await birthdaysRefetch();
-  };
+  const hasExtraFilters = Boolean(
+    categoryFilter || parentFilter || zodiacSignFilter,
+  );
 
+  // Refetch when the user comes back to the tab or the installed app, so the
+  // list stays current without a manual refresh button.
   useEffect(() => {
-    const refetchQuery = () => birthdaysRefetch();
+    const refetchQuery = () => {
+      if (document.visibilityState === "visible") birthdaysRefetch();
+    };
     window.addEventListener("focus", refetchQuery);
-    return () => window.removeEventListener("focus", refetchQuery);
-  });
+    document.addEventListener("visibilitychange", refetchQuery);
+    return () => {
+      window.removeEventListener("focus", refetchQuery);
+      document.removeEventListener("visibilitychange", refetchQuery);
+    };
+  }, [birthdaysRefetch]);
 
   const getDaysLabel = (daysUntil: number) => {
     if (daysUntil === 0) {
@@ -330,32 +337,26 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
           </div>
         </section>
       )}
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-3">
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 pb-4">
         <div className="flex items-center gap-4">
+          <div className="text-sm tabular-nums text-ink-muted">
+            {isFiltered
+              ? `${workingDatesCount} of ${birthdaysCount} shown`
+              : `${birthdaysCount} ${birthdaysCount === 1 ? "birthday" : "birthdays"}`}
+          </div>
           <button
             className={clsx(
-              isFiltered ? "text-accent-deep hover:text-ink" : "text-ink-muted",
-              "js-clear-filters flex items-center gap-1 text-sm",
+              isFiltered
+                ? "flex text-accent-deep hover:text-ink"
+                : "hidden text-ink-muted md:flex",
+              "js-clear-filters -my-2 items-center gap-1 py-2 text-sm",
             )}
             disabled={!isFiltered}
             onClick={() => clearFilters()}
+            type="button"
           >
-            <HiXCircle />
+            <HiXCircle aria-hidden />
             <span>Clear filters</span>
-          </button>
-          <div className="text-sm tabular-nums text-ink-muted">
-            {workingDatesCount}/{birthdaysCount} visible
-          </div>
-        </div>
-        <div className="flex items-center md:hidden">
-          <button
-            className="flex items-center gap-2 rounded-md border border-rule bg-paper px-3 py-2 text-sm text-ink hover:bg-paper-deep"
-            onClick={() => {
-              setShowFilters(!showFilters);
-            }}
-          >
-            <GrFormFilter />
-            <span>{showFilters ? "Hide filters" : "More filters"}</span>
           </button>
         </div>
         <Link
@@ -379,9 +380,9 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
         {birthdaysError && (
           <p className="pt-3 text-ink-soft">{birthdaysError.message}</p>
         )}
-        <div className="overflow-hidden rounded-xl border border-rule bg-paper text-ink">
-          <div className="sticky top-0 z-10 bg-paper">
-            <div className="flex items-center justify-between gap-3 border-b border-rule px-4 py-3 sm:px-6">
+        <div className="-mx-5 bg-paper text-ink sm:-mx-8 md:mx-0 md:overflow-hidden md:rounded-xl md:border md:border-rule">
+          <div className="bg-paper md:sticky md:top-0 md:z-10">
+            <div className="flex items-center justify-between gap-3 border-y border-rule px-5 py-3 sm:px-8 md:border-t-0 md:px-6">
               <p className="text-sm text-ink-soft">Your birthdays</p>
               <div
                 className="flex rounded-md border border-rule bg-paper-deep/60 p-1"
@@ -392,7 +393,7 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                   <button
                     aria-pressed={view === option}
                     className={clsx(
-                      "rounded px-3 py-1.5 text-sm capitalize focus-visible:outline-2 focus-visible:outline-accent",
+                      "min-h-11 rounded px-4 py-2 text-sm capitalize md:min-h-0 md:px-3 md:py-1.5 focus-visible:outline-2 focus-visible:outline-accent",
                       view === option
                         ? "bg-paper font-medium text-ink shadow-sm"
                         : "text-ink-soft hover:text-ink",
@@ -407,21 +408,23 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
               </div>
             </div>
             <div className="border-b border-rule bg-paper-deep/60">
-              <div className="grid gap-2 p-3 md:grid-cols-2 md:p-5 xl:flex">
+              <div className="grid gap-2 px-5 py-3 sm:px-8 md:grid-cols-2 md:p-5 xl:flex">
                 <div className="flex w-full gap-2">
                   <button
                     className={clsx(
-                      "js-add-birthday-button flex size-12 shrink-0 items-center justify-center rounded-md bg-accent text-white",
+                      "js-add-birthday-button flex h-12 shrink-0 items-center justify-center gap-1.5 rounded-md bg-accent px-4 font-medium text-white md:w-12 md:px-0",
                       "hover:bg-accent-deep",
                       "focus:outline-hidden focus:ring-2 focus:ring-accent/40 focus:ring-offset-2 focus:ring-offset-paper-deep",
                     )}
+                    aria-label="Add birthday"
                     title="Add birthday"
                     onClick={() =>
                       setIsAddBirthdayDialogVisible(!isAddBirthdayDialogVisible)
                     }
                     type="button"
                   >
-                    <IoAddCircleOutline className="h-5 w-5" />
+                    <IoAddCircleOutline aria-hidden className="h-5 w-5" />
+                    <span className="md:hidden">Add</span>
                   </button>
                   <div className="min-w-0 grow">
                     <BirthdayFilterField
@@ -431,21 +434,27 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
                       setValue={setNameFilter}
                     />
                   </div>
-                  <div className="flex md:hidden">
-                    <button
-                      className="flex size-12 items-center justify-center rounded-md border border-rule bg-paper text-ink hover:bg-paper-deep"
-                      onClick={handleRefresh}
-                      title="Refresh"
-                      type="button"
-                    >
-                      <GrRefresh
-                        className={clsx(
-                          birthdaysLoading && "animate-spin",
-                          "size-4",
-                        )}
+                  <button
+                    aria-expanded={showFilters}
+                    aria-label={showFilters ? "Hide filters" : "More filters"}
+                    className={clsx(
+                      "relative flex size-12 shrink-0 items-center justify-center rounded-md border text-ink md:hidden",
+                      showFilters
+                        ? "border-ink bg-paper-deep"
+                        : "border-rule bg-paper hover:bg-paper-deep",
+                    )}
+                    onClick={() => setShowFilters(!showFilters)}
+                    title={showFilters ? "Hide filters" : "More filters"}
+                    type="button"
+                  >
+                    <HiAdjustments aria-hidden className="size-5" />
+                    {hasExtraFilters && (
+                      <span
+                        aria-hidden
+                        className="absolute top-2 right-2 size-2 rounded-full bg-accent"
                       />
-                    </button>
-                  </div>
+                    )}
+                  </button>
                 </div>
                 <div
                   className={clsx(
@@ -561,30 +570,23 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
               <li>
                 <button
                   className={clsx(
-                    "flex w-full items-center justify-center gap-2 py-2 text-sm text-accent-deep transition",
+                    "flex w-full items-center justify-center gap-2 py-3 text-sm text-accent-deep transition md:py-2",
                     "hover:bg-paper-deep hover:text-ink",
                   )}
                   onClick={() => {
-                    const desktopTodayElement: HTMLElement | null =
-                      document.querySelector("#desktop-today");
-                    const mobileTodayElement: HTMLElement | null =
-                      document.querySelector("#mobile-today");
-
-                    if (desktopTodayElement || mobileTodayElement) {
-                      if (desktopTodayElement?.offsetTop) {
-                        window.scrollTo({
-                          top: desktopTodayElement?.offsetTop - 124,
-                          behavior: "smooth",
-                        });
-                      }
-
-                      if (mobileTodayElement?.offsetTop) {
-                        window.scrollTo({
-                          top: mobileTodayElement?.offsetTop - 76,
-                          behavior: "smooth",
-                        });
-                      }
-                    }
+                    const desktopTodayElement =
+                      document.getElementById("desktop-today");
+                    const mobileTodayElement =
+                      document.getElementById("mobile-today");
+                    // Only one of the two rows is displayed at a time;
+                    // offsetParent is null for the hidden one.
+                    const target = desktopTodayElement?.offsetParent
+                      ? desktopTodayElement
+                      : mobileTodayElement;
+                    target?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "center",
+                    });
                   }}
                   type="button"
                 >
@@ -624,10 +626,10 @@ const BirthdaysContainer = ({ userId }: { userId: string }) => {
               )}
             </div>
           )}
-          <div className={clsx("border-t border-rule px-4 py-3", "lg:px-8")}>
+          <div className="border-y border-rule px-5 py-4 sm:px-8 md:border-b-0 md:px-4 md:py-3 lg:px-8">
             <button
               className={clsx(
-                "flex w-full items-center justify-center gap-2 rounded-md border border-rule bg-paper-deep px-4 py-2 text-ink transition",
+                "flex w-full items-center justify-center gap-2 rounded-md border border-rule bg-paper-deep px-4 py-3 text-ink transition md:py-2",
                 "hover:bg-paper",
                 "focus:outline-hidden focus:ring-2 focus:ring-accent/30",
               )}

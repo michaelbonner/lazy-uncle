@@ -118,8 +118,8 @@ const EditBirthdayForm = ({
               value={name || ""}
             />
           </div>
-          <div>
-            <label className="mb-2 block text-sm font-medium">Birthday</label>
+          <fieldset className="min-w-0">
+            <legend className="mb-2 block text-sm font-medium">Birthday</legend>
             <BirthdayDateInput
               year={year}
               month={month}
@@ -129,7 +129,7 @@ const EditBirthdayForm = ({
               maxYear={new Date().getFullYear()}
               includeYearInput={true}
             />
-          </div>
+          </fieldset>
           <div>
             <label
               className="mb-2 block text-sm font-medium"

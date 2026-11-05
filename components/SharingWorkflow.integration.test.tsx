@@ -349,7 +349,8 @@ describe("Sharing Workflow Integration Tests", () => {
     );
 
     expect(await screen.findByText("Birthday submissions")).toBeInTheDocument();
-    expect(screen.getByText("Bob Wilson")).toBeInTheDocument();
+    // Rendered once in the mobile card list and once in the desktop table.
+    expect(screen.getAllByText("Bob Wilson")).toHaveLength(2);
     expect(
       await screen.findByText("Birthday sharing links"),
     ).toBeInTheDocument();
@@ -376,7 +377,9 @@ describe("Sharing Workflow Integration Tests", () => {
       "href",
       "/birthdays/tools/sharing",
     );
-    expect(screen.queryByRole("link", { name: "Review" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "Review" }),
+    ).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Settings" })).toHaveAttribute(
       "href",
       "/birthdays/tools/settings",
