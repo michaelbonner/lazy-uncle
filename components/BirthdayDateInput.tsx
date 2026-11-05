@@ -127,6 +127,9 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
       {!yearDisabled ? (
         // Date Picker Mode (includes year)
         <div>
+          <label htmlFor={`${idPrefix}-date`} className="sr-only">
+            Date
+          </label>
           <input
             type="date"
             id={`${idPrefix}-date`}
@@ -162,6 +165,9 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
         <div className="grid grid-cols-2 gap-2">
           {/* Month Dropdown */}
           <div>
+            <label htmlFor={`${idPrefix}-month`} className="sr-only">
+              Month
+            </label>
             <select
               id={`${idPrefix}-month`}
               className={inputClass}
@@ -195,6 +201,9 @@ const BirthdayDateInput: FC<BirthdayDateInputProps> = ({
 
           {/* Day Dropdown */}
           <div>
+            <label htmlFor={`${idPrefix}-day`} className="sr-only">
+              Day
+            </label>
             <select
               id={`${idPrefix}-day`}
               className={inputClass}

@@ -97,8 +97,8 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
             value={name}
           />
         </div>
-        <div>
-          <label className="mt-4 block text-sm">Birthday</label>
+        <fieldset className="mt-4 min-w-0">
+          <legend className="block text-sm">Birthday</legend>
           <BirthdayDateInput
             year={year}
             month={month}
@@ -108,7 +108,7 @@ const CreateBirthdayForm = ({ onSubmit }: { onSubmit: () => void }) => {
             maxYear={new Date().getFullYear()}
             includeYearInput={true}
           />
-        </div>
+        </fieldset>
         <div>
           <label className="mt-4 block text-sm" htmlFor="category">
             Category (optional)

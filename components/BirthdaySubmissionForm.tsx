@@ -285,13 +285,8 @@ const BirthdaySubmissionForm = ({
                   maxLength={100}
                 />
               </div>
-              <div>
-                <label
-                  className={mobileLabelClass}
-                  htmlFor={`entry-${entry.id}-date`}
-                >
-                  Birthday *
-                </label>
+              <fieldset className="min-w-0">
+                <legend className={mobileLabelClass}>Birthday *</legend>
                 <BirthdayDateInput
                   idPrefix={`entry-${entry.id}`}
                   year={entry.year}
@@ -303,7 +298,7 @@ const BirthdaySubmissionForm = ({
                   required={false}
                   maxYear={new Date().getFullYear()}
                 />
-              </div>
+              </fieldset>
               <div>
                 <label
                   className={mobileLabelClass}
