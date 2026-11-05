@@ -279,8 +279,8 @@ const SubmissionReviewInterface = () => {
     <div className="text-ink">
       <div>
         <div className="mb-6 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <IoPersonOutline className="h-6 w-6 text-accent" />
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <IoPersonOutline className="h-6 w-6 shrink-0 text-accent" />
             <h2 className="font-display text-2xl font-semibold">
               Birthday submissions
             </h2>
@@ -315,9 +315,9 @@ const SubmissionReviewInterface = () => {
         ) : (
           <>
             {/* Bulk Actions */}
-            <div className="mb-4 flex items-center justify-between rounded-lg border border-rule bg-paper p-4">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-rule bg-paper p-4">
               <div className="flex items-center space-x-4">
-                <label className="flex items-center space-x-2">
+                <label className="-my-2 flex items-center space-x-2 py-2">
                   <input
                     type="checkbox"
                     checked={
@@ -338,12 +338,12 @@ const SubmissionReviewInterface = () => {
                 )}
               </div>
               {selectedSubmissions.size > 0 && (
-                <div className="flex space-x-2">
+                <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto">
                   <button
                     onClick={handleBulkImport}
                     disabled={processingSubmissions.size > 0}
                     className={clsx(
-                      "flex items-center space-x-1 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                      "flex items-center justify-center space-x-1 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                       processingSubmissions.size > 0
                         ? "bg-paper-deep text-ink-muted"
                         : "bg-emerald-100 text-emerald-800 hover:bg-emerald-200",
@@ -356,7 +356,7 @@ const SubmissionReviewInterface = () => {
                     onClick={handleBulkReject}
                     disabled={processingSubmissions.size > 0}
                     className={clsx(
-                      "flex items-center space-x-1 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                      "flex items-center justify-center space-x-1 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                       processingSubmissions.size > 0
                         ? "bg-paper-deep text-ink-muted"
                         : "bg-rose-100 text-rose-800 hover:bg-rose-200",
@@ -369,8 +369,141 @@ const SubmissionReviewInterface = () => {
               )}
             </div>
 
+            {/* Submissions: stacked cards on phones */}
+            <ul className="divide-y divide-rule border-y border-rule md:hidden">
+              {submissionsWithDuplicates.map((submission) => {
+                const isSelected = selectedSubmissions.has(submission.id);
+                const isProcessing = processingSubmissions.has(submission.id);
+                const hasDuplicates = submission.duplicates.length > 0;
+                return (
+                  <li
+                    key={submission.id}
+                    className={clsx(
+                      "py-4",
+                      hasDuplicates && "-mx-5 bg-amber-50 px-5",
+                    )}
+                  >
+                    <label className="flex items-start gap-3">
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() =>
+                          toggleSubmissionSelection(submission.id)
+                        }
+                        aria-label={`Select submission for ${submission.name}`}
+                        className="mt-1 h-5 w-5 shrink-0 rounded border-rule text-accent focus:ring-accent/40"
+                      />
+                      <span className="min-w-0 flex-1">
+                        <span className="block font-medium break-words text-ink">
+                          {submission.name}
+                        </span>
+                        <span className="mt-0.5 flex items-center gap-1.5 text-sm text-ink">
+                          <IoCalendarOutline
+                            aria-hidden
+                            className="h-4 w-4 shrink-0 text-ink-soft"
+                          />
+                          {formatSubmissionDate(submission)}
+                          {submission.category && (
+                            <span className="ml-1 inline-flex rounded-full border border-rule bg-paper px-2 py-0.5 text-xs">
+                              {submission.category}
+                            </span>
+                          )}
+                        </span>
+                        <span className="mt-1 block text-sm text-ink-soft">
+                          From {submission.submitterName || "anonymous"}
+                          {submission.relationship &&
+                            ` (${submission.relationship})`}
+                          {submission.sharingLink.description &&
+                            ` via ${submission.sharingLink.description}`}{" "}
+                          · {format(new Date(submission.createdAt), "MMM d")}
+                        </span>
+                      </span>
+                    </label>
+                    {hasDuplicates && (
+                      <div className="mt-3 rounded-md border border-amber-200 bg-amber-100/60 p-3 text-sm">
+                        <p className="flex items-center gap-1.5 font-medium text-amber-900">
+                          <HiExclamationCircle
+                            aria-hidden
+                            className="h-4 w-4 shrink-0 text-amber-800"
+                          />
+                          Might already be on your list
+                        </p>
+                        <ul className="mt-1 space-y-0.5 text-amber-900">
+                          {submission.duplicates.map((duplicate) => (
+                            <li key={duplicate.id}>
+                              {duplicate.name},{" "}
+                              {formatSubmissionDate(duplicate)}
+                              {duplicate.category && ` (${duplicate.category})`}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {(submission.notes || submission.submitterEmail) && (
+                      <div className="mt-3 space-y-1 text-sm">
+                        {submission.notes && (
+                          <p className="break-words text-ink">
+                            <span className="text-ink-soft">Notes: </span>
+                            {submission.notes}
+                          </p>
+                        )}
+                        {submission.submitterEmail && (
+                          <p className="break-all">
+                            <a
+                              href={`mailto:${submission.submitterEmail}`}
+                              className="text-accent-deep underline underline-offset-4 hover:text-accent"
+                            >
+                              {submission.submitterEmail}
+                            </a>
+                          </p>
+                        )}
+                      </div>
+                    )}
+                    <div className="mt-3 grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleImportSubmission(submission.id)}
+                        disabled={isProcessing}
+                        className={clsx(
+                          "flex items-center justify-center gap-1 rounded-md px-3 py-2.5 text-sm font-medium transition-colors",
+                          isProcessing
+                            ? "bg-paper-deep text-ink-soft"
+                            : "bg-emerald-100 text-emerald-900 hover:bg-emerald-200",
+                        )}
+                      >
+                        {isProcessing ? (
+                          <LoadingSpinner size="sm" />
+                        ) : (
+                          <HiCheck aria-hidden className="h-4 w-4" />
+                        )}
+                        <span>Import</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleRejectSubmission(submission.id)}
+                        disabled={isProcessing}
+                        className={clsx(
+                          "flex items-center justify-center gap-1 rounded-md px-3 py-2.5 text-sm font-medium transition-colors",
+                          isProcessing
+                            ? "bg-paper-deep text-ink-soft"
+                            : "bg-rose-100 text-rose-900 hover:bg-rose-200",
+                        )}
+                      >
+                        {isProcessing ? (
+                          <LoadingSpinner size="sm" />
+                        ) : (
+                          <HiX aria-hidden className="h-4 w-4" />
+                        )}
+                        <span>Reject</span>
+                      </button>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+
             {/* Submissions Table */}
-            <div className="overflow-x-auto rounded-lg border border-rule bg-paper">
+            <div className="hidden overflow-x-auto rounded-lg border border-rule bg-paper md:block">
               <table className="w-full min-w-[1024px] text-sm text-ink">
                 <thead className="border-b border-rule bg-paper-deep text-left text-xs font-semibold uppercase tracking-wide text-ink">
                   <tr>

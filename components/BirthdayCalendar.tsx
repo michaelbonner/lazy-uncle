@@ -114,7 +114,7 @@ export default function BirthdayCalendar({
   return (
     <div className="text-left lg:grid lg:grid-cols-3">
       <div className="min-w-0 lg:col-span-2 lg:border-r lg:border-rule">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-rule px-4 py-4 sm:px-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-rule px-5 py-4 sm:px-8 md:px-6">
           <div>
             <h2 className="font-display text-2xl text-ink" aria-live="polite">
               {format(month, "MMMM yyyy")}

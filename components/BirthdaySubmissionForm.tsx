@@ -23,9 +23,11 @@ interface BirthdaySubmissionFormProps {
 const createEmptyEntry = (): BirthdayEntry => ({
   id: Math.random().toString(36).slice(2),
   name: "",
+  // Start blank: a prefilled date is easy to submit by accident.
+  // month/day of 0 means "not chosen yet" and fails validation.
   year: new Date().getFullYear(),
-  month: 1,
-  day: 1,
+  month: 0,
+  day: 0,
   notes: "",
 });
 
@@ -62,9 +64,7 @@ const BirthdaySubmissionForm = ({
 
     entries.forEach((entry, i) => {
       const label =
-        entries.length > 1
-          ? entry.name.trim() || `Entry ${i + 1}`
-          : "Birthday";
+        entries.length > 1 ? entry.name.trim() || `Entry ${i + 1}` : "Birthday";
 
       if (!entry.name.trim()) {
         errors.push(`${label}: Name is required`);
@@ -241,13 +241,16 @@ const BirthdaySubmissionForm = ({
   }
 
   const inputClass =
-    "block h-11 w-full rounded-md border border-rule bg-paper px-3 text-sm text-ink placeholder:text-ink-soft focus:border-accent focus:outline-hidden focus:ring-1 focus:ring-accent";
+    "block h-11 w-full rounded-md border border-rule bg-paper px-3 text-base text-ink placeholder:text-ink-soft focus:border-accent focus:outline-hidden focus:ring-1 focus:ring-accent sm:text-sm";
+  // Column headers label the fields on wide screens; on phones each field
+  // needs its own visible label.
+  const mobileLabelClass = "mb-1 block text-sm font-medium text-ink lg:sr-only";
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col space-y-6">
-      <div className="overflow-x-auto">
-        <div className="min-w-[600px] space-y-2 lg:min-w-0">
-          <div className="grid grid-cols-[1.5fr_2fr_2.5fr_2.5rem] gap-x-3 px-2 text-xs font-semibold uppercase tracking-wide text-ink">
+      <div>
+        <div className="space-y-3 lg:space-y-2">
+          <div className="hidden grid-cols-[1.5fr_2fr_2.5fr_2.5rem] gap-x-3 px-2 text-xs font-semibold uppercase tracking-wide text-ink lg:grid">
             <div>Name *</div>
             <div>Birthday *</div>
             <div>Notes</div>
@@ -256,11 +259,19 @@ const BirthdaySubmissionForm = ({
           {entries.map((entry, index) => (
             <div
               key={entry.id}
-              className="grid grid-cols-[1.5fr_2fr_2.5fr_2.5rem] items-start gap-x-3 gap-y-2 rounded-md border border-rule bg-paper-deep p-2"
+              className="relative grid grid-cols-1 items-start gap-x-3 gap-y-3 rounded-md border border-rule bg-paper-deep p-3 lg:grid-cols-[1.5fr_2fr_2.5fr_2.5rem] lg:gap-y-2 lg:p-2"
             >
+              {entries.length > 1 && (
+                <p className="flex h-7 items-center text-sm font-semibold text-ink lg:hidden">
+                  Birthday {index + 1}
+                </p>
+              )}
               <div>
-                <label className="sr-only" htmlFor={`name-${entry.id}`}>
-                  Name
+                <label
+                  className={mobileLabelClass}
+                  htmlFor={`name-${entry.id}`}
+                >
+                  Name *
                 </label>
                 <input
                   className={inputClass}
@@ -275,7 +286,12 @@ const BirthdaySubmissionForm = ({
                 />
               </div>
               <div>
-                <label className="sr-only">Birthday</label>
+                <label
+                  className={mobileLabelClass}
+                  htmlFor={`entry-${entry.id}-date`}
+                >
+                  Birthday *
+                </label>
                 <BirthdayDateInput
                   idPrefix={`entry-${entry.id}`}
                   year={entry.year}
@@ -289,8 +305,11 @@ const BirthdaySubmissionForm = ({
                 />
               </div>
               <div>
-                <label className="sr-only" htmlFor={`notes-${entry.id}`}>
-                  Notes
+                <label
+                  className={mobileLabelClass}
+                  htmlFor={`notes-${entry.id}`}
+                >
+                  Notes (optional)
                 </label>
                 <input
                   className={inputClass}
@@ -304,12 +323,12 @@ const BirthdaySubmissionForm = ({
                   maxLength={500}
                 />
               </div>
-              <div className="flex h-11 items-center justify-center">
+              <div className="absolute top-1.5 right-1.5 flex items-center lg:static lg:h-11 lg:justify-center">
                 {entries.length > 1 ? (
                   <button
                     type="button"
                     onClick={() => removeEntry(entry.id)}
-                    className="flex h-8 w-8 items-center justify-center rounded-md text-ink-soft transition hover:bg-rose-100 hover:text-rose-700"
+                    className="flex h-11 items-center justify-center gap-1.5 rounded-md px-3 text-sm text-ink-soft transition hover:bg-rose-100 hover:text-rose-700 lg:h-8 lg:w-8 lg:px-0"
                     aria-label={`Remove birthday ${index + 1}`}
                     title="Remove"
                   >
@@ -326,6 +345,9 @@ const BirthdaySubmissionForm = ({
                         d="M6 18L18 6M6 6l12 12"
                       />
                     </svg>
+                    <span aria-hidden className="lg:hidden">
+                      Remove
+                    </span>
                   </button>
                 ) : null}
               </div>

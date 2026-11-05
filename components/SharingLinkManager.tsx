@@ -115,19 +115,60 @@ const SharingLinkManager = () => {
 
   const sharingLinks: SharingLink[] = sharingLinksData ?? [];
 
+  const renderLinkActions = (link: SharingLink, expired: boolean) => (
+    <>
+      {!expired && (
+        <button
+          onClick={() => copyToClipboard(link.token, link.id)}
+          className={clsx(
+            "flex items-center justify-center gap-1 min-h-11 rounded-md px-3 py-2 text-sm font-medium transition-colors md:min-h-0 md:px-2.5 md:py-1.5 md:text-xs",
+            copiedLinkId === link.id
+              ? "bg-emerald-100 text-emerald-900"
+              : "bg-paper-deep text-ink hover:bg-rule",
+          )}
+          title="Copy link to clipboard"
+          type="button"
+        >
+          {copiedLinkId === link.id ? (
+            <>
+              <HiClipboardCheck aria-hidden className="h-4 w-4" />
+              <span>Copied</span>
+            </>
+          ) : (
+            <>
+              <HiClipboard aria-hidden className="h-4 w-4" />
+              <span className="whitespace-nowrap">
+                Copy<span className="md:hidden"> link</span>
+              </span>
+            </>
+          )}
+        </button>
+      )}
+      <button
+        onClick={() => handleRevokeLink(link.id)}
+        className="flex items-center justify-center gap-1 rounded-md min-h-11 bg-rose-100 px-3 py-2 text-sm font-medium text-rose-900 transition-colors hover:bg-rose-200 md:min-h-0 md:px-2.5 md:py-1.5 md:text-xs"
+        title="Revoke this link"
+        type="button"
+      >
+        <HiTrash aria-hidden className="h-4 w-4" />
+        <span>Revoke</span>
+      </button>
+    </>
+  );
+
   return (
     <section className="text-ink">
       <div>
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center space-x-3">
-            <IoShareOutline className="h-6 w-6 text-accent" />
+            <IoShareOutline className="h-6 w-6 shrink-0 text-accent" />
             <h2 className="font-display text-2xl font-semibold">
               Birthday sharing links
             </h2>
           </div>
           <button
             className={clsx(
-              "js-create-sharing-link flex items-center space-x-2 rounded-md border border-transparent bg-accent px-4 py-2 font-medium text-white transition",
+              "js-create-sharing-link flex w-full items-center justify-center space-x-2 rounded-md border border-transparent bg-accent px-4 py-3 font-medium whitespace-nowrap text-white transition sm:w-auto sm:py-2",
               "hover:bg-accent-deep",
               "focus:outline-hidden focus:ring-2 focus:ring-accent/40 focus:ring-offset-2 focus:ring-offset-paper-deep",
             )}
@@ -158,7 +199,7 @@ const SharingLinkManager = () => {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="e.g. Family gathering, work colleagues"
-                  className="w-full rounded-md border border-rule bg-white px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:border-accent focus:outline-hidden focus:ring-1 focus:ring-accent"
+                  className="w-full rounded-md border border-rule bg-white px-3 py-2 text-base text-ink placeholder:text-ink-soft focus:border-accent focus:outline-hidden focus:ring-1 focus:ring-accent sm:text-sm"
                   maxLength={100}
                 />
               </div>
@@ -175,7 +216,7 @@ const SharingLinkManager = () => {
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   placeholder="e.g. Family, Coworkers"
-                  className="w-full rounded-md border border-rule bg-white px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:border-accent focus:outline-hidden focus:ring-1 focus:ring-accent"
+                  className="w-full rounded-md border border-rule bg-white px-3 py-2 text-base text-ink placeholder:text-ink-soft focus:border-accent focus:outline-hidden focus:ring-1 focus:ring-accent sm:text-sm"
                   maxLength={50}
                 />
                 <p className="mt-1 text-xs text-ink-soft">
@@ -194,7 +235,7 @@ const SharingLinkManager = () => {
                   id="expirationHours"
                   value={expirationHours}
                   onChange={(e) => setExpirationHours(Number(e.target.value))}
-                  className="w-full rounded-md border border-rule bg-white px-3 py-2 text-sm text-ink focus:border-accent focus:outline-hidden focus:ring-1 focus:ring-accent"
+                  className="w-full rounded-md border border-rule bg-white px-3 py-2 text-base text-ink focus:border-accent focus:outline-hidden focus:ring-1 focus:ring-accent sm:text-sm"
                 >
                   <option value={24}>1 day</option>
                   <option value={72}>3 days</option>
@@ -248,112 +289,117 @@ const SharingLinkManager = () => {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-lg border border-rule bg-paper">
-            <table className="w-full min-w-[960px] text-sm text-ink">
-              <thead className="border-b border-rule bg-paper-deep text-left text-xs font-semibold uppercase tracking-wide text-ink">
-                <tr>
-                  <th className="px-3 py-2.5">Label</th>
-                  <th className="px-3 py-2.5">Category</th>
-                  <th className="px-3 py-2.5">Link</th>
-                  <th className="px-3 py-2.5 text-center">Submissions</th>
-                  <th className="px-3 py-2.5">Created</th>
-                  <th className="px-3 py-2.5">Status</th>
-                  <th className="px-3 py-2.5 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-rule">
-                {sharingLinks.map((link) => {
-                  const expired = isExpired(link.expiresAt);
-                  const url = `${window.location.origin}/share/${link.token}`;
-                  return (
-                    <tr
-                      key={link.id}
-                      className={clsx(
-                        "transition-colors",
-                        expired ? "bg-rose-50" : "hover:bg-paper-deep",
+          <>
+            <ul className="divide-y divide-rule border-y border-rule md:hidden">
+              {sharingLinks.map((link) => {
+                const expired = isExpired(link.expiresAt);
+                return (
+                  <li
+                    key={link.id}
+                    className={clsx("py-4", expired && "bg-rose-50 px-3")}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="min-w-0 font-medium break-words text-ink">
+                        {link.description || "Untitled link"}
+                      </p>
+                      {link.category && (
+                        <span className="max-w-[45%] truncate rounded-full border border-rule bg-paper-deep px-2 py-0.5 text-xs text-ink">
+                          {link.category}
+                        </span>
                       )}
-                    >
-                      <td className="px-3 py-3 align-top font-medium text-ink">
-                        {link.description || (
-                          <span className="text-ink-soft">—</span>
+                    </div>
+                    <p className="mt-1 text-sm">
+                      {formatExpirationDate(link.expiresAt)}
+                    </p>
+                    <p className="mt-0.5 text-sm text-ink-soft">
+                      {link.submissionCount}{" "}
+                      {link.submissionCount === 1
+                        ? "submission"
+                        : "submissions"}{" "}
+                      · Created{" "}
+                      {format(new Date(link.createdAt), "MMM d, yyyy")}
+                    </p>
+                    <div className="mt-3 grid grid-cols-2 gap-2">
+                      {renderLinkActions(link, expired)}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+            <div className="hidden overflow-x-auto rounded-lg border border-rule bg-paper md:block">
+              <table className="w-full min-w-[960px] text-sm text-ink">
+                <thead className="border-b border-rule bg-paper-deep text-left text-xs font-semibold uppercase tracking-wide text-ink">
+                  <tr>
+                    <th className="px-3 py-2.5">Label</th>
+                    <th className="px-3 py-2.5">Category</th>
+                    <th className="px-3 py-2.5">Link</th>
+                    <th className="px-3 py-2.5 text-center">Submissions</th>
+                    <th className="px-3 py-2.5">Created</th>
+                    <th className="px-3 py-2.5">Status</th>
+                    <th className="px-3 py-2.5 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-rule">
+                  {sharingLinks.map((link) => {
+                    const expired = isExpired(link.expiresAt);
+                    const url = `${window.location.origin}/share/${link.token}`;
+                    return (
+                      <tr
+                        key={link.id}
+                        className={clsx(
+                          "transition-colors",
+                          expired ? "bg-rose-50" : "hover:bg-paper-deep",
                         )}
-                      </td>
-                      <td className="px-3 py-3 align-top">
-                        {link.category ? (
-                          <span className="inline-flex rounded-full border border-rule bg-paper-deep px-2 py-0.5 text-xs text-ink">
-                            {link.category}
-                          </span>
-                        ) : (
-                          <span className="text-ink-soft">—</span>
-                        )}
-                      </td>
-                      <td className="px-3 py-3 align-top">
-                        {expired ? (
-                          <span className="text-ink-soft italic">
-                            link no longer active
-                          </span>
-                        ) : (
-                          <code
-                            className="block max-w-[28rem] truncate font-mono text-xs text-ink"
-                            title={url}
-                          >
-                            {url}
-                          </code>
-                        )}
-                      </td>
-                      <td className="px-3 py-3 text-center align-top font-semibold text-ink tabular-nums">
-                        {link.submissionCount}
-                      </td>
-                      <td className="px-3 py-3 align-top whitespace-nowrap text-ink">
-                        {format(new Date(link.createdAt), "MMM d, yyyy")}
-                      </td>
-                      <td className="px-3 py-3 align-top whitespace-nowrap">
-                        {formatExpirationDate(link.expiresAt)}
-                      </td>
-                      <td className="px-3 py-3 align-top">
-                        <div className="flex items-center justify-end gap-2">
-                          {!expired && (
-                            <button
-                              onClick={() =>
-                                copyToClipboard(link.token, link.id)
-                              }
-                              className={clsx(
-                                "flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
-                                copiedLinkId === link.id
-                                  ? "bg-emerald-100 text-emerald-900"
-                                  : "bg-paper-deep text-ink hover:bg-rule",
-                              )}
-                              title="Copy link to clipboard"
-                            >
-                              {copiedLinkId === link.id ? (
-                                <>
-                                  <HiClipboardCheck className="h-4 w-4" />
-                                  <span>Copied</span>
-                                </>
-                              ) : (
-                                <>
-                                  <HiClipboard className="h-4 w-4" />
-                                  <span>Copy</span>
-                                </>
-                              )}
-                            </button>
+                      >
+                        <td className="px-3 py-3 align-top font-medium text-ink">
+                          {link.description || (
+                            <span className="text-ink-soft">—</span>
                           )}
-                          <button
-                            onClick={() => handleRevokeLink(link.id)}
-                            className="flex items-center gap-1 rounded-md bg-rose-100 px-2.5 py-1.5 text-xs font-medium text-rose-900 transition-colors hover:bg-rose-200"
-                            title="Revoke this link"
-                          >
-                            <HiTrash className="h-4 w-4" />
-                            <span>Revoke</span>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                        </td>
+                        <td className="px-3 py-3 align-top">
+                          {link.category ? (
+                            <span className="inline-flex rounded-full border border-rule bg-paper-deep px-2 py-0.5 text-xs text-ink">
+                              {link.category}
+                            </span>
+                          ) : (
+                            <span className="text-ink-soft">—</span>
+                          )}
+                        </td>
+                        <td className="px-3 py-3 align-top">
+                          {expired ? (
+                            <span className="text-ink-soft italic">
+                              link no longer active
+                            </span>
+                          ) : (
+                            <code
+                              className="block max-w-[18rem] truncate font-mono text-xs text-ink"
+                              title={url}
+                            >
+                              {url}
+                            </code>
+                          )}
+                        </td>
+                        <td className="px-3 py-3 text-center align-top font-semibold text-ink tabular-nums">
+                          {link.submissionCount}
+                        </td>
+                        <td className="px-3 py-3 align-top whitespace-nowrap text-ink">
+                          {format(new Date(link.createdAt), "MMM d, yyyy")}
+                        </td>
+                        <td className="px-3 py-3 align-top whitespace-nowrap">
+                          {formatExpirationDate(link.expiresAt)}
+                        </td>
+                        <td className="px-3 py-3 align-top">
+                          <div className="flex items-center justify-end gap-2">
+                            {renderLinkActions(link, expired)}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
 
         <div className="mt-6 text-sm text-ink">

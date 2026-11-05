@@ -57,7 +57,7 @@ export const BirthdaysPage: NextPage = () => {
   return (
     <MainLayout title="Lazy Uncle">
       <main className="mx-auto max-w-7xl px-5 pb-16 sm:px-8 lg:px-12">
-        <div className="flex flex-wrap items-end justify-between gap-2 py-9 sm:py-12">
+        <div className="flex flex-wrap items-end justify-between gap-2 py-7 sm:py-12">
           <div>
             <p className="text-sm font-medium tracking-[0.12em] text-accent-deep uppercase">
               Your people

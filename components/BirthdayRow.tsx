@@ -78,14 +78,14 @@ const BirthdayRow: FC<Props> = ({
       case "sharing":
         return (
           <HiShare
-            className="h-3 w-3 text-blue-500"
+            className="size-3.5 shrink-0 text-ink-muted"
             title="Imported from sharing link"
           />
         );
       case "csv":
         return (
           <HiDocumentText
-            className="h-3 w-3 text-green-500"
+            className="size-3.5 shrink-0 text-ink-muted"
             title="Imported from CSV"
           />
         );
@@ -232,7 +232,7 @@ const BirthdayRow: FC<Props> = ({
 
       <li
         className={clsx(
-          "block border-t border-rule px-4 py-4 text-left text-ink md:hidden",
+          "block border-t border-rule text-left text-ink md:hidden",
           !birthday.id && "bg-paper-deep",
         )}
         id={birthday.id ? `birthday-${birthday.id}` : "mobile-today"}
@@ -242,60 +242,72 @@ const BirthdayRow: FC<Props> = ({
             onClick={() => {
               setIsEditBirthdayDialogOpen(true);
             }}
-            className="flex w-full items-start justify-between gap-4 text-left"
+            className="flex w-full items-start justify-between gap-4 px-5 py-4 text-left transition-colors active:bg-paper-deep sm:px-8"
+            type="button"
           >
             <div className="min-w-0">
-              <p className="flex flex-wrap items-center gap-x-2 text-xl font-medium">
+              <p className="flex flex-wrap items-center gap-x-2 text-lg leading-snug font-medium">
                 {todaysDateMonthAndDay === birthDateMonthAndDay && (
                   <span title={`Today is ${birthday.name}'s birthday!`}>
                     <GiBalloons className="top-0 right-0 text-lg text-rose-500" />
                   </span>
                 )}
-                <span>{birthday.name}</span>
+                <span className="min-w-0 break-words">{birthday.name}</span>
                 {notesTextOnly && (
-                  <HiOutlinePaperClip className="text-sm text-ink-muted" />
+                  <HiOutlinePaperClip
+                    aria-label="Has notes"
+                    className="shrink-0 text-sm text-ink-muted"
+                  />
                 )}
                 {getImportSourceIcon(birthday.importSource)}
               </p>
-              <div className="flex flex-wrap justify-start gap-x-4 gap-y-1 pt-1 text-ink-soft">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-1 text-sm text-ink-soft">
                 {age ? (
                   <p>
-                    <span className="text-sm font-light">Age</span>{" "}
-                    <span className="font-medium text-ink">{age}</span>
+                    Age <span className="font-medium text-ink">{age}</span>
                   </p>
-                ) : actualAge ? (
-                  <span className="sr-only">{actualAge}</span>
                 ) : (
-                  <p>
-                    <span className="text-sm font-light text-ink-muted">
-                      Age unknown
-                    </span>
-                  </p>
+                  actualAge && <span className="sr-only">{actualAge}</span>
                 )}
                 {birthday.parent && (
-                  <p className="overflow-hidden text-ellipsis">
-                    <span className="text-sm font-light">Parent </span>
+                  <p className="min-w-0 truncate">
+                    Parent{" "}
                     <span className="font-medium text-ink">
                       {birthday.parent}
                     </span>
                   </p>
                 )}
+                {zodiacSign && (
+                  <p className="flex items-center gap-1.5">
+                    <ZodiacSignCharacter name={zodiacSign} />
+                    <span>{zodiacSign}</span>
+                  </p>
+                )}
               </div>
-              <p className="mt-1 flex items-center gap-2 text-ink-soft">
-                <ZodiacSignCharacter name={zodiacSign ?? ""} />
-                <span className="text-xs">{zodiacSign ?? ""}</span>
-              </p>
             </div>
-            <p className="shrink-0 text-xl font-medium tabular-nums text-accent-deep">
-              {format(birthDate, "MMM d")}
-            </p>
+            <div className="shrink-0 text-right">
+              <p className="text-lg leading-snug font-medium tabular-nums text-accent-deep">
+                {format(birthDate, "MMM d")}
+              </p>
+              {daysFromNow === 0 ? (
+                <p className="pt-1 text-sm font-medium text-accent-deep">
+                  Today
+                </p>
+              ) : (
+                daysFromNow < 14 && (
+                  <p className="pt-1 text-sm text-ink-soft">
+                    {daysFromNow === 1 ? "Tomorrow" : `in ${daysFromNow} days`}
+                  </p>
+                )
+              )}
+            </div>
           </button>
         ) : (
-          <div className="flex w-full items-center justify-between">
-            <p className="flex items-center space-x-2 text-sm text-ink-muted">
-              <span>{birthday.name}</span>
+          <div className="flex w-full items-center justify-between px-5 py-2.5 sm:px-8">
+            <p className="text-sm font-medium tracking-wide text-ink-muted uppercase">
+              {birthday.name}
             </p>
-            <p className="text-xl font-medium text-accent-deep">
+            <p className="text-sm font-medium text-accent-deep">
               {format(birthDate, "MMM d")}
             </p>
           </div>
